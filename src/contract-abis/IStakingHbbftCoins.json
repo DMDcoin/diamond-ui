@@ -1,0 +1,104 @@
+{
+  "contractName": "IStakingHbbftCoins",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":\"IStakingHbbftCoins\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":{\"keccak256\":\"0xf318fe3ea7a4d93db50b0306931f1720282158cec2a52e48bfc4a27a40075b54\",\"urls\":[\"bzz-raw://2f063c3cfb4bff11de9fed737817c022f80fd12bf90c224209270549174dc689\",\"dweb:/ipfs/QmWbLvMXnbkbUNxo4TfH3UNqGqPzcMXVdGncXnyMwehqDq\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a72315820154f547dbc8ab4f8cb81548ff0dbdf60857b1b7dfb02fbc9b0f8be899e5687b964736f6c63430005100032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a72315820154f547dbc8ab4f8cb81548ff0dbdf60857b1b7dfb02fbc9b0f8be899e5687b964736f6c63430005100032",
+  "sourceMap": "27:31:23:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:31:23;;;;;;;",
+  "deployedSourceMap": "27:31:23:-;;;;;",
+  "source": "pragma solidity ^0.5.16;\n\n\ninterface IStakingHbbftCoins {}\n",
+  "sourcePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol",
+  "ast": {
+    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol",
+    "exportedSymbols": {
+      "IStakingHbbftCoins": [
+        9107
+      ]
+    },
+    "id": 9108,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9106,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:23"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 9107,
+        "linearizedBaseContracts": [
+          9107
+        ],
+        "name": "IStakingHbbftCoins",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 9108,
+        "src": "27:31:23"
+      }
+    ],
+    "src": "0:59:23"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol",
+    "exportedSymbols": {
+      "IStakingHbbftCoins": [
+        9107
+      ]
+    },
+    "id": 9108,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9106,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".16"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:23"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 9107,
+        "linearizedBaseContracts": [
+          9107
+        ],
+        "name": "IStakingHbbftCoins",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 9108,
+        "src": "27:31:23"
+      }
+    ],
+    "src": "0:59:23"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.1",
+  "updatedAt": "2020-11-10T08:59:06.070Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
