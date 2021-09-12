@@ -8,25 +8,8 @@ export default class HbbftNetwork {
   public currentTimestamp: BN = new BN(0);
 
   @observable public stakingEpoch!: number;
-
-}
-
-export class ClaimableStake {
-
-  public amount: BN = new BN(0);
-  public unlockEpoch: number = 0;
-
-  public constructor(public pool: Pool) {
-  }
-
-  
-  public canClaimNow(): boolean {
-    return this.amount.isPositive()  && this.unlockEpoch <= this.pool.model.stakingEpoch;
-  }
-}
-
-export class Delegator {
-  address: string = '';
+  @observable public currentBlockNumber!: number;
+  @observable public myAddr!: string;
 }
 
 
@@ -39,6 +22,7 @@ export class Pool {
   }
 
   public model: HbbftNetwork;
+
 
 
   public isActive: boolean = false; // currently "active" pool
@@ -57,7 +41,7 @@ export class Pool {
   public totalStake: BN = new BN(0);
   public myStake: BN = new BN(0);
   
-  //public claimableStake: IClaimableStake;
+  public claimableStake: ClaimableStake = new ClaimableStake(this);
 
   public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
@@ -85,3 +69,23 @@ export class Pool {
   }
 
 }
+
+
+export class ClaimableStake {
+
+  public amount: BN = new BN(0);
+  public unlockEpoch: number = 0;
+
+  public constructor(public pool: Pool) {
+  }
+
+  
+  public canClaimNow(): boolean {
+    return this.amount.isPositive()  && this.unlockEpoch <= this.pool.model.stakingEpoch;
+  }
+}
+
+export class Delegator {
+  address: string = '';
+}
+

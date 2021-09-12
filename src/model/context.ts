@@ -1,7 +1,7 @@
 
 import { observable } from 'mobx';
 import { Pool } from './model';
-
+import BN from 'bn.js';
 
 export default class Context {
 
@@ -14,19 +14,17 @@ export default class Context {
 
   // in Ether (not wei!)
   // TODO: initializing to 0 is a lazy shortcut
-  @observable public myBalance: string = '0';
+  @observable public myBalance: BN  = new BN(0);
 
   public coinSymbol = 'DMD';
 
-  public epochDuration!: number; // currently not changeable
+  @observable public epochDuration: number = 0; // currently not changeable
 
-  public candidateMinStake!: string;
+  public candidateMinStake: BN = new BN(0);
 
   public delegatorMinStake!: string;
 
   public hasWeb3BrowserSupport = false;
-
-
 
   @observable public epochStartBlock!: number;
 
