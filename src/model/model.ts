@@ -1,5 +1,5 @@
 
-import BN from 'bignumber.js';
+import BN from 'bn.js';
 import { observable } from 'mobx';
 
 

@@ -1,10 +1,15 @@
 
 import { observable } from 'mobx';
-import { Pool } from './model';
+import HbbftNetwork, { Pool } from './model';
 import BN from 'bn.js';
+import Web3 from 'web3';
+
 
 export default class Context {
 
+  //public web3!: Web3;
+
+  @observable public stakingEpoch!: number;
 
   @observable public currentBlockNumber!: number;
 
@@ -16,19 +21,26 @@ export default class Context {
   // TODO: initializing to 0 is a lazy shortcut
   @observable public myBalance: BN  = new BN(0);
 
+  public network: HbbftNetwork = new HbbftNetwork();
+
   public coinSymbol = 'DMD';
 
   @observable public epochDuration: number = 0; // currently not changeable
 
+  public stakeWithdrawDisallowPeriod!: number;
+
   public candidateMinStake: BN = new BN(0);
 
-  public delegatorMinStake!: string;
+  public delegatorMinStake: BN = new BN(0);
 
-  public hasWeb3BrowserSupport = false;
+  // public hasWeb3BrowserSupport = false;
 
   @observable public epochStartBlock!: number;
 
   @observable public epochStartTime!: number;
+
+  @observable public stakingEpochEndTime!: number;
+  
 
   @observable public deltaPot!: string;
 
