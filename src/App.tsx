@@ -16,6 +16,9 @@ interface AppProps {
 @observer
 class App extends React.Component<AppProps, {}> {
 
+  private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+
+
   private ui(o: BN) {
     
 
@@ -47,6 +50,8 @@ class App extends React.Component<AppProps, {}> {
       { title: "Added in Epoch", field: "addedInEpoch", align: "center" }
     ];
 
+    const data = context.pools;
+
 
     // TODO: css template/framework / convention to have a decent layout without writing CSS
     return (
@@ -55,7 +60,7 @@ class App extends React.Component<AppProps, {}> {
           <p>
             account: <span className="text-primary">{context.myAddr}</span> |
             balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
-            current block nr: {context.currentBlockNumber} | current epoch: {this.ui(context.stakingEpoch)} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x=>x.isCurrentValidator).length})
+            current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x=>x.isCurrentValidator).length})
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
             <div>
@@ -105,7 +110,8 @@ class App extends React.Component<AppProps, {}> {
           </table>
         </div>
         <hr />
-        <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
+
+        {/* <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
           <form spellCheck={false}>
             <label>pool address:   <input type="text" value={context.myAddr} readOnly title="determined by current wallet address" /></label> <br />
             <label>public key: <input type="text" defaultValue={this.examplePublicKey} onChange={(e) => {
@@ -125,7 +131,7 @@ class App extends React.Component<AppProps, {}> {
             <span className="sr-only">Loading...</span>
           </div>
           <button type="button" disabled={this.processing}>Remove My Pool (TODO)</button>
-        </div>
+        </div> */}
         
       </div>
     );
@@ -136,7 +142,7 @@ class App extends React.Component<AppProps, {}> {
 
     //this.props.context.showHistoric(isHistoric);
 
-    this.props.context.showHistoric(isHistoric);
+    //this.props.context.showHistoric(isHistoric);
   }
 
 }

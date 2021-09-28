@@ -1,5 +1,5 @@
 
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import HbbftNetwork, { Pool } from './model';
 import BN from 'bn.js';
 import Web3 from 'web3';
@@ -66,5 +66,15 @@ export default class Context {
   @observable public currentValidatorsWithoutPools: string[] = [];
 
   @observable public numbersOfValidators: number = 0;
+
+  @computed get myPool(): Pool | undefined {
+    return this.pools.filter((p) => p.stakingAddress === this.myAddr)[0];
+  }
+
+
+  @computed
+  public get iHaveAPool(): boolean {
+    return this.myPool !== undefined;
+  }
 
  }
