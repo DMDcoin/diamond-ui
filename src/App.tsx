@@ -32,7 +32,7 @@ class App extends React.Component<AppProps, {}> {
 
 
     const poolList = context.pools.map((pool) => (
-      <div>{pool}</div>
+      <div>{pool.miningAddress}</div>
     ));
 
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
@@ -78,36 +78,12 @@ class App extends React.Component<AppProps, {}> {
               data={data}
               columns={columns}
               tooltips={true}
-              layout={"fitData"}
+              layout={"fitColumns"}
               />
           </p>
         </header>
 
-        <div id="poolList">
-          <div className="spinner-border" hidden={!context.isSyncingPools} role="status">
-            <span className="sr-only">Syncing Pools...</span>
-          </div>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>pool address</th>
-                {/* <th>mining address</th> */}
-                <th>validator stake share / reward share % in current epoch</th>
-                <th>nr delegators</th>
-                <th>candidate stake</th>
-                <th>total stake</th>
-                <th>my stake</th>
-                <th>claimable</th>
-                <th>staking actions</th>
-                <th>uncollected reward</th>
-                <th>reward actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {poolList}
-            </tbody>
-          </table>
-        </div>
+        
         <hr />
 
         {/* <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
