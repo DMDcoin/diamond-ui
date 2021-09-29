@@ -27,14 +27,6 @@ class App extends React.Component<AppProps, {}> {
     const { modelDataAdapter } = this.props;
     const context = modelDataAdapter.context;
 
-    const minStakeAmount = this.ui(context.candidateMinStake);
-
-
-
-    const poolList = context.pools.map((pool) => (
-      <div>{pool.miningAddress}</div>
-    ));
-
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
@@ -86,7 +78,9 @@ class App extends React.Component<AppProps, {}> {
         
         <hr />
 
-        {/* <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
+        {/*
+        const minStakeAmount = this.ui(context.candidateMinStake);
+         <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
           <form spellCheck={false}>
             <label>pool address:   <input type="text" value={context.myAddr} readOnly title="determined by current wallet address" /></label> <br />
             <label>public key: <input type="text" defaultValue={this.examplePublicKey} onChange={(e) => {
@@ -113,7 +107,7 @@ class App extends React.Component<AppProps, {}> {
   }
   historicChanged(e: React.ChangeEvent<HTMLInputElement>): void {
     
-    const isHistoric = e.target.checked;
+    //const isHistoric = e.target.checked;
 
     //this.props.context.showHistoric(isHistoric);
 
