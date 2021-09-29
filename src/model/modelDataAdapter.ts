@@ -285,6 +285,36 @@ export class ModelDataAdapter {
     
   }
 
+  private async getClaimableReward(stakingAddr: string): Promise<string> {
+    if (!this.hasWeb3BrowserSupport) {
+      return '0';
+    }
+    // getRewardAmount() fails if invoked for a staker without stake in the pool, thus we check that beforehand
+    const hasStake: boolean = stakingAddr === this.context.myAddr ? true : (await this.stContract.methods.stakeFirstEpoch(stakingAddr, this.context.myAddr).call(this.callTx(), this.blockType())) !== '0';
+    return hasStake ? this.stContract.methods.getRewardAmount([], stakingAddr, this.context.myAddr).call(this.callTx(), this.blockType()) : '0';
+  }
+
+  private async getMyStake(stakingAddress: string): Promise<string> {
+    if (!this.hasWeb3BrowserSupport) {
+      return '0';
+    }
+    return this.stContract.methods.stakeAmount(stakingAddress, this.context.myAddr).call(this.callTx(), this.blockType());
+  }
+
+  private async getBannedUntil(miningAddress: string): Promise<BN> {
+    return new BN((await this.vsContract.methods.bannedUntil(miningAddress).call(this.callTx(), this.blockType())));
+  }
+
+  private async getBanCount(miningAddress: string): Promise<number> {
+    return parseInt(await this.vsContract.methods.banCounter(miningAddress).call(this.callTx(), this.blockType()));
+  }
+
+  private async getAvailableSince(miningAddress: string): Promise<BN> {
+    const rawResult = await this.vsContract.methods.validatorAvailableSince(miningAddress).call(this.callTx(), this.blockType());
+    // console.log('available sinc:', new BN(rawResult).toString('hex'));
+    return new BN(rawResult);
+  }
+
   private async updatePool(pool: Pool,
     activePoolAddrs: Array<string>,
     toBeElectedPoolAddrs: Array<string>,
@@ -309,31 +339,23 @@ export class ModelDataAdapter {
 
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call());
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call());
-    pool.myStake = await this.getMyStake(stakingAddress);
+    pool.myStake = new BN(await this.getMyStake(stakingAddress));
 
     if (this.hasWeb3BrowserSupport) {
       // there is a time, after a validator was chosen,
       // the state is still locked.
       // so the stake can just get "unlocked" in a block between epoch phases.
 
-      const claimableStake = {
-        amount: await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(),
-        unlockEpoch: parseInt(await this.stContract.methods.orderWithdrawEpoch(stakingAddress, this.context.myAddr).call()) + 1,
-        // this lightweigt solution works, but will not trigger an update by itself when its value changes
-        canClaimNow: () => claimableStake.amount.asNumber() > 0 && claimableStake.unlockEpoch <= this.context.stakingEpoch,
-      };
-      pool.claimableStake = claimableStake;
+      // const claimableStake = {
+      //   amount: await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(),
+      //   unlockEpoch: parseInt(await this.stContract.methods.orderWithdrawEpoch(stakingAddress, this.context.myAddr).call()) + 1,
+      //   // this lightweigt solution works, but will not trigger an update by itself when its value changes
+      //   canClaimNow: () => claimableStake.amount.asNumber() > 0 && claimableStake.unlockEpoch <= this.context.stakingEpoch,
+      // };
+      //pool.claimableStake = claimableStake;
       if (isNewEpoch) {
         pool.claimableReward = await this.getClaimableReward(pool.stakingAddress);
       }
-    } else {
-      const claimableStake = {
-        amount: '0',
-        unlockEpoch: 0,
-        // this lightweigt solution works, but will not trigger an update by itself when its value changes
-        canClaimNow: () => false,
-      };
-      pool.claimableStake = claimableStake;
     }
 
     // TODO: delegatorAddrs ?!
@@ -344,8 +366,6 @@ export class ModelDataAdapter {
 
     console.log('before get available since: ', pool.availableSince);
     pool.availableSince = await this.getAvailableSince(miningAddress);
-
-    pool.availableSinceAsText = new Date(pool.availableSince.toNumber() * 1000).toLocaleString();
     pool.isAvailable = !pool.availableSince.isZero();
 
     console.log('after get available since: ', pool.availableSince);
@@ -419,11 +439,11 @@ export class ModelDataAdapter {
     }
 
     // epoch change
-    console.log(`updating stakingEpochEndBlock at block ${this.currentBlockNumber}`);
-    const oldEpoch = this.stakingEpoch;
+    console.log(`updating stakingEpochEndBlock at block ${this.context.currentBlockNumber}`);
+    const oldEpoch = this.context.stakingEpoch;
     await this.retrieveValuesFromContract();
 
-    const isNewEpoch = oldEpoch !== this.stakingEpoch;
+    const isNewEpoch = oldEpoch !== this.context.stakingEpoch;
 
     // TODO FIX: blocks left in Epoch can't get told.
     // const blocksLeftInEpoch = this.stakingEpochEndBlock - this.currentBlockNumber;
@@ -437,7 +457,7 @@ export class ModelDataAdapter {
     // }
 
     // TODO: due to the use of 2 different web3 instances, this bool may not always match stakingAllowedTimeframe
-    this.canStakeOrWithdrawNow = await this.stContract.methods.areStakeAndWithdrawAllowed().call();
+    this.context.canStakeOrWithdrawNow = await this.stContract.methods.areStakeAndWithdrawAllowed().call();
 
     // TODO: don't do this in every block. There's no event we can rely on, but we can be smarter than this
     // await this.updateCurrentValidators();

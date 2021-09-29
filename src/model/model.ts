@@ -81,7 +81,7 @@ export class ClaimableStake {
 
   
   public canClaimNow(): boolean {
-    return this.amount.isPositive()  && this.unlockEpoch <= this.pool.model.stakingEpoch;
+    return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.model.stakingEpoch;
   }
 }
 

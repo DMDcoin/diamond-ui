@@ -1,16 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import logo from './logo.svg';
 import './App.css';
-import { action, computed, observable } from 'mobx';
-import Context from './model/context';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import { ReactTabulator } from 'react-tabulator'
+import { ModelDataAdapter } from './model/modelDataAdapter';
 
 
 interface AppProps {
-  context: Context;
+  modelDataAdapter: ModelDataAdapter;
 }
 
 @observer
@@ -20,14 +18,15 @@ class App extends React.Component<AppProps, {}> {
 
 
   private ui(o: BN) {
-    
-
+    return o.toString(10);
   }
 
   // TODO: should the key prop be here or inside the view?
   public render(): JSX.Element {
 
-    const { context } = this.props;
+    const { modelDataAdapter } = this.props;
+    const context = modelDataAdapter.context;
+
     const minStakeAmount = this.ui(context.candidateMinStake);
 
 
