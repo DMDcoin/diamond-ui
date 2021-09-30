@@ -37,16 +37,19 @@ class App extends React.Component<AppProps, {}> {
     ));
 
     const columns = [
+      { title: "Pool address", field: "stakingAddress", align: "left", frozen:true },
+      { title: "stake", field: "totalStake", formatter: "progress" },
       { title: "Active", field: "isActive", formatter: "tickCross", headerFilter: "select" },
       { title: "to be elected", field: "isToBeElected", formatter: "tickCross", headerFilter: "select" },
       { title: "pending", field: "isPendingValidator", formatter: "tickCross", headerFilter: "select" },
       { title: "available", field: "isAvailable", formatter: "tickCross", headerFilter: "select" },
-      { title: "Pool address", field: "stakingAddress", align: "center" },
       { title: "Miner address", field: "miningAddress", align: "center" },
       { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
     ];
 
     const data = context.pools;
+
+    
 
 
     // TODO: css template/framework / convention to have a decent layout without writing CSS
@@ -83,11 +86,9 @@ class App extends React.Component<AppProps, {}> {
           </p>
         </header>
 
-        
         <hr />
 
-        {/*
-        const minStakeAmount = this.ui(context.candidateMinStake);
+         {/*
          <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
           <form spellCheck={false}>
             <label>pool address:   <input type="text" value={context.myAddr} readOnly title="determined by current wallet address" /></label> <br />
