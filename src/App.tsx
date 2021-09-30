@@ -4,6 +4,9 @@ import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
+import './styles/tabulator.css';
+
+import dmd_logo from "./logo-hor.svg";
 
 import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
@@ -50,6 +53,10 @@ class App extends React.Component<AppProps, {}> {
     return (
       <div className="App">
         <header>
+          <a href="?">
+            <img src={dmd_logo} alt="logo" width="250px" />
+          </a>
+
           <p>
             account: <span className="text-primary">{context.myAddr}</span> |
             balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
@@ -69,11 +76,9 @@ class App extends React.Component<AppProps, {}> {
 /> {field.label} */}
             </div>
             <ReactTabulator
-             
               data={data}
               columns={columns}
               tooltips={true}
-             
               />
           </p>
         </header>
