@@ -1,8 +1,6 @@
-
 import { observable, computed } from 'mobx';
 import HbbftNetwork, { Pool } from './model';
 import BN from 'bn.js';
-import Web3 from 'web3';
 
 
 export default class Context {

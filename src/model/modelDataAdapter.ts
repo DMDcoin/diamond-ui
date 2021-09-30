@@ -7,7 +7,7 @@ import { AbiItem } from 'web3-utils';
 import { abi as ValidatorSetAbi } from '../contract-abis/ValidatorSetHbbft.json';
 import { abi as StakingAbi } from '../contract-abis/StakingHbbftCoins.json';
 import { abi as BlockRewardAbi } from '../contract-abis/BlockRewardHbbftCoins.json';
-import { abi as KeyGenHistoryAbi } from '../contract-abis/KeyGenHistory.json';
+// import { abi as KeyGenHistoryAbi } from '../contract-abis/KeyGenHistory.json';
 
 
 import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
@@ -16,7 +16,7 @@ import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
 
 import { BlockType, NonPayableTx } from '../contracts/types';
-import { computed, observable } from 'mobx';
+import { observable } from 'mobx';
 import { BlockHeader } from "web3-eth";
 
 import BN from 'bn.js';
@@ -171,8 +171,8 @@ export class ModelDataAdapter {
       const brAddress = await this.vsContract.methods.blockRewardContract().call(this.callTx(), this.blockType());
       const brContract : any = new this.web3WS.eth.Contract((BlockRewardAbi as AbiItem[]), brAddress);
       this.brContract = brContract;
-      const kghAddress = await this.vsContract.methods.keyGenHistoryContract().call(this.callTx(), this.blockType());
-      const kghContract = new this.web3.eth.Contract((KeyGenHistoryAbi as AbiItem[]), kghAddress);
+      //const kghAddress = await this.vsContract.methods.keyGenHistoryContract().call(this.callTx(), this.blockType());
+      //const kghContract = new this.web3.eth.Contract((KeyGenHistoryAbi as AbiItem[]), kghAddress);
 
     } catch (e) {
       console.log(`initializing contracts failed: ${e}`);

@@ -3,6 +3,8 @@ import { observer } from 'mobx-react';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
+import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
+
 import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
 
@@ -32,13 +34,13 @@ class App extends React.Component<AppProps, {}> {
     ));
 
     const columns = [
-      { title: "Active", field: "isActive" },
-      { title: "to be elected", field: "isToBeElected" },
-      { title: "pending", field: "isPendingValidator" },
-      { title: "available", field: "isAvailable" },
+      { title: "Active", field: "isActive", formatter: "tickCross", headerFilter: "select" },
+      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", headerFilter: "select" },
+      { title: "pending", field: "isPendingValidator", formatter: "tickCross", headerFilter: "select" },
+      { title: "available", field: "isAvailable", formatter: "tickCross", headerFilter: "select" },
       { title: "Pool address", field: "stakingAddress", align: "center" },
       { title: "Miner address", field: "miningAddress", align: "center" },
-      { title: "Added in Epoch", field: "addedInEpoch", align: "center" }
+      { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
     ];
 
     const data = context.pools;
@@ -67,10 +69,11 @@ class App extends React.Component<AppProps, {}> {
 /> {field.label} */}
             </div>
             <ReactTabulator
+             
               data={data}
               columns={columns}
               tooltips={true}
-              layout={"fitColumns"}
+             
               />
           </p>
         </header>

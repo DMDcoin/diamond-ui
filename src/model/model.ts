@@ -14,6 +14,21 @@ export default class HbbftNetwork {
 
 
 
+export class ClaimableStake {
+
+  public amount: BN = new BN(0);
+  public unlockEpoch: number = 0;
+
+  public constructor(public pool: Pool) {
+  }
+
+  
+  public canClaimNow(): boolean {
+    return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.model.stakingEpoch;
+  }
+}
+
+
 
 export class Pool {
 
@@ -40,9 +55,8 @@ export class Pool {
   public candidateStake: BN = new BN(0);
   public totalStake: BN = new BN(0);
   public myStake: BN = new BN(0);
-  
-  public claimableStake: ClaimableStake = new ClaimableStake(this);
 
+  public claimableStake: ClaimableStake = new ClaimableStake(this);
   public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
   public validatorStakeShare: number = 0; // percent
@@ -71,19 +85,6 @@ export class Pool {
 }
 
 
-export class ClaimableStake {
-
-  public amount: BN = new BN(0);
-  public unlockEpoch: number = 0;
-
-  public constructor(public pool: Pool) {
-  }
-
-  
-  public canClaimNow(): boolean {
-    return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.model.stakingEpoch;
-  }
-}
 
 export class Delegator {
   address: string = '';
