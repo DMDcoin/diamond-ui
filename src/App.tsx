@@ -26,6 +26,9 @@ class App extends React.Component<AppProps, {}> {
     return o.toString(10);
   }
 
+
+  
+
   // TODO: should the key prop be here or inside the view?
   public render(): JSX.Element {
 
@@ -38,26 +41,30 @@ class App extends React.Component<AppProps, {}> {
 
     const columns = [
       { title: "Pool address", field: "stakingAddress", align: "left", frozen:true },
-      { title: "stake", field: "totalStake", formatter: "progress" },
-      { title: "Active", field: "isActive", formatter: "tickCross", headerFilter: "select" },
-      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", headerFilter: "select" },
-      { title: "pending", field: "isPendingValidator", formatter: "tickCross", headerFilter: "select" },
-      { title: "available", field: "isAvailable", formatter: "tickCross", headerFilter: "select" },
-      { title: "Miner address", field: "miningAddress", align: "center" },
-      { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
+      { title: "stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width:100 },
+      { title: "Active", field: "isActive", formatter: "tickCross", width:100 },
+      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", width:100 },
+      { title: "pending", field: "isPendingValidator", formatter: "tickCross", width:100 },
+      { title: "available", field: "isAvailable", formatter: "tickCross", width:100 },
+      { title: "Miner address", field: "miningAddress", align: "center", responsive: true },
+      
     ];
+
+    // missing headers:
+    // { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
 
     const data = context.pools;
 
-    
-
+    const imgPadding = {
+      padding: '0.5rem'
+    };
 
     // TODO: css template/framework / convention to have a decent layout without writing CSS
     return (
       <div className="App">
         <header>
           <a href="?">
-            <img src={dmd_logo} alt="logo" width="250px" />
+            <img src={dmd_logo} alt="logo" width="250px" style={imgPadding} />
           </a>
 
           <p>
