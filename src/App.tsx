@@ -5,11 +5,16 @@ import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
 import './styles/tabulator.css';
+import WalletConnectProvider from "@walletconnect/web3-provider";
+
 
 import dmd_logo from "./logo-hor.svg";
 
 import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
+import Web3Modal from "web3modal";
+
+
 
 
 interface AppProps {
@@ -26,11 +31,50 @@ class App extends React.Component<AppProps, {}> {
     return o.toString(10);
   }
 
+  private onShowWeb3Modal() {
 
-  
+
+    console.log('this: ', this);
+    this.setupWeb3Modal().then(async (provider) => {
+      // Subscribe to provider connection
+      provider.on("connect", (info: { chainId: number }) => {
+        console.log(info);
+      });
+    })
+  }
+
+
+
+  private async setupWeb3Modal() {
+    
+    const providerOptions = {
+      /* See Provider Options Section */
+      walletconnect: {
+        package: WalletConnectProvider,
+        options: {
+          rpc: {
+            71117: "http://rpc.uniq.diamonds"
+          }
+        }
+      },
+
+    };
+
+    const web3Modal = new Web3Modal({
+      network: "mainnet", // optional
+      cacheProvider: true, // optional
+      providerOptions // required
+    });
+
+    const provider = await web3Modal.connect();
+    console.log('got provider: ', provider);
+    return provider;
+  }
 
   // TODO: should the key prop be here or inside the view?
   public render(): JSX.Element {
+
+
 
     const { modelDataAdapter } = this.props;
     const context = modelDataAdapter.context;
@@ -66,6 +110,10 @@ class App extends React.Component<AppProps, {}> {
           <a href="?">
             <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
+
+          <button onClick={() => this.onShowWeb3Modal()} style={{float: 'right'}}>
+            connect wallet
+          </button>
 
           <p>
             <div style={padding}>
