@@ -37,8 +37,6 @@ export class ModelDataAdapter {
 
   public context: Context = new Context();
 
-  public web3WS!: Web3;
-
   public web3!: Web3;
 
   public hasWeb3BrowserSupport = false;
@@ -77,36 +75,35 @@ export class ModelDataAdapter {
 
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
-  public static async initialize(wsUrl: URL, ensRpcUrl: URL, validatorSetContractAddress: string): Promise<ModelDataAdapter> {
-    console.log('initializing new context. ', wsUrl, ensRpcUrl, validatorSetContractAddress);
+  public static async initialize(web3: Web3, validatorSetContractAddress: string): Promise<ModelDataAdapter> {
+    //console.log('initializing new context. ', wsUrl, ensRpcUrl, validatorSetContractAddress);
     
     const result = new ModelDataAdapter();
-    result.web3WS = new Web3(wsUrl.toString());
+    result.web3 = web3;
     
-    //ctx.web3Ens = new Web3(ensRpcUrl.toString());
+    
     
 
     // doc: https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
-    if (window.ethereum) {
-      console.log('web3 injection detected');
-      result.web3 = window.ethereum;
-      result.hasWeb3BrowserSupport = true;
-      // todo: handle ethereum enable here.
-      // ctx.myAddr = ctx.web3.utils.toChecksumAddress((await window.ethereum.enable())[0]);
-      // console.log('using address: ', ctx.myAddr);
-    } else {
-      console.log('no web3 detected, falling back.');
+    // if (window.ethereum) {
+    //   console.log('web3 injection detected');
+    //   result.web3 = window.ethereum;
+    //   result.hasWeb3BrowserSupport = true;
+    //   // todo: handle ethereum enable here.
+    //   // ctx.myAddr = ctx.web3.utils.toChecksumAddress((await window.ethereum.enable())[0]);
+    //   // console.log('using address: ', ctx.myAddr);
+    // } else {
+    //   console.log('no web3 detected, falling back.');
       
-      result.web3 = result.web3WS;
-      result.hasWeb3BrowserSupport = false;
-    }
+    //   result.hasWeb3BrowserSupport = false;
+    // }
 
     // test connections
     try {
       const rpcBlockNr = await result.web3.eth.getBlockNumber();
-      const wsBlockNr = await result.web3WS.eth.getBlockNumber();
+     
       // todo: check if block numbers are about the same, the difference between those 2 should be at max 1.
-      console.log(`block numbers: rpc ${rpcBlockNr}, ws ${wsBlockNr}`);
+      console.log(`block numbers: rpc ${rpcBlockNr}`);
     } catch (e) {
       console.error(`connection test failed: ${e}`);
     }
@@ -138,7 +135,7 @@ export class ModelDataAdapter {
     await result.syncPoolsState(true);
     result.isSyncingPools = false;
 
-    await result.subscribeToEvents(result.web3WS);
+    await result.subscribeToEvents(result.web3);
 
     //await result.retrieveOneShotInfos();
 
@@ -169,7 +166,7 @@ export class ModelDataAdapter {
       const stContract : any =  new this.web3.eth.Contract((StakingAbi as AbiItem[]), stAddress);
       this.stContract = stContract;
       const brAddress = await this.vsContract.methods.blockRewardContract().call(this.callTx(), this.blockType());
-      const brContract : any = new this.web3WS.eth.Contract((BlockRewardAbi as AbiItem[]), brAddress);
+      const brContract : any = new this.web3.eth.Contract((BlockRewardAbi as AbiItem[]), brAddress);
       this.brContract = brContract;
       //const kghAddress = await this.vsContract.methods.keyGenHistoryContract().call(this.callTx(), this.blockType());
       //const kghContract = new this.web3.eth.Contract((KeyGenHistoryAbi as AbiItem[]), kghAddress);
@@ -419,13 +416,18 @@ export class ModelDataAdapter {
   // TODO: does the mix of 2 web3 instances as event source cause troubles?
   private async subscribeToEvents(web3Instance: Web3): Promise<void> {
     this.context.currentBlockNumber = await web3Instance.eth.getBlockNumber();
-    web3Instance.eth.subscribe('newBlockHeaders', async (error, blockHeader) => {
-      if (error) {
-        console.error(error);
-        throw Error(`block listener error: ${error}`);
-      }
-      await this.handleNewBlock(web3Instance, blockHeader);
-    });
+    
+    // web sockets never made it really to the web3 standard, 
+    // since tools like Metamask do not support them.
+    // therefore we need to poll here.
+    
+    // web3Instance.eth.subscribe('newBlockHeaders', async (error, blockHeader) => {
+    //  if (error) {
+    //    console.error(error);
+    //    throw Error(`block listener error: ${error}`);
+    //  }
+    //  await this.handleNewBlock(web3Instance, blockHeader);
+    //});
   }
 
 
