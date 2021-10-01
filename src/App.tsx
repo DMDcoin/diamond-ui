@@ -55,7 +55,7 @@ class App extends React.Component<AppProps, {}> {
 
     const data = context.pools;
 
-    const imgPadding = {
+    const padding = {
       padding: '0.5rem'
     };
 
@@ -64,16 +64,19 @@ class App extends React.Component<AppProps, {}> {
       <div className="App">
         <header>
           <a href="?">
-            <img src={dmd_logo} alt="logo" width="250px" style={imgPadding} />
+            <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
 
           <p>
-            account: <span className="text-primary">{context.myAddr}</span> |
-            balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
-            current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x=>x.isCurrentValidator).length})
+            <div style={padding}>
+              account: <span className="text-primary">{context.myAddr}</span> |
+              balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
+              current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x=>x.isCurrentValidator).length})
+            </div>
+            <span></span>
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
-            <div>
+            <div style={padding}>
               <input type="checkbox" id="latest-block" name="latest-block" checked />
               <label htmlFor="latest-block">latest block</label>
               <input type="number" min="0" required></input>
