@@ -124,18 +124,12 @@ class App extends React.Component<AppProps, {}> {
             <span></span>
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
-            <div style={padding}>
+            {/* <div style={padding}>
               <input type="checkbox" id="latest-block" name="latest-block" checked />
               <label htmlFor="latest-block">latest block</label>
               <input type="number" min="0" required></input>
               <input onChange={(e) => this.historicChanged(e)} type="checkbox" defaultChecked={false} />
-              {/* <input             
-                {...this.props.context.showHistoric .bind({
-                  type: 'checkbox',
-              })}
-    checked={field.value}
-/> {field.label} */}
-            </div>
+            </div> */}
             <ReactTabulator
               data={data}
               columns={columns}
