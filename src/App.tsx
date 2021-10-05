@@ -13,6 +13,7 @@ import dmd_logo from "./logo-hor.svg";
 import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
+import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 
 
 
@@ -111,7 +112,7 @@ class App extends React.Component<AppProps, {}> {
             <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
 
-          <button onClick={() => this.onShowWeb3Modal()} style={{float: 'right'}}>
+          <button onClick={() => this.onShowWeb3Modal()} style={{float: 'right', margin: '1rem'}}>
             connect wallet
           </button>
 
@@ -130,7 +131,9 @@ class App extends React.Component<AppProps, {}> {
               <input type="number" min="0" required></input>
               <input onChange={(e) => this.historicChanged(e)} type="checkbox" defaultChecked={false} />
             </div> */}
+            <ReactTabulatorViewOptions tabulatorId='tabulator' />
             <ReactTabulator
+              
               data={data}
               columns={columns}
               tooltips={true}
