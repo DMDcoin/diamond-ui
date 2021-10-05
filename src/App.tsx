@@ -47,7 +47,7 @@ class App extends React.Component<AppProps, {}> {
 
 
   private async setupWeb3Modal() {
-    
+
     const providerOptions = {
       /* See Provider Options Section */
       walletconnect: {
@@ -85,14 +85,14 @@ class App extends React.Component<AppProps, {}> {
     ));
 
     const columns = [
-      { title: "Pool address", field: "stakingAddress", align: "left", frozen:true },
-      { title: "stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width:100 },
-      { title: "Active", field: "isActive", formatter: "tickCross", width:100 },
-      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", width:100 },
-      { title: "pending", field: "isPendingValidator", formatter: "tickCross", width:100 },
-      { title: "available", field: "isAvailable", formatter: "tickCross", width:100 },
+      { title: "Pool address", field: "stakingAddress", align: "left", frozen: true },
+      { title: "stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
+      { title: "Active", field: "isActive", formatter: "tickCross", width: 100 },
+      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", width: 100 },
+      { title: "pending", field: "isPendingValidator", formatter: "tickCross", width: 100 },
+      { title: "available", field: "isAvailable", formatter: "tickCross", width: 100 },
       { title: "Miner address", field: "miningAddress", align: "center", responsive: true },
-      
+
     ];
 
     // missing headers:
@@ -112,7 +112,7 @@ class App extends React.Component<AppProps, {}> {
             <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
 
-          <button onClick={() => this.onShowWeb3Modal()} style={{float: 'right', margin: '1rem'}}>
+          <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
             connect wallet
           </button>
 
@@ -120,7 +120,7 @@ class App extends React.Component<AppProps, {}> {
             <div style={padding}>
               account: <span className="text-primary">{context.myAddr}</span> |
               balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
-              current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x=>x.isCurrentValidator).length})
+              current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x => x.isCurrentValidator).length})
             </div>
             <span></span>
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
@@ -131,19 +131,19 @@ class App extends React.Component<AppProps, {}> {
               <input type="number" min="0" required></input>
               <input onChange={(e) => this.historicChanged(e)} type="checkbox" defaultChecked={false} />
             </div> */}
-            <ReactTabulatorViewOptions tabulatorId='tabulator' />
-            <ReactTabulator
-              
-              data={data}
-              columns={columns}
-              tooltips={true}
+            <ReactTabulatorViewOptions >
+              <ReactTabulator
+                data={data}
+                columns={columns}
+                tooltips={true}
               />
+            </ReactTabulatorViewOptions>
           </p>
         </header>
 
         <hr />
 
-         {/*
+        {/*
          <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
           <form spellCheck={false}>
             <label>pool address:   <input type="text" value={context.myAddr} readOnly title="determined by current wallet address" /></label> <br />
@@ -165,12 +165,12 @@ class App extends React.Component<AppProps, {}> {
           </div>
           <button type="button" disabled={this.processing}>Remove My Pool (TODO)</button>
         </div> */}
-        
+
       </div>
     );
   }
   historicChanged(e: React.ChangeEvent<HTMLInputElement>): void {
-    
+
     //const isHistoric = e.target.checked;
 
     //this.props.context.showHistoric(isHistoric);

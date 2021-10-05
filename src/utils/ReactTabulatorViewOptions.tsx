@@ -8,7 +8,6 @@ interface ReactTabulatorViewOptionsColumnSet {
 }
 
 interface ReactTabulatorViewOptionsProps {
-  tabulatorId: string,
   allListName: string;
 }
 
@@ -77,7 +76,9 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
       <div>
         <small>all list Name: </small>
         <small>{this.props.allListName}</small>
+        {this.props.children}
       </div>
+
     );
   }
 
