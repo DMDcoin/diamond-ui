@@ -85,13 +85,13 @@ class App extends React.Component<AppProps, {}> {
     ));
 
     const columns = [
-      { title: "Pool address", field: "stakingAddress", align: "left", frozen: true },
+      { title: "Pool address", field: "stakingAddress", hozAlign: "left", frozen: true },
       { title: "stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
       { title: "Active", field: "isActive", formatter: "tickCross", width: 100 },
       { title: "to be elected", field: "isToBeElected", formatter: "tickCross", width: 100 },
       { title: "pending", field: "isPendingValidator", formatter: "tickCross", width: 100 },
       { title: "available", field: "isAvailable", formatter: "tickCross", width: 100 },
-      { title: "Miner address", field: "miningAddress", align: "center", responsive: true },
+      { title: "Miner address", field: "miningAddress", hozAlign: "left", responsive: true },
 
     ];
 
@@ -116,7 +116,7 @@ class App extends React.Component<AppProps, {}> {
             connect wallet
           </button>
 
-          <p>
+          <div>
             <div style={padding}>
               account: <span className="text-primary">{context.myAddr}</span> |
               balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
@@ -138,7 +138,7 @@ class App extends React.Component<AppProps, {}> {
                 tooltips={true}
               />
             </ReactTabulatorViewOptions>
-          </p>
+          </div>
         </header>
 
         <hr />
