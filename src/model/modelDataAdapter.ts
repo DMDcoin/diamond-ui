@@ -1,13 +1,5 @@
 import Web3 from "web3";
-import { ContractOptions } from "web3-eth-contract";
 import Context from "./context";
-
-import { AbiItem } from 'web3-utils';
-
-import { abi as ValidatorSetAbi } from '../contract-abis/ValidatorSetHbbft.json';
-import { abi as StakingAbi } from '../contract-abis/StakingHbbftCoins.json';
-import { abi as BlockRewardAbi } from '../contract-abis/BlockRewardHbbftCoins.json';
-// import { abi as KeyGenHistoryAbi } from '../contract-abis/KeyGenHistory.json';
 
 
 import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
@@ -15,12 +7,11 @@ import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
 
-import { BlockType, NonPayableTx } from '../contracts/types';
 import { observable } from 'mobx';
 
 import BN from 'bn.js';
 import HbbftNetwork, { Pool } from "./model";
-
+import { ContractManager } from "./contracts/contractManager";
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
   interface Window {
@@ -52,35 +43,30 @@ export class ModelDataAdapter {
 
   private kghContract!: KeyGenHistory;
 
+  private contracts! : ContractManager;
+
   private isShowHistoric: boolean = false;
 
   private showHistoricBlock: number = 0;
 
   @observable public isSyncingPools = true;
 
-
-  private blockType() : BlockType {
-    if ( this.isShowHistoric ) {
-      return this.showHistoricBlock;
-    } else {
-      return 'latest';
-    }
-  }
-
-  private callTx() : NonPayableTx {
-    
-    return { };
-  }
-
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
   public static async initialize(web3: Web3, validatorSetContractAddress: string): Promise<ModelDataAdapter> {
     //console.log('initializing new context. ', wsUrl, ensRpcUrl, validatorSetContractAddress);
     
+    web3.eth.defaultBlock = 12732;
+
     const result = new ModelDataAdapter();
     result.web3 = web3;
+    result.contracts = new ContractManager(web3);
     
     
+    result.vsContract = result.contracts.getValidatorSetHbbft();
+    result.stContract = await result.contracts.getStakingHbbft();
+    result.brContract = await result.contracts.getRewardHbbft();
+    result.kghContract = await result.contracts.getKeyGenHistory();
     
     
 
@@ -114,7 +100,7 @@ export class ModelDataAdapter {
     // debug
     // window.web3 = ctx.web3;
 
-    if (window.ethereum) {
+    //if (window.ethereum) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       // window.ethereum.on('accountsChanged', (accounts: any) => {
       //   alert(`metamask account changed to ${accounts}. You may want to reload...`);
@@ -123,7 +109,7 @@ export class ModelDataAdapter {
       // window.ethereum.on('chainChanged', (chainId: number) => {
       //   alert(`metamask chain changed to ${chainId}. You may want to reload...`);
       // });
-    }
+    //}
 
     result.defaultTxOpts.from = result.context.myAddr;
 
@@ -145,49 +131,37 @@ export class ModelDataAdapter {
 
 
   private async initContracts(validatorSetContractAddress: string): Promise<void> {
-    try {
+    // try {
       // TODO: if a contract call fails, the stack trace doesn't show the actual line number.
-      console.log('validatorSet Contract: ', validatorSetContractAddress);
-      //this.vsContract = new ValidatorSetHbbft();
+      // console.log('validatorSet Contract: ', validatorSetContractAddress);
+      // this.vsContract = new ValidatorSetHbbft();
 
-      //const x : any = ValidatorSetAbi[0];
+      // const x : any = ValidatorSetAbi[0];
 
-      const contractOptions: ContractOptions = {};
-      // ValidatorSetAbi.
-      // const obj = JSON.parse( ValidatorSetAbi );
-      const vsContract : any = new this.web3.eth.Contract(ValidatorSetAbi as AbiItem[], validatorSetContractAddress, contractOptions);
-      this.vsContract = vsContract;
-      //this.vsContract = new this.web3.eth.Contract((ValidatorSetAbi as AbiItem[]), validatorSetContractAddress);
-      console.log('queriying adress...');
 
-      
-      const stAddress = await this.vsContract.methods.stakingContract().call(this.callTx(), this.blockType());
-      console.log('stAddress: ', stAddress);
-      const stContract : any =  new this.web3.eth.Contract((StakingAbi as AbiItem[]), stAddress);
-      this.stContract = stContract;
-      const brAddress = await this.vsContract.methods.blockRewardContract().call(this.callTx(), this.blockType());
-      const brContract : any = new this.web3.eth.Contract((BlockRewardAbi as AbiItem[]), brAddress);
-      this.brContract = brContract;
-      //const kghAddress = await this.vsContract.methods.keyGenHistoryContract().call(this.callTx(), this.blockType());
-      //const kghContract = new this.web3.eth.Contract((KeyGenHistoryAbi as AbiItem[]), kghAddress);
+    // } catch (e) {
+    //   console.log(`initializing contracts failed: ${e}`);
+    //   console.log(e);
+    //   throw e;
+    // }
 
-      
+    await this.retrieveGlobalValues();
+    await this.retrieveValuesFromContract();
+    // this.posdaoStartBlock = this.stakingEpochStartBlock - this.stakingEpoch * this.epochDuration;
+  }
 
-    } catch (e) {
-      console.log(`initializing contracts failed: ${e}`);
-      console.log(e);
-      throw e;
-    }
+  /**
+   * get values that are independend 
+   */
+  private async retrieveGlobalValues() {
 
     this.context.candidateMinStake = new BN(await this.stContract.methods.candidateMinStake().call());
     this.context.delegatorMinStake = new BN(await this.stContract.methods.delegatorMinStake().call());
 
     // those values are asumed to be not changeable.
-    this.context.epochDuration = parseInt(await this.stContract.methods.stakingFixedEpochDuration().call());
-    this.context.stakeWithdrawDisallowPeriod = parseInt(await this.stContract.methods.stakingWithdrawDisallowPeriod().call());
+    this.context.epochDuration = parseInt(await (await this.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call());
+    this.context.stakeWithdrawDisallowPeriod = parseInt(await (await this.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call());
 
-    await this.retrieveValuesFromContract();
-    // this.posdaoStartBlock = this.stakingEpochStartBlock - this.stakingEpoch * this.epochDuration;
   }
 
   private async retrieveValuesFromContract(): Promise<void> {
@@ -289,27 +263,27 @@ export class ModelDataAdapter {
       return '0';
     }
     // getRewardAmount() fails if invoked for a staker without stake in the pool, thus we check that beforehand
-    const hasStake: boolean = stakingAddr === this.context.myAddr ? true : (await this.stContract.methods.stakeFirstEpoch(stakingAddr, this.context.myAddr).call(this.callTx(), this.blockType())) !== '0';
-    return hasStake ? this.stContract.methods.getRewardAmount([], stakingAddr, this.context.myAddr).call(this.callTx(), this.blockType()) : '0';
+    const hasStake: boolean = stakingAddr === this.context.myAddr ? true : (await this.stContract.methods.stakeFirstEpoch(stakingAddr, this.context.myAddr).call()) !== '0';
+    return hasStake ? this.stContract.methods.getRewardAmount([], stakingAddr, this.context.myAddr).call() : '0';
   }
 
   private async getMyStake(stakingAddress: string): Promise<string> {
     if (!this.hasWeb3BrowserSupport) {
       return '0';
     }
-    return this.stContract.methods.stakeAmount(stakingAddress, this.context.myAddr).call(this.callTx(), this.blockType());
+    return this.stContract.methods.stakeAmount(stakingAddress, this.context.myAddr).call();
   }
 
   private async getBannedUntil(miningAddress: string): Promise<BN> {
-    return new BN((await this.vsContract.methods.bannedUntil(miningAddress).call(this.callTx(), this.blockType())));
+    return new BN((await this.vsContract.methods.bannedUntil(miningAddress).call()));
   }
 
   private async getBanCount(miningAddress: string): Promise<number> {
-    return parseInt(await this.vsContract.methods.banCounter(miningAddress).call(this.callTx(), this.blockType()));
+    return parseInt(await this.vsContract.methods.banCounter(miningAddress).call());
   }
 
   private async getAvailableSince(miningAddress: string): Promise<BN> {
-    const rawResult = await this.vsContract.methods.validatorAvailableSince(miningAddress).call(this.callTx(), this.blockType());
+    const rawResult = await this.vsContract.methods.validatorAvailableSince(miningAddress).call();
     // console.log('available sinc:', new BN(rawResult).toString('hex'));
     return new BN(rawResult);
   }
@@ -423,6 +397,9 @@ export class ModelDataAdapter {
     // like MetaMask do not support them,
     // there seems not to be a better way currently other then 
     // polling like stupid.
+
+    // todo: If we query historic informations, we do not need this subscription.
+  
 
     this.context.currentBlockNumber = await web3Instance.eth.getBlockNumber();
     

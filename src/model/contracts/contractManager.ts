@@ -9,8 +9,8 @@ import JsonStakingHbbft from '../../contract-abis/StakingHbbft.json';
 import { KeyGenHistory } from '../../contracts/KeyGenHistory';
 import JsonKeyGenHistory from '../../contract-abis/KeyGenHistory.json';
 
-import { BlockRewardHbbftBase } from '../../contracts/BlockRewardHbbftBase';
-import JsonBlockRewardHbbftBase from '../../contract-abis/BlockRewardHbbftBase.json';
+import { BlockRewardHbbftCoins } from '../../contracts/BlockRewardHbbftCoins';
+import JsonBlockRewardHbbftCoins from '../../contract-abis/BlockRewardHbbftCoins.json';
 
 import { Registry } from '../../contracts/Registry';
 import JsonRegistry from '../../contract-abis/Registry.json';
@@ -31,7 +31,7 @@ export class ContractManager {
   private cachedValidatorSetHbbft?: ValidatorSetHbbft;
   private cachedStakingHbbft?: StakingHbbft;
   private cachedKeyGenHistory?: KeyGenHistory;
-  private cachedRewardContract?: BlockRewardHbbftBase;
+  private cachedRewardContract?: BlockRewardHbbftCoins;
 
   public constructor(public web3: Web3) {
 
@@ -83,14 +83,14 @@ export class ContractManager {
     return result;
   }
 
-  public async getRewardHbbft() : Promise<BlockRewardHbbftBase> {
+  public async getRewardHbbft() : Promise<BlockRewardHbbftCoins> {
     if (this.cachedRewardContract) {
       return this.cachedRewardContract;
     }
 
     const contractAddress = await this.getValidatorSetHbbft().methods.blockRewardContract().call();
 
-    const abi : any = JsonBlockRewardHbbftBase.abi;
+    const abi : any = JsonBlockRewardHbbftCoins.abi;
     const result : any = new this.web3.eth.Contract(abi, contractAddress);
     this.cachedRewardContract = result;
     //const validatorSet : ValidatorSetHbbft = validatorSetContract;

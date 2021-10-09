@@ -21,6 +21,9 @@ console.log('connecting to web3 url: ', url.toString());
 declare let window: any;
 
 const web3 = new Web3(url.toString());
+web3.eth.defaultBlock = 12732;
+
+
 ModelDataAdapter.initialize(web3, validatorSetContractAddress)
   .then((adapter) => {
     // debug
@@ -30,9 +33,9 @@ ModelDataAdapter.initialize(web3, validatorSetContractAddress)
       <App modelDataAdapter={adapter} />,
       document.getElementById('root'),
     );
-  }).catch((err) => {
-    alert(`initializing failed: ${err}`);
-  });
+  }); //.catch((err) => {
+    // alert(`initializing failed: ${err}`);
+  // });
 
 ReactDOM.render(
   <React.StrictMode>

@@ -7,11 +7,11 @@ export default class Context {
 
   //public web3!: Web3;
 
-  @observable public stakingEpoch!: number;
+  @observable public stakingEpoch: number = 0;
 
-  @observable public currentBlockNumber!: number;
+  @observable public currentBlockNumber: number = 0;
 
-  @observable public currentTimestamp!: any;
+  @observable public currentTimestamp: any;
 
   @observable public myAddr!: string;
 
