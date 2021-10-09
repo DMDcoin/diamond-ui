@@ -15,9 +15,11 @@ import JsonBlockRewardHbbftBase from '../../contract-abis/BlockRewardHbbftBase.j
 import { Registry } from '../../contracts/Registry';
 import JsonRegistry from '../../contract-abis/Registry.json';
 
-import BigNumber from 'bignumber.js';
+import { AdminUpgradeabilityProxy } from '../../contracts/AdminUpgradeabilityProxy';
+import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilityProxy.json';
 
 
+import BigNumber from 'bn.js';
 
 
 export interface ContractAddresses {
@@ -71,6 +73,13 @@ export class ContractManager {
     
     const abi : any = JsonRegistry.abi;
     let result : any = new this.web3.eth.Contract(abi, '0x6000000000000000000000000000000000000000');
+    return result;
+  }
+
+  public getUpgradabilityProxy(address: string) : AdminUpgradeabilityProxy {
+
+    const abi : any = JsonAdminUpgradeabilityProxy.abi;
+    let result : any = new this.web3.eth.Contract(abi, address);
     return result;
   }
 

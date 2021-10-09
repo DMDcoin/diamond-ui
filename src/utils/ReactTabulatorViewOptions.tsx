@@ -25,7 +25,7 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
   public reactTabulatorComponent?: ReactTabulator
 
 
-  static getDefaultProps() {
+  static getDefaultPropsForInit() {
     const result = {
       allListName: 'all'
     }
@@ -33,7 +33,7 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
     return result;
   }
 
-  static defaultProps =  ReactTabulatorViewOptions.getDefaultProps();
+  static defaultProps =  ReactTabulatorViewOptions.getDefaultPropsForInit();
 
   public constructor(props: ReactTabulatorViewOptionsProps) {
     super(props);
@@ -86,4 +86,4 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
 
 
 
-ReactTabulatorViewOptions.defaultProps = ReactTabulatorViewOptions.getDefaultProps();
+ReactTabulatorViewOptions.defaultProps = ReactTabulatorViewOptions.getDefaultPropsForInit();

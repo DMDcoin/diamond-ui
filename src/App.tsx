@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { computed } from 'mobx';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
@@ -7,15 +8,12 @@ import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme
 import './styles/tabulator.css';
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-
 import dmd_logo from "./logo-hor.svg";
 
 import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
-
-
 
 
 interface AppProps {
@@ -44,8 +42,6 @@ class App extends React.Component<AppProps, {}> {
     })
   }
 
-
-
   private async setupWeb3Modal() {
 
     const providerOptions = {
@@ -72,15 +68,18 @@ class App extends React.Component<AppProps, {}> {
     return provider;
   }
 
-  // TODO: should the key prop be here or inside the view?
+  @computed get dataContext() {
+    return this.props.modelDataAdapter.context;
+  }
+
   public render(): JSX.Element {
 
+    //const { context } = this.props.modelDataAdapter;
+    // const context = modelDataAdapter.context;
 
+    
 
-    const { modelDataAdapter } = this.props;
-    const context = modelDataAdapter.context;
-
-    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
+    const validatorsWithoutPoolSection = this.dataContext.currentValidatorsWithoutPools.map((address) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
@@ -98,7 +97,7 @@ class App extends React.Component<AppProps, {}> {
     // missing headers:
     // { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
 
-    const data = context.pools;
+    const data = this.dataContext.pools;
 
     const padding = {
       padding: '0.5rem'
@@ -118,9 +117,9 @@ class App extends React.Component<AppProps, {}> {
 
           <div>
             <div style={padding}>
-              account: <span className="text-primary">{context.myAddr}</span> |
-              balance: {this.ui(context.myBalance)} {context.coinSymbol}<br />
-              current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x => x.isCurrentValidator).length})
+              account: <span className="text-primary">{this.dataContext.myAddr}</span> |
+              balance: {this.ui(this.dataContext.myBalance)} {this.dataContext.coinSymbol}<br />
+              current block nr: {this.dataContext.currentBlockNumber} | current epoch: {this.dataContext.stakingEpoch} | epoch start Block {this.dataContext.epochStartBlock} | epoch start Time {new Date(this.dataContext.epochStartTime * 1000).toLocaleString()} | deltaPot {this.dataContext.deltaPot} | reinsertPot {this.dataContext.reinsertPot} | validators# | {this.dataContext.pools.filter(x => x.isCurrentValidator).length})
             </div>
             <span></span>
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
@@ -179,5 +178,6 @@ class App extends React.Component<AppProps, {}> {
   }
 
 }
+
 
 export default App;

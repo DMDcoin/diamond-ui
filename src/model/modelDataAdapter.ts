@@ -17,7 +17,6 @@ import { KeyGenHistory } from '../contracts/KeyGenHistory';
 
 import { BlockType, NonPayableTx } from '../contracts/types';
 import { observable } from 'mobx';
-import { BlockHeader } from "web3-eth";
 
 import BN from 'bn.js';
 import HbbftNetwork, { Pool } from "./model";
@@ -35,7 +34,7 @@ declare global {
 export class ModelDataAdapter {
 
 
-  public context: Context = new Context();
+  @observable public context: Context = new Context();
 
   public web3!: Web3;
 
@@ -80,6 +79,7 @@ export class ModelDataAdapter {
     
     const result = new ModelDataAdapter();
     result.web3 = web3;
+    
     
     
     
@@ -171,6 +171,8 @@ export class ModelDataAdapter {
       //const kghAddress = await this.vsContract.methods.keyGenHistoryContract().call(this.callTx(), this.blockType());
       //const kghContract = new this.web3.eth.Contract((KeyGenHistoryAbi as AbiItem[]), kghAddress);
 
+      
+
     } catch (e) {
       console.log(`initializing contracts failed: ${e}`);
       console.log(e);
@@ -232,16 +234,16 @@ export class ModelDataAdapter {
 
     if (blockNumberAtBegin !== this.context.currentBlockNumber) { console.warn('detected slow pool sync'); return; }
     const activePoolAddrs: Array<string> = await this.stContract.methods.getPools().call();
-    console.log('active Pools:', activePoolAddrs);
+    // console.log('active Pools:', activePoolAddrs);
     if (blockNumberAtBegin !== this.context.currentBlockNumber) { console.warn('detected slow pool sync'); return; }
     const inactivePoolAddrs: Array<string> = await this.stContract.methods.getPoolsInactive().call();
-    console.log('inactive Pools:', inactivePoolAddrs);
+    // console.log('inactive Pools:', inactivePoolAddrs);
     if (blockNumberAtBegin !== this.context.currentBlockNumber) { console.warn('detected slow pool sync'); return; }
     const toBeElectedPoolAddrs = await this.stContract.methods.getPoolsToBeElected().call();
-    console.log('to be elected Pools:', toBeElectedPoolAddrs);
+    // console.log('to be elected Pools:', toBeElectedPoolAddrs);
     if (blockNumberAtBegin !== this.context.currentBlockNumber) { console.warn('detected slow pool sync'); return; }
     const pendingValidatorAddrs = await this.vsContract.methods.getPendingValidators().call();
-    console.log('pendingMiningPools:', pendingValidatorAddrs);
+    // console.log('pendingMiningPools:', pendingValidatorAddrs);
     if (blockNumberAtBegin !== this.context.currentBlockNumber) { console.warn('detected slow pool sync'); return; }
     console.log(`syncing ${activePoolAddrs.length} active and ${inactivePoolAddrs.length} inactive pools...`);
     const poolAddrs = activePoolAddrs.concat(inactivePoolAddrs);
@@ -318,13 +320,13 @@ export class ModelDataAdapter {
     pendingValidatorAddrs: Array<string>,
     isNewEpoch: boolean): Promise<void> {
     const { stakingAddress } = pool;
-    console.log(`checking pool ${stakingAddress}`);
+    // console.log(`checking pool ${stakingAddress}`);
     //const ensNamePromise = this.getEnsNameOf(pool.stakingAddress);
-    console.log(`ens: ${stakingAddress}`);
+    // console.log(`ens: ${stakingAddress}`);
     // TODO: figure out if this value can be cached or not.
     pool.miningAddress = await this.vsContract.methods.miningByStakingAddress(stakingAddress).call();
     pool.miningPublicKey = await this.vsContract.methods.getPublicKey(pool.miningAddress).call();
-    console.log(`minigAddress: ${pool.miningAddress}`);
+    // console.log(`minigAddress: ${pool.miningAddress}`);
 
     const { miningAddress } = pool;
 
@@ -361,11 +363,11 @@ export class ModelDataAdapter {
     pool.bannedUntil = new BN(await this.getBannedUntil(miningAddress));
     pool.banCount = await this.getBanCount(miningAddress);
 
-    console.log('before get available since: ', pool.availableSince);
+    // console.log('before get available since: ', pool.availableSince);
     pool.availableSince = await this.getAvailableSince(miningAddress);
     pool.isAvailable = !pool.availableSince.isZero();
 
-    console.log('after get available since: ', pool.availableSince);
+    // console.log('after get available since: ', pool.availableSince);
 
     // const stEvents = await this.stContract.getPastEvents('allEvents', { fromBlock: 0 });
     // there are between 1 and n AddedPool events per pool. We're looking for the first one
@@ -409,35 +411,46 @@ export class ModelDataAdapter {
     //   pool.ensName = name;
     // });
 
-    console.log('pool got updated: ', pool);
+    // console.log('pool got updated: ', pool);
   }
 
-    // listens for events we're interested in and triggers actions accordingly
-  // TODO: does the mix of 2 web3 instances as event source cause troubles?
+
+  private newBlockPolling?: NodeJS.Timeout = undefined;
+
   private async subscribeToEvents(web3Instance: Web3): Promise<void> {
+
+    // since web3 websockets never made it to be a full supported standard,
+    // like MetaMask do not support them,
+    // there seems not to be a better way currently other then 
+    // polling like stupid.
+
     this.context.currentBlockNumber = await web3Instance.eth.getBlockNumber();
     
-    // web sockets never made it really to the web3 standard, 
-    // since tools like Metamask do not support them.
-    // therefore we need to poll here.
+    // todo: manage closing of old handler.
+    if (this.newBlockPolling) {
+      clearInterval(this.newBlockPolling);
+    }
     
-    // web3Instance.eth.subscribe('newBlockHeaders', async (error, blockHeader) => {
-    //  if (error) {
-    //    console.error(error);
-    //    throw Error(`block listener error: ${error}`);
-    //  }
-    //  await this.handleNewBlock(web3Instance, blockHeader);
-    //});
+    this.newBlockPolling = setInterval(async () =>  {
+      const currentBlock = await web3Instance.eth.getBlockNumber();
+      if (currentBlock > this.context.currentBlockNumber) {
+        await this.handleNewBlock();
+      }
+      // todo: what if the RPCC internet connection is slower than the interval ?
+    }, 1000);
   }
 
 
   // does relevant state updates and checks if the epoch changed
-  private async handleNewBlock(web3Instance: Web3, blockHeader: BlockHeader): Promise<void> {
+  private async handleNewBlock() : Promise<void> {
+
+    const blockHeader = await this.web3.eth.getBlock('latest');
     this.context.currentBlockNumber = blockHeader.number;
+    console.log(`current Block Number: `, this.context.currentBlockNumber);
     this.context.currentTimestamp = new BN(blockHeader.timestamp);
 
     if (this.hasWeb3BrowserSupport) {
-      this.context.myBalance = new BN(await web3Instance.eth.getBalance(this.context.myAddr));
+      this.context.myBalance = new BN(await this.web3.eth.getBalance(this.context.myAddr));
     }
 
     // epoch change

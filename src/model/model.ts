@@ -8,7 +8,7 @@ export default class HbbftNetwork {
   public currentTimestamp: BN = new BN(0);
 
   @observable public stakingEpoch!: number;
-  @observable public currentBlockNumber!: number;
+  // @observable public currentBlockNumber!: number;
   @observable public myAddr!: string;
 }
 
@@ -39,6 +39,8 @@ export class Pool {
   public model: HbbftNetwork;
 
 
+
+  // public isUpdating: boolean = false;
 
   public isActive: boolean = false; // currently "active" pool
   public isToBeElected: boolean = false; // is to be elected.
