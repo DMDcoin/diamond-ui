@@ -21,7 +21,6 @@ export class ClaimableStake {
 
   public constructor(public pool: Pool) {
   }
-
   
   public canClaimNow(): boolean {
     return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.model.stakingEpoch;

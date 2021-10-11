@@ -37,15 +37,6 @@ export class ContractManager {
 
   }
 
-  /**
-   * retrieves a ContractManager with the web3 context from current configuration.
-  */
-  // public static get() : ContractManager {
-  //   const web3 = ConfigManager.getWeb3();
-  //   const contractManager = new ContractManager(web3);
-  //   return contractManager;
-  // }
-
   public static getContractAddresses() : ContractAddresses {
     //todo: query other addresses ?!
     // more intelligent contract manager that queries lazy ?
@@ -59,13 +50,9 @@ export class ContractManager {
     }
 
     const contractAddresses = ContractManager.getContractAddresses();
-
-    
-    
     const abi : any = JsonValidatorSetHbbft.abi;
     const validatorSetContract : any = new this.web3.eth.Contract(abi, contractAddresses.validatorSetAddress);
     this.cachedValidatorSetHbbft = validatorSetContract;
-    //const validatorSet : ValidatorSetHbbft = validatorSetContract;
     return validatorSetContract;
   }
 
