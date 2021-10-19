@@ -14,6 +14,7 @@ import { ReactTabulator } from 'react-tabulator'
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
+import { BlockSelectorUI } from './components/block-selector-ui';
 
 
 interface AppProps {
@@ -77,7 +78,7 @@ class App extends React.Component<AppProps, {}> {
     //const { context } = this.props.modelDataAdapter;
     // const context = modelDataAdapter.context;
 
-    
+
 
     const validatorsWithoutPoolSection = this.dataContext.currentValidatorsWithoutPools.map((address) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
@@ -116,12 +117,7 @@ class App extends React.Component<AppProps, {}> {
           </button>
 
           <div>
-            <div style={padding}>
-              account: <span className="text-primary">{this.dataContext.myAddr}</span> |
-              balance: {this.ui(this.dataContext.myBalance)} {this.dataContext.coinSymbol}<br />
-              current block nr: {this.dataContext.currentBlockNumber} | current epoch: {this.dataContext.stakingEpoch} | epoch start Block {this.dataContext.epochStartBlock} | epoch start Time {new Date(this.dataContext.epochStartTime * 1000).toLocaleString()} | deltaPot {this.dataContext.deltaPot} | reinsertPot {this.dataContext.reinsertPot} | validators# | {this.dataContext.pools.filter(x => x.isCurrentValidator).length})
-            </div>
-            <span></span>
+            <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
             {/* <div style={padding}>

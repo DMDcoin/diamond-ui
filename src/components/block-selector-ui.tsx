@@ -2,6 +2,7 @@ import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { observer } from 'mobx-react';
 import React from 'react';
 import { ui } from "../ui";
+import { Table } from "react-bootstrap";
 
 
 export interface IBlockSelectorProps {
@@ -20,10 +21,63 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
 
     const context = this.props.modelDataAdapter.context;
 
+    let accountInfos = undefined;
+
+    if (this.props.modelDataAdapter.hasWeb3BrowserSupport) {
+      accountInfos = 
+      <section>
+        <div>account: <span className="text-primary">{context.myAddr}</span></div>
+        <div>balance: {ui(context.myBalance)} {context.coinSymbol}</div>;
+      </section>
+
+      accountInfos = 
+      <section>
+        <tr>
+          <td>account</td>
+          <td>{context.myAddr}</td>
+        </tr>
+        <tr>
+          <td>balance</td>
+          <td>{ui(context.myBalance)} {context.coinSymbol}</td>
+        </tr>
+      </section>
+    }
+
     return <div style={padding}>
-    account: <span className="text-primary">{context.myAddr}</span> |
-    balance: {ui(context.myBalance)} {context.coinSymbol}<br />
-    current block nr: {context.currentBlockNumber} | current epoch: {context.stakingEpoch} | epoch start Block {context.epochStartBlock} | epoch start Time {new Date(context.epochStartTime * 1000).toLocaleString()} | deltaPot {context.deltaPot} | reinsertPot {context.reinsertPot} | validators# | {context.pools.filter(x => x.isCurrentValidator).length})
+      {accountInfos}
+    <Table striped bordered hover>
+      <tbody>
+        <tr>
+          <td>current block nr</td>
+          <td>{context.currentBlockNumber}</td>
+        </tr>
+        <tr>
+          <td>current epoch</td>
+          <td>{context.stakingEpoch}</td>
+        </tr>
+        <tr>
+          <td>epoch start Block</td>
+          <td>{context.epochStartBlock}</td>
+        </tr>
+        <tr>
+          <td>epoch start time</td>
+          <td>{context.epochStartTimeFormatted}</td>
+        </tr>
+        <tr>
+          <td>delta pot</td>
+          <td>{context.deltaPot}</td>
+        </tr>
+        <tr>
+          <td>reinsert pot</td>
+          <td>{context.reinsertPot}</td>
+        </tr>
+        <tr>
+          <td>validators</td>
+          <td>{context.pools.filter(x => x.isCurrentValidator).length}</td>
+        </tr>
+      </tbody>
+    </Table>
+
   </div>;
   }
 }

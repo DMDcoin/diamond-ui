@@ -69,6 +69,9 @@ export default class Context {
     return this.pools.filter((p) => p.stakingAddress === this.myAddr)[0];
   }
 
+  @computed get epochStartTimeFormatted() : string {
+    return new Date(this.epochStartTime * 1000).toLocaleString();
+  }
 
   @computed
   public get iHaveAPool(): boolean {
