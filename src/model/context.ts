@@ -3,7 +3,7 @@ import { Pool } from './model';
 import BN from 'bn.js';
 
 
-export default class Context {
+export class Context {
 
   //public web3!: Web3;
 

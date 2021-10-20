@@ -2,8 +2,9 @@ import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { observer } from 'mobx-react';
 import React from 'react';
 import { ui } from "../ui";
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 
+import { ArrowLeft, ArrowRight } from 'react-bootstrap-icons';
 
 export interface IBlockSelectorProps {
   modelDataAdapter: ModelDataAdapter;
@@ -49,7 +50,21 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
       <tbody>
         <tr>
           <td>current block nr</td>
-          <td>{context.currentBlockNumber}</td>
+          
+          <td>
+            <section style={{width:'20rem'}}>
+              <Button>
+                <ArrowLeft />
+              </Button>
+              <Button style={{margin:'0.1rem'}}>
+                {context.currentBlockNumber}
+              </Button>
+              <Button>
+                <ArrowRight/>
+              </Button>
+            </section>
+          </td>
+          
         </tr>
         <tr>
           <td>current epoch</td>

@@ -1,9 +1,8 @@
 
 import BN from 'bn.js';
 import { observable } from 'mobx';
-import Context from './context';
+import { Context } from './context';
 
-@observable
 export class ClaimableStake {
 
   public amount: BN = new BN(0);
@@ -18,7 +17,7 @@ export class ClaimableStake {
 }
 
 
-@observable
+// @observable
 export class Pool {
 
   public constructor(context: Context) {

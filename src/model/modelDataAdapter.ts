@@ -1,17 +1,16 @@
+import BN from 'bn.js';
+
 import Web3 from "web3";
-import Context from "./context";
 
-
+import { Context } from './context';
 import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
 import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
-
 import { observable } from 'mobx';
-
-import BN from 'bn.js';
 import { Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
+
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
   interface Window {
