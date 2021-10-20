@@ -10,7 +10,7 @@ import { KeyGenHistory } from '../contracts/KeyGenHistory';
 import { observable } from 'mobx';
 
 import BN from 'bn.js';
-import HbbftNetwork, { Pool } from "./model";
+import { Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
@@ -191,8 +191,9 @@ export class ModelDataAdapter {
     this.context.canStakeOrWithdrawNow = await this.stContract.methods.areStakeAndWithdrawAllowed().call();
   }
 
-  private createEmptyPool(stakingAddress: string, network: HbbftNetwork): Pool {
-    const result = new Pool(network);
+  private createEmptyPool(stakingAddress: string): Pool {
+    const result = new Pool(this.context);
+    
     result.stakingAddress = stakingAddress;
     return result;
   }
@@ -233,7 +234,7 @@ export class ModelDataAdapter {
     poolAddrs.forEach((poolAddress) => {
       const findResult = this.context.pools.find((x) => x.stakingAddress === poolAddress);
       if (!findResult) {
-        this.context.pools.push(this.createEmptyPool(poolAddress, this.context.network));
+        this.context.pools.push(this.createEmptyPool(poolAddress));
       }
     });
 

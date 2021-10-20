@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import HbbftNetwork, { Pool } from './model';
+import { Pool } from './model';
 import BN from 'bn.js';
 
 
@@ -18,8 +18,6 @@ export default class Context {
   // in Ether (not wei!)
   // TODO: initializing to 0 is a lazy shortcut
   @observable public myBalance: BN  = new BN(0);
-
-  public network: HbbftNetwork = new HbbftNetwork();
 
   public coinSymbol = 'DMD';
 

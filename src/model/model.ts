@@ -1,19 +1,9 @@
 
 import BN from 'bn.js';
 import { observable } from 'mobx';
+import Context from './context';
 
-
-export default class HbbftNetwork {
-
-  public currentTimestamp: BN = new BN(0);
-
-  @observable public stakingEpoch!: number;
-  // @observable public currentBlockNumber!: number;
-  @observable public myAddr!: string;
-}
-
-
-
+@observable
 export class ClaimableStake {
 
   public amount: BN = new BN(0);
@@ -23,19 +13,19 @@ export class ClaimableStake {
   }
   
   public canClaimNow(): boolean {
-    return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.model.stakingEpoch;
+    return this.amount.gt(new BN(0))  && this.unlockEpoch <= this.pool.context.stakingEpoch;
   }
 }
 
 
-
+@observable
 export class Pool {
 
-  public constructor(model: HbbftNetwork) {
-    this.model = model;
+  public constructor(context: Context) {
+    this.context = context;
   }
 
-  public model: HbbftNetwork;
+  public context: Context;
 
 
 
@@ -65,7 +55,7 @@ export class Pool {
   public claimableReward: string = '0';
   
   public isBanned(): boolean {
-    return this.bannedUntil.gt(this.model.currentTimestamp);
+    return this.bannedUntil.gt(this.context.currentTimestamp);
   }
   
   public bannedUntil: BN = new BN('0');
