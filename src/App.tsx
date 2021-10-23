@@ -15,6 +15,7 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
+import { Button } from 'react-bootstrap';
 
 
 interface AppProps {
@@ -116,7 +117,10 @@ class App extends React.Component<AppProps, {}> {
             connect wallet
           </button>
 
-          <div>
+          
+        </header>
+
+        <div>
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
@@ -134,9 +138,8 @@ class App extends React.Component<AppProps, {}> {
               />
             </ReactTabulatorViewOptions>
           </div>
-        </header>
 
-        <hr />
+          <Button onClick={() => {this.forceUpdate()}}>force update</Button>
 
         {/*
          <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>

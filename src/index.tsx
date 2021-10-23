@@ -5,14 +5,7 @@ import App from './App';
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3 from 'web3';
 
-// import reportWebVitals from './reportWebVitals';
-
 const url = new URL(process.env.REACT_APP_URL || 'http://localhost:8540');
-const validatorSetContractAddress = process.env.REACT_APP_VALIDATORSET_CONTRACT || '0x1000000000000000000000000000000000000001';
-
-
-//const adapter = new ModelDataAdapter();
-
 
 console.log('connecting to web3: ', url);
 console.log('connecting to web3 url: ', url.toString());
@@ -21,10 +14,8 @@ console.log('connecting to web3 url: ', url.toString());
 declare let window: any;
 
 const web3 = new Web3(url.toString());
-web3.eth.defaultBlock = 12732;
 
-
-ModelDataAdapter.initialize(web3, validatorSetContractAddress)
+ModelDataAdapter.initialize(web3)
   .then((adapter) => {
     // debug
     window.context = adapter;
