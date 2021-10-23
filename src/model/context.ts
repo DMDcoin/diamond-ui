@@ -11,6 +11,8 @@ export class Context {
 
   @observable public currentBlockNumber: number = 0;
 
+  @observable public latestBlockNumber: number = 0;
+
   @observable public currentTimestamp: any;
 
   @observable public myAddr!: string;

@@ -34,6 +34,8 @@ export class ModelDataAdapter {
     from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
   };
 
+
+
   private vsContract!: ValidatorSetHbbft;
 
   private stContract!: StakingHbbftCoins;
@@ -44,18 +46,23 @@ export class ModelDataAdapter {
 
   private contracts! : ContractManager;
 
-  private isShowHistoric: boolean = false;
+  private _isShowHistoric: boolean = false;
 
+  @observable public isReadingData: boolean = false;
+  
   private showHistoricBlock: number = 0;
 
   @observable public isSyncingPools = true;
 
+  public get isShowHistoric() : boolean {
+    return this._isShowHistoric; 
+  }
+
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
-  public static async initialize(web3: Web3, validatorSetContractAddress: string): Promise<ModelDataAdapter> {
+  public static async initialize(web3: Web3): Promise<ModelDataAdapter> {
     //console.log('initializing new context. ', wsUrl, ensRpcUrl, validatorSetContractAddress);
     
-    web3.eth.defaultBlock = 12732;
 
     const result = new ModelDataAdapter();
     result.web3 = web3;
@@ -67,60 +74,18 @@ export class ModelDataAdapter {
     result.brContract = await result.contracts.getRewardHbbft();
     result.kghContract = await result.contracts.getKeyGenHistory();
     
-    
-
-    // doc: https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
-    // if (window.ethereum) {
-    //   console.log('web3 injection detected');
-    //   result.web3 = window.ethereum;
-    //   result.hasWeb3BrowserSupport = true;
-    //   // todo: handle ethereum enable here.
-    //   // ctx.myAddr = ctx.web3.utils.toChecksumAddress((await window.ethereum.enable())[0]);
-    //   // console.log('using address: ', ctx.myAddr);
-    // } else {
-    //   console.log('no web3 detected, falling back.');
-      
-    //   result.hasWeb3BrowserSupport = false;
-    // }
-
-    // test connections
-    try {
-      const rpcBlockNr = await result.web3.eth.getBlockNumber();
-     
-      // todo: check if block numbers are about the same, the difference between those 2 should be at max 1.
-      console.log(`block numbers: rpc ${rpcBlockNr}`);
-    } catch (e) {
-      console.error(`connection test failed: ${e}`);
-    }
-
-    // TODO FIX ENS Stuff.
-    // ctx.web3Ens.eth.getBlockNumber().catch(console.error); // test connection (non-blocking)
-
-    // debug
-    // window.web3 = ctx.web3;
-
-    //if (window.ethereum) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // window.ethereum.on('accountsChanged', (accounts: any) => {
-      //   alert(`metamask account changed to ${accounts}. You may want to reload...`);
-      // });
-
-      // window.ethereum.on('chainChanged', (chainId: number) => {
-      //   alert(`metamask chain changed to ${chainId}. You may want to reload...`);
-      // });
-    //}
-
     result.defaultTxOpts.from = result.context.myAddr;
 
     console.log('default: ', result.defaultTxOpts);
 
-    await result.initContracts(validatorSetContractAddress);
+    await result.initContracts();
 
+    console.log('default block after init: ', result.web3.eth.defaultBlock);
     // treat the first think as "new epoch" - so all available data get's queried.
     await result.syncPoolsState(true);
     result.isSyncingPools = false;
 
-    await result.subscribeToEvents(result.web3);
+    await result.updateEventSubscription();
 
     //await result.retrieveOneShotInfos();
 
@@ -128,31 +93,59 @@ export class ModelDataAdapter {
   }
 
 
+  public async showHistoric(blockNumber: number) {
 
-  private async initContracts(validatorSetContractAddress: string): Promise<void> {
-    // try {
-      // TODO: if a contract call fails, the stack trace doesn't show the actual line number.
-      // console.log('validatorSet Contract: ', validatorSetContractAddress);
-      // this.vsContract = new ValidatorSetHbbft();
+    if (!this.isShowHistoric || this.showHistoricBlock !== blockNumber) {
+      this._isShowHistoric = true;
+      this.showHistoricBlock = blockNumber;
+      this.web3.eth.defaultBlock = blockNumber;
+      //async call.
+      this.refresh();
+    }
+  }
 
-      // const x : any = ValidatorSetAbi[0];
+  public async showLatest() {
 
+    if (this.isShowHistoric) {
 
-    // } catch (e) {
-    //   console.log(`initializing contracts failed: ${e}`);
-    //   console.log(e);
-    //   throw e;
-    // }
+      console.error('show latest.');
+      this._isShowHistoric = false;
+      this.web3.eth.defaultBlock = 'latest';
+      //async call.
+      this.refresh();
+    }
+  }
 
+  private async refresh() {
+
+    console.log('starting data refresh');
+    this.isReadingData = true;
     await this.retrieveGlobalValues();
     await this.retrieveValuesFromContract();
-    // this.posdaoStartBlock = this.stakingEpochStartBlock - this.stakingEpoch * this.epochDuration;
+    await this.syncPoolsState(true);
+    this.isReadingData = false;
+    console.log('finished data refresh');
+  }
+
+  private async initContracts(): Promise<void> {
+    this.refresh();
   }
 
   /**
    * get values that are independend 
    */
   private async retrieveGlobalValues() {
+
+    if (this.web3.eth.defaultBlock === undefined || this.web3.eth.defaultBlock === 'latest') {
+      console.error('getting from eth', this.web3.eth.defaultBlock);
+      this.context.currentBlockNumber = await this.web3.eth.getBlockNumber();
+    } else if ( typeof this.web3.eth.defaultBlock === 'number' ) {
+      console.error('getting from number');
+        this.context.currentBlockNumber = this.web3.eth.defaultBlock;
+    } else {
+      console.error('unexpected defaultBlock: ', this.web3.eth.defaultBlock);
+    }
+    
 
     this.context.candidateMinStake = new BN(await this.stContract.methods.candidateMinStake().call());
     this.context.delegatorMinStake = new BN(await this.stContract.methods.delegatorMinStake().call());
@@ -288,11 +281,13 @@ export class ModelDataAdapter {
     return new BN(rawResult);
   }
 
-  private async updatePool(pool: Pool,
+  private async updatePool(
+    pool: Pool,
     activePoolAddrs: Array<string>,
     toBeElectedPoolAddrs: Array<string>,
     pendingValidatorAddrs: Array<string>,
-    isNewEpoch: boolean): Promise<void> {
+    isNewEpoch: boolean) : Promise<void> {
+
     const { stakingAddress } = pool;
     // console.log(`checking pool ${stakingAddress}`);
     //const ensNamePromise = this.getEnsNameOf(pool.stakingAddress);
@@ -391,7 +386,36 @@ export class ModelDataAdapter {
 
   private newBlockPolling?: NodeJS.Timeout = undefined;
 
-  private async subscribeToEvents(web3Instance: Web3): Promise<void> {
+  /**
+   * updates the event subscript based on the fact 
+   * if we are browsing historic data or not.
+   */
+  private updateEventSubscription() {
+
+    console.log('updating event subscription. is historic:', this.isShowHistoric);
+
+    if (this.isShowHistoric) {
+      // if we browse historic, we can safely unsusbscribe from events.
+      this.unsubscribeToEvents();
+    }
+    else {
+      // if we are tracking the latest block,
+      // we only subscript to event if we have not done already.
+
+      if (!this.newBlockPolling) {
+        this.subscribeToEvents();
+      }
+    }
+  }
+
+  private  unsubscribeToEvents() {
+    if (this.newBlockPolling) {
+      clearInterval(this.newBlockPolling);
+      this.newBlockPolling = undefined;
+    }
+  }
+
+  private async subscribeToEvents(): Promise<void> {
 
     // since web3 websockets never made it to be a full supported standard,
     // like MetaMask do not support them,
@@ -401,15 +425,20 @@ export class ModelDataAdapter {
     // todo: If we query historic informations, we do not need this subscription.
   
 
-    this.context.currentBlockNumber = await web3Instance.eth.getBlockNumber();
+    //this.context.currentBlockNumber = await web3Instance.eth.getBlockNumber();
+    //this.context.latestBlockNumber = this.context.currentBlockNumber;
+
+    this.unsubscribeToEvents();
     
-    // todo: manage closing of old handler.
-    if (this.newBlockPolling) {
-      clearInterval(this.newBlockPolling);
-    }
-    
+
     this.newBlockPolling = setInterval(async () =>  {
-      const currentBlock = await web3Instance.eth.getBlockNumber();
+      // we make a double check, if we are really
+      // should not browse historic.
+      if (this.isShowHistoric) {
+        return;
+      }
+
+      const currentBlock = await this.web3.eth.getBlockNumber();
       if (currentBlock > this.context.currentBlockNumber) {
         await this.handleNewBlock();
       }
@@ -421,6 +450,7 @@ export class ModelDataAdapter {
   // does relevant state updates and checks if the epoch changed
   private async handleNewBlock() : Promise<void> {
 
+    console.error('handling new block.');
     const blockHeader = await this.web3.eth.getBlock('latest');
     this.context.currentBlockNumber = blockHeader.number;
     console.log(`current Block Number: `, this.context.currentBlockNumber);
