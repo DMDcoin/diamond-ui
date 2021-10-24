@@ -54,8 +54,15 @@ export class ModelDataAdapter {
 
   @observable public isSyncingPools = true;
 
+  private _uiElementsToUpdate: Array<JSX.Element> = new Array<JSX.Element>();
+
   public get isShowHistoric() : boolean {
     return this._isShowHistoric; 
+  }
+
+  public registerUIElement(element: JSX.Element) {
+
+    this._uiElementsToUpdate.push(element);
   }
 
   // TODO: properly implement singleton pattern
