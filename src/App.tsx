@@ -70,18 +70,15 @@ class App extends React.Component<AppProps, {}> {
     return provider;
   }
 
-  @computed get dataContext() {
-    return this.props.modelDataAdapter.context;
-  }
 
   public render(): JSX.Element {
 
     //const { context } = this.props.modelDataAdapter;
     // const context = modelDataAdapter.context;
+    const { modelDataAdapter } = this.props;
+    const { context } = modelDataAdapter;
 
-
-
-    const validatorsWithoutPoolSection = this.dataContext.currentValidatorsWithoutPools.map((address) => (
+    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
@@ -95,23 +92,21 @@ class App extends React.Component<AppProps, {}> {
       { title: "Miner address", field: "miningAddress", hozAlign: "left", responsive: true },
 
     ];
-
-    // missing headers:
-    // { title: "Added in Epoch", field: "addedInEpoch", align: "center", headerFilter: "input" }
-
-    const data = this.dataContext.pools;
+    
+    const data = context.pools;
 
     const padding = {
       padding: '0.5rem'
     };
 
     // TODO: css template/framework / convention to have a decent layout without writing CSS
-    return (
+    const result = (
       <div className="App">
         <header>
           <a href="?">
             <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
+          {}
 
           <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
             connect wallet
@@ -124,12 +119,6 @@ class App extends React.Component<AppProps, {}> {
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {validatorsWithoutPoolSection}
-            {/* <div style={padding}>
-              <input type="checkbox" id="latest-block" name="latest-block" checked />
-              <label htmlFor="latest-block">latest block</label>
-              <input type="number" min="0" required></input>
-              <input onChange={(e) => this.historicChanged(e)} type="checkbox" defaultChecked={false} />
-            </div> */}
             <ReactTabulatorViewOptions >
               <ReactTabulator
                 data={data}
@@ -166,6 +155,10 @@ class App extends React.Component<AppProps, {}> {
 
       </div>
     );
+
+    //this.props.modelDataAdapter.registerUIElement(this);
+
+    return result;
   }
   historicChanged(e: React.ChangeEvent<HTMLInputElement>): void {
 
