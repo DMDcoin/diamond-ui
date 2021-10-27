@@ -54,16 +54,30 @@ export class ModelDataAdapter {
 
   @observable public isSyncingPools = true;
 
-  private _uiElementsToUpdate: Array<JSX.Element> = new Array<JSX.Element>();
+  private _uiElementsToUpdate = new Array<React.Component>();
 
   public get isShowHistoric() : boolean {
     return this._isShowHistoric; 
   }
 
-  public registerUIElement(element: JSX.Element) {
-
+  public registerUIElement(element: React.Component) {
     this._uiElementsToUpdate.push(element);
   }
+
+  public unregisterUIElement(element: React.Component) {
+
+    const index = this._uiElementsToUpdate.indexOf(element);
+
+    function spliceNoMutate<T>(myArray: Array<T>, indexToRemove: number) : Array<T> {
+      return myArray.slice(0,indexToRemove).concat(myArray.slice(indexToRemove+1));
+    }
+
+    if (index ) {
+      this._uiElementsToUpdate = spliceNoMutate(this._uiElementsToUpdate, index);
+      console.log(`element unregistered at index ${index}`);
+    }
+  }
+  
 
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
@@ -131,7 +145,9 @@ export class ModelDataAdapter {
     await this.retrieveValuesFromContract();
     await this.syncPoolsState(true);
     this.isReadingData = false;
-    console.log('finished data refresh');
+    console.log('finished data refresh - updating UI.');
+    this._uiElementsToUpdate.forEach(x => x.forceUpdate());
+
   }
 
   private async initContracts(): Promise<void> {

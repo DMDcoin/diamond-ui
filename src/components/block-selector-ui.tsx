@@ -181,5 +181,15 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
   </div>;
   }
 
+
+  public componentDidMount() {
+    console.log('block selector ui did mount.');
+    this.props.modelDataAdapter.registerUIElement(this);
+  }
+
+  public componentWillUnmount() {
+    console.log('block selector ui will unmount.');
+    this.props.modelDataAdapter.unregisterUIElement(this);
+  }
   
 }

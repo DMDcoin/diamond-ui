@@ -79,6 +79,16 @@ class App extends React.Component<AppProps, AppState> {
     return provider;
   }
 
+  public componentDidMount() {
+    console.log('component did mount.');
+    this.props.modelDataAdapter.registerUIElement(this);
+  }
+
+  public componentWillUnmount() {
+    console.log('component will unmount.');
+    this.props.modelDataAdapter.registerUIElement(this);
+  }
+
 
   public render(): JSX.Element {
 
@@ -202,7 +212,7 @@ class App extends React.Component<AppProps, AppState> {
       </div>
     );
 
-    //this.props.modelDataAdapter.registerUIElement(this);
+    
 
     return result;
   }
