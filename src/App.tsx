@@ -86,7 +86,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public componentWillUnmount() {
     console.log('component will unmount.');
-    this.props.modelDataAdapter.registerUIElement(this);
+    this.props.modelDataAdapter.unregisterUIElement(this);
   }
 
 
