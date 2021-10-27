@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { observer } from 'mobx-react';
 import { computed } from 'mobx';
 import './App.css';
@@ -15,18 +15,27 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Button } from 'react-bootstrap';
+import { Button, Modal, Overlay } from 'react-bootstrap';
 
 
 interface AppProps {
-  modelDataAdapter: ModelDataAdapter;
+  modelDataAdapter: ModelDataAdapter,
+}
+
+interface AppState {
+  showModal: boolean
 }
 
 @observer
-class App extends React.Component<AppProps, {}> {
+class App extends React.Component<AppProps, AppState> {
 
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
+  private _ref_overlay = React.createRef<HTMLElement>();
+
+  state = {
+    showModal: false,
+  }
 
   private ui(o: BN) {
     return o.toString(10);
@@ -76,6 +85,7 @@ class App extends React.Component<AppProps, {}> {
     //const { context } = this.props.modelDataAdapter;
     // const context = modelDataAdapter.context;
     const { modelDataAdapter } = this.props;
+    const { showModal } = this.state;
     const { context } = modelDataAdapter;
 
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
@@ -99,6 +109,17 @@ class App extends React.Component<AppProps, {}> {
       padding: '0.5rem'
     };
 
+    const handleClose = () => {
+
+      this.setState({showModal: false});
+    }
+
+    //const target = useRef(null);
+
+    
+    
+    //const show = context;
+
     // TODO: css template/framework / convention to have a decent layout without writing CSS
     const result = (
       <div className="App">
@@ -115,6 +136,27 @@ class App extends React.Component<AppProps, {}> {
           
         </header>
 
+        
+
+        <Overlay target={this._ref_overlay}>
+          <Modal show={showModal} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleClose}>
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Overlay>
+        
+          
+
         <div>
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
@@ -128,7 +170,11 @@ class App extends React.Component<AppProps, {}> {
             </ReactTabulatorViewOptions>
           </div>
 
-          <Button onClick={() => {this.forceUpdate()}}>force update</Button>
+          <Button onClick={() => {
+            this.forceUpdate();
+            this.setState({ showModal: true});
+            }
+            }>force update</Button>
 
         {/*
          <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
