@@ -137,7 +137,7 @@ class App extends React.Component<AppProps, AppState> {
           <a href="?">
             <img src={dmd_logo} alt="logo" width="250px" style={padding} />
           </a>
-          {}
+          {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null}
 
           <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
             connect wallet

@@ -1,7 +1,7 @@
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { ui } from "../ui";
 import { Button, Modal, Table } from "react-bootstrap";
 
@@ -102,7 +102,8 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
 
     console.log('render.');
 
-    const context = this.props.modelDataAdapter.context;
+    const { modelDataAdapter } = this.props;
+    const { context } = modelDataAdapter;
     
     //const historicIcon = this.props.modelDataAdapter.showHistoric
 
@@ -127,6 +128,8 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
         </tr>
       </section>
     }
+
+    //const section2 = modelDataAdapter.isReadingData ? <div>... Loading ...</div>  : 
     
     return <div style={padding}>
       {this._isModal?this.getModal():undefined}
@@ -151,6 +154,8 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
           </td>
           
         </tr>
+
+        { modelDataAdapter.isReadingData ? <div>... Loading ...</div>  : <Fragment>
         <tr>
           <td>current epoch</td>
           <td>{context.stakingEpoch}</td>
@@ -174,13 +179,13 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
         <tr>
           <td>validators</td>
           <td>{context.pools.filter(x => x.isCurrentValidator).length}</td>
-        </tr>
+        </tr> 
+        </Fragment>}
       </tbody>
     </Table>
     <Button onClick={() => {this.forceUpdate()}}>force update</Button>
   </div>;
   }
-
 
   public componentDidMount() {
     console.log('block selector ui did mount.');
