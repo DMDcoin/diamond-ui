@@ -72,13 +72,15 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
   }
 
   public render() {
-    return (
-      <div>
-        <small>all list Name: </small>
-        <small>{this.props.allListName}</small>
-        {this.props.children}
-      </div>
 
+    const showList = false; // in progress...
+    //return <div />
+    return (
+       <div>
+         { showList ? <small>all list Name: </small> : null }
+         { showList ? <small>{this.props.allListName} </small> : null}
+         {this.props.children}
+       </div>
     );
   }
 
