@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
 import './App.css';
 import BN from "bn.js";
@@ -14,7 +14,7 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Button, Modal, Overlay } from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 
 
 interface AppProps {
@@ -146,7 +146,7 @@ class App extends React.Component<AppProps, AppState> {
         </header>
 
         
-
+{/* 
         <Overlay target={this._ref_overlay}>
           <Modal show={showModal} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -163,12 +163,15 @@ class App extends React.Component<AppProps, AppState> {
             </Modal.Footer>
           </Modal>
         </Overlay>
-        
+         */}
           
 
+        
         <div>
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
+            {modelDataAdapter.isReadingData ? '... Loading ...' : 
+            <Fragment>
             {validatorsWithoutPoolSection}
             <ReactTabulatorViewOptions >
               <ReactTabulator
@@ -177,13 +180,15 @@ class App extends React.Component<AppProps, AppState> {
                 tooltips={true}
               />
             </ReactTabulatorViewOptions>
-          </div>
-
-          <Button onClick={() => {
-            this.forceUpdate();
-            this.setState({ showModal: true});
+            </Fragment>
             }
-            }>force update</Button>
+          </div>
+        
+
+          {/* <Button onClick={() => {
+            this.forceUpdate();
+            }
+            }>force update</Button> */}
 
         {/*
          <div id="addPool" hidden={context.iHaveAPool || context.isSyncingPools}>
