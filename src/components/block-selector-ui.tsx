@@ -5,7 +5,7 @@ import React, { Fragment } from 'react';
 import { ui } from "../ui";
 import { Button, Modal, Table } from "react-bootstrap";
 
-import { ArrowLeft, ArrowRight, ClockHistory } from 'react-bootstrap-icons';
+import { ArrowLeft, ArrowRight } from 'react-bootstrap-icons';
 
 export interface IBlockSelectorProps {
   modelDataAdapter: ModelDataAdapter;

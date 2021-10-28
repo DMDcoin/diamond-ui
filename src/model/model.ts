@@ -1,6 +1,5 @@
 
 import BN from 'bn.js';
-import { observable } from 'mobx';
 import { Context } from './context';
 
 export class ClaimableStake {

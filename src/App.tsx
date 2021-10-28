@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
-import { computed } from 'mobx';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
