@@ -143,7 +143,6 @@ export class ModelDataAdapter {
 
   private async refresh() {
 
-
     const history_info = this.getBlockHistoryInfoAsString();
     console.log('starting data refresh', history_info);
     this.isReadingData = true;
@@ -154,8 +153,6 @@ export class ModelDataAdapter {
     this.isReadingData = false;
     console.log('finished data refresh - updating UI.', history_info);
     this._uiElementsToUpdate.forEach(x => x.forceUpdate());
-
-    console.log('updated # of uis:', this._uiElementsToUpdate.length);
   }
 
   private async initContracts(): Promise<void> {
