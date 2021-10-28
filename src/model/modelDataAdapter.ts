@@ -143,9 +143,11 @@ export class ModelDataAdapter {
 
   private async refresh() {
 
+
     const history_info = this.getBlockHistoryInfoAsString();
     console.log('starting data refresh', history_info);
     this.isReadingData = true;
+    this._uiElementsToUpdate.forEach(x => x.forceUpdate());
     await this.retrieveGlobalValues();
     await this.retrieveValuesFromContract();
     await this.syncPoolsState(true);
@@ -153,6 +155,7 @@ export class ModelDataAdapter {
     console.log('finished data refresh - updating UI.', history_info);
     this._uiElementsToUpdate.forEach(x => x.forceUpdate());
 
+    console.log('updated # of uis:', this._uiElementsToUpdate.length);
   }
 
   private async initContracts(): Promise<void> {
@@ -165,13 +168,13 @@ export class ModelDataAdapter {
   private async retrieveGlobalValues() {
 
     if (this.web3.eth.defaultBlock === undefined || this.web3.eth.defaultBlock === 'latest') {
-      console.error('getting from eth', this.web3.eth.defaultBlock);
+      console.warn('getting from eth', this.web3.eth.defaultBlock);
       this.context.currentBlockNumber = await this.web3.eth.getBlockNumber();
     } else if ( typeof this.web3.eth.defaultBlock === 'number' ) {
-      console.error('getting from number', this.web3.eth.defaultBlock);
+      console.warn('getting from number', this.web3.eth.defaultBlock);
         this.context.currentBlockNumber = this.web3.eth.defaultBlock;
     } else {
-      console.error('unexpected defaultBlock: ', this.web3.eth.defaultBlock);
+      console.warn('unexpected defaultBlock: ', this.web3.eth.defaultBlock);
     }
     
 
