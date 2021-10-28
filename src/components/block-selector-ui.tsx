@@ -1,11 +1,11 @@
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
-import React, { Fragment } from 'react';
+import React, { Fragment, MutableRefObject } from 'react';
 import { ui } from "../ui";
-import { Button, Modal, Table } from "react-bootstrap";
+import { Button, Modal, Overlay, Table } from "react-bootstrap";
 
-import { ArrowLeft, ArrowRight } from 'react-bootstrap-icons';
+import { ArrowLeft, ArrowRight, Hourglass } from 'react-bootstrap-icons';
 
 export interface IBlockSelectorProps {
   modelDataAdapter: ModelDataAdapter;
@@ -16,6 +16,7 @@ export interface IBlockSelectorProps {
 export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
 
   private _isModal = false;
+
 
   private getModal() : JSX.Element  {
     //this.props.modelDataAdapter.context.latestBlockNumber
@@ -44,23 +45,25 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
       self._isModal = false;
     }
 
-    return <Modal show={true} backdrop="static">
-      <Modal.Dialog>
-        <Modal.Header closeButton>
-          <Modal.Title>Choose Block to display</Modal.Title>
-        </Modal.Header>
-      
-        <Modal.Body>
-          <p>You can either track the latest block or directly jump to an historic one.</p>
-        </Modal.Body>
-      
-        <Modal.Footer>
-          <Button variant="primary" onClick={action(onClickLatest)}>Latest</Button>
-          Historic Block # <input ref={historicBlockNumberRef} type="number" min="1" max={this.props.modelDataAdapter.context.latestBlockNumber}/> 
-          <Button variant="secondary" onClick={onClickHistoric}></Button>
-        </Modal.Footer>
-      </Modal.Dialog>
-    </Modal>;
+    
+
+    return <Modal size="lg" show={true} backdrop="static">
+        <Modal.Dialog>
+          <Modal.Header closeButton>
+            <Modal.Title>Choose Block to display</Modal.Title>
+          </Modal.Header>
+        
+          <Modal.Body>
+            <p>You can either track the latest block or directly jump to an historic one.</p>
+          </Modal.Body>
+        
+          <Modal.Footer>
+            <Button variant="primary" onClick={action(onClickLatest)}>Latest</Button>
+            Historic Block # <input ref={historicBlockNumberRef} type="number" min="1" max={this.props.modelDataAdapter.context.latestBlockNumber}/> 
+            <Button variant="secondary" onClick={onClickHistoric}></Button>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </Modal>;
 
   }
 
@@ -83,6 +86,8 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
     console.log('right clicked', adapter.context.currentBlockNumber);
     if (adapter.context.currentBlockNumber < adapter.context.latestBlockNumber) {
       await adapter.showHistoric(adapter.context.currentBlockNumber + 1);
+    } else {
+      console.log(`ignoring right click. ${adapter.context.currentBlockNumber} ${adapter.context.latestBlockNumber}`);
     }
 
   }
@@ -129,7 +134,21 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
       </section>
     }
 
-    //const section2 = modelDataAdapter.isReadingData ? <div>... Loading ...</div>  : 
+
+    const prompt = () => {
+
+      const input = window.prompt('pleased enter a block number you want to browse historic, or latest to track the latest block.');
+      if (input) {
+        if (input === 'latest') {
+          this.props.modelDataAdapter.showLatest();
+        } else {
+          const number = Number.parseInt(input);
+          if (Number.isInteger(number)) {
+            this.props.modelDataAdapter.showHistoric(number);
+          }
+        }
+      }
+    };
     
     return <div style={padding}>
       {this._isModal?this.getModal():undefined}
@@ -144,7 +163,7 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
               <Button onClick={this.left.bind(this)}>
                 <ArrowLeft />
               </Button>
-              <Button style={{margin:'0.1rem'}} onClick={this.showModal.bind(this)}>
+              <Button style={{margin:'0.1rem'}} onClick={prompt}>
                 {context.currentBlockNumber}
               </Button>
               <Button onClick={this.right.bind(this)}>
@@ -155,7 +174,7 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
           
         </tr>
 
-        { modelDataAdapter.isReadingData ? <div>... Loading ...</div>  : <Fragment>
+        { modelDataAdapter.isReadingData ? <tr><td>... Loading ...</td></tr>  : <Fragment>
         <tr>
           <td>current epoch</td>
           <td>{context.stakingEpoch}</td>
@@ -183,13 +202,22 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
         </Fragment>}
       </tbody>
     </Table>
-    <Button onClick={() => {this.forceUpdate()}}>force update</Button>
+    {/* <Button onClick={() => {this.forceUpdate()}}>force update</Button> */}
   </div>;
   }
+
+
+  private _ref :  React.RefObject<HTMLElement> = React.createRef<HTMLElement>();
 
   public componentDidMount() {
     console.log('block selector ui did mount.');
     this.props.modelDataAdapter.registerUIElement(this);
+
+    const element = document.getElementById('root');
+
+    //this._ref.current = element;
+    //this._ref = React.createRef<HTMLElement>()
+    
   }
 
   public componentWillUnmount() {
