@@ -137,15 +137,20 @@ export class ModelDataAdapter {
     }
   }
 
+  private getBlockHistoryInfoAsString() {
+    return this._isShowHistoric ? `historic block #${this.showHistoricBlock}` : 'latest';
+  }
+
   private async refresh() {
 
-    console.log('starting data refresh');
+    const history_info = this.getBlockHistoryInfoAsString();
+    console.log('starting data refresh', history_info);
     this.isReadingData = true;
     await this.retrieveGlobalValues();
     await this.retrieveValuesFromContract();
     await this.syncPoolsState(true);
     this.isReadingData = false;
-    console.log('finished data refresh - updating UI.');
+    console.log('finished data refresh - updating UI.', history_info);
     this._uiElementsToUpdate.forEach(x => x.forceUpdate());
 
   }
