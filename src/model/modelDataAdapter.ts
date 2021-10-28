@@ -163,7 +163,7 @@ export class ModelDataAdapter {
       console.error('getting from eth', this.web3.eth.defaultBlock);
       this.context.currentBlockNumber = await this.web3.eth.getBlockNumber();
     } else if ( typeof this.web3.eth.defaultBlock === 'number' ) {
-      console.error('getting from number');
+      console.error('getting from number', this.web3.eth.defaultBlock);
         this.context.currentBlockNumber = this.web3.eth.defaultBlock;
     } else {
       console.error('unexpected defaultBlock: ', this.web3.eth.defaultBlock);
