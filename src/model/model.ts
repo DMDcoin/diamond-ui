@@ -63,6 +63,30 @@ export class Pool {
   public parts: string = ''; // if part of the treshhold key, or pending validator, this holds the PARTS
   public numberOfAcks: number = 0; // if part of the treshhold key, or pending validator, this holds the number of ACKS
 
+  public get isWrittenParts(): boolean | undefined {
+    // if (!this.isPendingValidator) {
+    //   return undefined;
+    // }
+
+    return this.parts.length > 0;
+  }
+
+  public set isWrittenParts(_value: boolean | undefined) {
+    //do nothing, has only be added to make tabulator happy
+  }
+
+  public get isWrittenAcks(): boolean | undefined {
+    // if (!this.isPendingValidator) {
+    //   return undefined;
+    // }
+
+    return this.numberOfAcks > 0;
+  }
+
+  public set isWrittenAcks(_value: boolean | undefined) {
+    //do nothing, has only be added to make tabulator happy
+  }
+
   // availability
   public availableSince: BN = new BN(0);
 
