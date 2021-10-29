@@ -67,6 +67,10 @@ export class Pool {
     // if (!this.isPendingValidator) {
     //   return undefined;
     // }
+    
+    if (this.parts === null) {
+      return false;
+    }
 
     return this.parts.length > 0;
   }
