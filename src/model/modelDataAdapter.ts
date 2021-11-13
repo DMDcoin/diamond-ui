@@ -50,6 +50,8 @@ export class ModelDataAdapter {
   private _isShowHistoric: boolean = false;
 
   @observable public isReadingData: boolean = false;
+
+  @observable public lastError?: unknown = undefined;
   
   private showHistoricBlock: number = 0;
 
@@ -144,15 +146,25 @@ export class ModelDataAdapter {
 
   private async refresh() {
 
-    const history_info = this.getBlockHistoryInfoAsString();
-    console.log('starting data refresh', history_info);
-    this.isReadingData = true;
-    this._uiElementsToUpdate.forEach(x => x.forceUpdate());
-    await this.retrieveGlobalValues();
-    await this.retrieveValuesFromContract();
-    await this.syncPoolsState(true);
-    this.isReadingData = false;
-    console.log('finished data refresh - updating UI.', history_info);
+    try {
+
+    
+      const history_info = this.getBlockHistoryInfoAsString();
+      console.log('starting data refresh', history_info);
+      this.isReadingData = true;
+      this._uiElementsToUpdate.forEach(x => x.forceUpdate());
+      await this.retrieveGlobalValues();
+      await this.retrieveValuesFromContract();
+      await this.syncPoolsState(true);
+      this.isReadingData = false;
+      this.lastError = undefined;
+      console.log('finished data refresh - updating UI.', history_info);
+    } catch(e: unknown) {
+      this.lastError = e;
+      this.isReadingData = false;
+    }
+
+    
     this._uiElementsToUpdate.forEach(x => x.forceUpdate());
   }
 
