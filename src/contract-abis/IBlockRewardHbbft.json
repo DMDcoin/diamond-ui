@@ -49,14 +49,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IBlockRewardHbbft.sol",
     "exportedSymbols": {
       "IBlockRewardHbbft": [
-        9583
+        9834
       ]
     },
-    "id": 9584,
+    "id": 9835,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9569,
+        "id": 9820,
         "literals": [
           "solidity",
           "^",
@@ -72,9 +72,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 9583,
+        "id": 9834,
         "linearizedBaseContracts": [
-          9583
+          9834
         ],
         "name": "IBlockRewardHbbft",
         "nodeType": "ContractDefinition",
@@ -82,22 +82,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 9574,
+            "id": 9825,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "initialize",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 9572,
+              "id": 9823,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9571,
+                  "id": 9822,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9574,
+                  "scope": 9825,
                   "src": "81:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -106,7 +106,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9570,
+                    "id": 9821,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:7:14",
@@ -123,12 +123,12 @@
               "src": "80:9:14"
             },
             "returnParameters": {
-              "id": 9573,
+              "id": 9824,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "98:0:14"
             },
-            "scope": 9583,
+            "scope": 9834,
             "src": "61:38:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -137,22 +137,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 9582,
+            "id": 9833,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "epochsPoolGotRewardFor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 9577,
+              "id": 9828,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9576,
+                  "id": 9827,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9582,
+                  "scope": 9833,
                   "src": "136:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -161,7 +161,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9575,
+                    "id": 9826,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "136:7:14",
@@ -178,15 +178,15 @@
               "src": "135:9:14"
             },
             "returnParameters": {
-              "id": 9581,
+              "id": 9832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9580,
+                  "id": 9831,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9582,
+                  "scope": 9833,
                   "src": "167:16:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -196,7 +196,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 9578,
+                      "id": 9829,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "167:7:14",
@@ -205,7 +205,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 9579,
+                    "id": 9830,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "167:9:14",
@@ -220,14 +220,14 @@
               ],
               "src": "166:18:14"
             },
-            "scope": 9583,
+            "scope": 9834,
             "src": "104:81:14",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 9584,
+        "scope": 9835,
         "src": "27:160:14"
       }
     ],
@@ -237,14 +237,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IBlockRewardHbbft.sol",
     "exportedSymbols": {
       "IBlockRewardHbbft": [
-        9583
+        9834
       ]
     },
-    "id": 9584,
+    "id": 9835,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9569,
+        "id": 9820,
         "literals": [
           "solidity",
           "^",
@@ -260,9 +260,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 9583,
+        "id": 9834,
         "linearizedBaseContracts": [
-          9583
+          9834
         ],
         "name": "IBlockRewardHbbft",
         "nodeType": "ContractDefinition",
@@ -270,22 +270,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 9574,
+            "id": 9825,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "initialize",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 9572,
+              "id": 9823,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9571,
+                  "id": 9822,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9574,
+                  "scope": 9825,
                   "src": "81:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -294,7 +294,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9570,
+                    "id": 9821,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "81:7:14",
@@ -311,12 +311,12 @@
               "src": "80:9:14"
             },
             "returnParameters": {
-              "id": 9573,
+              "id": 9824,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "98:0:14"
             },
-            "scope": 9583,
+            "scope": 9834,
             "src": "61:38:14",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -325,22 +325,22 @@
           {
             "body": null,
             "documentation": null,
-            "id": 9582,
+            "id": 9833,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "epochsPoolGotRewardFor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 9577,
+              "id": 9828,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9576,
+                  "id": 9827,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9582,
+                  "scope": 9833,
                   "src": "136:7:14",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -349,7 +349,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 9575,
+                    "id": 9826,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "136:7:14",
@@ -366,15 +366,15 @@
               "src": "135:9:14"
             },
             "returnParameters": {
-              "id": 9581,
+              "id": 9832,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 9580,
+                  "id": 9831,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 9582,
+                  "scope": 9833,
                   "src": "167:16:14",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -384,7 +384,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 9578,
+                      "id": 9829,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "167:7:14",
@@ -393,7 +393,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 9579,
+                    "id": 9830,
                     "length": null,
                     "nodeType": "ArrayTypeName",
                     "src": "167:9:14",
@@ -408,14 +408,14 @@
               ],
               "src": "166:18:14"
             },
-            "scope": 9583,
+            "scope": 9834,
             "src": "104:81:14",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 9584,
+        "scope": 9835,
         "src": "27:160:14"
       }
     ],
@@ -427,7 +427,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2021-04-12T22:02:33.555Z",
+  "updatedAt": "2021-12-06T19:40:03.033Z",
   "devdoc": {
     "methods": {}
   },

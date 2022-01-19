@@ -1,9 +1,9 @@
 {
   "contractName": "IStakingHbbftCoins",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":\"IStakingHbbftCoins\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":{\"keccak256\":\"0xf318fe3ea7a4d93db50b0306931f1720282158cec2a52e48bfc4a27a40075b54\",\"urls\":[\"bzz-raw://2f063c3cfb4bff11de9fed737817c022f80fd12bf90c224209270549174dc689\",\"dweb:/ipfs/QmWbLvMXnbkbUNxo4TfH3UNqGqPzcMXVdGncXnyMwehqDq\"]}},\"version\":1}",
-  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a72315820154f547dbc8ab4f8cb81548ff0dbdf60857b1b7dfb02fbc9b0f8be899e5687b964736f6c63430005100032",
-  "deployedBytecode": "0x6080604052600080fdfea265627a7a72315820154f547dbc8ab4f8cb81548ff0dbdf60857b1b7dfb02fbc9b0f8be899e5687b964736f6c63430005100032",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":\"IStakingHbbftCoins\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol\":{\"keccak256\":\"0xf318fe3ea7a4d93db50b0306931f1720282158cec2a52e48bfc4a27a40075b54\",\"urls\":[\"bzz-raw://2f063c3cfb4bff11de9fed737817c022f80fd12bf90c224209270549174dc689\",\"dweb:/ipfs/QmWbLvMXnbkbUNxo4TfH3UNqGqPzcMXVdGncXnyMwehqDq\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a723158206c16ee12ba0be558fef8814cb3b9ab9eadea31375c91b539795e7cf8a8a4887964736f6c63430005110032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a723158206c16ee12ba0be558fef8814cb3b9ab9eadea31375c91b539795e7cf8a8a4887964736f6c63430005110032",
   "sourceMap": "27:31:23:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;27:31:23;;;;;;;",
   "deployedSourceMap": "27:31:23:-;;;;;",
   "source": "pragma solidity ^0.5.16;\n\n\ninterface IStakingHbbftCoins {}\n",
@@ -12,14 +12,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol",
     "exportedSymbols": {
       "IStakingHbbftCoins": [
-        9107
+        10248
       ]
     },
-    "id": 9108,
+    "id": 10249,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9106,
+        "id": 10247,
         "literals": [
           "solidity",
           "^",
@@ -35,14 +35,14 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 9107,
+        "id": 10248,
         "linearizedBaseContracts": [
-          9107
+          10248
         ],
         "name": "IStakingHbbftCoins",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 9108,
+        "scope": 10249,
         "src": "27:31:23"
       }
     ],
@@ -52,14 +52,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbftCoins.sol",
     "exportedSymbols": {
       "IStakingHbbftCoins": [
-        9107
+        10248
       ]
     },
-    "id": 9108,
+    "id": 10249,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 9106,
+        "id": 10247,
         "literals": [
           "solidity",
           "^",
@@ -75,14 +75,14 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 9107,
+        "id": 10248,
         "linearizedBaseContracts": [
-          9107
+          10248
         ],
         "name": "IStakingHbbftCoins",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 9108,
+        "scope": 10249,
         "src": "27:31:23"
       }
     ],
@@ -90,11 +90,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2020-11-10T08:59:06.070Z",
+  "updatedAt": "2021-12-06T19:40:03.038Z",
   "devdoc": {
     "methods": {}
   },

@@ -43,14 +43,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol",
     "exportedSymbols": {
       "RandomHbbft": [
-        910
+        959
       ]
     },
-    "id": 911,
+    "id": 960,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 877,
+        "id": 926,
         "literals": [
           "solidity",
           "^",
@@ -63,10 +63,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
         "file": "./interfaces/IRandomHbbft.sol",
-        "id": 878,
+        "id": 927,
         "nodeType": "ImportDirective",
-        "scope": 911,
-        "sourceUnit": 9703,
+        "scope": 960,
+        "sourceUnit": 10016,
         "src": "26:39:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -74,10 +74,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
         "file": "./upgradeability/UpgradeabilityAdmin.sol",
-        "id": 879,
+        "id": 928,
         "nodeType": "ImportDirective",
-        "scope": 911,
-        "sourceUnit": 11076,
+        "scope": 960,
+        "sourceUnit": 11398,
         "src": "66:50:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -88,17 +88,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 880,
+              "id": 929,
               "name": "UpgradeabilityAdmin",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11075,
+              "referencedDeclaration": 11397,
               "src": "283:19:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11075",
+                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11397",
                 "typeString": "contract UpgradeabilityAdmin"
               }
             },
-            "id": 881,
+            "id": 930,
             "nodeType": "InheritanceSpecifier",
             "src": "283:19:5"
           },
@@ -106,43 +106,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 882,
+              "id": 931,
               "name": "IRandomHbbft",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9702,
+              "referencedDeclaration": 10015,
               "src": "304:12:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRandomHbbft_$9702",
+                "typeIdentifier": "t_contract$_IRandomHbbft_$10015",
                 "typeString": "contract IRandomHbbft"
               }
             },
-            "id": 883,
+            "id": 932,
             "nodeType": "InheritanceSpecifier",
             "src": "304:12:5"
           }
         ],
         "contractDependencies": [
-          9702,
-          11075
+          10015,
+          11397
         ],
         "contractKind": "contract",
         "documentation": "@dev Stores and uppdates a random seed that is used to form a new validator set by the\n `ValidatorSetHbbft.newValidatorSet` function.",
         "fullyImplemented": true,
-        "id": 910,
+        "id": 959,
         "linearizedBaseContracts": [
-          910,
-          9702,
-          11075
+          959,
+          10015,
+          11397
         ],
         "name": "RandomHbbft",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 885,
+            "id": 934,
             "name": "currentSeed",
             "nodeType": "VariableDeclaration",
-            "scope": 910,
+            "scope": 959,
             "src": "699:26:5",
             "stateVariable": true,
             "storageLocation": "default",
@@ -151,7 +151,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 884,
+              "id": 933,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "699:7:5",
@@ -165,7 +165,7 @@
           },
           {
             "body": {
-              "id": 896,
+              "id": 945,
               "nodeType": "Block",
               "src": "976:123:5",
               "statements": [
@@ -179,7 +179,7 @@
                           "typeIdentifier": "t_address_payable",
                           "typeString": "address payable"
                         },
-                        "id": 891,
+                        "id": 940,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -188,18 +188,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 888,
+                            "id": 937,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11158,
+                            "referencedDeclaration": 11480,
                             "src": "994:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 889,
+                          "id": 938,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -218,7 +218,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "307866666666464646664646666666666666666666666666666646664646466666664646466646466645",
-                          "id": 890,
+                          "id": 939,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -242,7 +242,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4d7573742062652065786563757465642062792053797374656d",
-                        "id": 892,
+                        "id": 941,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -269,21 +269,21 @@
                           "typeString": "literal_string \"Must be executed by System\""
                         }
                       ],
-                      "id": 887,
+                      "id": 936,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11161,
-                        11162
+                        11483,
+                        11484
                       ],
-                      "referencedDeclaration": 11162,
+                      "referencedDeclaration": 11484,
                       "src": "986:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 893,
+                    "id": 942,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -297,23 +297,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 894,
+                  "id": 943,
                   "nodeType": "ExpressionStatement",
                   "src": "986:95:5"
                 },
                 {
-                  "id": 895,
+                  "id": 944,
                   "nodeType": "PlaceholderStatement",
                   "src": "1091:1:5"
                 }
               ]
             },
             "documentation": "@dev Ensures the caller is the SYSTEM_ADDRESS. See https://wiki.parity.io/Validator-Set.html",
-            "id": 897,
+            "id": 946,
             "name": "onlySystem",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 886,
+              "id": 935,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "973:2:5"
@@ -323,25 +323,25 @@
           },
           {
             "body": {
-              "id": 908,
+              "id": 957,
               "nodeType": "Block",
               "src": "1908:43:5",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 906,
+                    "id": 955,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 904,
+                      "id": 953,
                       "name": "currentSeed",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 885,
+                      "referencedDeclaration": 934,
                       "src": "1918:11:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -352,11 +352,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 905,
+                      "id": 954,
                       "name": "_currentSeed",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 899,
+                      "referencedDeclaration": 948,
                       "src": "1932:12:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -369,27 +369,27 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 907,
+                  "id": 956,
                   "nodeType": "ExpressionStatement",
                   "src": "1918:26:5"
                 }
               ]
             },
             "documentation": "@dev The cooperative consens mechanism in HBBFT achieves to \n generate a seed, that cannot be predicted by the nodes,\n but can get used within smart contracts without having to wait for\n an additional block.\n this is one of the biggest benefits of HBBFT.\n When the nodes are able to decrypt the transaction,\n they know the seed, that can be used as random base for smart contract interactions.\n setCurrentSeed is always the first transaction within a block,\n and currentSeed is a public available value that can get used by all smart contracts.",
-            "id": 909,
+            "id": 958,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 902,
+                "id": 951,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 901,
+                  "id": 950,
                   "name": "onlySystem",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 897,
+                  "referencedDeclaration": 946,
                   "src": "1897:10:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -403,15 +403,15 @@
             "name": "setCurrentSeed",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 900,
+              "id": 949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 899,
+                  "id": 948,
                   "name": "_currentSeed",
                   "nodeType": "VariableDeclaration",
-                  "scope": 909,
+                  "scope": 958,
                   "src": "1858:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -420,7 +420,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 898,
+                    "id": 947,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1858:7:5",
@@ -436,19 +436,19 @@
               "src": "1857:22:5"
             },
             "returnParameters": {
-              "id": 903,
+              "id": 952,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1908:0:5"
             },
-            "scope": 910,
+            "scope": 959,
             "src": "1834:117:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 911,
+        "scope": 960,
         "src": "259:1694:5"
       }
     ],
@@ -458,14 +458,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol",
     "exportedSymbols": {
       "RandomHbbft": [
-        910
+        959
       ]
     },
-    "id": 911,
+    "id": 960,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 877,
+        "id": 926,
         "literals": [
           "solidity",
           "^",
@@ -478,10 +478,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
         "file": "./interfaces/IRandomHbbft.sol",
-        "id": 878,
+        "id": 927,
         "nodeType": "ImportDirective",
-        "scope": 911,
-        "sourceUnit": 9703,
+        "scope": 960,
+        "sourceUnit": 10016,
         "src": "26:39:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -489,10 +489,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
         "file": "./upgradeability/UpgradeabilityAdmin.sol",
-        "id": 879,
+        "id": 928,
         "nodeType": "ImportDirective",
-        "scope": 911,
-        "sourceUnit": 11076,
+        "scope": 960,
+        "sourceUnit": 11398,
         "src": "66:50:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -503,17 +503,17 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 880,
+              "id": 929,
               "name": "UpgradeabilityAdmin",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11075,
+              "referencedDeclaration": 11397,
               "src": "283:19:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11075",
+                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11397",
                 "typeString": "contract UpgradeabilityAdmin"
               }
             },
-            "id": 881,
+            "id": 930,
             "nodeType": "InheritanceSpecifier",
             "src": "283:19:5"
           },
@@ -521,43 +521,43 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 882,
+              "id": 931,
               "name": "IRandomHbbft",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9702,
+              "referencedDeclaration": 10015,
               "src": "304:12:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRandomHbbft_$9702",
+                "typeIdentifier": "t_contract$_IRandomHbbft_$10015",
                 "typeString": "contract IRandomHbbft"
               }
             },
-            "id": 883,
+            "id": 932,
             "nodeType": "InheritanceSpecifier",
             "src": "304:12:5"
           }
         ],
         "contractDependencies": [
-          9702,
-          11075
+          10015,
+          11397
         ],
         "contractKind": "contract",
         "documentation": "@dev Stores and uppdates a random seed that is used to form a new validator set by the\n `ValidatorSetHbbft.newValidatorSet` function.",
         "fullyImplemented": true,
-        "id": 910,
+        "id": 959,
         "linearizedBaseContracts": [
-          910,
-          9702,
-          11075
+          959,
+          10015,
+          11397
         ],
         "name": "RandomHbbft",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 885,
+            "id": 934,
             "name": "currentSeed",
             "nodeType": "VariableDeclaration",
-            "scope": 910,
+            "scope": 959,
             "src": "699:26:5",
             "stateVariable": true,
             "storageLocation": "default",
@@ -566,7 +566,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 884,
+              "id": 933,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "699:7:5",
@@ -580,7 +580,7 @@
           },
           {
             "body": {
-              "id": 896,
+              "id": 945,
               "nodeType": "Block",
               "src": "976:123:5",
               "statements": [
@@ -594,7 +594,7 @@
                           "typeIdentifier": "t_address_payable",
                           "typeString": "address payable"
                         },
-                        "id": 891,
+                        "id": 940,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -603,18 +603,18 @@
                           "argumentTypes": null,
                           "expression": {
                             "argumentTypes": null,
-                            "id": 888,
+                            "id": 937,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 11158,
+                            "referencedDeclaration": 11480,
                             "src": "994:3:5",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
                               "typeString": "msg"
                             }
                           },
-                          "id": 889,
+                          "id": 938,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -633,7 +633,7 @@
                         "rightExpression": {
                           "argumentTypes": null,
                           "hexValue": "307866666666464646664646666666666666666666666666666646664646466666664646466646466645",
-                          "id": 890,
+                          "id": 939,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -657,7 +657,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "4d7573742062652065786563757465642062792053797374656d",
-                        "id": 892,
+                        "id": 941,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -684,21 +684,21 @@
                           "typeString": "literal_string \"Must be executed by System\""
                         }
                       ],
-                      "id": 887,
+                      "id": 936,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11161,
-                        11162
+                        11483,
+                        11484
                       ],
-                      "referencedDeclaration": 11162,
+                      "referencedDeclaration": 11484,
                       "src": "986:7:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 893,
+                    "id": 942,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -712,23 +712,23 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 894,
+                  "id": 943,
                   "nodeType": "ExpressionStatement",
                   "src": "986:95:5"
                 },
                 {
-                  "id": 895,
+                  "id": 944,
                   "nodeType": "PlaceholderStatement",
                   "src": "1091:1:5"
                 }
               ]
             },
             "documentation": "@dev Ensures the caller is the SYSTEM_ADDRESS. See https://wiki.parity.io/Validator-Set.html",
-            "id": 897,
+            "id": 946,
             "name": "onlySystem",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 886,
+              "id": 935,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "973:2:5"
@@ -738,25 +738,25 @@
           },
           {
             "body": {
-              "id": 908,
+              "id": 957,
               "nodeType": "Block",
               "src": "1908:43:5",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 906,
+                    "id": 955,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 904,
+                      "id": 953,
                       "name": "currentSeed",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 885,
+                      "referencedDeclaration": 934,
                       "src": "1918:11:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -767,11 +767,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 905,
+                      "id": 954,
                       "name": "_currentSeed",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 899,
+                      "referencedDeclaration": 948,
                       "src": "1932:12:5",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -784,27 +784,27 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 907,
+                  "id": 956,
                   "nodeType": "ExpressionStatement",
                   "src": "1918:26:5"
                 }
               ]
             },
             "documentation": "@dev The cooperative consens mechanism in HBBFT achieves to \n generate a seed, that cannot be predicted by the nodes,\n but can get used within smart contracts without having to wait for\n an additional block.\n this is one of the biggest benefits of HBBFT.\n When the nodes are able to decrypt the transaction,\n they know the seed, that can be used as random base for smart contract interactions.\n setCurrentSeed is always the first transaction within a block,\n and currentSeed is a public available value that can get used by all smart contracts.",
-            "id": 909,
+            "id": 958,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": null,
-                "id": 902,
+                "id": 951,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 901,
+                  "id": 950,
                   "name": "onlySystem",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 897,
+                  "referencedDeclaration": 946,
                   "src": "1897:10:5",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -818,15 +818,15 @@
             "name": "setCurrentSeed",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 900,
+              "id": 949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 899,
+                  "id": 948,
                   "name": "_currentSeed",
                   "nodeType": "VariableDeclaration",
-                  "scope": 909,
+                  "scope": 958,
                   "src": "1858:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -835,7 +835,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 898,
+                    "id": 947,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1858:7:5",
@@ -851,19 +851,19 @@
               "src": "1857:22:5"
             },
             "returnParameters": {
-              "id": 903,
+              "id": 952,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1908:0:5"
             },
-            "scope": 910,
+            "scope": 959,
             "src": "1834:117:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 911,
+        "scope": 960,
         "src": "259:1694:5"
       }
     ],
@@ -875,7 +875,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2021-05-13T16:57:33.135Z",
+  "updatedAt": "2021-12-06T19:40:02.911Z",
   "devdoc": {
     "details": "Stores and uppdates a random seed that is used to form a new validator set by the `ValidatorSetHbbft.newValidatorSet` function.",
     "methods": {

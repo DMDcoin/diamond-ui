@@ -12,14 +12,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
     "exportedSymbols": {
       "UpgradeabilityAdmin": [
-        11116
+        11397
       ]
     },
-    "id": 11117,
+    "id": 11398,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11101,
+        "id": 11382,
         "literals": [
           "solidity",
           "^",
@@ -35,19 +35,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 11116,
+        "id": 11397,
         "linearizedBaseContracts": [
-          11116
+          11397
         ],
         "name": "UpgradeabilityAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 11104,
+            "id": 11385,
             "name": "ADMIN_SLOT",
             "nodeType": "VariableDeclaration",
-            "scope": 11116,
+            "scope": 11397,
             "src": "211:105:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -56,7 +56,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11102,
+              "id": 11383,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "211:7:38",
@@ -68,7 +68,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307862353331323736383461353638623331373361653133623966386136303136653234336536336236653865653131373864366137313738353062356436313033",
-              "id": 11103,
+              "id": 11384,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -87,21 +87,21 @@
           },
           {
             "body": {
-              "id": 11114,
+              "id": 11395,
               "nodeType": "Block",
               "src": "436:102:38",
               "statements": [
                 {
                   "assignments": [
-                    11110
+                    11391
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11110,
+                      "id": 11391,
                       "name": "slot",
                       "nodeType": "VariableDeclaration",
-                      "scope": 11114,
+                      "scope": 11395,
                       "src": "446:12:38",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -110,7 +110,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 11109,
+                        "id": 11390,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "446:7:38",
@@ -123,14 +123,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11112,
+                  "id": 11393,
                   "initialValue": {
                     "argumentTypes": null,
-                    "id": 11111,
+                    "id": 11392,
                     "name": "ADMIN_SLOT",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 11104,
+                    "referencedDeclaration": 11385,
                     "src": "461:10:38",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -144,7 +144,7 @@
                   "externalReferences": [
                     {
                       "adm": {
-                        "declaration": 11107,
+                        "declaration": 11388,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "504:3:38",
@@ -153,7 +153,7 @@
                     },
                     {
                       "slot": {
-                        "declaration": 11110,
+                        "declaration": 11391,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "517:4:38",
@@ -161,7 +161,7 @@
                       }
                     }
                   ],
-                  "id": 11113,
+                  "id": 11394,
                   "nodeType": "InlineAssembly",
                   "operations": "{ adm := sload(slot) }",
                   "src": "481:51:38"
@@ -169,28 +169,28 @@
               ]
             },
             "documentation": "@return The admin slot.",
-            "id": 11115,
+            "id": 11396,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "_admin",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 11105,
+              "id": 11386,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "385:2:38"
             },
             "returnParameters": {
-              "id": 11108,
+              "id": 11389,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11107,
+                  "id": 11388,
                   "name": "adm",
                   "nodeType": "VariableDeclaration",
-                  "scope": 11115,
+                  "scope": 11396,
                   "src": "423:11:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -199,7 +199,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11106,
+                    "id": 11387,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:38",
@@ -215,14 +215,14 @@
               ],
               "src": "422:13:38"
             },
-            "scope": 11116,
+            "scope": 11397,
             "src": "370:168:38",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 11117,
+        "scope": 11398,
         "src": "26:773:38"
       }
     ],
@@ -232,14 +232,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
     "exportedSymbols": {
       "UpgradeabilityAdmin": [
-        11116
+        11397
       ]
     },
-    "id": 11117,
+    "id": 11398,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 11101,
+        "id": 11382,
         "literals": [
           "solidity",
           "^",
@@ -255,19 +255,19 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 11116,
+        "id": 11397,
         "linearizedBaseContracts": [
-          11116
+          11397
         ],
         "name": "UpgradeabilityAdmin",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 11104,
+            "id": 11385,
             "name": "ADMIN_SLOT",
             "nodeType": "VariableDeclaration",
-            "scope": 11116,
+            "scope": 11397,
             "src": "211:105:38",
             "stateVariable": true,
             "storageLocation": "default",
@@ -276,7 +276,7 @@
               "typeString": "bytes32"
             },
             "typeName": {
-              "id": 11102,
+              "id": 11383,
               "name": "bytes32",
               "nodeType": "ElementaryTypeName",
               "src": "211:7:38",
@@ -288,7 +288,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "307862353331323736383461353638623331373361653133623966386136303136653234336536336236653865653131373864366137313738353062356436313033",
-              "id": 11103,
+              "id": 11384,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -307,21 +307,21 @@
           },
           {
             "body": {
-              "id": 11114,
+              "id": 11395,
               "nodeType": "Block",
               "src": "436:102:38",
               "statements": [
                 {
                   "assignments": [
-                    11110
+                    11391
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 11110,
+                      "id": 11391,
                       "name": "slot",
                       "nodeType": "VariableDeclaration",
-                      "scope": 11114,
+                      "scope": 11395,
                       "src": "446:12:38",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -330,7 +330,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 11109,
+                        "id": 11390,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "446:7:38",
@@ -343,14 +343,14 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 11112,
+                  "id": 11393,
                   "initialValue": {
                     "argumentTypes": null,
-                    "id": 11111,
+                    "id": 11392,
                     "name": "ADMIN_SLOT",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 11104,
+                    "referencedDeclaration": 11385,
                     "src": "461:10:38",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
@@ -364,7 +364,7 @@
                   "externalReferences": [
                     {
                       "adm": {
-                        "declaration": 11107,
+                        "declaration": 11388,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "504:3:38",
@@ -373,7 +373,7 @@
                     },
                     {
                       "slot": {
-                        "declaration": 11110,
+                        "declaration": 11391,
                         "isOffset": false,
                         "isSlot": false,
                         "src": "517:4:38",
@@ -381,7 +381,7 @@
                       }
                     }
                   ],
-                  "id": 11113,
+                  "id": 11394,
                   "nodeType": "InlineAssembly",
                   "operations": "{ adm := sload(slot) }",
                   "src": "481:51:38"
@@ -389,28 +389,28 @@
               ]
             },
             "documentation": "@return The admin slot.",
-            "id": 11115,
+            "id": 11396,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "_admin",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 11105,
+              "id": 11386,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "385:2:38"
             },
             "returnParameters": {
-              "id": 11108,
+              "id": 11389,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 11107,
+                  "id": 11388,
                   "name": "adm",
                   "nodeType": "VariableDeclaration",
-                  "scope": 11115,
+                  "scope": 11396,
                   "src": "423:11:38",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -419,7 +419,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 11106,
+                    "id": 11387,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "423:7:38",
@@ -435,14 +435,14 @@
               ],
               "src": "422:13:38"
             },
-            "scope": 11116,
+            "scope": 11397,
             "src": "370:168:38",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "internal"
           }
         ],
-        "scope": 11117,
+        "scope": 11398,
         "src": "26:773:38"
       }
     ],
@@ -454,7 +454,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2021-04-12T22:02:33.580Z",
+  "updatedAt": "2021-12-06T19:40:03.056Z",
   "devdoc": {
     "methods": {}
   },

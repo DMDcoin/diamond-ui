@@ -469,6 +469,11 @@
         },
         {
           "internalType": "uint256",
+          "name": "_maxStake",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_stakingFixedEpochDuration",
           "type": "uint256"
         },
@@ -529,6 +534,21 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "maxStakeAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "payable": false,
@@ -1338,6 +1358,15 @@
       "type": "function"
     },
     {
+      "constant": false,
+      "inputs": [],
+      "name": "upgrade",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "constant": true,
       "inputs": [],
       "name": "validatorSetContract",
@@ -1553,7 +1582,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ClaimedOrderedWithdrawal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"toPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"MovedStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"int256\",\"name\":\"amount\",\"type\":\"int256\"}],\"name\":\"OrderedWithdrawal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"toPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PlacedStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"WithdrewStake\",\"type\":\"event\"},{\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"constant\":true,\"inputs\":[],\"name\":\"MAX_CANDIDATES\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_miningAddress\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"_ip\",\"type\":\"bytes16\"}],\"name\":\"addPool\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"addPoolActiveMock\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"addPoolInactiveMock\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"areStakeAndWithdrawAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"candidateMinStake\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"claimOrderedWithdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_stakingEpoch\",\"type\":\"uint256\"}],\"name\":\"clearDelegatorStakeSnapshot\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_epoch\",\"type\":\"uint256\"}],\"name\":\"clearRewardWasTaken\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"currentKeyGenExtraTimeWindow\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"delegatorMinStake\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"delegatorStakeSnapshot\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolAddress\",\"type\":\"address\"}],\"name\":\"getPoolInternetAddress\",\"outputs\":[{\"internalType\":\"bytes16\",\"name\":\"\",\"type\":\"bytes16\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolAddress\",\"type\":\"address\"}],\"name\":\"getPoolPublicKey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPools\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsInactive\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsLikelihood\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"likelihoods\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"sum\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsToBeElected\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsToBeRemoved\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"incrementStakingEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_validatorSetContract\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"_initialStakingAddresses\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"_delegatorMinStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_candidateMinStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingFixedEpochDuration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingTransitionTimeframeLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingWithdrawDisallowPeriod\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"_publicKeys\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes16[]\",\"name\":\"_internetAddresses\",\"type\":\"bytes16[]\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"isPoolActive\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"maxWithdrawAllowed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"maxWithdrawOrderAllowed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_fromPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_toPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"moveStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"notifyAvailability\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"notifyKeyGenFailed\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"detectedOfflineTime\",\"type\":\"uint256\"}],\"name\":\"notifyNetworkOfftimeDetected\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"int256\",\"name\":\"_amount\",\"type\":\"int256\"}],\"name\":\"orderWithdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderWithdrawEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderedWithdrawAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderedWithdrawAmountTotal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolDelegatorInactiveIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolDelegatorIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"poolDelegators\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"poolDelegatorsInactive\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolInactiveIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"internetAddress\",\"type\":\"bytes16\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolToBeElectedIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolToBeRemovedIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"removeMyPool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"removePool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"removePools\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"rewardWasTaken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minStake\",\"type\":\"uint256\"}],\"name\":\"setCandidateMinStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minStake\",\"type\":\"uint256\"}],\"name\":\"setDelegatorMinStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"_ip\",\"type\":\"bytes16\"}],\"name\":\"setPoolInfo\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"setStakeAmountTotal\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"setStakeFirstEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"setStakeLastEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_stakingEpoch\",\"type\":\"uint256\"}],\"name\":\"setStakingEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_timestamp\",\"type\":\"uint256\"}],\"name\":\"setStakingEpochStartTime\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"_validatorSetAddress\",\"type\":\"address\"}],\"name\":\"setValidatorSetAddress\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_toPoolStakingAddress\",\"type\":\"address\"}],\"name\":\"stake\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"stakeAmountByCurrentEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeAmountTotal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeFirstEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeLastEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpochStartBlock\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpochStartTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingFixedEpochDuration\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingFixedEpochEndTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingTransitionTimeframeLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingWithdrawDisallowPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"startTimeOfNextPhaseTransition\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"validatorSetContract\",\"outputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_fromPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addPool(address,bytes,bytes16)\":{\"details\":\"Adds a new candidate's pool to the list of active pools (see the `getPools` getter) and moves the specified amount of staking coins from the candidate's staking address to the candidate's pool. A participant calls this function using their staking address when they want to create a pool. This is a wrapper for the `stake` function.\",\"params\":{\"_miningAddress\":\"The mining address of the candidate. The mining address is bound to the staking address (msg.sender). This address cannot be equal to `msg.sender`.\"}},\"areStakeAndWithdrawAllowed()\":{\"details\":\"Determines whether staking/withdrawal operations are allowed at the moment. Used by all staking/withdrawal functions.\"},\"claimOrderedWithdraw(address)\":{\"details\":\"Withdraws the staking coins from the specified pool ordered during the previous staking epochs with the `orderWithdraw` function. The ordered amount can be retrieved by the `orderedWithdrawAmount` getter.\",\"params\":{\"_poolStakingAddress\":\"The staking address of the pool from which the ordered coins are withdrawn.\"}},\"getPoolInternetAddress(address)\":{\"details\":\"Returns the registered IPv4 Address for the node.\",\"params\":{\"_poolAddress\":\"The Pool Address to query the IPv4Address for.\"},\"return\":\"IPv4 Address for the given pool address. \"},\"getPoolPublicKey(address)\":{\"details\":\"Return the Public Key used by a Node to send targeted HBBFT Consensus Messages.\",\"params\":{\"_poolAddress\":\"The Pool Address to query the public key for.\"},\"return\":\"the public key for the given pool address.  Note that the public key does not convert to the ethereum address of the pool address. The pool address is used for stacking, and not for signing HBBFT messages.\"},\"getPools()\":{\"details\":\"Returns an array of the current active pools (the staking addresses of candidates and validators). The size of the array cannot exceed MAX_CANDIDATES. A pool can be added to this array with the `_addPoolActive` internal function which is called by the `stake` or `orderWithdraw` function. A pool is considered active if its address has at least the minimum stake and this stake is not ordered to be withdrawn.\"},\"getPoolsInactive()\":{\"details\":\"Returns an array of the current inactive pools (the staking addresses of former candidates). A pool can be added to this array with the `_addPoolInactive` internal function which is called by `_removePool`. A pool is considered inactive if it is banned for some reason, if its address has zero stake, or if its entire stake is ordered to be withdrawn.\"},\"getPoolsLikelihood()\":{\"details\":\"Returns the array of stake amounts for each corresponding address in the `poolsToBeElected` array (see the `getPoolsToBeElected` getter) and a sum of these amounts. Used by the `ValidatorSetHbbft.newValidatorSet` function when randomly selecting new validators at the last block of a staking epoch. An array value is updated every time any staked amount is changed in this pool (see the `_setLikelihood` internal function).\",\"return\":\"`uint256[] likelihoods` - The array of the coefficients. The array length is always equal to the length of the `poolsToBeElected` array. `uint256 sum` - The total sum of the amounts.\"},\"getPoolsToBeElected()\":{\"details\":\"Returns the list of pools (their staking addresses) which will participate in a new validator set selection process in the `ValidatorSetHbbft.newValidatorSet` function. This is an array of pools which will be considered as candidates when forming a new validator set (at the last block of a staking epoch). This array is kept updated by the `_addPoolToBeElected` and `_deletePoolToBeElected` internal functions.\"},\"getPoolsToBeRemoved()\":{\"details\":\"Returns the list of pools (their staking addresses) which will be removed by the `ValidatorSetHbbft.newValidatorSet` function from the active `pools` array (at the last block of a staking epoch). This array is kept updated by the `_addPoolToBeRemoved` and `_deletePoolToBeRemoved` internal functions. A pool is added to this array when the pool's address withdraws (or orders) all of its own staking coins from the pool, inactivating the pool.\"},\"incrementStakingEpoch()\":{\"details\":\"Increments the serial number of the current staking epoch. Called by the `ValidatorSetHbbft.newValidatorSet` at the last block of the finished staking epoch.\"},\"initialize(address,address[],uint256,uint256,uint256,uint256,uint256,bytes32[],bytes16[])\":{\"details\":\"Initializes the network parameters. Can only be called by the constructor of the `InitializerHbbft` contract or owner.\",\"params\":{\"_candidateMinStake\":\"The minimum allowed amount of candidate/validator stake in Wei.\",\"_delegatorMinStake\":\"The minimum allowed amount of delegator stake in Wei.\",\"_initialStakingAddresses\":\"The array of initial validators' staking addresses.\",\"_stakingFixedEpochDuration\":\"The fixed duration of each epoch before keyGen starts.\",\"_stakingTransitionTimeframeLength\":\"Length of the timeframe in seconds for the transition to the new validator set.\",\"_stakingWithdrawDisallowPeriod\":\"The duration period at the end of a staking epoch during which participants cannot stake/withdraw/order/claim their staking coins\",\"_validatorSetContract\":\"The address of the `ValidatorSetHbbft` contract.\"}},\"isInitialized()\":{\"details\":\"Returns a boolean flag indicating if the `initialize` function has been called.\"},\"isPoolActive(address)\":{\"details\":\"Returns a flag indicating whether a specified address is in the `pools` array. See the `getPools` getter.\",\"params\":{\"_stakingAddress\":\"The staking address of the pool.\"}},\"maxWithdrawAllowed(address,address)\":{\"details\":\"Returns the maximum amount which can be withdrawn from the specified pool by the specified staker at the moment. Used by the `withdraw` and `moveStake` functions.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address from which the withdrawal will be made.\",\"_staker\":\"The staker address that is going to withdraw.\"}},\"maxWithdrawOrderAllowed(address,address)\":{\"details\":\"Returns the maximum amount which can be ordered to be withdrawn from the specified pool by the specified staker at the moment. Used by the `orderWithdraw` function.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address from which the withdrawal will be ordered.\",\"_staker\":\"The staker address that is going to order the withdrawal.\"}},\"moveStake(address,address,uint256)\":{\"details\":\"Moves staking coins from one pool to another. A staker calls this function when they want to move their coins from one pool to another without withdrawing their coins.\",\"params\":{\"_amount\":\"The amount of staking coins to be moved. The amount cannot exceed the value returned by the `maxWithdrawAllowed` getter.\",\"_fromPoolStakingAddress\":\"The staking address of the source pool.\",\"_toPoolStakingAddress\":\"The staking address of the target pool.\"}},\"notifyAvailability(address)\":{\"details\":\"Notifies hbbft staking contract that a validator asociated with the given `_stakingAddress` became available again and can be put on to the list  of available nodes again.\"},\"notifyKeyGenFailed()\":{\"details\":\"Notifies hbbft staking contract that the key generation has failed, and a new round  of keygeneration starts.\"},\"notifyNetworkOfftimeDetected(uint256)\":{\"details\":\"Notifies hbbft staking contract about a detected network offline time. if there is no handling for this, validators got chosen outside the transition timewindow and get banned immediatly, since they never got their chance to write their keys. more about: https://github.com/DMDcoin/hbbft-posdao-contracts/issues/96\"},\"orderWithdraw(address,int256)\":{\"details\":\"Orders coins withdrawal from the staking address of the specified pool to the staker's address. The requested coins can be claimed after the current staking epoch is complete using the `claimOrderedWithdraw` function.\",\"params\":{\"_amount\":\"The amount to be withdrawn. A positive value means the staker wants to either set or increase their withdrawal amount. A negative value means the staker wants to decrease a withdrawal amount that was previously set. The amount cannot exceed the value returned by the `maxWithdrawOrderAllowed` getter.\",\"_poolStakingAddress\":\"The staking address of the pool from which the amount will be withdrawn.\"}},\"poolDelegators(address)\":{\"details\":\"Returns an array of the current active delegators of the specified pool. A delegator is considered active if they have staked into the specified pool and their stake is not ordered to be withdrawn.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\"}},\"poolDelegatorsInactive(address)\":{\"details\":\"Returns an array of the current inactive delegators of the specified pool. A delegator is considered inactive if their entire stake is ordered to be withdrawn but not yet claimed.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\"}},\"removeMyPool()\":{\"details\":\"Removes the candidate's or validator's pool from the `pools` array (a list of active pools which can be retrieved by the `getPools` getter). When a candidate or validator wants to remove their pool, they should call this function from their staking address.\"},\"removePool(address)\":{\"details\":\"Removes a specified pool from the `pools` array (a list of active pools which can be retrieved by the `getPools` getter). Called by the `ValidatorSetHbbft._removeMaliciousValidator` internal function,  and the `ValidatorSetHbbft.handleFailedKeyGeneration` function when a pool must be removed by the algorithm.\",\"params\":{\"_stakingAddress\":\"The staking address of the pool to be removed.\"}},\"removePools()\":{\"details\":\"Removes pools which are in the `_poolsToBeRemoved` internal array from the `pools` array. Called by the `ValidatorSetHbbft.newValidatorSet` function when a pool must be removed by the algorithm.\"},\"setCandidateMinStake(uint256)\":{\"details\":\"Sets (updates) the limit of the minimum candidate stake (CANDIDATE_MIN_STAKE). Can only be called by the `owner`.\",\"params\":{\"_minStake\":\"The value of a new limit in Wei.\"}},\"setDelegatorMinStake(uint256)\":{\"details\":\"Sets (updates) the limit of the minimum delegator stake (DELEGATOR_MIN_STAKE). Can only be called by the `owner`.\",\"params\":{\"_minStake\":\"The value of a new limit in Wei.\"}},\"setPoolInfo(bytes,bytes16)\":{\"details\":\"set's the pool info for a specific ethereum address.\",\"params\":{\"_ip\":\"(optional) IPV4 address of a running Node Software or Proxy. Stores the supplied data for a staking (pool) address. This function is external available without security checks, since no array operations are used in the implementation, this allows the flexibility to set the pool information before adding the stake to the pool.\",\"_publicKey\":\"public key of the (future) signing address.\"}},\"setStakingEpochStartTime(uint256)\":{\"details\":\"Sets the timetamp of the current epoch's last block as the start time of the upcoming staking epoch. Called by the `ValidatorSetHbbft.newValidatorSet` function at the last block of a staking epoch.\",\"params\":{\"_timestamp\":\"The starting time of the very first block in the upcoming staking epoch.\"}},\"stake(address)\":{\"details\":\"Moves the specified amount of staking coins from the staker's address to the staking address of the specified pool. Actually, the amount is stored in a balance of this StakingHbbft contract. A staker calls this function when they want to make a stake into a pool.\",\"params\":{\"_toPoolStakingAddress\":\"The staking address of the pool where the coins should be staked.\"}},\"stakeAmountByCurrentEpoch(address,address)\":{\"details\":\"Returns the amount of staking coins staked into the specified pool by the specified staker during the current staking epoch (see the `stakingEpoch` getter). Used by the `stake`, `withdraw`, and `orderWithdraw` functions.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\",\"_staker\":\"The staker's address.\"}},\"stakingFixedEpochEndTime()\":{\"details\":\"Returns an indicative time of the last block of the current staking epoch before key generation starts.\"},\"startTimeOfNextPhaseTransition()\":{\"details\":\"indicates the time when the new validatorset for the next epoch gets chosen. this is the start of a timeframe before the end of the epoch, that is long enough for the validators to create a new shared key.\"},\"withdraw(address,uint256)\":{\"details\":\"Moves the specified amount of staking coins from the staking address of the specified pool to the staker's address. A staker calls this function when they want to withdraw their coins.\",\"params\":{\"_amount\":\"The amount of coins to be withdrawn. The amount cannot exceed the value returned by the `maxWithdrawAllowed` getter.\",\"_fromPoolStakingAddress\":\"The staking address of the pool from which the coins should be withdrawn.\"}}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol\":\"StakingHbbftBaseMock\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/base/StakingHbbftBase.sol\":{\"keccak256\":\"0xd34bbc3452674b36600e6a26b1646f7c184af7e1037d84a5dd15ea7a1d5d16a1\",\"urls\":[\"bzz-raw://5aab74a85842a80773d69b24660ad6d84facff7dd9b94961b27e64c4fb42e641\",\"dweb:/ipfs/Qme6HxbGAzYfTF8BMuG5D8wfXtVntwosHKhe6EAaTmVzgL\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IBlockRewardHbbft.sol\":{\"keccak256\":\"0x3c1584cfd166741f927feab7398d08979ffee78995c2fdf58f04434dd0f1ee5d\",\"urls\":[\"bzz-raw://09ba56a1e5f90cda6d3f15060639432a718380fdddc6f997f46b2b1a9c1e29a6\",\"dweb:/ipfs/QmQfeLM6YjK9nUf2dWNrrsJsBiGPwhpqetjiN9yByYQH5w\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbft.sol\":{\"keccak256\":\"0x7c312e4da7faf0523ba30f946b37d50a7ace6d7ca8cfb33be0f3b8bdbfd49c24\",\"urls\":[\"bzz-raw://ace830d251a02a289c03f65bb42046d8d13a458cde8530189a05448deb89ddb7\",\"dweb:/ipfs/QmewCWKoQ81TeVhHyiXHkRnPTRCXRtMm8m7XyN117Q6YDs\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IValidatorSetHbbft.sol\":{\"keccak256\":\"0xc2dc8bb49aa31838f80106103f4387f3434682c79d016e708132fc727cd0a048\",\"urls\":[\"bzz-raw://21439fc3f5f4ca721e1b269ac848dd3029ba93321cb61c0410345947b5812818\",\"dweb:/ipfs/QmeoiYSkbjcKsnN2UsqxvGFGdzDQ6oXpUT2r7oN3KFCYke\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/libs/SafeMath.sol\":{\"keccak256\":\"0xa2e1cdf70b43e279d70e7b6c29df08e250a96d0987ded73bd04dc618ed28f6a3\",\"urls\":[\"bzz-raw://e803ce96bb1f1f2902430dabdb446fab5a3e74a047a24844c441d381d37a9e76\",\"dweb:/ipfs/Qmf68nqksAN4KDz5RZSQWi6rtzQvqYRh5ywNQ4BVZKhrG3\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol\":{\"keccak256\":\"0x8fabe912b2f86a6acc64e7a1453d1dc2f31d9ee8bb7d3ff2e3f5c3797047746b\",\"urls\":[\"bzz-raw://062462334d98bc554ccf22b2521acb061a9d8f9415bc8927e9e63a1765e196b5\",\"dweb:/ipfs/QmWajHbWR7VQ96cN3E2JGttdPMd8SsZNRL6nKBA5gGvwzA\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol\":{\"keccak256\":\"0x0b393066e706db35b9c523d3a21b63a5d9eafde51fdefbcbc4d6c815dff574a2\",\"urls\":[\"bzz-raw://493d9041c195ee69b05ab36000021c7171816f3efb2623c8d2a1d90118fb1fd9\",\"dweb:/ipfs/QmPuhiCNVZjM4B18cEpphc5juGTDcjhNcKnBDxexXMZ3Md\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeableOwned.sol\":{\"keccak256\":\"0xe9eefd29c6ddb1827e99e9c6c61a5b2ccd2dc9d6a97d176bad914e0f1e8671ca\",\"urls\":[\"bzz-raw://359c65fd2eed4da4eea4a5c8ca855fd5f89975d6afb966b33540a15755d76a6b\",\"dweb:/ipfs/QmVB7diM5HApkF9njDKTMMpSMcAYj8RxCesyFaGkpGNeFh\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ClaimedOrderedWithdrawal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"toPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"MovedStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"int256\",\"name\":\"amount\",\"type\":\"int256\"}],\"name\":\"OrderedWithdrawal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"toPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PlacedStake\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"fromPoolStakingAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"staker\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"stakingEpoch\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"WithdrewStake\",\"type\":\"event\"},{\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"constant\":true,\"inputs\":[],\"name\":\"MAX_CANDIDATES\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_miningAddress\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"_publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"_ip\",\"type\":\"bytes16\"}],\"name\":\"addPool\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"addPoolActiveMock\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"addPoolInactiveMock\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"areStakeAndWithdrawAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"candidateMinStake\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"claimOrderedWithdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_stakingEpoch\",\"type\":\"uint256\"}],\"name\":\"clearDelegatorStakeSnapshot\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_epoch\",\"type\":\"uint256\"}],\"name\":\"clearRewardWasTaken\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"currentKeyGenExtraTimeWindow\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"delegatorMinStake\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"delegatorStakeSnapshot\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolAddress\",\"type\":\"address\"}],\"name\":\"getPoolInternetAddress\",\"outputs\":[{\"internalType\":\"bytes16\",\"name\":\"\",\"type\":\"bytes16\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolAddress\",\"type\":\"address\"}],\"name\":\"getPoolPublicKey\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPools\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsInactive\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsLikelihood\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"likelihoods\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"sum\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsToBeElected\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getPoolsToBeRemoved\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"incrementStakingEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_validatorSetContract\",\"type\":\"address\"},{\"internalType\":\"address[]\",\"name\":\"_initialStakingAddresses\",\"type\":\"address[]\"},{\"internalType\":\"uint256\",\"name\":\"_delegatorMinStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_candidateMinStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxStake\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingFixedEpochDuration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingTransitionTimeframeLength\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_stakingWithdrawDisallowPeriod\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"_publicKeys\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes16[]\",\"name\":\"_internetAddresses\",\"type\":\"bytes16[]\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"isPoolActive\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"maxStakeAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"maxWithdrawAllowed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"maxWithdrawOrderAllowed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_fromPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_toPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"moveStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"notifyAvailability\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"notifyKeyGenFailed\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"detectedOfflineTime\",\"type\":\"uint256\"}],\"name\":\"notifyNetworkOfftimeDetected\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"int256\",\"name\":\"_amount\",\"type\":\"int256\"}],\"name\":\"orderWithdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderWithdrawEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderedWithdrawAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"orderedWithdrawAmountTotal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolDelegatorInactiveIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolDelegatorIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"poolDelegators\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"}],\"name\":\"poolDelegatorsInactive\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolInactiveIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolInfo\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"internetAddress\",\"type\":\"bytes16\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolToBeElectedIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"poolToBeRemovedIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"removeMyPool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_stakingAddress\",\"type\":\"address\"}],\"name\":\"removePool\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"removePools\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"rewardWasTaken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minStake\",\"type\":\"uint256\"}],\"name\":\"setCandidateMinStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minStake\",\"type\":\"uint256\"}],\"name\":\"setDelegatorMinStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"_publicKey\",\"type\":\"bytes\"},{\"internalType\":\"bytes16\",\"name\":\"_ip\",\"type\":\"bytes16\"}],\"name\":\"setPoolInfo\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"setStakeAmountTotal\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"setStakeFirstEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_delegator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"setStakeLastEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_stakingEpoch\",\"type\":\"uint256\"}],\"name\":\"setStakingEpoch\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_timestamp\",\"type\":\"uint256\"}],\"name\":\"setStakingEpochStartTime\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"_validatorSetAddress\",\"type\":\"address\"}],\"name\":\"setValidatorSetAddress\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_toPoolStakingAddress\",\"type\":\"address\"}],\"name\":\"stake\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_poolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_staker\",\"type\":\"address\"}],\"name\":\"stakeAmountByCurrentEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeAmountTotal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeFirstEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"stakeLastEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpoch\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpochStartBlock\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingEpochStartTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingFixedEpochDuration\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingFixedEpochEndTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingTransitionTimeframeLength\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"stakingWithdrawDisallowPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"startTimeOfNextPhaseTransition\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"upgrade\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"validatorSetContract\",\"outputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_fromPoolStakingAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"addPool(address,bytes,bytes16)\":{\"details\":\"Adds a new candidate's pool to the list of active pools (see the `getPools` getter) and moves the specified amount of staking coins from the candidate's staking address to the candidate's pool. A participant calls this function using their staking address when they want to create a pool. This is a wrapper for the `stake` function.\",\"params\":{\"_miningAddress\":\"The mining address of the candidate. The mining address is bound to the staking address (msg.sender). This address cannot be equal to `msg.sender`.\"}},\"areStakeAndWithdrawAllowed()\":{\"details\":\"Determines whether staking/withdrawal operations are allowed at the moment. Used by all staking/withdrawal functions.\"},\"claimOrderedWithdraw(address)\":{\"details\":\"Withdraws the staking coins from the specified pool ordered during the previous staking epochs with the `orderWithdraw` function. The ordered amount can be retrieved by the `orderedWithdrawAmount` getter.\",\"params\":{\"_poolStakingAddress\":\"The staking address of the pool from which the ordered coins are withdrawn.\"}},\"getPoolInternetAddress(address)\":{\"details\":\"Returns the registered IPv4 Address for the node.\",\"params\":{\"_poolAddress\":\"The Pool Address to query the IPv4Address for.\"},\"return\":\"IPv4 Address for the given pool address. \"},\"getPoolPublicKey(address)\":{\"details\":\"Return the Public Key used by a Node to send targeted HBBFT Consensus Messages.\",\"params\":{\"_poolAddress\":\"The Pool Address to query the public key for.\"},\"return\":\"the public key for the given pool address.  Note that the public key does not convert to the ethereum address of the pool address. The pool address is used for stacking, and not for signing HBBFT messages.\"},\"getPools()\":{\"details\":\"Returns an array of the current active pools (the staking addresses of candidates and validators). The size of the array cannot exceed MAX_CANDIDATES. A pool can be added to this array with the `_addPoolActive` internal function which is called by the `stake` or `orderWithdraw` function. A pool is considered active if its address has at least the minimum stake and this stake is not ordered to be withdrawn.\"},\"getPoolsInactive()\":{\"details\":\"Returns an array of the current inactive pools (the staking addresses of former candidates). A pool can be added to this array with the `_addPoolInactive` internal function which is called by `_removePool`. A pool is considered inactive if it is banned for some reason, if its address has zero stake, or if its entire stake is ordered to be withdrawn.\"},\"getPoolsLikelihood()\":{\"details\":\"Returns the array of stake amounts for each corresponding address in the `poolsToBeElected` array (see the `getPoolsToBeElected` getter) and a sum of these amounts. Used by the `ValidatorSetHbbft.newValidatorSet` function when randomly selecting new validators at the last block of a staking epoch. An array value is updated every time any staked amount is changed in this pool (see the `_setLikelihood` internal function).\",\"return\":\"`uint256[] likelihoods` - The array of the coefficients. The array length is always equal to the length of the `poolsToBeElected` array. `uint256 sum` - The total sum of the amounts.\"},\"getPoolsToBeElected()\":{\"details\":\"Returns the list of pools (their staking addresses) which will participate in a new validator set selection process in the `ValidatorSetHbbft.newValidatorSet` function. This is an array of pools which will be considered as candidates when forming a new validator set (at the last block of a staking epoch). This array is kept updated by the `_addPoolToBeElected` and `_deletePoolToBeElected` internal functions.\"},\"getPoolsToBeRemoved()\":{\"details\":\"Returns the list of pools (their staking addresses) which will be removed by the `ValidatorSetHbbft.newValidatorSet` function from the active `pools` array (at the last block of a staking epoch). This array is kept updated by the `_addPoolToBeRemoved` and `_deletePoolToBeRemoved` internal functions. A pool is added to this array when the pool's address withdraws (or orders) all of its own staking coins from the pool, inactivating the pool.\"},\"incrementStakingEpoch()\":{\"details\":\"Increments the serial number of the current staking epoch. Called by the `ValidatorSetHbbft.newValidatorSet` at the last block of the finished staking epoch.\"},\"initialize(address,address[],uint256,uint256,uint256,uint256,uint256,uint256,bytes32[],bytes16[])\":{\"details\":\"Initializes the network parameters. Can only be called by the constructor of the `InitializerHbbft` contract or owner.\",\"params\":{\"_candidateMinStake\":\"The minimum allowed amount of candidate/validator stake in Wei.\",\"_delegatorMinStake\":\"The minimum allowed amount of delegator stake in Wei.\",\"_initialStakingAddresses\":\"The array of initial validators' staking addresses.\",\"_stakingFixedEpochDuration\":\"The fixed duration of each epoch before keyGen starts.\",\"_stakingTransitionTimeframeLength\":\"Length of the timeframe in seconds for the transition to the new validator set.\",\"_stakingWithdrawDisallowPeriod\":\"The duration period at the end of a staking epoch during which participants cannot stake/withdraw/order/claim their staking coins\",\"_validatorSetContract\":\"The address of the `ValidatorSetHbbft` contract.\"}},\"isInitialized()\":{\"details\":\"Returns a boolean flag indicating if the `initialize` function has been called.\"},\"isPoolActive(address)\":{\"details\":\"Returns a flag indicating whether a specified address is in the `pools` array. See the `getPools` getter.\",\"params\":{\"_stakingAddress\":\"The staking address of the pool.\"}},\"maxWithdrawAllowed(address,address)\":{\"details\":\"Returns the maximum amount which can be withdrawn from the specified pool by the specified staker at the moment. Used by the `withdraw` and `moveStake` functions.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address from which the withdrawal will be made.\",\"_staker\":\"The staker address that is going to withdraw.\"}},\"maxWithdrawOrderAllowed(address,address)\":{\"details\":\"Returns the maximum amount which can be ordered to be withdrawn from the specified pool by the specified staker at the moment. Used by the `orderWithdraw` function.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address from which the withdrawal will be ordered.\",\"_staker\":\"The staker address that is going to order the withdrawal.\"}},\"moveStake(address,address,uint256)\":{\"details\":\"Moves staking coins from one pool to another. A staker calls this function when they want to move their coins from one pool to another without withdrawing their coins.\",\"params\":{\"_amount\":\"The amount of staking coins to be moved. The amount cannot exceed the value returned by the `maxWithdrawAllowed` getter.\",\"_fromPoolStakingAddress\":\"The staking address of the source pool.\",\"_toPoolStakingAddress\":\"The staking address of the target pool.\"}},\"notifyAvailability(address)\":{\"details\":\"Notifies hbbft staking contract that a validator asociated with the given `_stakingAddress` became available again and can be put on to the list  of available nodes again.\"},\"notifyKeyGenFailed()\":{\"details\":\"Notifies hbbft staking contract that the key generation has failed, and a new round  of keygeneration starts.\"},\"notifyNetworkOfftimeDetected(uint256)\":{\"details\":\"Notifies hbbft staking contract about a detected network offline time. if there is no handling for this, validators got chosen outside the transition timewindow and get banned immediatly, since they never got their chance to write their keys. more about: https://github.com/DMDcoin/hbbft-posdao-contracts/issues/96\"},\"orderWithdraw(address,int256)\":{\"details\":\"Orders coins withdrawal from the staking address of the specified pool to the staker's address. The requested coins can be claimed after the current staking epoch is complete using the `claimOrderedWithdraw` function.\",\"params\":{\"_amount\":\"The amount to be withdrawn. A positive value means the staker wants to either set or increase their withdrawal amount. A negative value means the staker wants to decrease a withdrawal amount that was previously set. The amount cannot exceed the value returned by the `maxWithdrawOrderAllowed` getter.\",\"_poolStakingAddress\":\"The staking address of the pool from which the amount will be withdrawn.\"}},\"poolDelegators(address)\":{\"details\":\"Returns an array of the current active delegators of the specified pool. A delegator is considered active if they have staked into the specified pool and their stake is not ordered to be withdrawn.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\"}},\"poolDelegatorsInactive(address)\":{\"details\":\"Returns an array of the current inactive delegators of the specified pool. A delegator is considered inactive if their entire stake is ordered to be withdrawn but not yet claimed.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\"}},\"removeMyPool()\":{\"details\":\"Removes the candidate's or validator's pool from the `pools` array (a list of active pools which can be retrieved by the `getPools` getter). When a candidate or validator wants to remove their pool, they should call this function from their staking address.\"},\"removePool(address)\":{\"details\":\"Removes a specified pool from the `pools` array (a list of active pools which can be retrieved by the `getPools` getter). Called by the `ValidatorSetHbbft._removeMaliciousValidator` internal function,  and the `ValidatorSetHbbft.handleFailedKeyGeneration` function when a pool must be removed by the algorithm.\",\"params\":{\"_stakingAddress\":\"The staking address of the pool to be removed.\"}},\"removePools()\":{\"details\":\"Removes pools which are in the `_poolsToBeRemoved` internal array from the `pools` array. Called by the `ValidatorSetHbbft.newValidatorSet` function when a pool must be removed by the algorithm.\"},\"setCandidateMinStake(uint256)\":{\"details\":\"Sets (updates) the limit of the minimum candidate stake (CANDIDATE_MIN_STAKE). Can only be called by the `owner`.\",\"params\":{\"_minStake\":\"The value of a new limit in Wei.\"}},\"setDelegatorMinStake(uint256)\":{\"details\":\"Sets (updates) the limit of the minimum delegator stake (DELEGATOR_MIN_STAKE). Can only be called by the `owner`.\",\"params\":{\"_minStake\":\"The value of a new limit in Wei.\"}},\"setPoolInfo(bytes,bytes16)\":{\"details\":\"set's the pool info for a specific ethereum address.\",\"params\":{\"_ip\":\"(optional) IPV4 address of a running Node Software or Proxy. Stores the supplied data for a staking (pool) address. This function is external available without security checks, since no array operations are used in the implementation, this allows the flexibility to set the pool information before adding the stake to the pool.\",\"_publicKey\":\"public key of the (future) signing address.\"}},\"setStakingEpochStartTime(uint256)\":{\"details\":\"Sets the timetamp of the current epoch's last block as the start time of the upcoming staking epoch. Called by the `ValidatorSetHbbft.newValidatorSet` function at the last block of a staking epoch.\",\"params\":{\"_timestamp\":\"The starting time of the very first block in the upcoming staking epoch.\"}},\"stake(address)\":{\"details\":\"Moves the specified amount of staking coins from the staker's address to the staking address of the specified pool. Actually, the amount is stored in a balance of this StakingHbbft contract. A staker calls this function when they want to make a stake into a pool.\",\"params\":{\"_toPoolStakingAddress\":\"The staking address of the pool where the coins should be staked.\"}},\"stakeAmountByCurrentEpoch(address,address)\":{\"details\":\"Returns the amount of staking coins staked into the specified pool by the specified staker during the current staking epoch (see the `stakingEpoch` getter). Used by the `stake`, `withdraw`, and `orderWithdraw` functions.\",\"params\":{\"_poolStakingAddress\":\"The pool staking address.\",\"_staker\":\"The staker's address.\"}},\"stakingFixedEpochEndTime()\":{\"details\":\"Returns an indicative time of the last block of the current staking epoch before key generation starts.\"},\"startTimeOfNextPhaseTransition()\":{\"details\":\"indicates the time when the new validatorset for the next epoch gets chosen. this is the start of a timeframe before the end of the epoch, that is long enough for the validators to create a new shared key.\"},\"upgrade()\":{\"details\":\"save function that can be called by anyone that fixes uninitialzed values.\"},\"withdraw(address,uint256)\":{\"details\":\"Moves the specified amount of staking coins from the staking address of the specified pool to the staker's address. A staker calls this function when they want to withdraw their coins.\",\"params\":{\"_amount\":\"The amount of coins to be withdrawn. The amount cannot exceed the value returned by the `maxWithdrawAllowed` getter.\",\"_fromPoolStakingAddress\":\"The staking address of the pool from which the coins should be withdrawn.\"}}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol\":\"StakingHbbftBaseMock\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/base/StakingHbbftBase.sol\":{\"keccak256\":\"0xbeb02e42760df1a076b9976fb5f499508d627c4afd471f38063f8b65250bbbeb\",\"urls\":[\"bzz-raw://e895e1054bf6bd9924e23c4982061cd82836dbc470ec5ff71c0d0060d28a4219\",\"dweb:/ipfs/QmSeWNmYXER6oFthL2RufyR7bAgdf2pCoCheGUff5EzNyC\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IBlockRewardHbbft.sol\":{\"keccak256\":\"0x3c1584cfd166741f927feab7398d08979ffee78995c2fdf58f04434dd0f1ee5d\",\"urls\":[\"bzz-raw://09ba56a1e5f90cda6d3f15060639432a718380fdddc6f997f46b2b1a9c1e29a6\",\"dweb:/ipfs/QmQfeLM6YjK9nUf2dWNrrsJsBiGPwhpqetjiN9yByYQH5w\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbft.sol\":{\"keccak256\":\"0xbb10a6ced6a2216e5a3c7217f839ee1e1e08ed13ce44ff89071e40e05677a705\",\"urls\":[\"bzz-raw://fda89933ea5e91225360cce72e411035365ab38a5ba58d211036d37ba690e388\",\"dweb:/ipfs/QmSvcHDsyjYK4xrYQsjd5xFN7VkDcLiT19gzFDHY5Letwq\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IValidatorSetHbbft.sol\":{\"keccak256\":\"0x850cc47e5d0675ea50aa509a23ca5aa8666d4f38a9f7cdef3a2f5109c83f7bcc\",\"urls\":[\"bzz-raw://a49880321a4510b9f96075bbf715e649b0a82c9f00b68185e96ab391f0246e7e\",\"dweb:/ipfs/QmYJQ1CKshBTfLKi3FVoiFfY4NUpnqRbMGgFn3tagiactG\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/libs/SafeMath.sol\":{\"keccak256\":\"0xa2e1cdf70b43e279d70e7b6c29df08e250a96d0987ded73bd04dc618ed28f6a3\",\"urls\":[\"bzz-raw://e803ce96bb1f1f2902430dabdb446fab5a3e74a047a24844c441d381d37a9e76\",\"dweb:/ipfs/Qmf68nqksAN4KDz5RZSQWi6rtzQvqYRh5ywNQ4BVZKhrG3\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol\":{\"keccak256\":\"0x8fabe912b2f86a6acc64e7a1453d1dc2f31d9ee8bb7d3ff2e3f5c3797047746b\",\"urls\":[\"bzz-raw://062462334d98bc554ccf22b2521acb061a9d8f9415bc8927e9e63a1765e196b5\",\"dweb:/ipfs/QmWajHbWR7VQ96cN3E2JGttdPMd8SsZNRL6nKBA5gGvwzA\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol\":{\"keccak256\":\"0x0b393066e706db35b9c523d3a21b63a5d9eafde51fdefbcbc4d6c815dff574a2\",\"urls\":[\"bzz-raw://493d9041c195ee69b05ab36000021c7171816f3efb2623c8d2a1d90118fb1fd9\",\"dweb:/ipfs/QmPuhiCNVZjM4B18cEpphc5juGTDcjhNcKnBDxexXMZ3Md\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeableOwned.sol\":{\"keccak256\":\"0xe9eefd29c6ddb1827e99e9c6c61a5b2ccd2dc9d6a97d176bad914e0f1e8671ca\",\"urls\":[\"bzz-raw://359c65fd2eed4da4eea4a5c8ca855fd5f89975d6afb966b33540a15755d76a6b\",\"dweb:/ipfs/QmVB7diM5HApkF9njDKTMMpSMcAYj8RxCesyFaGkpGNeFh\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
@@ -1564,14 +1593,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol",
     "exportedSymbols": {
       "StakingHbbftBaseMock": [
-        10835
+        11023
       ]
     },
-    "id": 10836,
+    "id": 11024,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10692,
+        "id": 10880,
         "literals": [
           "solidity",
           "^",
@@ -1584,10 +1613,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/base/StakingHbbftBase.sol",
         "file": "../../contracts/base/StakingHbbftBase.sol",
-        "id": 10693,
+        "id": 10881,
         "nodeType": "ImportDirective",
-        "scope": 10836,
-        "sourceUnit": 9217,
+        "scope": 11024,
+        "sourceUnit": 9388,
         "src": "26:51:31",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1598,44 +1627,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10694,
+              "id": 10882,
               "name": "StakingHbbftBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9216,
+              "referencedDeclaration": 9387,
               "src": "113:16:31",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_StakingHbbftBase_$9216",
+                "typeIdentifier": "t_contract$_StakingHbbftBase_$9387",
                 "typeString": "contract StakingHbbftBase"
               }
             },
-            "id": 10695,
+            "id": 10883,
             "nodeType": "InheritanceSpecifier",
             "src": "113:16:31"
           }
         ],
         "contractDependencies": [
-          9216,
-          10112,
-          11260,
-          11328
+          9387,
+          10296,
+          11448,
+          11516
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 10835,
+        "id": 11023,
         "linearizedBaseContracts": [
-          10835,
-          9216,
-          10112,
-          11328,
-          11260
+          11023,
+          9387,
+          10296,
+          11516,
+          11448
         ],
         "name": "StakingHbbftBaseMock",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10705,
+              "id": 10893,
               "nodeType": "Block",
               "src": "323:54:31",
               "statements": [
@@ -1645,11 +1674,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10701,
+                        "id": 10889,
                         "name": "_stakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10697,
+                        "referencedDeclaration": 10885,
                         "src": "348:15:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1659,7 +1688,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "74727565",
-                        "id": 10702,
+                        "id": 10890,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1686,18 +1715,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10700,
+                      "id": 10888,
                       "name": "_addPoolActive",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7678,
+                      "referencedDeclaration": 7824,
                       "src": "333:14:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bool_$returns$__$",
                         "typeString": "function (address,bool)"
                       }
                     },
-                    "id": 10703,
+                    "id": 10891,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1711,29 +1740,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10704,
+                  "id": 10892,
                   "nodeType": "ExpressionStatement",
                   "src": "333:37:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10706,
+            "id": 10894,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "addPoolActiveMock",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10698,
+              "id": 10886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10697,
+                  "id": 10885,
                   "name": "_stakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10706,
+                  "scope": 10894,
                   "src": "287:23:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1742,7 +1771,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10696,
+                    "id": 10884,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "287:7:31",
@@ -1759,12 +1788,12 @@
               "src": "286:25:31"
             },
             "returnParameters": {
-              "id": 10699,
+              "id": 10887,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "323:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "260:117:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1772,7 +1801,7 @@
           },
           {
             "body": {
-              "id": 10715,
+              "id": 10903,
               "nodeType": "Block",
               "src": "444:50:31",
               "statements": [
@@ -1782,11 +1811,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10712,
+                        "id": 10900,
                         "name": "_stakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10708,
+                        "referencedDeclaration": 10896,
                         "src": "471:15:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1801,18 +1830,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10711,
+                      "id": 10899,
                       "name": "_addPoolInactive",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7718,
+                      "referencedDeclaration": 7864,
                       "src": "454:16:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 10713,
+                    "id": 10901,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1826,29 +1855,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10714,
+                  "id": 10902,
                   "nodeType": "ExpressionStatement",
                   "src": "454:33:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10716,
+            "id": 10904,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "addPoolInactiveMock",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10709,
+              "id": 10897,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10708,
+                  "id": 10896,
                   "name": "_stakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10716,
+                  "scope": 10904,
                   "src": "412:23:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1857,7 +1886,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10707,
+                    "id": 10895,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "412:7:31",
@@ -1874,12 +1903,12 @@
               "src": "411:25:31"
             },
             "returnParameters": {
-              "id": 10710,
+              "id": 10898,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "444:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "383:111:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1887,14 +1916,14 @@
           },
           {
             "body": {
-              "id": 10735,
+              "id": 10923,
               "nodeType": "Block",
               "src": "620:91:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10733,
+                    "id": 10921,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1907,25 +1936,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 10725,
+                            "id": 10913,
                             "name": "delegatorStakeSnapshot",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6273,
+                            "referencedDeclaration": 6401,
                             "src": "630:22:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                               "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                             }
                           },
-                          "id": 10729,
+                          "id": 10917,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 10726,
+                            "id": 10914,
                             "name": "_poolStakingAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10718,
+                            "referencedDeclaration": 10906,
                             "src": "653:19:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1943,14 +1972,14 @@
                             "typeString": "mapping(address => mapping(uint256 => uint256))"
                           }
                         },
-                        "id": 10730,
+                        "id": 10918,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10727,
+                          "id": 10915,
                           "name": "_delegator",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10720,
+                          "referencedDeclaration": 10908,
                           "src": "674:10:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1968,14 +1997,14 @@
                           "typeString": "mapping(uint256 => uint256)"
                         }
                       },
-                      "id": 10731,
+                      "id": 10919,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10728,
+                        "id": 10916,
                         "name": "_stakingEpoch",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10722,
+                        "referencedDeclaration": 10910,
                         "src": "686:13:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1998,7 +2027,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 10732,
+                      "id": 10920,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -2019,29 +2048,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10734,
+                  "id": 10922,
                   "nodeType": "ExpressionStatement",
                   "src": "630:74:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10736,
+            "id": 10924,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "clearDelegatorStakeSnapshot",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10723,
+              "id": 10911,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10718,
+                  "id": 10906,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "537:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2050,7 +2079,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10717,
+                    "id": 10905,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "537:7:31",
@@ -2065,10 +2094,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10720,
+                  "id": 10908,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "566:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2077,7 +2106,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10719,
+                    "id": 10907,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "566:7:31",
@@ -2092,10 +2121,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10722,
+                  "id": 10910,
                   "name": "_stakingEpoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "586:21:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2104,7 +2133,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10721,
+                    "id": 10909,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "586:7:31",
@@ -2120,12 +2149,12 @@
               "src": "536:72:31"
             },
             "returnParameters": {
-              "id": 10724,
+              "id": 10912,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "620:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "500:211:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2133,14 +2162,14 @@
           },
           {
             "body": {
-              "id": 10755,
+              "id": 10943,
               "nodeType": "Block",
               "src": "819:77:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10753,
+                    "id": 10941,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2153,25 +2182,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 10745,
+                            "id": 10933,
                             "name": "rewardWasTaken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6325,
+                            "referencedDeclaration": 6453,
                             "src": "829:14:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_bool_$_$_$",
                               "typeString": "mapping(address => mapping(address => mapping(uint256 => bool)))"
                             }
                           },
-                          "id": 10749,
+                          "id": 10937,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 10746,
+                            "id": 10934,
                             "name": "_poolStakingAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10738,
+                            "referencedDeclaration": 10926,
                             "src": "844:19:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2189,14 +2218,14 @@
                             "typeString": "mapping(address => mapping(uint256 => bool))"
                           }
                         },
-                        "id": 10750,
+                        "id": 10938,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10747,
+                          "id": 10935,
                           "name": "_staker",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10740,
+                          "referencedDeclaration": 10928,
                           "src": "865:7:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2214,14 +2243,14 @@
                           "typeString": "mapping(uint256 => bool)"
                         }
                       },
-                      "id": 10751,
+                      "id": 10939,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10748,
+                        "id": 10936,
                         "name": "_epoch",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10742,
+                        "referencedDeclaration": 10930,
                         "src": "874:6:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2244,7 +2273,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "66616c7365",
-                      "id": 10752,
+                      "id": 10940,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -2265,29 +2294,29 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 10754,
+                  "id": 10942,
                   "nodeType": "ExpressionStatement",
                   "src": "829:60:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10756,
+            "id": 10944,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "clearRewardWasTaken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10743,
+              "id": 10931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10738,
+                  "id": 10926,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "746:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2296,7 +2325,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10737,
+                    "id": 10925,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "746:7:31",
@@ -2311,10 +2340,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10740,
+                  "id": 10928,
                   "name": "_staker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "775:15:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2323,7 +2352,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10739,
+                    "id": 10927,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "775:7:31",
@@ -2338,10 +2367,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10742,
+                  "id": 10930,
                   "name": "_epoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "792:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2350,7 +2379,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10741,
+                    "id": 10929,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "792:7:31",
@@ -2366,12 +2395,12 @@
               "src": "745:62:31"
             },
             "returnParameters": {
-              "id": 10744,
+              "id": 10932,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "819:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "717:179:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2379,14 +2408,14 @@
           },
           {
             "body": {
-              "id": 10769,
+              "id": 10957,
               "nodeType": "Block",
               "src": "988:64:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10767,
+                    "id": 10955,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2395,25 +2424,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 10763,
+                        "id": 10951,
                         "name": "stakeAmountTotal",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6361,
+                        "referencedDeclaration": 6489,
                         "src": "998:16:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10765,
+                      "id": 10953,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10764,
+                        "id": 10952,
                         "name": "_poolStakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10758,
+                        "referencedDeclaration": 10946,
                         "src": "1015:19:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2435,11 +2464,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10766,
+                      "id": 10954,
                       "name": "_amount",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10760,
+                      "referencedDeclaration": 10948,
                       "src": "1038:7:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2452,29 +2481,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10768,
+                  "id": 10956,
                   "nodeType": "ExpressionStatement",
                   "src": "998:47:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10770,
+            "id": 10958,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeAmountTotal",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10761,
+              "id": 10949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10758,
+                  "id": 10946,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10770,
+                  "scope": 10958,
                   "src": "931:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2483,7 +2512,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10757,
+                    "id": 10945,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "931:7:31",
@@ -2498,10 +2527,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10760,
+                  "id": 10948,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10770,
+                  "scope": 10958,
                   "src": "960:15:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2510,7 +2539,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10759,
+                    "id": 10947,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "960:7:31",
@@ -2526,12 +2555,12 @@
               "src": "930:46:31"
             },
             "returnParameters": {
-              "id": 10762,
+              "id": 10950,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "988:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "902:150:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2539,14 +2568,14 @@
           },
           {
             "body": {
-              "id": 10787,
+              "id": 10975,
               "nodeType": "Block",
               "src": "1162:74:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10785,
+                    "id": 10973,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2557,25 +2586,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 10779,
+                          "id": 10967,
                           "name": "stakeFirstEpoch",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6337,
+                          "referencedDeclaration": 6465,
                           "src": "1172:15:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                             "typeString": "mapping(address => mapping(address => uint256))"
                           }
                         },
-                        "id": 10782,
+                        "id": 10970,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10780,
+                          "id": 10968,
                           "name": "_poolStakingAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10772,
+                          "referencedDeclaration": 10960,
                           "src": "1188:19:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2593,14 +2622,14 @@
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10783,
+                      "id": 10971,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10781,
+                        "id": 10969,
                         "name": "_delegator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10774,
+                        "referencedDeclaration": 10962,
                         "src": "1209:10:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2622,11 +2651,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10784,
+                      "id": 10972,
                       "name": "_value",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10776,
+                      "referencedDeclaration": 10964,
                       "src": "1223:6:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2639,29 +2668,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10786,
+                  "id": 10974,
                   "nodeType": "ExpressionStatement",
                   "src": "1172:57:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10788,
+            "id": 10976,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeFirstEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10777,
+              "id": 10965,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10772,
+                  "id": 10960,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1086:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2670,7 +2699,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10771,
+                    "id": 10959,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1086:7:31",
@@ -2685,10 +2714,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10774,
+                  "id": 10962,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1115:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2697,7 +2726,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10773,
+                    "id": 10961,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1115:7:31",
@@ -2712,10 +2741,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10776,
+                  "id": 10964,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1135:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2724,7 +2753,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10775,
+                    "id": 10963,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1135:7:31",
@@ -2740,12 +2769,12 @@
               "src": "1085:65:31"
             },
             "returnParameters": {
-              "id": 10778,
+              "id": 10966,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1162:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1058:178:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2753,14 +2782,14 @@
           },
           {
             "body": {
-              "id": 10805,
+              "id": 10993,
               "nodeType": "Block",
               "src": "1345:73:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10803,
+                    "id": 10991,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2771,25 +2800,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 10797,
+                          "id": 10985,
                           "name": "stakeLastEpoch",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6343,
+                          "referencedDeclaration": 6471,
                           "src": "1355:14:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                             "typeString": "mapping(address => mapping(address => uint256))"
                           }
                         },
-                        "id": 10800,
+                        "id": 10988,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10798,
+                          "id": 10986,
                           "name": "_poolStakingAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10790,
+                          "referencedDeclaration": 10978,
                           "src": "1370:19:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -2807,14 +2836,14 @@
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10801,
+                      "id": 10989,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10799,
+                        "id": 10987,
                         "name": "_delegator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10792,
+                        "referencedDeclaration": 10980,
                         "src": "1391:10:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2836,11 +2865,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10802,
+                      "id": 10990,
                       "name": "_value",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10794,
+                      "referencedDeclaration": 10982,
                       "src": "1405:6:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2853,29 +2882,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10804,
+                  "id": 10992,
                   "nodeType": "ExpressionStatement",
                   "src": "1355:56:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10806,
+            "id": 10994,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeLastEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10795,
+              "id": 10983,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10790,
+                  "id": 10978,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1269:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2884,7 +2913,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10789,
+                    "id": 10977,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1269:7:31",
@@ -2899,10 +2928,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10792,
+                  "id": 10980,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1298:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2911,7 +2940,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10791,
+                    "id": 10979,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1298:7:31",
@@ -2926,10 +2955,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10794,
+                  "id": 10982,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1318:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2938,7 +2967,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10793,
+                    "id": 10981,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1318:7:31",
@@ -2954,12 +2983,12 @@
               "src": "1268:65:31"
             },
             "returnParameters": {
-              "id": 10796,
+              "id": 10984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1345:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1242:176:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2967,25 +2996,25 @@
           },
           {
             "body": {
-              "id": 10815,
+              "id": 11003,
               "nodeType": "Block",
               "src": "1483:45:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10813,
+                    "id": 11001,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 10811,
+                      "id": 10999,
                       "name": "stakingEpoch",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6347,
+                      "referencedDeclaration": 6475,
                       "src": "1493:12:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2996,11 +3025,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10812,
+                      "id": 11000,
                       "name": "_stakingEpoch",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10808,
+                      "referencedDeclaration": 10996,
                       "src": "1508:13:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3013,29 +3042,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10814,
+                  "id": 11002,
                   "nodeType": "ExpressionStatement",
                   "src": "1493:28:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10816,
+            "id": 11004,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakingEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10809,
+              "id": 10997,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10808,
+                  "id": 10996,
                   "name": "_stakingEpoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10816,
+                  "scope": 11004,
                   "src": "1449:21:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3044,7 +3073,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10807,
+                    "id": 10995,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1449:7:31",
@@ -3060,12 +3089,12 @@
               "src": "1448:23:31"
             },
             "returnParameters": {
-              "id": 10810,
+              "id": 10998,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1483:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1424:104:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3073,28 +3102,28 @@
           },
           {
             "body": {
-              "id": 10825,
+              "id": 11013,
               "nodeType": "Block",
               "src": "1618:60:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10823,
+                    "id": 11011,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 10821,
+                      "id": 11009,
                       "name": "validatorSetContract",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6363,
+                      "referencedDeclaration": 6491,
                       "src": "1628:20:31",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -3102,62 +3131,62 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10822,
+                      "id": 11010,
                       "name": "_validatorSetAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10818,
+                      "referencedDeclaration": 11006,
                       "src": "1651:20:31",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
                     "src": "1628:43:31",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
-                  "id": 10824,
+                  "id": 11012,
                   "nodeType": "ExpressionStatement",
                   "src": "1628:43:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10826,
+            "id": 11014,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setValidatorSetAddress",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10819,
+              "id": 11007,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10818,
+                  "id": 11006,
                   "name": "_validatorSetAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10826,
+                  "scope": 11014,
                   "src": "1566:39:31",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                    "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                     "typeString": "contract IValidatorSetHbbft"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 10817,
+                    "id": 11005,
                     "name": "IValidatorSetHbbft",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10329,
+                    "referencedDeclaration": 10517,
                     "src": "1566:18:31",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
@@ -3168,12 +3197,12 @@
               "src": "1565:41:31"
             },
             "returnParameters": {
-              "id": 10820,
+              "id": 11008,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1618:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1534:144:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3181,7 +3210,7 @@
           },
           {
             "body": {
-              "id": 10833,
+              "id": 11021,
               "nodeType": "Block",
               "src": "1970:27:31",
               "statements": [
@@ -3189,7 +3218,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "313030",
-                    "id": 10831,
+                    "id": 11019,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -3204,36 +3233,36 @@
                     },
                     "value": "100"
                   },
-                  "functionReturnParameters": 10830,
-                  "id": 10832,
+                  "functionReturnParameters": 11018,
+                  "id": 11020,
                   "nodeType": "Return",
                   "src": "1980:10:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10834,
+            "id": 11022,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "_getMaxCandidates",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10827,
+              "id": 11015,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1936:2:31"
             },
             "returnParameters": {
-              "id": 10830,
+              "id": 11018,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10829,
+                  "id": 11017,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10834,
+                  "scope": 11022,
                   "src": "1961:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3242,7 +3271,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10828,
+                    "id": 11016,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1961:7:31",
@@ -3257,14 +3286,14 @@
               ],
               "src": "1960:9:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1910:87:31",
             "stateMutability": "pure",
-            "superFunction": 9120,
+            "superFunction": 9291,
             "visibility": "internal"
           }
         ],
-        "scope": 10836,
+        "scope": 11024,
         "src": "80:1920:31"
       }
     ],
@@ -3274,14 +3303,14 @@
     "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/mockContracts/StakingHbbftBaseMock.sol",
     "exportedSymbols": {
       "StakingHbbftBaseMock": [
-        10835
+        11023
       ]
     },
-    "id": 10836,
+    "id": 11024,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10692,
+        "id": 10880,
         "literals": [
           "solidity",
           "^",
@@ -3294,10 +3323,10 @@
       {
         "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/base/StakingHbbftBase.sol",
         "file": "../../contracts/base/StakingHbbftBase.sol",
-        "id": 10693,
+        "id": 10881,
         "nodeType": "ImportDirective",
-        "scope": 10836,
-        "sourceUnit": 9217,
+        "scope": 11024,
+        "sourceUnit": 9388,
         "src": "26:51:31",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3308,44 +3337,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10694,
+              "id": 10882,
               "name": "StakingHbbftBase",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9216,
+              "referencedDeclaration": 9387,
               "src": "113:16:31",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_StakingHbbftBase_$9216",
+                "typeIdentifier": "t_contract$_StakingHbbftBase_$9387",
                 "typeString": "contract StakingHbbftBase"
               }
             },
-            "id": 10695,
+            "id": 10883,
             "nodeType": "InheritanceSpecifier",
             "src": "113:16:31"
           }
         ],
         "contractDependencies": [
-          9216,
-          10112,
-          11260,
-          11328
+          9387,
+          10296,
+          11448,
+          11516
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 10835,
+        "id": 11023,
         "linearizedBaseContracts": [
-          10835,
-          9216,
-          10112,
-          11328,
-          11260
+          11023,
+          9387,
+          10296,
+          11516,
+          11448
         ],
         "name": "StakingHbbftBaseMock",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10705,
+              "id": 10893,
               "nodeType": "Block",
               "src": "323:54:31",
               "statements": [
@@ -3355,11 +3384,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10701,
+                        "id": 10889,
                         "name": "_stakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10697,
+                        "referencedDeclaration": 10885,
                         "src": "348:15:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3369,7 +3398,7 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "74727565",
-                        "id": 10702,
+                        "id": 10890,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -3396,18 +3425,18 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 10700,
+                      "id": 10888,
                       "name": "_addPoolActive",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7678,
+                      "referencedDeclaration": 7824,
                       "src": "333:14:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bool_$returns$__$",
                         "typeString": "function (address,bool)"
                       }
                     },
-                    "id": 10703,
+                    "id": 10891,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3421,29 +3450,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10704,
+                  "id": 10892,
                   "nodeType": "ExpressionStatement",
                   "src": "333:37:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10706,
+            "id": 10894,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "addPoolActiveMock",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10698,
+              "id": 10886,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10697,
+                  "id": 10885,
                   "name": "_stakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10706,
+                  "scope": 10894,
                   "src": "287:23:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3452,7 +3481,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10696,
+                    "id": 10884,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "287:7:31",
@@ -3469,12 +3498,12 @@
               "src": "286:25:31"
             },
             "returnParameters": {
-              "id": 10699,
+              "id": 10887,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "323:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "260:117:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3482,7 +3511,7 @@
           },
           {
             "body": {
-              "id": 10715,
+              "id": 10903,
               "nodeType": "Block",
               "src": "444:50:31",
               "statements": [
@@ -3492,11 +3521,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 10712,
+                        "id": 10900,
                         "name": "_stakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10708,
+                        "referencedDeclaration": 10896,
                         "src": "471:15:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -3511,18 +3540,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 10711,
+                      "id": 10899,
                       "name": "_addPoolInactive",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 7718,
+                      "referencedDeclaration": 7864,
                       "src": "454:16:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 10713,
+                    "id": 10901,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3536,29 +3565,29 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10714,
+                  "id": 10902,
                   "nodeType": "ExpressionStatement",
                   "src": "454:33:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10716,
+            "id": 10904,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "addPoolInactiveMock",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10709,
+              "id": 10897,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10708,
+                  "id": 10896,
                   "name": "_stakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10716,
+                  "scope": 10904,
                   "src": "412:23:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3567,7 +3596,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10707,
+                    "id": 10895,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "412:7:31",
@@ -3584,12 +3613,12 @@
               "src": "411:25:31"
             },
             "returnParameters": {
-              "id": 10710,
+              "id": 10898,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "444:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "383:111:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3597,14 +3626,14 @@
           },
           {
             "body": {
-              "id": 10735,
+              "id": 10923,
               "nodeType": "Block",
               "src": "620:91:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10733,
+                    "id": 10921,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3617,25 +3646,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 10725,
+                            "id": 10913,
                             "name": "delegatorStakeSnapshot",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6273,
+                            "referencedDeclaration": 6401,
                             "src": "630:22:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                               "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                             }
                           },
-                          "id": 10729,
+                          "id": 10917,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 10726,
+                            "id": 10914,
                             "name": "_poolStakingAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10718,
+                            "referencedDeclaration": 10906,
                             "src": "653:19:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -3653,14 +3682,14 @@
                             "typeString": "mapping(address => mapping(uint256 => uint256))"
                           }
                         },
-                        "id": 10730,
+                        "id": 10918,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10727,
+                          "id": 10915,
                           "name": "_delegator",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10720,
+                          "referencedDeclaration": 10908,
                           "src": "674:10:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -3678,14 +3707,14 @@
                           "typeString": "mapping(uint256 => uint256)"
                         }
                       },
-                      "id": 10731,
+                      "id": 10919,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10728,
+                        "id": 10916,
                         "name": "_stakingEpoch",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10722,
+                        "referencedDeclaration": 10910,
                         "src": "686:13:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -3708,7 +3737,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "30",
-                      "id": 10732,
+                      "id": 10920,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -3729,29 +3758,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10734,
+                  "id": 10922,
                   "nodeType": "ExpressionStatement",
                   "src": "630:74:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10736,
+            "id": 10924,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "clearDelegatorStakeSnapshot",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10723,
+              "id": 10911,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10718,
+                  "id": 10906,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "537:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3760,7 +3789,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10717,
+                    "id": 10905,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "537:7:31",
@@ -3775,10 +3804,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10720,
+                  "id": 10908,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "566:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3787,7 +3816,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10719,
+                    "id": 10907,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "566:7:31",
@@ -3802,10 +3831,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10722,
+                  "id": 10910,
                   "name": "_stakingEpoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10736,
+                  "scope": 10924,
                   "src": "586:21:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3814,7 +3843,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10721,
+                    "id": 10909,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "586:7:31",
@@ -3830,12 +3859,12 @@
               "src": "536:72:31"
             },
             "returnParameters": {
-              "id": 10724,
+              "id": 10912,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "620:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "500:211:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3843,14 +3872,14 @@
           },
           {
             "body": {
-              "id": 10755,
+              "id": 10943,
               "nodeType": "Block",
               "src": "819:77:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10753,
+                    "id": 10941,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -3863,25 +3892,25 @@
                           "argumentTypes": null,
                           "baseExpression": {
                             "argumentTypes": null,
-                            "id": 10745,
+                            "id": 10933,
                             "name": "rewardWasTaken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 6325,
+                            "referencedDeclaration": 6453,
                             "src": "829:14:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_bool_$_$_$",
                               "typeString": "mapping(address => mapping(address => mapping(uint256 => bool)))"
                             }
                           },
-                          "id": 10749,
+                          "id": 10937,
                           "indexExpression": {
                             "argumentTypes": null,
-                            "id": 10746,
+                            "id": 10934,
                             "name": "_poolStakingAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 10738,
+                            "referencedDeclaration": 10926,
                             "src": "844:19:31",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -3899,14 +3928,14 @@
                             "typeString": "mapping(address => mapping(uint256 => bool))"
                           }
                         },
-                        "id": 10750,
+                        "id": 10938,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10747,
+                          "id": 10935,
                           "name": "_staker",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10740,
+                          "referencedDeclaration": 10928,
                           "src": "865:7:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -3924,14 +3953,14 @@
                           "typeString": "mapping(uint256 => bool)"
                         }
                       },
-                      "id": 10751,
+                      "id": 10939,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10748,
+                        "id": 10936,
                         "name": "_epoch",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10742,
+                        "referencedDeclaration": 10930,
                         "src": "874:6:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -3954,7 +3983,7 @@
                     "rightHandSide": {
                       "argumentTypes": null,
                       "hexValue": "66616c7365",
-                      "id": 10752,
+                      "id": 10940,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -3975,29 +4004,29 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 10754,
+                  "id": 10942,
                   "nodeType": "ExpressionStatement",
                   "src": "829:60:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10756,
+            "id": 10944,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "clearRewardWasTaken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10743,
+              "id": 10931,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10738,
+                  "id": 10926,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "746:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4006,7 +4035,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10737,
+                    "id": 10925,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "746:7:31",
@@ -4021,10 +4050,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10740,
+                  "id": 10928,
                   "name": "_staker",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "775:15:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4033,7 +4062,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10739,
+                    "id": 10927,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "775:7:31",
@@ -4048,10 +4077,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10742,
+                  "id": 10930,
                   "name": "_epoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10756,
+                  "scope": 10944,
                   "src": "792:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4060,7 +4089,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10741,
+                    "id": 10929,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "792:7:31",
@@ -4076,12 +4105,12 @@
               "src": "745:62:31"
             },
             "returnParameters": {
-              "id": 10744,
+              "id": 10932,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "819:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "717:179:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4089,14 +4118,14 @@
           },
           {
             "body": {
-              "id": 10769,
+              "id": 10957,
               "nodeType": "Block",
               "src": "988:64:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10767,
+                    "id": 10955,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4105,25 +4134,25 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 10763,
+                        "id": 10951,
                         "name": "stakeAmountTotal",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 6361,
+                        "referencedDeclaration": 6489,
                         "src": "998:16:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10765,
+                      "id": 10953,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10764,
+                        "id": 10952,
                         "name": "_poolStakingAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10758,
+                        "referencedDeclaration": 10946,
                         "src": "1015:19:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -4145,11 +4174,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10766,
+                      "id": 10954,
                       "name": "_amount",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10760,
+                      "referencedDeclaration": 10948,
                       "src": "1038:7:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4162,29 +4191,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10768,
+                  "id": 10956,
                   "nodeType": "ExpressionStatement",
                   "src": "998:47:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10770,
+            "id": 10958,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeAmountTotal",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10761,
+              "id": 10949,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10758,
+                  "id": 10946,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10770,
+                  "scope": 10958,
                   "src": "931:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4193,7 +4222,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10757,
+                    "id": 10945,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "931:7:31",
@@ -4208,10 +4237,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10760,
+                  "id": 10948,
                   "name": "_amount",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10770,
+                  "scope": 10958,
                   "src": "960:15:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4220,7 +4249,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10759,
+                    "id": 10947,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "960:7:31",
@@ -4236,12 +4265,12 @@
               "src": "930:46:31"
             },
             "returnParameters": {
-              "id": 10762,
+              "id": 10950,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "988:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "902:150:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4249,14 +4278,14 @@
           },
           {
             "body": {
-              "id": 10787,
+              "id": 10975,
               "nodeType": "Block",
               "src": "1162:74:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10785,
+                    "id": 10973,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4267,25 +4296,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 10779,
+                          "id": 10967,
                           "name": "stakeFirstEpoch",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6337,
+                          "referencedDeclaration": 6465,
                           "src": "1172:15:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                             "typeString": "mapping(address => mapping(address => uint256))"
                           }
                         },
-                        "id": 10782,
+                        "id": 10970,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10780,
+                          "id": 10968,
                           "name": "_poolStakingAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10772,
+                          "referencedDeclaration": 10960,
                           "src": "1188:19:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -4303,14 +4332,14 @@
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10783,
+                      "id": 10971,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10781,
+                        "id": 10969,
                         "name": "_delegator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10774,
+                        "referencedDeclaration": 10962,
                         "src": "1209:10:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -4332,11 +4361,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10784,
+                      "id": 10972,
                       "name": "_value",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10776,
+                      "referencedDeclaration": 10964,
                       "src": "1223:6:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4349,29 +4378,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10786,
+                  "id": 10974,
                   "nodeType": "ExpressionStatement",
                   "src": "1172:57:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10788,
+            "id": 10976,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeFirstEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10777,
+              "id": 10965,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10772,
+                  "id": 10960,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1086:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4380,7 +4409,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10771,
+                    "id": 10959,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1086:7:31",
@@ -4395,10 +4424,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10774,
+                  "id": 10962,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1115:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4407,7 +4436,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10773,
+                    "id": 10961,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1115:7:31",
@@ -4422,10 +4451,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10776,
+                  "id": 10964,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10788,
+                  "scope": 10976,
                   "src": "1135:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4434,7 +4463,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10775,
+                    "id": 10963,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1135:7:31",
@@ -4450,12 +4479,12 @@
               "src": "1085:65:31"
             },
             "returnParameters": {
-              "id": 10778,
+              "id": 10966,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1162:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1058:178:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4463,14 +4492,14 @@
           },
           {
             "body": {
-              "id": 10805,
+              "id": 10993,
               "nodeType": "Block",
               "src": "1345:73:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10803,
+                    "id": 10991,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -4481,25 +4510,25 @@
                         "argumentTypes": null,
                         "baseExpression": {
                           "argumentTypes": null,
-                          "id": 10797,
+                          "id": 10985,
                           "name": "stakeLastEpoch",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 6343,
+                          "referencedDeclaration": 6471,
                           "src": "1355:14:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
                             "typeString": "mapping(address => mapping(address => uint256))"
                           }
                         },
-                        "id": 10800,
+                        "id": 10988,
                         "indexExpression": {
                           "argumentTypes": null,
-                          "id": 10798,
+                          "id": 10986,
                           "name": "_poolStakingAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 10790,
+                          "referencedDeclaration": 10978,
                           "src": "1370:19:31",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -4517,14 +4546,14 @@
                           "typeString": "mapping(address => uint256)"
                         }
                       },
-                      "id": 10801,
+                      "id": 10989,
                       "indexExpression": {
                         "argumentTypes": null,
-                        "id": 10799,
+                        "id": 10987,
                         "name": "_delegator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10792,
+                        "referencedDeclaration": 10980,
                         "src": "1391:10:31",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -4546,11 +4575,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10802,
+                      "id": 10990,
                       "name": "_value",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10794,
+                      "referencedDeclaration": 10982,
                       "src": "1405:6:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4563,29 +4592,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10804,
+                  "id": 10992,
                   "nodeType": "ExpressionStatement",
                   "src": "1355:56:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10806,
+            "id": 10994,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakeLastEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10795,
+              "id": 10983,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10790,
+                  "id": 10978,
                   "name": "_poolStakingAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1269:27:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4594,7 +4623,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10789,
+                    "id": 10977,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1269:7:31",
@@ -4609,10 +4638,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10792,
+                  "id": 10980,
                   "name": "_delegator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1298:18:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4621,7 +4650,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10791,
+                    "id": 10979,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1298:7:31",
@@ -4636,10 +4665,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 10794,
+                  "id": 10982,
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10806,
+                  "scope": 10994,
                   "src": "1318:14:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4648,7 +4677,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10793,
+                    "id": 10981,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1318:7:31",
@@ -4664,12 +4693,12 @@
               "src": "1268:65:31"
             },
             "returnParameters": {
-              "id": 10796,
+              "id": 10984,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1345:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1242:176:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4677,25 +4706,25 @@
           },
           {
             "body": {
-              "id": 10815,
+              "id": 11003,
               "nodeType": "Block",
               "src": "1483:45:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10813,
+                    "id": 11001,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 10811,
+                      "id": 10999,
                       "name": "stakingEpoch",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6347,
+                      "referencedDeclaration": 6475,
                       "src": "1493:12:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4706,11 +4735,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10812,
+                      "id": 11000,
                       "name": "_stakingEpoch",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10808,
+                      "referencedDeclaration": 10996,
                       "src": "1508:13:31",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -4723,29 +4752,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 10814,
+                  "id": 11002,
                   "nodeType": "ExpressionStatement",
                   "src": "1493:28:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10816,
+            "id": 11004,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setStakingEpoch",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10809,
+              "id": 10997,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10808,
+                  "id": 10996,
                   "name": "_stakingEpoch",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10816,
+                  "scope": 11004,
                   "src": "1449:21:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4754,7 +4783,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10807,
+                    "id": 10995,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1449:7:31",
@@ -4770,12 +4799,12 @@
               "src": "1448:23:31"
             },
             "returnParameters": {
-              "id": 10810,
+              "id": 10998,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1483:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1424:104:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4783,28 +4812,28 @@
           },
           {
             "body": {
-              "id": 10825,
+              "id": 11013,
               "nodeType": "Block",
               "src": "1618:60:31",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 10823,
+                    "id": 11011,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 10821,
+                      "id": 11009,
                       "name": "validatorSetContract",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 6363,
+                      "referencedDeclaration": 6491,
                       "src": "1628:20:31",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -4812,62 +4841,62 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 10822,
+                      "id": 11010,
                       "name": "_validatorSetAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10818,
+                      "referencedDeclaration": 11006,
                       "src": "1651:20:31",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
                     "src": "1628:43:31",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
-                  "id": 10824,
+                  "id": 11012,
                   "nodeType": "ExpressionStatement",
                   "src": "1628:43:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10826,
+            "id": 11014,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "setValidatorSetAddress",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10819,
+              "id": 11007,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10818,
+                  "id": 11006,
                   "name": "_validatorSetAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10826,
+                  "scope": 11014,
                   "src": "1566:39:31",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                    "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                     "typeString": "contract IValidatorSetHbbft"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 10817,
+                    "id": 11005,
                     "name": "IValidatorSetHbbft",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10329,
+                    "referencedDeclaration": 10517,
                     "src": "1566:18:31",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10329",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
@@ -4878,12 +4907,12 @@
               "src": "1565:41:31"
             },
             "returnParameters": {
-              "id": 10820,
+              "id": 11008,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1618:0:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1534:144:31",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4891,7 +4920,7 @@
           },
           {
             "body": {
-              "id": 10833,
+              "id": 11021,
               "nodeType": "Block",
               "src": "1970:27:31",
               "statements": [
@@ -4899,7 +4928,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "313030",
-                    "id": 10831,
+                    "id": 11019,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -4914,36 +4943,36 @@
                     },
                     "value": "100"
                   },
-                  "functionReturnParameters": 10830,
-                  "id": 10832,
+                  "functionReturnParameters": 11018,
+                  "id": 11020,
                   "nodeType": "Return",
                   "src": "1980:10:31"
                 }
               ]
             },
             "documentation": null,
-            "id": 10834,
+            "id": 11022,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "_getMaxCandidates",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 10827,
+              "id": 11015,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1936:2:31"
             },
             "returnParameters": {
-              "id": 10830,
+              "id": 11018,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10829,
+                  "id": 11017,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10834,
+                  "scope": 11022,
                   "src": "1961:7:31",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -4952,7 +4981,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10828,
+                    "id": 11016,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1961:7:31",
@@ -4967,14 +4996,14 @@
               ],
               "src": "1960:9:31"
             },
-            "scope": 10835,
+            "scope": 11023,
             "src": "1910:87:31",
             "stateMutability": "pure",
-            "superFunction": 9120,
+            "superFunction": 9291,
             "visibility": "internal"
           }
         ],
-        "scope": 10836,
+        "scope": 11024,
         "src": "80:1920:31"
       }
     ],
@@ -4986,7 +5015,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2021-08-10T15:39:34.292Z",
+  "updatedAt": "2022-01-07T23:00:13.462Z",
   "devdoc": {
     "methods": {
       "addPool(address,bytes,bytes16)": {
@@ -5037,7 +5066,7 @@
       "incrementStakingEpoch()": {
         "details": "Increments the serial number of the current staking epoch. Called by the `ValidatorSetHbbft.newValidatorSet` at the last block of the finished staking epoch."
       },
-      "initialize(address,address[],uint256,uint256,uint256,uint256,uint256,bytes32[],bytes16[])": {
+      "initialize(address,address[],uint256,uint256,uint256,uint256,uint256,uint256,bytes32[],bytes16[])": {
         "details": "Initializes the network parameters. Can only be called by the constructor of the `InitializerHbbft` contract or owner.",
         "params": {
           "_candidateMinStake": "The minimum allowed amount of candidate/validator stake in Wei.",
@@ -5163,6 +5192,9 @@
       },
       "startTimeOfNextPhaseTransition()": {
         "details": "indicates the time when the new validatorset for the next epoch gets chosen. this is the start of a timeframe before the end of the epoch, that is long enough for the validators to create a new shared key."
+      },
+      "upgrade()": {
+        "details": "save function that can be called by anyone that fixes uninitialzed values."
       },
       "withdraw(address,uint256)": {
         "details": "Moves the specified amount of staking coins from the staking address of the specified pool to the staker's address. A staker calls this function when they want to withdraw their coins.",

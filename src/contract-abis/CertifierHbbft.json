@@ -150,9 +150,9 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"who\",\"type\":\"address\"}],\"name\":\"Confirmed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"who\",\"type\":\"address\"}],\"name\":\"Revoked\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certifiedExplicitly\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certify\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_certifiedAddresses\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"_validatorSet\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"revoke\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"validatorSetContract\",\"outputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Allows validators to use a zero gas price for their service transactions (see https://wiki.parity.io/Permissioning.html#gas-price for more info).\",\"methods\":{\"certified(address)\":{\"details\":\"Returns a boolean flag indicating whether the specified address is allowed to use zero gas price transactions. Returns `true` if either the address is certified using the `_certify` function or if `ValidatorSet.isReportValidatorValid` returns `true` for the specified address, or the address is a pending validator who has to write it's key shares (ACK and PART).\",\"params\":{\"_who\":\"The address for which the boolean flag must be determined.\"}},\"certifiedExplicitly(address)\":{\"details\":\"Returns a boolean flag indicating whether the specified address is allowed to use zero gas price transactions. Returns `true` if the address is certified using the `_certify` function. This function differs from the `certified`: it doesn't take into account the returned value of `ValidatorSetHbbft.isReportValidatorValid` function.\",\"params\":{\"_who\":\"The address for which the boolean flag must be determined.\"}},\"certify(address)\":{\"details\":\"Allows the specified address to use a zero gas price for its transactions. Can only be called by the `owner`.\",\"params\":{\"_who\":\"The address for which zero gas price transactions must be allowed.\"}},\"initialize(address[],address)\":{\"details\":\"Initializes the contract at network startup. Can only be called by the constructor of the `InitializerHbbft` contract or owner.\",\"params\":{\"_certifiedAddresses\":\"The addresses for which a zero gas price must be allowed.\",\"_validatorSet\":\"The address of the `ValidatorSetHbbft` contract.\"}},\"isInitialized()\":{\"details\":\"Returns a boolean flag indicating if the `initialize` function has been called.\"},\"revoke(address)\":{\"details\":\"Denies the specified address usage of a zero gas price for its transactions. Can only be called by the `owner`.\",\"params\":{\"_who\":\"The address for which transactions with a zero gas price must be denied.\"}}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/CertifierHbbft.sol\":\"CertifierHbbft\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/CertifierHbbft.sol\":{\"keccak256\":\"0xefb4b6e5900a9f30b0c638745022abb5e9dbafb6376138eb9d75b54fde051a0b\",\"urls\":[\"bzz-raw://4d572115f972a5509a07011ed77e258cc125b5436cbeb20e7381cb7837f4869c\",\"dweb:/ipfs/Qmcy9G3po2QdCXK5XKTvYkHvqgWwXM8wKANjHJS54wmuF3\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/ICertifier.sol\":{\"keccak256\":\"0x1aa58acf8819d4cced1266ea3e22c26aa9d3fe335abe723ed2adcd6892d614c1\",\"urls\":[\"bzz-raw://e05822d9adee23db647b69d16ccbac5723c9014f339e572be546b6d9532da968\",\"dweb:/ipfs/Qmbyf34Lm6CaSXARodokUF8QjchdBCez4MCdh5oiKqM5sf\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbft.sol\":{\"keccak256\":\"0x7c312e4da7faf0523ba30f946b37d50a7ace6d7ca8cfb33be0f3b8bdbfd49c24\",\"urls\":[\"bzz-raw://ace830d251a02a289c03f65bb42046d8d13a458cde8530189a05448deb89ddb7\",\"dweb:/ipfs/QmewCWKoQ81TeVhHyiXHkRnPTRCXRtMm8m7XyN117Q6YDs\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IValidatorSetHbbft.sol\":{\"keccak256\":\"0xc2dc8bb49aa31838f80106103f4387f3434682c79d016e708132fc727cd0a048\",\"urls\":[\"bzz-raw://21439fc3f5f4ca721e1b269ac848dd3029ba93321cb61c0410345947b5812818\",\"dweb:/ipfs/QmeoiYSkbjcKsnN2UsqxvGFGdzDQ6oXpUT2r7oN3KFCYke\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol\":{\"keccak256\":\"0x0b393066e706db35b9c523d3a21b63a5d9eafde51fdefbcbc4d6c815dff574a2\",\"urls\":[\"bzz-raw://493d9041c195ee69b05ab36000021c7171816f3efb2623c8d2a1d90118fb1fd9\",\"dweb:/ipfs/QmPuhiCNVZjM4B18cEpphc5juGTDcjhNcKnBDxexXMZ3Md\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeableOwned.sol\":{\"keccak256\":\"0xe9eefd29c6ddb1827e99e9c6c61a5b2ccd2dc9d6a97d176bad914e0f1e8671ca\",\"urls\":[\"bzz-raw://359c65fd2eed4da4eea4a5c8ca855fd5f89975d6afb966b33540a15755d76a6b\",\"dweb:/ipfs/QmVB7diM5HApkF9njDKTMMpSMcAYj8RxCesyFaGkpGNeFh\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506107ec806100206000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c806374a8f1031161005b57806374a8f1031461013f578063cc1d4c0214610165578063dfc8bf4e1461018b578063e8e23ac0146101af5761007d565b80631425388714610082578063392e53cd146100aa578063462d0b2e146100c6575b600080fd5b6100a86004803603602081101561009857600080fd5b50356001600160a01b03166101d5565b005b6100b261027b565b604080519115158252519081900360200190f35b6100a8600480360360408110156100dc57600080fd5b8101906020810181356401000000008111156100f757600080fd5b82018360208201111561010957600080fd5b8035906020019184602083028401116401000000008311171561012b57600080fd5b9193509150356001600160a01b031661028c565b6100a86004803603602081101561015557600080fd5b50356001600160a01b0316610446565b6100b26004803603602081101561017b57600080fd5b50356001600160a01b0316610529565b61019361066e565b604080516001600160a01b039092168252519081900360200190f35b6100b2600480360360208110156101c557600080fd5b50356001600160a01b031661067d565b6101dd61069b565b6001600160a01b0316336001600160a01b03161461022c5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b61023461027b565b61026f5760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b610278816106c0565b50565b6001546001600160a01b0316151590565b61029461069b565b6001600160a01b0316336001600160a01b031614806102cb57506102b661069b565b6001600160a01b0316326001600160a01b0316145b806102e457506102d961069b565b6001600160a01b0316155b806102ed575043155b610335576040805162461bcd60e51b815260206004820152601460248201527329b2b73232b91036bab9ba1031329030b236b4b760611b604482015290519081900360640190fd5b61033d61027b565b1561038f576040805162461bcd60e51b815260206004820152601f60248201527f436f6e747261637420697320616c726561647920696e697469616c697a656400604482015290519081900360640190fd5b6001600160a01b0381166103ea576040805162461bcd60e51b815260206004820152601a60248201527f56616c696461746f72736574206d757374206e6f742062652030000000000000604482015290519081900360640190fd5b60005b828110156104215761041984848381811061040457fe5b905060200201356001600160a01b03166106c0565b6001016103ed565b50600180546001600160a01b0319166001600160a01b03929092169190911790555050565b61044e61069b565b6001600160a01b0316336001600160a01b03161461049d5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b6104a561027b565b6104e05760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b6001600160a01b038116600081815260208190526040808220805460ff19169055517fb6fa8b8bd5eab60f292eca876e3ef90722275b785309d84b1de113ce0b8c4e749190a250565b6001600160a01b03811660009081526020819052604081205460ff161561055257506001610669565b600154604080516307b9342f60e21b81526001600160a01b03858116600483015291516000939290921691631ee4d0bc91602480820192602092909190829003018186803b1580156105a357600080fd5b505afa1580156105b7573d6000803e3d6000fd5b505050506040513d60208110156105cd57600080fd5b505190506001600160a01b0381166105e9576000915050610669565b60015460408051633ba6481760e21b815290516000926001600160a01b03169163ee99205c916004808301926020929190829003018186803b15801561062e57600080fd5b505afa158015610642573d6000803e3d6000fd5b505050506040513d602081101561065857600080fd5b5050506001600160a01b0316151590505b919050565b6001546001600160a01b031681565b6001600160a01b031660009081526020819052604090205460ff1690565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b6001600160a01b03811661071b576040805162461bcd60e51b815260206004820152601f60248201527f636572746966696572206d757374206e6f742062652061646472657373203000604482015290519081900360640190fd5b6001600160a01b038116600081815260208190526040808220805460ff19166001179055517fd415b905d4dd806bfba99a7a0e6351bd0c9db3a9912add21c0e6bef4479f673f9190a25056fe436f6e747261637420726571756972657320746f20626520696e697469616c697a656428296f6e6c792061646d696e20697320616c6c6f77656420746f2063616c6c20746869732066756e6374696f6ea265627a7a72315820fe22e7486858f8db93d0a8cff61759eca8df1cc523df02682c146ea2c415920664736f6c63430005110032",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c806374a8f1031161005b57806374a8f1031461013f578063cc1d4c0214610165578063dfc8bf4e1461018b578063e8e23ac0146101af5761007d565b80631425388714610082578063392e53cd146100aa578063462d0b2e146100c6575b600080fd5b6100a86004803603602081101561009857600080fd5b50356001600160a01b03166101d5565b005b6100b261027b565b604080519115158252519081900360200190f35b6100a8600480360360408110156100dc57600080fd5b8101906020810181356401000000008111156100f757600080fd5b82018360208201111561010957600080fd5b8035906020019184602083028401116401000000008311171561012b57600080fd5b9193509150356001600160a01b031661028c565b6100a86004803603602081101561015557600080fd5b50356001600160a01b0316610446565b6100b26004803603602081101561017b57600080fd5b50356001600160a01b0316610529565b61019361066e565b604080516001600160a01b039092168252519081900360200190f35b6100b2600480360360208110156101c557600080fd5b50356001600160a01b031661067d565b6101dd61069b565b6001600160a01b0316336001600160a01b03161461022c5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b61023461027b565b61026f5760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b610278816106c0565b50565b6001546001600160a01b0316151590565b61029461069b565b6001600160a01b0316336001600160a01b031614806102cb57506102b661069b565b6001600160a01b0316326001600160a01b0316145b806102e457506102d961069b565b6001600160a01b0316155b806102ed575043155b610335576040805162461bcd60e51b815260206004820152601460248201527329b2b73232b91036bab9ba1031329030b236b4b760611b604482015290519081900360640190fd5b61033d61027b565b1561038f576040805162461bcd60e51b815260206004820152601f60248201527f436f6e747261637420697320616c726561647920696e697469616c697a656400604482015290519081900360640190fd5b6001600160a01b0381166103ea576040805162461bcd60e51b815260206004820152601a60248201527f56616c696461746f72736574206d757374206e6f742062652030000000000000604482015290519081900360640190fd5b60005b828110156104215761041984848381811061040457fe5b905060200201356001600160a01b03166106c0565b6001016103ed565b50600180546001600160a01b0319166001600160a01b03929092169190911790555050565b61044e61069b565b6001600160a01b0316336001600160a01b03161461049d5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b6104a561027b565b6104e05760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b6001600160a01b038116600081815260208190526040808220805460ff19169055517fb6fa8b8bd5eab60f292eca876e3ef90722275b785309d84b1de113ce0b8c4e749190a250565b6001600160a01b03811660009081526020819052604081205460ff161561055257506001610669565b600154604080516307b9342f60e21b81526001600160a01b03858116600483015291516000939290921691631ee4d0bc91602480820192602092909190829003018186803b1580156105a357600080fd5b505afa1580156105b7573d6000803e3d6000fd5b505050506040513d60208110156105cd57600080fd5b505190506001600160a01b0381166105e9576000915050610669565b60015460408051633ba6481760e21b815290516000926001600160a01b03169163ee99205c916004808301926020929190829003018186803b15801561062e57600080fd5b505afa158015610642573d6000803e3d6000fd5b505050506040513d602081101561065857600080fd5b5050506001600160a01b0316151590505b919050565b6001546001600160a01b031681565b6001600160a01b031660009081526020819052604090205460ff1690565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b6001600160a01b03811661071b576040805162461bcd60e51b815260206004820152601f60248201527f636572746966696572206d757374206e6f742062652061646472657373203000604482015290519081900360640190fd5b6001600160a01b038116600081815260208190526040808220805460ff19166001179055517fd415b905d4dd806bfba99a7a0e6351bd0c9db3a9912add21c0e6bef4479f673f9190a25056fe436f6e747261637420726571756972657320746f20626520696e697469616c697a656428296f6e6c792061646d696e20697320616c6c6f77656420746f2063616c6c20746869732066756e6374696f6ea265627a7a72315820fe22e7486858f8db93d0a8cff61759eca8df1cc523df02682c146ea2c415920664736f6c63430005110032",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"who\",\"type\":\"address\"}],\"name\":\"Confirmed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"who\",\"type\":\"address\"}],\"name\":\"Revoked\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certifiedExplicitly\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"certify\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"_certifiedAddresses\",\"type\":\"address[]\"},{\"internalType\":\"address\",\"name\":\"_validatorSet\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_who\",\"type\":\"address\"}],\"name\":\"revoke\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"validatorSetContract\",\"outputs\":[{\"internalType\":\"contract IValidatorSetHbbft\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Allows validators to use a zero gas price for their service transactions (see https://wiki.parity.io/Permissioning.html#gas-price for more info).\",\"methods\":{\"certified(address)\":{\"details\":\"Returns a boolean flag indicating whether the specified address is allowed to use zero gas price transactions. Returns `true` if either the address is certified using the `_certify` function or if `ValidatorSet.isReportValidatorValid` returns `true` for the specified address, or the address is a pending validator who has to write it's key shares (ACK and PART).\",\"params\":{\"_who\":\"The address for which the boolean flag must be determined.\"}},\"certifiedExplicitly(address)\":{\"details\":\"Returns a boolean flag indicating whether the specified address is allowed to use zero gas price transactions. Returns `true` if the address is certified using the `_certify` function. This function differs from the `certified`: it doesn't take into account the returned value of `ValidatorSetHbbft.isReportValidatorValid` function.\",\"params\":{\"_who\":\"The address for which the boolean flag must be determined.\"}},\"certify(address)\":{\"details\":\"Allows the specified address to use a zero gas price for its transactions. Can only be called by the `owner`.\",\"params\":{\"_who\":\"The address for which zero gas price transactions must be allowed.\"}},\"initialize(address[],address)\":{\"details\":\"Initializes the contract at network startup. Can only be called by the constructor of the `InitializerHbbft` contract or owner.\",\"params\":{\"_certifiedAddresses\":\"The addresses for which a zero gas price must be allowed.\",\"_validatorSet\":\"The address of the `ValidatorSetHbbft` contract.\"}},\"isInitialized()\":{\"details\":\"Returns a boolean flag indicating if the `initialize` function has been called.\"},\"revoke(address)\":{\"details\":\"Denies the specified address usage of a zero gas price for its transactions. Can only be called by the `owner`.\",\"params\":{\"_who\":\"The address for which transactions with a zero gas price must be denied.\"}}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/CertifierHbbft.sol\":\"CertifierHbbft\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/CertifierHbbft.sol\":{\"keccak256\":\"0xefb4b6e5900a9f30b0c638745022abb5e9dbafb6376138eb9d75b54fde051a0b\",\"urls\":[\"bzz-raw://4d572115f972a5509a07011ed77e258cc125b5436cbeb20e7381cb7837f4869c\",\"dweb:/ipfs/Qmcy9G3po2QdCXK5XKTvYkHvqgWwXM8wKANjHJS54wmuF3\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/ICertifier.sol\":{\"keccak256\":\"0x1aa58acf8819d4cced1266ea3e22c26aa9d3fe335abe723ed2adcd6892d614c1\",\"urls\":[\"bzz-raw://e05822d9adee23db647b69d16ccbac5723c9014f339e572be546b6d9532da968\",\"dweb:/ipfs/Qmbyf34Lm6CaSXARodokUF8QjchdBCez4MCdh5oiKqM5sf\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IStakingHbbft.sol\":{\"keccak256\":\"0xbb10a6ced6a2216e5a3c7217f839ee1e1e08ed13ce44ff89071e40e05677a705\",\"urls\":[\"bzz-raw://fda89933ea5e91225360cce72e411035365ab38a5ba58d211036d37ba690e388\",\"dweb:/ipfs/QmSvcHDsyjYK4xrYQsjd5xFN7VkDcLiT19gzFDHY5Letwq\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IValidatorSetHbbft.sol\":{\"keccak256\":\"0x850cc47e5d0675ea50aa509a23ca5aa8666d4f38a9f7cdef3a2f5109c83f7bcc\",\"urls\":[\"bzz-raw://a49880321a4510b9f96075bbf715e649b0a82c9f00b68185e96ab391f0246e7e\",\"dweb:/ipfs/QmYJQ1CKshBTfLKi3FVoiFfY4NUpnqRbMGgFn3tagiactG\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol\":{\"keccak256\":\"0x0b393066e706db35b9c523d3a21b63a5d9eafde51fdefbcbc4d6c815dff574a2\",\"urls\":[\"bzz-raw://493d9041c195ee69b05ab36000021c7171816f3efb2623c8d2a1d90118fb1fd9\",\"dweb:/ipfs/QmPuhiCNVZjM4B18cEpphc5juGTDcjhNcKnBDxexXMZ3Md\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeableOwned.sol\":{\"keccak256\":\"0xe9eefd29c6ddb1827e99e9c6c61a5b2ccd2dc9d6a97d176bad914e0f1e8671ca\",\"urls\":[\"bzz-raw://359c65fd2eed4da4eea4a5c8ca855fd5f89975d6afb966b33540a15755d76a6b\",\"dweb:/ipfs/QmVB7diM5HApkF9njDKTMMpSMcAYj8RxCesyFaGkpGNeFh\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506107ec806100206000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c806374a8f1031161005b57806374a8f1031461013f578063cc1d4c0214610165578063dfc8bf4e1461018b578063e8e23ac0146101af5761007d565b80631425388714610082578063392e53cd146100aa578063462d0b2e146100c6575b600080fd5b6100a86004803603602081101561009857600080fd5b50356001600160a01b03166101d5565b005b6100b261027b565b604080519115158252519081900360200190f35b6100a8600480360360408110156100dc57600080fd5b8101906020810181356401000000008111156100f757600080fd5b82018360208201111561010957600080fd5b8035906020019184602083028401116401000000008311171561012b57600080fd5b9193509150356001600160a01b031661028c565b6100a86004803603602081101561015557600080fd5b50356001600160a01b0316610446565b6100b26004803603602081101561017b57600080fd5b50356001600160a01b0316610529565b61019361066e565b604080516001600160a01b039092168252519081900360200190f35b6100b2600480360360208110156101c557600080fd5b50356001600160a01b031661067d565b6101dd61069b565b6001600160a01b0316336001600160a01b03161461022c5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b61023461027b565b61026f5760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b610278816106c0565b50565b6001546001600160a01b0316151590565b61029461069b565b6001600160a01b0316336001600160a01b031614806102cb57506102b661069b565b6001600160a01b0316326001600160a01b0316145b806102e457506102d961069b565b6001600160a01b0316155b806102ed575043155b610335576040805162461bcd60e51b815260206004820152601460248201527329b2b73232b91036bab9ba1031329030b236b4b760611b604482015290519081900360640190fd5b61033d61027b565b1561038f576040805162461bcd60e51b815260206004820152601f60248201527f436f6e747261637420697320616c726561647920696e697469616c697a656400604482015290519081900360640190fd5b6001600160a01b0381166103ea576040805162461bcd60e51b815260206004820152601a60248201527f56616c696461746f72736574206d757374206e6f742062652030000000000000604482015290519081900360640190fd5b60005b828110156104215761041984848381811061040457fe5b905060200201356001600160a01b03166106c0565b6001016103ed565b50600180546001600160a01b0319166001600160a01b03929092169190911790555050565b61044e61069b565b6001600160a01b0316336001600160a01b03161461049d5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b6104a561027b565b6104e05760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b6001600160a01b038116600081815260208190526040808220805460ff19169055517fb6fa8b8bd5eab60f292eca876e3ef90722275b785309d84b1de113ce0b8c4e749190a250565b6001600160a01b03811660009081526020819052604081205460ff161561055257506001610669565b600154604080516307b9342f60e21b81526001600160a01b03858116600483015291516000939290921691631ee4d0bc91602480820192602092909190829003018186803b1580156105a357600080fd5b505afa1580156105b7573d6000803e3d6000fd5b505050506040513d60208110156105cd57600080fd5b505190506001600160a01b0381166105e9576000915050610669565b60015460408051633ba6481760e21b815290516000926001600160a01b03169163ee99205c916004808301926020929190829003018186803b15801561062e57600080fd5b505afa158015610642573d6000803e3d6000fd5b505050506040513d602081101561065857600080fd5b5050506001600160a01b0316151590505b919050565b6001546001600160a01b031681565b6001600160a01b031660009081526020819052604090205460ff1690565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b6001600160a01b03811661071b576040805162461bcd60e51b815260206004820152601f60248201527f636572746966696572206d757374206e6f742062652061646472657373203000604482015290519081900360640190fd5b6001600160a01b038116600081815260208190526040808220805460ff19166001179055517fd415b905d4dd806bfba99a7a0e6351bd0c9db3a9912add21c0e6bef4479f673f9190a25056fe436f6e747261637420726571756972657320746f20626520696e697469616c697a656428296f6e6c792061646d696e20697320616c6c6f77656420746f2063616c6c20746869732066756e6374696f6ea265627a7a72315820a218eed9a5989244a9e2df564eeda760ac21d0ee544662a3e45a631dd541535864736f6c63430005110032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c806374a8f1031161005b57806374a8f1031461013f578063cc1d4c0214610165578063dfc8bf4e1461018b578063e8e23ac0146101af5761007d565b80631425388714610082578063392e53cd146100aa578063462d0b2e146100c6575b600080fd5b6100a86004803603602081101561009857600080fd5b50356001600160a01b03166101d5565b005b6100b261027b565b604080519115158252519081900360200190f35b6100a8600480360360408110156100dc57600080fd5b8101906020810181356401000000008111156100f757600080fd5b82018360208201111561010957600080fd5b8035906020019184602083028401116401000000008311171561012b57600080fd5b9193509150356001600160a01b031661028c565b6100a86004803603602081101561015557600080fd5b50356001600160a01b0316610446565b6100b26004803603602081101561017b57600080fd5b50356001600160a01b0316610529565b61019361066e565b604080516001600160a01b039092168252519081900360200190f35b6100b2600480360360208110156101c557600080fd5b50356001600160a01b031661067d565b6101dd61069b565b6001600160a01b0316336001600160a01b03161461022c5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b61023461027b565b61026f5760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b610278816106c0565b50565b6001546001600160a01b0316151590565b61029461069b565b6001600160a01b0316336001600160a01b031614806102cb57506102b661069b565b6001600160a01b0316326001600160a01b0316145b806102e457506102d961069b565b6001600160a01b0316155b806102ed575043155b610335576040805162461bcd60e51b815260206004820152601460248201527329b2b73232b91036bab9ba1031329030b236b4b760611b604482015290519081900360640190fd5b61033d61027b565b1561038f576040805162461bcd60e51b815260206004820152601f60248201527f436f6e747261637420697320616c726561647920696e697469616c697a656400604482015290519081900360640190fd5b6001600160a01b0381166103ea576040805162461bcd60e51b815260206004820152601a60248201527f56616c696461746f72736574206d757374206e6f742062652030000000000000604482015290519081900360640190fd5b60005b828110156104215761041984848381811061040457fe5b905060200201356001600160a01b03166106c0565b6001016103ed565b50600180546001600160a01b0319166001600160a01b03929092169190911790555050565b61044e61069b565b6001600160a01b0316336001600160a01b03161461049d5760405162461bcd60e51b815260040180806020018281038252602b81526020018061078d602b913960400191505060405180910390fd5b6104a561027b565b6104e05760405162461bcd60e51b81526004018080602001828103825260258152602001806107686025913960400191505060405180910390fd5b6001600160a01b038116600081815260208190526040808220805460ff19169055517fb6fa8b8bd5eab60f292eca876e3ef90722275b785309d84b1de113ce0b8c4e749190a250565b6001600160a01b03811660009081526020819052604081205460ff161561055257506001610669565b600154604080516307b9342f60e21b81526001600160a01b03858116600483015291516000939290921691631ee4d0bc91602480820192602092909190829003018186803b1580156105a357600080fd5b505afa1580156105b7573d6000803e3d6000fd5b505050506040513d60208110156105cd57600080fd5b505190506001600160a01b0381166105e9576000915050610669565b60015460408051633ba6481760e21b815290516000926001600160a01b03169163ee99205c916004808301926020929190829003018186803b15801561062e57600080fd5b505afa158015610642573d6000803e3d6000fd5b505050506040513d602081101561065857600080fd5b5050506001600160a01b0316151590505b919050565b6001546001600160a01b031681565b6001600160a01b031660009081526020819052604090205460ff1690565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b6001600160a01b03811661071b576040805162461bcd60e51b815260206004820152601f60248201527f636572746966696572206d757374206e6f742062652061646472657373203000604482015290519081900360640190fd5b6001600160a01b038116600081815260208190526040808220805460ff19166001179055517fd415b905d4dd806bfba99a7a0e6351bd0c9db3a9912add21c0e6bef4479f673f9190a25056fe436f6e747261637420726571756972657320746f20626520696e697469616c697a656428296f6e6c792061646d696e20697320616c6c6f77656420746f2063616c6c20746869732066756e6374696f6ea265627a7a72315820a218eed9a5989244a9e2df564eeda760ac21d0ee544662a3e45a631dd541535864736f6c63430005110032",
   "sourceMap": "360:5867:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;360:5867:1;;;;;;;",
   "deployedSourceMap": "360:5867:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;360:5867:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3108:97;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;3108:97:1;-1:-1:-1;;;;;3108:97:1;;:::i;:::-;;5605:132;;;:::i;:::-;;;;;;;;;;;;;;;;;;2278:606;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;2278:606:1;;;;;;;;21:11:-1;5:28;;2:2;;;46:1;43;36:12;2:2;2278:606:1;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;2278:606:1;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;39:11;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;2278:606:1;;-1:-1:-1;2278:606:1;-1:-1:-1;2278:606:1;-1:-1:-1;;;;;2278:606:1;;:::i;3437:134::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;3437:134:1;-1:-1:-1;;;;;3437:134:1;;:::i;4178:750::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;4178:750:1;-1:-1:-1;;;;;4178:750:1;;:::i;824:46::-;;;:::i;:::-;;;;-1:-1:-1;;;;;824:46:1;;;;;;;;;;;;;;5383:123;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;5383:123:1;-1:-1:-1;;;;;5383:123:1;;:::i;3108:97::-;255:8:40;:6;:8::i;:::-;-1:-1:-1;;;;;241:22:40;:10;-1:-1:-1;;;;;241:22:40;;233:78;;;;-1:-1:-1;;;233:78:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1756:15:1;:13;:15::i;:::-;1748:65;;;;-1:-1:-1;;;1748:65:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3184:14;3193:4;3184:8;:14::i;:::-;3108:97;:::o;5605:132::-;5685:20;;-1:-1:-1;;;;;5685:20:1;:45;;5605:132;:::o;2278:606::-;2424:8;:6;:8::i;:::-;-1:-1:-1;;;;;2410:22:1;:10;-1:-1:-1;;;;;2410:22:1;;:47;;;;2449:8;:6;:8::i;:::-;-1:-1:-1;;;;;2436:21:1;:9;-1:-1:-1;;;;;2436:21:1;;2410:47;:73;;;;2475:8;:6;:8::i;:::-;-1:-1:-1;;;;;2461:22:1;;2410:73;:94;;;-1:-1:-1;2487:12:1;:17;2410:94;2402:140;;;;;-1:-1:-1;;;2402:140:1;;;;;;;;;;;;-1:-1:-1;;;2402:140:1;;;;;;;;;;;;;;;2561:15;:13;:15::i;:::-;2560:16;2552:60;;;;;-1:-1:-1;;;2552:60:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;2630:27:1;;2622:66;;;;;-1:-1:-1;;;2622:66:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;2703:9;2698:114;2718:30;;;2698:114;;;2769:32;2778:19;;2798:1;2778:22;;;;;;;;;;;;;-1:-1:-1;;;;;2778:22:1;2769:8;:32::i;:::-;2750:3;;2698:114;;;-1:-1:-1;2821:20:1;:56;;-1:-1:-1;;;;;;2821:56:1;-1:-1:-1;;;;;2821:56:1;;;;;;;;;;-1:-1:-1;;2278:606:1:o;3437:134::-;255:8:40;:6;:8::i;:::-;-1:-1:-1;;;;;241:22:40;:10;-1:-1:-1;;;;;241:22:40;;233:78;;;;-1:-1:-1;;;233:78:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1756:15:1;:13;:15::i;:::-;1748:65;;;;-1:-1:-1;;;1748:65:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;3512:16:1;;3531:5;3512:16;;;;;;;;;;;:24;;-1:-1:-1;;3512:24:1;;;3551:13;;;3531:5;3551:13;3437:134;:::o;4178:750::-;-1:-1:-1;;;;;4266:16:1;;4245:4;4266:16;;;;;;;;;;;;;4262:58;;;-1:-1:-1;4305:4:1;4298:11;;4262:58;4355:20;;:49;;;-1:-1:-1;;;4355:49:1;;-1:-1:-1;;;;;4355:49:1;;;;;;;;;4330:22;;4355:20;;;;;:43;;:49;;;;;;;;;;;;;;;:20;:49;;;5:2:-1;;;;30:1;27;20:12;5:2;4355:49:1;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4355:49:1;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;4355:49:1;;-1:-1:-1;;;;;;4418:28:1;;4414:140;;4538:5;4531:12;;;;;4414:140;4837:20;;:38;;;-1:-1:-1;;;4837:38:1;;;;4791:29;;-1:-1:-1;;;;;4837:20:1;;:36;;:38;;;;;;;;;;;;;;:20;:38;;;5:2:-1;;;;30:1;27;20:12;5:2;4837:38:1;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4837:38:1;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;;;4893:28:1;;;;-1:-1:-1;4178:750:1;;;;:::o;824:46::-;;;-1:-1:-1;;;;;824:46:1;;:::o;5383:123::-;-1:-1:-1;;;;;5483:16:1;5460:4;5483:16;;;;;;;;;;;;;;5383:123::o;370:168:38:-;250:66;511:11;;490:42::o;6038:187:1:-;-1:-1:-1;;;;;6101:18:1;;6093:62;;;;;-1:-1:-1;;;6093:62:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;6165:16:1;;:10;:16;;;;;;;;;;;:23;;-1:-1:-1;;6165:23:1;6184:4;6165:23;;;6203:15;;;6165:10;6203:15;6038:187;:::o",
   "source": "pragma solidity ^0.5.16;\n\nimport \"./interfaces/ICertifier.sol\";\nimport \"./interfaces/IStakingHbbft.sol\";\nimport \"./interfaces/IValidatorSetHbbft.sol\";\nimport \"./upgradeability/UpgradeableOwned.sol\";\n\n\n/// @dev Allows validators to use a zero gas price for their service transactions\n/// (see https://wiki.parity.io/Permissioning.html#gas-price for more info).\ncontract CertifierHbbft is UpgradeableOwned, ICertifier {\n\n    // =============================================== Storage ========================================================\n\n    // WARNING: since this contract is upgradeable, do not remove\n    // existing storage variables, do not change their order,\n    // and do not change their types!\n\n    mapping(address => bool) internal _certified;\n\n    /// @dev The address of the `ValidatorSetHbbft` contract.\n    IValidatorSetHbbft public validatorSetContract;\n\n    // ================================================ Events ========================================================\n\n    /// @dev Emitted by the `certify` function when the specified address is allowed to use a zero gas price\n    /// for its transactions.\n    /// @param who Specified address allowed to make zero gas price transactions.\n    event Confirmed(address indexed who);\n\n    /// @dev Emitted by the `revoke` function when the specified address is denied using a zero gas price\n    /// for its transactions.\n    /// @param who Specified address for which zero gas price transactions are denied.\n    event Revoked(address indexed who);\n\n    // ============================================== Modifiers =======================================================\n\n    /// @dev Ensures the `initialize` function was called before.\n    modifier onlyInitialized {\n        require(isInitialized(), \"Contract requires to be initialized()\");\n        _;\n    }\n\n    // =============================================== Setters ========================================================\n\n    /// @dev Initializes the contract at network startup.\n    /// Can only be called by the constructor of the `InitializerHbbft` contract or owner.\n    /// @param _certifiedAddresses The addresses for which a zero gas price must be allowed.\n    /// @param _validatorSet The address of the `ValidatorSetHbbft` contract.\n    function initialize(\n        address[] calldata _certifiedAddresses,\n        address _validatorSet\n    ) external {\n        require(msg.sender == _admin() || tx.origin == _admin() || address(0) == _admin() || block.number == 0, \n            \"Sender must be admin\");\n        require(!isInitialized(), \"Contract is already initialized\");\n        require(_validatorSet != address(0), \"Validatorset must not be 0\");\n        for (uint256 i = 0; i < _certifiedAddresses.length; i++) {\n            _certify(_certifiedAddresses[i]);\n        }\n        validatorSetContract = IValidatorSetHbbft(_validatorSet);\n    }\n\n    /// @dev Allows the specified address to use a zero gas price for its transactions.\n    /// Can only be called by the `owner`.\n    /// @param _who The address for which zero gas price transactions must be allowed.\n    function certify(address _who) external onlyOwner onlyInitialized {\n        _certify(_who);\n    }\n\n    /// @dev Denies the specified address usage of a zero gas price for its transactions.\n    /// Can only be called by the `owner`.\n    /// @param _who The address for which transactions with a zero gas price must be denied.\n    function revoke(address _who) external onlyOwner onlyInitialized {\n        _certified[_who] = false;\n        emit Revoked(_who);\n    }\n\n    // =============================================== Getters ========================================================\n\n    /// @dev Returns a boolean flag indicating whether the specified address is allowed to use zero gas price\n    /// transactions. Returns `true` if either the address is certified using the `_certify` function or if\n    /// `ValidatorSet.isReportValidatorValid` returns `true` for the specified address,\n    /// or the address is a pending validator who has to write it's key shares (ACK and PART).\n    /// @param _who The address for which the boolean flag must be determined.\n    function certified(address _who)\n    external\n    view\n    returns(bool) {\n\n        if (_certified[_who]) {\n            return true;\n        }\n\n        address stakingAddress = validatorSetContract.stakingByMiningAddress(_who);\n        if (stakingAddress == address(0)) {\n            //if there is no staking address registered to this pool\n            return false;\n        }\n\n        // we generally certify every active node, \n        // since the node cache the list of certifiers\n        // and the permission contracts checks anyway, \n        // if the specific 0 gas transaction is allowed or not.\n        IStakingHbbft stakingContract = IStakingHbbft(validatorSetContract.stakingContract());\n        return stakingAddress != address(0);\n    }\n\n    /// @dev Returns a boolean flag indicating whether the specified address is allowed to use zero gas price\n    /// transactions. Returns `true` if the address is certified using the `_certify` function.\n    /// This function differs from the `certified`: it doesn't take into account the returned value of\n    /// `ValidatorSetHbbft.isReportValidatorValid` function.\n    /// @param _who The address for which the boolean flag must be determined.\n    function certifiedExplicitly(address _who)\n    external\n    view\n    returns(bool) {\n        return _certified[_who];\n    }\n\n    /// @dev Returns a boolean flag indicating if the `initialize` function has been called.\n    function isInitialized()\n    public\n    view\n    returns(bool) {\n        return validatorSetContract != IValidatorSetHbbft(0);\n    }\n\n    // ============================================== Internal ========================================================\n\n    /// @dev An internal function for the `certify` and `initialize` functions.\n    /// @param _who The address for which transactions with a zero gas price must be allowed.\n    function _certify(address _who)\n    internal {\n        require(_who != address(0), \"certifier must not be address 0\");\n        _certified[_who] = true;\n        emit Confirmed(_who);\n    }\n}\n",
@@ -184,7 +184,7 @@
         "id": 8,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 9826,
+        "sourceUnit": 9932,
         "src": "26:37:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -195,7 +195,7 @@
         "id": 9,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 10178,
+        "sourceUnit": 10297,
         "src": "64:40:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -206,7 +206,7 @@
         "id": 10,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 10395,
+        "sourceUnit": 10518,
         "src": "105:45:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -217,7 +217,7 @@
         "id": 11,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 11394,
+        "sourceUnit": 11517,
         "src": "151:47:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -231,10 +231,10 @@
               "id": 12,
               "name": "UpgradeableOwned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11393,
+              "referencedDeclaration": 11516,
               "src": "387:16:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeableOwned_$11393",
+                "typeIdentifier": "t_contract$_UpgradeableOwned_$11516",
                 "typeString": "contract UpgradeableOwned"
               }
             },
@@ -249,10 +249,10 @@
               "id": 14,
               "name": "ICertifier",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9825,
+              "referencedDeclaration": 9931,
               "src": "405:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ICertifier_$9825",
+                "typeIdentifier": "t_contract$_ICertifier_$9931",
                 "typeString": "contract ICertifier"
               }
             },
@@ -262,9 +262,9 @@
           }
         ],
         "contractDependencies": [
-          9825,
-          11325,
-          11393
+          9931,
+          11448,
+          11516
         ],
         "contractKind": "contract",
         "documentation": "@dev Allows validators to use a zero gas price for their service transactions\n (see https://wiki.parity.io/Permissioning.html#gas-price for more info).",
@@ -272,9 +272,9 @@
         "id": 245,
         "linearizedBaseContracts": [
           245,
-          9825,
-          11393,
-          11325
+          9931,
+          11516,
+          11448
         ],
         "name": "CertifierHbbft",
         "nodeType": "ContractDefinition",
@@ -334,7 +334,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
               "typeString": "contract IValidatorSetHbbft"
             },
             "typeName": {
@@ -342,10 +342,10 @@
               "id": 20,
               "name": "IValidatorSetHbbft",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10394,
+              "referencedDeclaration": 10517,
               "src": "824:18:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                 "typeString": "contract IValidatorSetHbbft"
               }
             },
@@ -512,10 +512,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "1748:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -622,7 +622,7 @@
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11408,
+                                  "referencedDeclaration": 11531,
                                   "src": "2410:3:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
@@ -654,7 +654,7 @@
                                   "name": "_admin",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11324,
+                                  "referencedDeclaration": 11447,
                                   "src": "2424:6:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -702,7 +702,7 @@
                                   "name": "tx",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11420,
+                                  "referencedDeclaration": 11543,
                                   "src": "2436:2:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_transaction",
@@ -734,7 +734,7 @@
                                   "name": "_admin",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11324,
+                                  "referencedDeclaration": 11447,
                                   "src": "2449:6:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -847,7 +847,7 @@
                                 "name": "_admin",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 11324,
+                                "referencedDeclaration": 11447,
                                 "src": "2475:6:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -901,7 +901,7 @@
                               "name": "block",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11398,
+                              "referencedDeclaration": 11521,
                               "src": "2487:5:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_block",
@@ -988,10 +988,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2402:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1100,10 +1100,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2552:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1254,10 +1254,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2622:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1541,7 +1541,7 @@
                       "referencedDeclaration": 21,
                       "src": "2821:20:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -1575,10 +1575,10 @@
                         "name": "IValidatorSetHbbft",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10394,
+                        "referencedDeclaration": 10517,
                         "src": "2844:18:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10394_$",
+                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10517_$",
                           "typeString": "type(contract IValidatorSetHbbft)"
                         }
                       },
@@ -1592,13 +1592,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2844:33:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
                     "src": "2821:56:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
@@ -1695,7 +1695,7 @@
             "scope": 245,
             "src": "2278:606:1",
             "stateMutability": "nonpayable",
-            "superFunction": 9824,
+            "superFunction": 9930,
             "visibility": "external"
           },
           {
@@ -1774,7 +1774,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 11392,
+                  "referencedDeclaration": 11515,
                   "src": "3148:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2006,7 +2006,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 11392,
+                  "referencedDeclaration": 11515,
                   "src": "3476:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -2234,7 +2234,7 @@
                         "referencedDeclaration": 21,
                         "src": "4355:20:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                          "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                           "typeString": "contract IValidatorSetHbbft"
                         }
                       },
@@ -2245,7 +2245,7 @@
                       "lValueRequested": false,
                       "memberName": "stakingByMiningAddress",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10362,
+                      "referencedDeclaration": 10485,
                       "src": "4355:43:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_address_$",
@@ -2409,7 +2409,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                        "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                         "typeString": "contract IStakingHbbft"
                       },
                       "typeName": {
@@ -2417,10 +2417,10 @@
                         "id": 180,
                         "name": "IStakingHbbft",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 10177,
+                        "referencedDeclaration": 10296,
                         "src": "4791:13:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                          "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                           "typeString": "contract IStakingHbbft"
                         }
                       },
@@ -2446,7 +2446,7 @@
                             "referencedDeclaration": 21,
                             "src": "4837:20:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                               "typeString": "contract IValidatorSetHbbft"
                             }
                           },
@@ -2457,7 +2457,7 @@
                           "lValueRequested": false,
                           "memberName": "stakingContract",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10381,
+                          "referencedDeclaration": 10504,
                           "src": "4837:36:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -2490,10 +2490,10 @@
                       "name": "IStakingHbbft",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10177,
+                      "referencedDeclaration": 10296,
                       "src": "4823:13:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IStakingHbbft_$10177_$",
+                        "typeIdentifier": "t_type$_t_contract$_IStakingHbbft_$10296_$",
                         "typeString": "type(contract IStakingHbbft)"
                       }
                     },
@@ -2507,7 +2507,7 @@
                     "nodeType": "FunctionCall",
                     "src": "4823:53:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                      "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                       "typeString": "contract IStakingHbbft"
                     }
                   },
@@ -2821,7 +2821,7 @@
             "scope": 245,
             "src": "5383:123:1",
             "stateMutability": "view",
-            "superFunction": 9816,
+            "superFunction": 9922,
             "visibility": "external"
           },
           {
@@ -2834,7 +2834,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "commonType": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     },
                     "id": 216,
@@ -2851,7 +2851,7 @@
                       "referencedDeclaration": 21,
                       "src": "5685:20:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -2890,10 +2890,10 @@
                         "name": "IValidatorSetHbbft",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10394,
+                        "referencedDeclaration": 10517,
                         "src": "5709:18:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10394_$",
+                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10517_$",
                           "typeString": "type(contract IValidatorSetHbbft)"
                         }
                       },
@@ -2907,7 +2907,7 @@
                       "nodeType": "FunctionCall",
                       "src": "5709:21:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -3108,10 +3108,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "6093:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3357,7 +3357,7 @@
         "id": 8,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 9826,
+        "sourceUnit": 9932,
         "src": "26:37:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3368,7 +3368,7 @@
         "id": 9,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 10178,
+        "sourceUnit": 10297,
         "src": "64:40:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3379,7 +3379,7 @@
         "id": 10,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 10395,
+        "sourceUnit": 10518,
         "src": "105:45:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3390,7 +3390,7 @@
         "id": 11,
         "nodeType": "ImportDirective",
         "scope": 246,
-        "sourceUnit": 11394,
+        "sourceUnit": 11517,
         "src": "151:47:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3404,10 +3404,10 @@
               "id": 12,
               "name": "UpgradeableOwned",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11393,
+              "referencedDeclaration": 11516,
               "src": "387:16:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeableOwned_$11393",
+                "typeIdentifier": "t_contract$_UpgradeableOwned_$11516",
                 "typeString": "contract UpgradeableOwned"
               }
             },
@@ -3422,10 +3422,10 @@
               "id": 14,
               "name": "ICertifier",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9825,
+              "referencedDeclaration": 9931,
               "src": "405:10:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ICertifier_$9825",
+                "typeIdentifier": "t_contract$_ICertifier_$9931",
                 "typeString": "contract ICertifier"
               }
             },
@@ -3435,9 +3435,9 @@
           }
         ],
         "contractDependencies": [
-          9825,
-          11325,
-          11393
+          9931,
+          11448,
+          11516
         ],
         "contractKind": "contract",
         "documentation": "@dev Allows validators to use a zero gas price for their service transactions\n (see https://wiki.parity.io/Permissioning.html#gas-price for more info).",
@@ -3445,9 +3445,9 @@
         "id": 245,
         "linearizedBaseContracts": [
           245,
-          9825,
-          11393,
-          11325
+          9931,
+          11516,
+          11448
         ],
         "name": "CertifierHbbft",
         "nodeType": "ContractDefinition",
@@ -3507,7 +3507,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
               "typeString": "contract IValidatorSetHbbft"
             },
             "typeName": {
@@ -3515,10 +3515,10 @@
               "id": 20,
               "name": "IValidatorSetHbbft",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10394,
+              "referencedDeclaration": 10517,
               "src": "824:18:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                 "typeString": "contract IValidatorSetHbbft"
               }
             },
@@ -3685,10 +3685,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "1748:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3795,7 +3795,7 @@
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11408,
+                                  "referencedDeclaration": 11531,
                                   "src": "2410:3:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_message",
@@ -3827,7 +3827,7 @@
                                   "name": "_admin",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11324,
+                                  "referencedDeclaration": 11447,
                                   "src": "2424:6:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -3875,7 +3875,7 @@
                                   "name": "tx",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11420,
+                                  "referencedDeclaration": 11543,
                                   "src": "2436:2:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_transaction",
@@ -3907,7 +3907,7 @@
                                   "name": "_admin",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 11324,
+                                  "referencedDeclaration": 11447,
                                   "src": "2449:6:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -4020,7 +4020,7 @@
                                 "name": "_admin",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 11324,
+                                "referencedDeclaration": 11447,
                                 "src": "2475:6:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -4074,7 +4074,7 @@
                               "name": "block",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 11398,
+                              "referencedDeclaration": 11521,
                               "src": "2487:5:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_block",
@@ -4161,10 +4161,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2402:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4273,10 +4273,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2552:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4427,10 +4427,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "2622:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4714,7 +4714,7 @@
                       "referencedDeclaration": 21,
                       "src": "2821:20:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -4748,10 +4748,10 @@
                         "name": "IValidatorSetHbbft",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10394,
+                        "referencedDeclaration": 10517,
                         "src": "2844:18:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10394_$",
+                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10517_$",
                           "typeString": "type(contract IValidatorSetHbbft)"
                         }
                       },
@@ -4765,13 +4765,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2844:33:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
                     "src": "2821:56:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     }
                   },
@@ -4868,7 +4868,7 @@
             "scope": 245,
             "src": "2278:606:1",
             "stateMutability": "nonpayable",
-            "superFunction": 9824,
+            "superFunction": 9930,
             "visibility": "external"
           },
           {
@@ -4947,7 +4947,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 11392,
+                  "referencedDeclaration": 11515,
                   "src": "3148:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5179,7 +5179,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 11392,
+                  "referencedDeclaration": 11515,
                   "src": "3476:9:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5407,7 +5407,7 @@
                         "referencedDeclaration": 21,
                         "src": "4355:20:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                          "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                           "typeString": "contract IValidatorSetHbbft"
                         }
                       },
@@ -5418,7 +5418,7 @@
                       "lValueRequested": false,
                       "memberName": "stakingByMiningAddress",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10362,
+                      "referencedDeclaration": 10485,
                       "src": "4355:43:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_address_$",
@@ -5582,7 +5582,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                        "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                         "typeString": "contract IStakingHbbft"
                       },
                       "typeName": {
@@ -5590,10 +5590,10 @@
                         "id": 180,
                         "name": "IStakingHbbft",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 10177,
+                        "referencedDeclaration": 10296,
                         "src": "4791:13:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                          "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                           "typeString": "contract IStakingHbbft"
                         }
                       },
@@ -5619,7 +5619,7 @@
                             "referencedDeclaration": 21,
                             "src": "4837:20:1",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                              "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                               "typeString": "contract IValidatorSetHbbft"
                             }
                           },
@@ -5630,7 +5630,7 @@
                           "lValueRequested": false,
                           "memberName": "stakingContract",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10381,
+                          "referencedDeclaration": 10504,
                           "src": "4837:36:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$__$returns$_t_address_$",
@@ -5663,10 +5663,10 @@
                       "name": "IStakingHbbft",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 10177,
+                      "referencedDeclaration": 10296,
                       "src": "4823:13:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_IStakingHbbft_$10177_$",
+                        "typeIdentifier": "t_type$_t_contract$_IStakingHbbft_$10296_$",
                         "typeString": "type(contract IStakingHbbft)"
                       }
                     },
@@ -5680,7 +5680,7 @@
                     "nodeType": "FunctionCall",
                     "src": "4823:53:1",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IStakingHbbft_$10177",
+                      "typeIdentifier": "t_contract$_IStakingHbbft_$10296",
                       "typeString": "contract IStakingHbbft"
                     }
                   },
@@ -5994,7 +5994,7 @@
             "scope": 245,
             "src": "5383:123:1",
             "stateMutability": "view",
-            "superFunction": 9816,
+            "superFunction": 9922,
             "visibility": "external"
           },
           {
@@ -6007,7 +6007,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "commonType": {
-                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                      "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                       "typeString": "contract IValidatorSetHbbft"
                     },
                     "id": 216,
@@ -6024,7 +6024,7 @@
                       "referencedDeclaration": 21,
                       "src": "5685:20:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -6063,10 +6063,10 @@
                         "name": "IValidatorSetHbbft",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10394,
+                        "referencedDeclaration": 10517,
                         "src": "5709:18:1",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10394_$",
+                          "typeIdentifier": "t_type$_t_contract$_IValidatorSetHbbft_$10517_$",
                           "typeString": "type(contract IValidatorSetHbbft)"
                         }
                       },
@@ -6080,7 +6080,7 @@
                       "nodeType": "FunctionCall",
                       "src": "5709:21:1",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10394",
+                        "typeIdentifier": "t_contract$_IValidatorSetHbbft_$10517",
                         "typeString": "contract IValidatorSetHbbft"
                       }
                     },
@@ -6281,10 +6281,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        11411,
-                        11412
+                        11534,
+                        11535
                       ],
-                      "referencedDeclaration": 11412,
+                      "referencedDeclaration": 11535,
                       "src": "6093:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -6509,7 +6509,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.1",
-  "updatedAt": "2021-08-10T12:07:20.761Z",
+  "updatedAt": "2022-01-07T23:00:13.284Z",
   "devdoc": {
     "details": "Allows validators to use a zero gas price for their service transactions (see https://wiki.parity.io/Permissioning.html#gas-price for more info).",
     "methods": {
