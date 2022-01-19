@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { ModelDataAdapter } from './model/modelDataAdapter';
-import Web3 from 'web3';
 
 const url = new URL(process.env.REACT_APP_URL || 'http://localhost:8540');
 
@@ -13,9 +12,8 @@ console.log('connecting to web3 url: ', url.toString());
 // debug
 declare let window: any;
 
-const web3 = new Web3(url.toString());
 
-ModelDataAdapter.initialize(web3)
+ModelDataAdapter.initialize(url)
   .then((adapter) => {
     // debug
     window.context = adapter;

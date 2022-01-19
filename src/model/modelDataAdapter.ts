@@ -29,6 +29,8 @@ export class ModelDataAdapter {
 
   public web3!: Web3;
 
+  public url!: URL;
+
   public hasWeb3BrowserSupport = false;
 
   public defaultTxOpts = {
@@ -84,13 +86,14 @@ export class ModelDataAdapter {
 
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
-  public static async initialize(web3: Web3): Promise<ModelDataAdapter> {
-    //console.log('initializing new context. ', wsUrl, ensRpcUrl, validatorSetContractAddress);
+  public static async initialize(url: URL): Promise<ModelDataAdapter> {
     
-
+    console.log('initializing new context. ', url.toString());
+    
     const result = new ModelDataAdapter();
-    result.web3 = web3;
-    result.contracts = new ContractManager(web3);
+    result.url = url;
+    result.web3 = new Web3(url.toString());
+    result.contracts = new ContractManager(result.web3);
     
     
     result.vsContract = result.contracts.getValidatorSetHbbft();

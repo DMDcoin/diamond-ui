@@ -54,13 +54,18 @@ class App extends React.Component<AppProps, AppState> {
 
   private async setupWeb3Modal() {
 
+    
+
+    const url = this.props.modelDataAdapter.url;
+    //const url = 'http://localhost:8540';
+
     const providerOptions = {
       /* See Provider Options Section */
       walletconnect: {
         package: WalletConnectProvider,
         options: {
           rpc: {
-            71117: "http://rpc.uniq.diamonds"
+            71117: url
           }
         }
       },
