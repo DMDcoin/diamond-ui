@@ -108,14 +108,19 @@ class App extends React.Component<AppProps, AppState> {
 
     const columns = [
       { title: "Pool address", field: "stakingAddress", hozAlign: "left", frozen: true },
-      { title: "stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
-      { title: "Active", field: "isActive", formatter: "tickCross", width: 100 },
+      { title: "Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
+      { title: "Staked", field: "isActive", formatter: "tickCross", width: 100 },
+      { title: "Available", field: "isAvailable", formatter: "tickCross", width: 100 },
       { title: "Current", field: "isCurrentValidator", formatter: "tickCross", width: 100 },
-      { title: "Parts written", field: "isWrittenParts", formatter: "tickCross", width: 100 },
-      { title: "Acks written", field: "isWrittenAcks", formatter: "tickCross", width: 100 },
-      { title: "to be elected", field: "isToBeElected", formatter: "tickCross", width: 100 },
-      { title: "pending", field: "isPendingValidator", formatter: "tickCross", width: 100 },
-      { title: "available", field: "isAvailable", formatter: "tickCross", width: 100 },
+
+      /* reall required ? */
+      { title: "To be elected", field: "isToBeElected", formatter: "tickCross", width: 100 },
+      /* key generation fields */
+      { title: "Pending", field: "isPendingValidator", formatter: "tickCross", width: 100 },
+      { title: "Parts", field: "isWrittenParts", formatter: "tickCross", width: 100 },
+      { title: "Acks", field: "isWrittenAcks", formatter: "tickCross", width: 100 },
+      
+      /* miner fields */
       { title: "Miner address", field: "miningAddress", hozAlign: "left", responsive: true },
 
     ];
