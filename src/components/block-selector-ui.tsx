@@ -6,14 +6,10 @@ import { ui } from "../ui";
 import { Button, Modal, Overlay, Table } from "react-bootstrap";
 
 import { ArrowLeft, ArrowRight, Hourglass } from 'react-bootstrap-icons';
-
-export interface IBlockSelectorProps {
-  modelDataAdapter: ModelDataAdapter;
-}
-
+import { DmdComponent } from "./dmd-component";
 
 @observer
-export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
+export class BlockSelectorUI extends DmdComponent {
 
   private _isModal = false;
 
@@ -45,8 +41,6 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
       self._isModal = false;
     }
 
-    
-
     return <Modal size="lg" show={true} backdrop="static">
         <Modal.Dialog>
           <Modal.Header closeButton>
@@ -73,8 +67,10 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
 
     const adapter = this.props.modelDataAdapter;
     console.log('left clicked', adapter.context.currentBlockNumber);
-    if (adapter.context.currentBlockNumber > 1) {
+    if (adapter.context.currentBlockNumber >= 1) {
       await adapter.showHistoric(adapter.context.currentBlockNumber - 1);
+    } else {
+      console.log(`ignoring left click. ${adapter.context.currentBlockNumber}`);
     }
 
   }
@@ -205,24 +201,4 @@ export class BlockSelectorUI extends React.Component<IBlockSelectorProps, {}> {
     {/* <Button onClick={() => {this.forceUpdate()}}>force update</Button> */}
   </div>;
   }
-
-
-  private _ref :  React.RefObject<HTMLElement> = React.createRef<HTMLElement>();
-
-  public componentDidMount() {
-    console.log('block selector ui did mount.');
-    this.props.modelDataAdapter.registerUIElement(this);
-
-    const element = document.getElementById('root');
-
-    //this._ref.current = element;
-    //this._ref = React.createRef<HTMLElement>()
-    
-  }
-
-  public componentWillUnmount() {
-    console.log('block selector ui will unmount.');
-    this.props.modelDataAdapter.unregisterUIElement(this);
-  }
-  
 }
