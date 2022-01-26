@@ -14,7 +14,8 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Button} from 'react-bootstrap';
+import { Button, Tab, Tabs} from 'react-bootstrap';
+import { ContractDetailsUI } from './components/contract-details-ui';
 
 
 interface AppProps {
@@ -107,9 +108,9 @@ class App extends React.Component<AppProps, AppState> {
     ));
 
     const columns = [
-      { title: "Pool address", field: "stakingAddress", hozAlign: "left", frozen: true },
+      { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left", frozen: true },
       { title: "Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
-      { title: "Staked", field: "isActive", formatter: "tickCross", width: 100 },
+      { title: "Staked", field: "isActive", headerFilter:true, formatter: "tickCross", width: 100 },
       { title: "Available", field: "isAvailable", formatter: "tickCross", width: 100 },
       { title: "Current", field: "isCurrentValidator", formatter: "tickCross", width: 100 },
 
@@ -121,7 +122,7 @@ class App extends React.Component<AppProps, AppState> {
       { title: "Acks", field: "isWrittenAcks", formatter: "tickCross", width: 100 },
       
       /* miner fields */
-      { title: "Miner address", field: "miningAddress", hozAlign: "left", responsive: true },
+      { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", responsive: true },
 
     ];
     
@@ -182,17 +183,27 @@ class App extends React.Component<AppProps, AppState> {
         
         <div>
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
+            <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} />
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {modelDataAdapter.isReadingData ? '... Loading ...' : 
             <Fragment>
-            {validatorsWithoutPoolSection}
-            <ReactTabulatorViewOptions >
-              <ReactTabulator
-                data={data}
-                columns={columns}
-                tooltips={true}
-              />
-            </ReactTabulatorViewOptions>
+              <Tabs className="mb-3">
+                <Tab eventKey="overview" title="Overview" >
+                  {validatorsWithoutPoolSection}
+                  <ReactTabulatorViewOptions >
+                    <ReactTabulator
+                      data={data}
+                      columns={columns}
+                      tooltips={true}
+                      
+                    />
+                  </ReactTabulatorViewOptions>
+                </Tab>
+                <Tab eventKey="state-history" title="History">
+                  ...history...
+                </Tab>
+              </Tabs>
+            
             </Fragment>
             }
           </div>
@@ -225,6 +236,15 @@ class App extends React.Component<AppProps, AppState> {
           </div>
           <button type="button" disabled={this.processing}>Remove My Pool (TODO)</button>
         </div> */}
+
+        {/* <Tabs className="mb-3">
+          <Tab eventKey="overview" title="Overview" >
+            tab1
+          </Tab>
+          <Tab eventKey="state-history" title="History">
+            tab2
+          </Tab>
+        </Tabs> */}
 
       </div>
     );
