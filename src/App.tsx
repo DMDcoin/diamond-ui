@@ -5,6 +5,7 @@ import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
 import './styles/tabulator.css';
+
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import dmd_logo from "./logo-hor.svg";
@@ -111,15 +112,15 @@ class App extends React.Component<AppProps, AppState> {
       { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left", frozen: true },
       { title: "Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
       { title: "Staked", field: "isActive", headerFilter:true, formatter: "tickCross", width: 100 },
-      { title: "Available", field: "isAvailable", formatter: "tickCross", width: 100 },
-      { title: "Current", field: "isCurrentValidator", formatter: "tickCross", width: 100 },
+      { title: "Available", field: "isAvailable", headerFilter:true, formatter: "tickCross", width: 100 },
+      { title: "Current", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 100 },
 
       /* reall required ? */
-      { title: "To be elected", field: "isToBeElected", formatter: "tickCross", width: 100 },
+      { title: "To be elected", field: "isToBeElected", headerFilter:true, formatter: "tickCross", width: 100 },
       /* key generation fields */
-      { title: "Pending", field: "isPendingValidator", formatter: "tickCross", width: 100 },
-      { title: "Parts", field: "isWrittenParts", formatter: "tickCross", width: 100 },
-      { title: "Acks", field: "isWrittenAcks", formatter: "tickCross", width: 100 },
+      { title: "Pending", field: "isPendingValidator", headerFilter:true,  formatter: "tickCross", width: 100 },
+      { title: "Parts", field: "isWrittenParts", headerFilter:true, formatter: "tickCross", width: 100 },
+      { title: "Acks", field: "isWrittenAcks", headerFilter:true, formatter: "tickCross", width: 100 },
       
       /* miner fields */
       { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", responsive: true },
@@ -183,12 +184,12 @@ class App extends React.Component<AppProps, AppState> {
         
         <div>
             <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
-            <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} />
+            {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {modelDataAdapter.isReadingData ? '... Loading ...' : 
             <Fragment>
               <Tabs className="mb-3">
-                <Tab eventKey="overview" title="Overview" >
+                <Tab eventKey="overview" title="" >
                   {validatorsWithoutPoolSection}
                   <ReactTabulatorViewOptions >
                     <ReactTabulator
@@ -199,7 +200,7 @@ class App extends React.Component<AppProps, AppState> {
                     />
                   </ReactTabulatorViewOptions>
                 </Tab>
-                <Tab eventKey="state-history" title="History">
+                <Tab eventKey="state-history" title="">
                   ...history...
                 </Tab>
               </Tabs>

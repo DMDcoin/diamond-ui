@@ -4,8 +4,8 @@ import { action } from 'mobx';
 import React, { Fragment, MutableRefObject } from 'react';
 import { ui } from "../ui";
 import { Button, Modal, Overlay, Table } from "react-bootstrap";
-
-import { ArrowLeft, ArrowRight, Hourglass } from 'react-bootstrap-icons';
+import ReactTooltip from "react-tooltip";
+import { ArrowLeft, ArrowRight, Hourglass, SkipEnd } from 'react-bootstrap-icons';
 import { DmdComponent } from "./dmd-component";
 
 @observer
@@ -88,6 +88,19 @@ export class BlockSelectorUI extends DmdComponent {
 
   }
 
+  @action.bound
+  private async latest() {
+
+    const adapter = this.props.modelDataAdapter;
+    console.log('latest clicked', adapter.context.currentBlockNumber);
+    if (adapter.context.currentBlockNumber < adapter.context.latestBlockNumber) {
+      await adapter.showHistoric(adapter.context.latestBlockNumber);
+    } else {
+      console.log(`ignoring latest click. ${adapter.context.currentBlockNumber} ${adapter.context.latestBlockNumber}`);
+    }
+
+  }
+
   private showModal() {
     console.log('showModal.');
     this._isModal = true;
@@ -165,6 +178,15 @@ export class BlockSelectorUI extends DmdComponent {
               <Button onClick={this.right.bind(this)}>
                 <ArrowRight/>
               </Button>
+              <ReactTooltip place="top" effect="solid">
+                next block
+              </ReactTooltip>
+              <Button data-for="latest" onClick={this.latest.bind(this)} style={{margin:'0.1rem'}}>
+                <SkipEnd />
+              </Button>
+              <ReactTooltip id="latest" place="top" effect="solid">
+                latest block
+              </ReactTooltip>
             </section>
           </td>
           
