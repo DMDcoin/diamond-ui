@@ -1,7 +1,7 @@
-import { ModelDataAdapter } from "../model/modelDataAdapter";
+
 import { observer } from 'mobx-react';
 import { action } from 'mobx';
-import React, { Fragment, MutableRefObject } from 'react';
+import React, { Fragment } from 'react';
 import { ui } from "../ui";
 import { Button, Modal, Overlay, Table } from "react-bootstrap";
 import ReactTooltip from "react-tooltip";
