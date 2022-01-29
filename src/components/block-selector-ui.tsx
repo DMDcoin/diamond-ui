@@ -158,17 +158,23 @@ export class BlockSelectorUI extends DmdComponent {
         }
       }
     };
+
+    const alignLeft = {
+      padding: '0.1rem',
+      width: '25rem'
+    };
+
     
-    return <div style={padding}>
+    return <div style={alignLeft}>
       {this._isModal?this.getModal():undefined}
       {accountInfos}
-    <Table striped bordered hover>
+    <Table bordered>
       <tbody>
         <tr>
-          <td>current block nr</td>
+          <td >current block nr</td>
           
           <td>
-            <section style={{width:'20rem'}}>
+            <section >
               <Button onClick={this.left.bind(this)}>
                 <ArrowLeft />
               </Button>
