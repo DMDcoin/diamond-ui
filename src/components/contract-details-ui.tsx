@@ -20,7 +20,7 @@ export class ContractDetailsUI extends DmdComponent {
     const { context } = this.props.modelDataAdapter;
 
     return <div>
-         <Table striped bordered hover>
+        <Table bordered hover>
             <tbody>
               <tr>
                 <td>current epochs reward expections</td>
@@ -38,9 +38,8 @@ export class ContractDetailsUI extends DmdComponent {
                 <tr>{formatEth(context.reinsertPot)}</tr>
               </tr>
             </tbody>
-         </Table>
-
-    </div>;
+        </Table>
+        </div>;
   }
 
 }

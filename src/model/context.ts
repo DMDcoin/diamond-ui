@@ -9,6 +9,8 @@ export class Context {
 
   @observable public stakingEpoch: number = 0;
 
+  @observable public keyGenRound: number = 0;
+
   @observable public currentBlockNumber: number = 0;
 
   @observable public latestBlockNumber: number = 0;

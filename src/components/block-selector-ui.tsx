@@ -204,6 +204,10 @@ export class BlockSelectorUI extends DmdComponent {
           <td>{context.stakingEpoch}</td>
         </tr>
         <tr>
+          <td>key gen. round</td>
+          <td>{context.keyGenRound}</td>
+        </tr>
+        <tr>
           <td>epoch start Block</td>
           <td>{context.epochStartBlock}</td>
         </tr>

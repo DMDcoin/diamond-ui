@@ -15,8 +15,8 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Button, Tab, Tabs} from 'react-bootstrap';
-import { ContractDetailsUI } from './components/contract-details-ui';
+import { Tab, Tabs} from 'react-bootstrap';
+// import { ContractDetailsUI } from './components/contract-details-ui';
 
 
 interface AppProps {
@@ -101,7 +101,7 @@ class App extends React.Component<AppProps, AppState> {
     //const { context } = this.props.modelDataAdapter;
     // const context = modelDataAdapter.context;
     const { modelDataAdapter } = this.props;
-    const { showModal } = this.state;
+    // const { showModal } = this.state;
     const { context } = modelDataAdapter;
 
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
@@ -133,10 +133,10 @@ class App extends React.Component<AppProps, AppState> {
       padding: '0.5rem'
     };
 
-    const handleClose = () => {
+    // const handleClose = () => {
 
-      this.setState({showModal: false});
-    }
+    //   this.setState({showModal: false});
+    // }
 
     //const target = useRef(null);
 
