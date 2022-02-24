@@ -15,6 +15,9 @@ import JsonBlockRewardHbbftCoins from '../../contract-abis/BlockRewardHbbftCoins
 import { Registry } from '../../contracts/Registry';
 import JsonRegistry from '../../contract-abis/Registry.json';
 
+import { TxPermissionHbbft } from '../../contracts/TxPermissionHbbft';
+import JsonTxPermissionHbbft from '../../contract-abis/TxPermissionHbbft.json';
+
 import { AdminUpgradeabilityProxy } from '../../contracts/AdminUpgradeabilityProxy';
 import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilityProxy.json';
 
@@ -32,6 +35,7 @@ export class ContractManager {
   private cachedStakingHbbft?: StakingHbbft;
   private cachedKeyGenHistory?: KeyGenHistory;
   private cachedRewardContract?: BlockRewardHbbftCoins;
+  private cachedPermission?: TxPermissionHbbft;
 
   public constructor(public web3: Web3) {
 
@@ -96,6 +100,24 @@ export class ContractManager {
     const stakingContract : any = new this.web3.eth.Contract(abi, contractAddress);
     this.cachedStakingHbbft = stakingContract;
     return stakingContract;
+  }
+
+  public async getPermission() : Promise<TxPermissionHbbft> {
+    
+        
+    if (this.cachedPermission ) {
+      return this.cachedPermission;
+    }
+
+    // address from chain spec.
+    const configuredAddress = '0x4000000000000000000000000000000000000001';
+
+    const abi : any = JsonTxPermissionHbbft.abi;
+    const permissionContract : any = new this.web3.eth.Contract(abi, configuredAddress);
+    this.cachedPermission = permissionContract;
+    return permissionContract;
+
+    //minimumGasPrice
   }
 
   public async getKeyGenHistory() : Promise<KeyGenHistory> {
