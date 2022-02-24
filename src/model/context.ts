@@ -33,6 +33,8 @@ export class Context {
 
   public delegatorMinStake: BN = new BN(0);
 
+  public minimumGasFee: BN = new BN(0);
+
   // public hasWeb3BrowserSupport = false;
 
   @observable public epochStartBlock!: number;
@@ -73,6 +75,10 @@ export class Context {
 
   @computed get epochStartTimeFormatted() : string {
     return new Date(this.epochStartTime * 1000).toLocaleString();
+  }
+
+  @computed get minimumGasFeeFormatted() : string {
+    return this.minimumGasFee.toNumber().toString();
   }
 
   @computed

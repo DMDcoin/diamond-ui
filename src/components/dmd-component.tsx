@@ -8,7 +8,6 @@ export interface IDmdProps {
 }
 
 
-@observer
 export class DmdComponent extends React.Component<IDmdProps, {}> {
 
   public componentDidMount() {

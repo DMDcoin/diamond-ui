@@ -224,6 +224,11 @@ export class BlockSelectorUI extends DmdComponent {
           <td>{context.reinsertPot}</td>
         </tr>
         <tr>
+          <td>minimum gas fee</td>
+          <td>{context.minimumGasFeeFormatted}</td>
+        </tr>
+       
+        <tr>
           <td>validators</td>
           <td>{context.pools.filter(x => x.isCurrentValidator).length}</td>
         </tr> 

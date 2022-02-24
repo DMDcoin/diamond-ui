@@ -102,7 +102,7 @@ export class ContractManager {
     return stakingContract;
   }
 
-  public async getPermission() : Promise<TxPermissionHbbft> {
+  public getContractPermission() : TxPermissionHbbft {
     
         
     if (this.cachedPermission ) {

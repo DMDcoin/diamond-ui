@@ -195,6 +195,8 @@ export class ModelDataAdapter {
 
     this.context.candidateMinStake = new BN(await this.stContract.methods.candidateMinStake().call(this.tx(), this.block()));
     this.context.delegatorMinStake = new BN(await this.stContract.methods.delegatorMinStake().call(this.tx(), this.block()));
+    
+    this.context.minimumGasFee = new BN(await this.contracts.getContractPermission().methods.minimumGasPrice().call(this.tx(), this.block()));
 
     // those values are asumed to be not changeable.
     this.context.epochDuration = parseInt(await (await this.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(this.tx(), this.block()));
