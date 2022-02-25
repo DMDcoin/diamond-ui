@@ -21,15 +21,30 @@ import JsonTxPermissionHbbft from '../../contract-abis/TxPermissionHbbft.json';
 import { AdminUpgradeabilityProxy } from '../../contracts/AdminUpgradeabilityProxy';
 import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilityProxy.json';
 
+import BigNumber from 'bignumber.js';
+import { BlockType } from '../../contracts/types';
 
-import BigNumber from 'bn.js';
 
+export enum KeyGenMode {
+  NotAPendingValidator = 0,
+  WritePart, 
+  WaitForOtherParts,
+  WriteAck,
+  WaitForOtherAcks,
+  AllKeysDone
+}
 
 export interface ContractAddresses {
   validatorSetAddress: string
 }
 
+// Hex string to number
+function h2n(hexString: string) : number {
+  return new BigNumber(hexString).toNumber();
+}
 export class ContractManager {
+
+
 
   private cachedValidatorSetHbbft?: ValidatorSetHbbft;
   private cachedStakingHbbft?: StakingHbbft;
@@ -54,9 +69,11 @@ export class ContractManager {
     }
 
     const contractAddresses = ContractManager.getContractAddresses();
+
     const abi : any = JsonValidatorSetHbbft.abi;
     const validatorSetContract : any = new this.web3.eth.Contract(abi, contractAddresses.validatorSetAddress);
     this.cachedValidatorSetHbbft = validatorSetContract;
+    //const validatorSet : ValidatorSetHbbft = validatorSetContract;
     return validatorSetContract;
   }
 
@@ -73,7 +90,6 @@ export class ContractManager {
     let result : any = new this.web3.eth.Contract(abi, address);
     return result;
   }
-
   public async getRewardHbbft() : Promise<BlockRewardHbbftCoins> {
     if (this.cachedRewardContract) {
       return this.cachedRewardContract;
@@ -86,6 +102,14 @@ export class ContractManager {
     this.cachedRewardContract = result;
     //const validatorSet : ValidatorSetHbbft = validatorSetContract;
     return this.cachedRewardContract!;
+  }
+
+  public async getEpoch(blockNumber: number | undefined) : Promise<number> {
+    return h2n(await (await this.getStakingHbbft()).methods.stakingEpoch().call({}, blockNumber));
+  }
+
+  public async getEpochStartBlock(blockNumber: BlockType = 'latest') {
+    return h2n(await (await this.getStakingHbbft()).methods.stakingEpochStartBlock().call({}, blockNumber));
   }
 
   public async getStakingHbbft() : Promise<StakingHbbft> {
@@ -101,7 +125,6 @@ export class ContractManager {
     this.cachedStakingHbbft = stakingContract;
     return stakingContract;
   }
-
   public getContractPermission() : TxPermissionHbbft {
     
         
@@ -135,9 +158,50 @@ export class ContractManager {
     return contract;
   }
 
+  public getAdminUpgradeabilityProxy(contractAddress: string) : AdminUpgradeabilityProxy {
+    
+    const abi : any = JsonAdminUpgradeabilityProxy.abi;
+    const contract : any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+
   public async isValidatorAvailable(miningAddress: string) {
      const validatorAvailableSince = new BigNumber(await (await this.getValidatorSetHbbft()).methods.validatorAvailableSince(miningAddress).call());
      return !validatorAvailableSince.isZero();
+  }
+
+  public async getValidators(blockNumber: BlockType = 'latest') {
+
+    return await this.getValidatorSetHbbft().methods.getValidators().call({}, blockNumber);
+  }
+
+  public async getPendingValidators(blockNumber: BlockType = 'latest') {
+    return await this.getValidatorSetHbbft().methods.getPendingValidators().call({}, blockNumber);
+  }
+
+
+  public async getPendingValidatorState(validator: string, blockNumber: BlockType = 'latest') : Promise<KeyGenMode> {
+
+    return h2n(await this.getValidatorSetHbbft().methods
+      .getPendingValidatorKeyGenerationMode(validator).call({}, blockNumber));
+  }
+
+  public async getKeyPARTBytesLength(validator: string, blockNumber: BlockType = 'latest') {
+    const part = await this.getKeyPART(validator, blockNumber);
+    return (part.length - 2) / 2;
+  }
+
+  public async getKeyPART(validator: string, blockNumber: BlockType = 'latest') : Promise<string> {
+    return await (await this.getKeyGenHistory()).methods.getPart(validator).call({}, blockNumber);
+  }
+
+  // retrieves only the number of written Acks (so not that much data has to get transferted.
+  public async getKeyACKSNumber(validator: string, blockNumber: BlockType = 'latest') : Promise<number> {
+    return h2n(await (await this.getKeyGenHistory()).methods.getAcksLength(validator).call({}, blockNumber));
+  }
+
+  public async getKeyGenRound(blockNumber: BlockType = 'latest') {
+    return h2n(await (await this.getKeyGenHistory()).methods.getCurrentKeyGenRound().call({}, blockNumber));
   }
 
  }
