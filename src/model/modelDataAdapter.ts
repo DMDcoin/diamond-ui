@@ -427,6 +427,8 @@ export class ModelDataAdapter {
 
     // const blocksAuthored = 0;
 
+    pool.keyGenMode = await this.contracts.getPendingValidatorState(miningAddress, this.block());
+
     if (pool.isPendingValidator) {
       pool.parts = await this.kghContract.methods.parts(miningAddress).call(this.tx(), this.block());
       const acksLengthBN = new BN(await this.kghContract.methods.getAcksLength(miningAddress).call(this.tx(), this.block()));

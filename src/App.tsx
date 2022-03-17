@@ -121,7 +121,7 @@ class App extends React.Component<AppProps, AppState> {
       { title: "Pending", field: "isPendingValidator", headerFilter:true,  formatter: "tickCross", width: 100 },
       { title: "Parts", field: "isWrittenParts", headerFilter:true, formatter: "tickCross", width: 100 },
       { title: "Acks", field: "isWrittenAcks", headerFilter:true, formatter: "tickCross", width: 100 },
-      
+      { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
       /* miner fields */
       { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", responsive: true },
 

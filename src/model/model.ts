@@ -1,6 +1,7 @@
 
 import BN from 'bn.js';
 import { Context } from './context';
+import { KeyGenMode } from './contracts/contractManager';
 
 export class ClaimableStake {
 
@@ -51,6 +52,8 @@ export class Pool {
   public validatorStakeShare: number = 0; // percent
   public validatorRewardShare: number = 0; // percent
   public claimableReward: string = '0';
+
+  public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
   
   public isBanned(): boolean {
     return this.bannedUntil.gt(this.context.currentTimestamp);
