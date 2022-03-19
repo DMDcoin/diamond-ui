@@ -1,0 +1,3 @@
+We’re launching our Diamond UI and Staking UI App on a beta-testing basis. While we’ve worked long and hard to develop the core features of the software, we expect that our users may detect bugs and other issues. Help us improve by posting any difficulties to our support page.
+Use of this app and blockchain at your own risk. Users may experience unexpected delays, unexpected visual artifacts, unexpected loss of tokens or funds from improper app configuration, or other negative outcomes.
+By hitting the "continue" button, you are representing that you’ve read our Terms of Service in full, and that you agree to be legally bound by them.
