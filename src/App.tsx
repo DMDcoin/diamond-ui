@@ -16,6 +16,7 @@ import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
 import { Tab, Tabs} from 'react-bootstrap';
+import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
 
@@ -108,7 +109,7 @@ class App extends React.Component<AppProps, AppState> {
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
-    const columns = [
+    const columns : ColumnDefinition[] = [
       { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left", frozen: true },
       { title: "Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
       { title: "Staked", field: "isActive", headerFilter:true, formatter: "tickCross", width: 100 },
@@ -123,7 +124,7 @@ class App extends React.Component<AppProps, AppState> {
       { title: "Acks", field: "isWrittenAcks", headerFilter:true, formatter: "tickCross", width: 100 },
       { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
       /* miner fields */
-      { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", responsive: true },
+      { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left" },
 
     ];
     
@@ -193,6 +194,7 @@ class App extends React.Component<AppProps, AppState> {
                   {validatorsWithoutPoolSection}
                   <ReactTabulatorViewOptions >
                     <ReactTabulator
+                      
                       data={data}
                       columns={columns}
                       tooltips={true}
