@@ -1,6 +1,5 @@
 import React from "react";
-import { ReactTabulator } from "react-tabulator";
-
+import { React15Tabulator } from 'react-tabulator';
 
 interface ReactTabulatorViewOptionsColumnSet {
   listName: string,
@@ -22,7 +21,7 @@ export class ReactTabulatorViewOptions extends  React.Component<ReactTabulatorVi
 
   public columnSets : Array<ReactTabulatorViewOptionsColumnSet> = [];
 
-  public reactTabulatorComponent?: ReactTabulator
+  public reactTabulatorComponent: React15Tabulator | undefined = undefined;
 
 
   static getDefaultPropsForInit() {

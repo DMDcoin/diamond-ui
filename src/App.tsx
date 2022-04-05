@@ -10,7 +10,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import dmd_logo from "./logo-hor.svg";
 
-import { ReactTabulator } from 'react-tabulator'
+import { ReactTabulator } from 'react-tabulator';
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
@@ -194,11 +194,9 @@ class App extends React.Component<AppProps, AppState> {
                   {validatorsWithoutPoolSection}
                   <ReactTabulatorViewOptions >
                     <ReactTabulator
-                      
                       data={data}
                       columns={columns}
                       tooltips={true}
-                      
                     />
                   </ReactTabulatorViewOptions>
                 </Tab>
