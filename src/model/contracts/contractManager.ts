@@ -44,8 +44,6 @@ function h2n(hexString: string) : number {
 }
 export class ContractManager {
 
-
-
   private cachedValidatorSetHbbft?: ValidatorSetHbbft;
   private cachedStakingHbbft?: StakingHbbft;
   private cachedKeyGenHistory?: KeyGenHistory;
@@ -90,6 +88,7 @@ export class ContractManager {
     let result : any = new this.web3.eth.Contract(abi, address);
     return result;
   }
+
   public async getRewardHbbft() : Promise<BlockRewardHbbftCoins> {
     if (this.cachedRewardContract) {
       return this.cachedRewardContract;
@@ -143,13 +142,13 @@ export class ContractManager {
     //minimumGasPrice
   }
 
-  public async getKeyGenHistory() : Promise<KeyGenHistory> {
+  public async getKeyGenHistory(blockNumber: BlockType = 'latest') : Promise<KeyGenHistory> {
     
     if (this.cachedKeyGenHistory) {
       return this.cachedKeyGenHistory;
     }
 
-    const contractAddress = await this.getValidatorSetHbbft().methods.keyGenHistoryContract().call();
+    const contractAddress = await this.getValidatorSetHbbft().methods.keyGenHistoryContract().call({}, blockNumber);
     console.log('KeyGenHistory address: ', contractAddress);
 
     const abi : any = JsonKeyGenHistory.abi;
@@ -165,8 +164,8 @@ export class ContractManager {
     return contract;
   }
 
-  public async isValidatorAvailable(miningAddress: string) {
-     const validatorAvailableSince = new BigNumber(await (await this.getValidatorSetHbbft()).methods.validatorAvailableSince(miningAddress).call());
+  public async isValidatorAvailable(miningAddress: string, blockNumber: BlockType = 'latest') {
+     const validatorAvailableSince = new BigNumber(await (await this.getValidatorSetHbbft()).methods.validatorAvailableSince(miningAddress).call({}, blockNumber));
      return !validatorAvailableSince.isZero();
   }
 
