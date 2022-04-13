@@ -24,16 +24,11 @@ interface AppProps {
   modelDataAdapter: ModelDataAdapter,
 }
 
-interface AppState {
-  showModal: boolean
-}
 
 @observer
-class App extends React.Component<AppProps, AppState> {
+class App extends React.Component<AppProps> {
 
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-
-  private _ref_overlay = React.createRef<HTMLElement>();
 
   state = {
     showModal: false,
@@ -99,10 +94,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public render(): JSX.Element {
 
-    //const { context } = this.props.modelDataAdapter;
-    // const context = modelDataAdapter.context;
     const { modelDataAdapter } = this.props;
-    // const { showModal } = this.state;
     const { context } = modelDataAdapter;
 
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
@@ -133,14 +125,7 @@ class App extends React.Component<AppProps, AppState> {
     const padding = {
       padding: '0.5rem'
     };
-
-    // const handleClose = () => {
-
-    //   this.setState({showModal: false});
-    // }
-
     //const target = useRef(null);
-
     
     
     //const show = context;
@@ -160,27 +145,6 @@ class App extends React.Component<AppProps, AppState> {
 
           
         </header>
-
-        
-{/* 
-        <Overlay target={this._ref_overlay}>
-          <Modal show={showModal} onHide={handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Modal heading</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
-              <Button variant="primary" onClick={handleClose}>
-                Save Changes
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </Overlay>
-         */}
-          
 
         
         <div>
@@ -253,14 +217,6 @@ class App extends React.Component<AppProps, AppState> {
     
 
     return result;
-  }
-  historicChanged(e: React.ChangeEvent<HTMLInputElement>): void {
-
-    //const isHistoric = e.target.checked;
-
-    //this.props.context.showHistoric(isHistoric);
-
-    //this.props.context.showHistoric(isHistoric);
   }
 
 }

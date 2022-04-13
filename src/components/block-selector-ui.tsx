@@ -1,17 +1,15 @@
-
-import { observer } from 'mobx-react';
 import { action } from 'mobx';
 import React, { Fragment } from 'react';
 import { ui } from "../ui";
-import { Button, Modal, Overlay, Table } from "react-bootstrap";
+import { Button, Modal, Table} from 'react-bootstrap';
 import ReactTooltip from "react-tooltip";
-import { ArrowLeft, ArrowRight, Hourglass, SkipEnd } from 'react-bootstrap-icons';
+import { ArrowLeft, ArrowRight, SkipEnd } from 'react-bootstrap-icons';
 import { DmdComponent } from "./dmd-component";
 
-@observer
 export class BlockSelectorUI extends DmdComponent {
 
   private _isModal = false;
+  private _ref_overlay = React.createRef<HTMLElement>();
 
 
   private getModal() : JSX.Element  {
@@ -109,10 +107,6 @@ export class BlockSelectorUI extends DmdComponent {
 
 
   public render(): JSX.Element {
-
-    const padding = {
-      padding: '0.5rem'
-    };
 
     console.log('render.');
 

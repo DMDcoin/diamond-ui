@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+
 import React from "react";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import BigNumber from 'bn.js';
