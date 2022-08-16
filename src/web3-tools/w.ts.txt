@@ -1,0 +1,66 @@
+// import Web3 from "web3";
+
+
+
+// import "reflect-metadata";
+
+// interface Type<T> {
+//   new (...args: any[]): T;
+// }
+
+// function Injectable() {
+//   return function <T>(target: Type<T>) {
+//     console.log(Reflect.getMetadata("design:paramtypes", target));
+//   };
+// }
+
+// @Injectable()
+// class Service1 {}
+
+// @Injectable()
+// class Service2 {
+//   constructor(service1: Service1) {}
+// }
+
+// @Injectable()
+// class Example {
+//   constructor(service1: Service1, service2: Service2) {}
+// }
+
+
+// export function testInject() {
+  
+//   const s1 = new Service1();
+//   const s2 = new Service2(s1);
+//   const e = new Example(s1, s2);
+  
+// }
+
+
+// export function inject(web3: Web3) {
+
+
+//   // call(transactionConfig: TransactionConfig): Promise<string>;
+  
+//   // call(
+//   //     transactionConfig: TransactionConfig,
+//   //     defaultBlock?: BlockNumber
+//   // ): Promise<string>;
+//   // call(
+//   //     transactionConfig: TransactionConfig,
+//   //     callback?: (error: Error, data: string) => void
+//   // ): Promise<string>;
+//   // call(
+//   //     transactionConfig: TransactionConfig,
+//   //     defaultBlock: BlockNumber,
+//   //     callback: (error: Error, data: string) => void
+//   // ): Promise<string>;
+
+//   // let call = (transactionConfig: TransactionConfig,
+//   //             defaultBlock: BlockNumber,
+//   //             callback: (error: Error, data: string) => void) => {
+//   //               web3.eth.call
+//   // }
+
+
+// }
