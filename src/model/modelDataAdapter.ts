@@ -11,6 +11,7 @@ import { observable } from 'mobx';
 import { Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 import { BlockType, NonPayableTx } from '../contracts/types';
+import { IModelCache, LocalStorageModelCache } from './modelCacheProvider';
 
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
@@ -37,8 +38,6 @@ export class ModelDataAdapter {
     from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
   };
 
-
-
   private vsContract!: ValidatorSetHbbft;
 
   private stContract!: StakingHbbftCoins;
@@ -48,6 +47,8 @@ export class ModelDataAdapter {
   private kghContract!: KeyGenHistory;
 
   public contracts! : ContractManager;
+
+  // public cache: IModelCache = new LocalStorageModelCache();
 
   private _isShowHistoric: boolean = false;
 
@@ -309,7 +310,8 @@ export class ModelDataAdapter {
     this.context.currentValidatorsWithoutPools = validatorWithoutPool;
     this.context.pools = this.context.pools.sort((a, b) => a.stakingAddress.localeCompare(b.stakingAddress));
 
-    
+    // this.cache.store(this.context);
+    //storeData(this.context);
   }
 
   private async getClaimableReward(stakingAddr: string): Promise<string> {

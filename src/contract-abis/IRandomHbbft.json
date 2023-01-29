@@ -1,8 +1,9 @@
 {
+  "_format": "hh-sol-artifact-1",
   "contractName": "IRandomHbbft",
+  "sourceName": "contracts/interfaces/IRandomHbbft.sol",
   "abi": [
     {
-      "constant": true,
       "inputs": [],
       "name": "currentSeed",
       "outputs": [
@@ -12,219 +13,95 @@
           "type": "uint256"
         }
       ],
-      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_blocknumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSeedHistoric",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "getSeedsHistoric",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isFullHealth",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "isFullHealthHistoric",
+      "outputs": [
+        {
+          "internalType": "bool[]",
+          "name": "",
+          "type": "bool[]"
+        }
+      ],
       "stateMutability": "view",
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentSeed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol\":\"IRandomHbbft\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol\":{\"keccak256\":\"0xba5c1a7935bb398f241f4e9ab74c813ce020945ddbca2ae25c76588195d99428\",\"urls\":[\"bzz-raw://b1e5ed76dceb549cb41c0969c4ffae3213e452d53f8e457d68c9cafeb0abd20b\",\"dweb:/ipfs/QmdUtpfrrm93RXiUP6oGDVz172dvUkrCCCRJMLymRAU9Fp\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
-  "sourceMap": "",
-  "deployedSourceMap": "",
-  "source": "pragma solidity ^0.5.16;\n\n\ninterface IRandomHbbft {\n    function currentSeed() external view returns(uint256);\n}\n",
-  "sourcePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
-  "ast": {
-    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
-    "exportedSymbols": {
-      "IRandomHbbft": [
-        10015
-      ]
-    },
-    "id": 10016,
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 10009,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".16"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "0:24:20"
-      },
-      {
-        "baseContracts": [],
-        "contractDependencies": [],
-        "contractKind": "interface",
-        "documentation": null,
-        "fullyImplemented": false,
-        "id": 10015,
-        "linearizedBaseContracts": [
-          10015
-        ],
-        "name": "IRandomHbbft",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "body": null,
-            "documentation": null,
-            "id": 10014,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "currentSeed",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 10010,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "76:2:20"
-            },
-            "returnParameters": {
-              "id": 10013,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 10012,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 10014,
-                  "src": "101:7:20",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 10011,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "101:7:20",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "100:9:20"
-            },
-            "scope": 10015,
-            "src": "56:54:20",
-            "stateMutability": "view",
-            "superFunction": null,
-            "visibility": "external"
-          }
-        ],
-        "scope": 10016,
-        "src": "27:85:20"
-      }
-    ],
-    "src": "0:113:20"
-  },
-  "legacyAST": {
-    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
-    "exportedSymbols": {
-      "IRandomHbbft": [
-        10015
-      ]
-    },
-    "id": 10016,
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 10009,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".16"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "0:24:20"
-      },
-      {
-        "baseContracts": [],
-        "contractDependencies": [],
-        "contractKind": "interface",
-        "documentation": null,
-        "fullyImplemented": false,
-        "id": 10015,
-        "linearizedBaseContracts": [
-          10015
-        ],
-        "name": "IRandomHbbft",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "body": null,
-            "documentation": null,
-            "id": 10014,
-            "implemented": false,
-            "kind": "function",
-            "modifiers": [],
-            "name": "currentSeed",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 10010,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "76:2:20"
-            },
-            "returnParameters": {
-              "id": 10013,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 10012,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 10014,
-                  "src": "101:7:20",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 10011,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "101:7:20",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "100:9:20"
-            },
-            "scope": 10015,
-            "src": "56:54:20",
-            "stateMutability": "view",
-            "superFunction": null,
-            "visibility": "external"
-          }
-        ],
-        "scope": 10016,
-        "src": "27:85:20"
-      }
-    ],
-    "src": "0:113:20"
-  },
-  "compiler": {
-    "name": "solc",
-    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
-  },
-  "networks": {},
-  "schemaVersion": "3.3.1",
-  "updatedAt": "2021-12-06T19:40:03.036Z",
-  "devdoc": {
-    "methods": {}
-  },
-  "userdoc": {
-    "methods": {}
-  }
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }

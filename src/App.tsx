@@ -102,21 +102,21 @@ class App extends React.Component<AppProps> {
     ));
 
     const columns : ColumnDefinition[] = [
-      { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left", frozen: true },
+      { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left",  width:370 },
       { title: "Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 50000000000000000000000 }, width: 100 },
-      { title: "Staked", field: "isActive", headerFilter:true, formatter: "tickCross", width: 100 },
-      { title: "Available", field: "isAvailable", headerFilter:true, formatter: "tickCross", width: 100 },
-      { title: "Current", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 100 },
+      { title: "S", headerTooltip: "Staked - has enough stake ?" ,field: "isActive", headerFilter:true, formatter: "tickCross", width: 30},
+      { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
+      { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
 
       /* reall required ? */
-      { title: "To be elected", field: "isToBeElected", headerFilter:true, formatter: "tickCross", width: 100 },
+      { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", headerFilter:true, formatter: "tickCross", width: 30 },
       /* key generation fields */
-      { title: "Pending", field: "isPendingValidator", headerFilter:true,  formatter: "tickCross", width: 100 },
-      { title: "Parts", field: "isWrittenParts", headerFilter:true, formatter: "tickCross", width: 100 },
-      { title: "Acks", field: "isWrittenAcks", headerFilter:true, formatter: "tickCross", width: 100 },
-      { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
+      { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts", headerFilter:true,  formatter: "tickCross", width: 30 },
+      { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", headerFilter:true, formatter: "tickCross", width: 30 },
+      { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", headerFilter:true, formatter: "tickCross", width: 30 },
+      // { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
       /* miner fields */
-      { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left" },
+      { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left",  width: 370 },
 
     ];
     
@@ -158,6 +158,7 @@ class App extends React.Component<AppProps> {
                   {validatorsWithoutPoolSection}
                   <ReactTabulatorViewOptions >
                     <ReactTabulator
+                      responsiveLayout="collapse"
                       data={data}
                       columns={columns}
                       tooltips={true}
