@@ -1,8 +1,9 @@
 {
+  "_format": "hh-sol-artifact-1",
   "contractName": "RandomHbbft",
+  "sourceName": "contracts/RandomHbbft.sol",
   "abi": [
     {
-      "constant": true,
       "inputs": [],
       "name": "currentSeed",
       "outputs": [
@@ -12,12 +13,93 @@
           "type": "uint256"
         }
       ],
-      "payable": false,
       "stateMutability": "view",
       "type": "function"
     },
     {
-      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_blocknumber",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSeedHistoric",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_blocknumbers",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "getSeedsHistoric",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_validatorSetContract",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isFullHealth",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_blocknumbers",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "isFullHealthHistoric",
+      "outputs": [
+        {
+          "internalType": "bool[]",
+          "name": "",
+          "type": "bool[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -27,864 +109,25 @@
       ],
       "name": "setCurrentSeed",
       "outputs": [],
-      "payable": false,
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "validatorSetContract",
+      "outputs": [
+        {
+          "internalType": "contract IValidatorSetHbbft",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentSeed\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_currentSeed\",\"type\":\"uint256\"}],\"name\":\"setCurrentSeed\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Stores and uppdates a random seed that is used to form a new validator set by the `ValidatorSetHbbft.newValidatorSet` function.\",\"methods\":{\"setCurrentSeed(uint256)\":{\"details\":\"The cooperative consens mechanism in HBBFT achieves to  generate a seed, that cannot be predicted by the nodes, but can get used within smart contracts without having to wait for an additional block. this is one of the biggest benefits of HBBFT. When the nodes are able to decrypt the transaction, they know the seed, that can be used as random base for smart contract interactions. setCurrentSeed is always the first transaction within a block, and currentSeed is a public available value that can get used by all smart contracts.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol\":\"RandomHbbft\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol\":{\"keccak256\":\"0x6471954d754d0b96f3e9177a6fc84466b50e3dd4e7134c0a1371743471c6ed31\",\"urls\":[\"bzz-raw://587848d20c4c5bbd1b416f4ceebcf05c8ac390b655215c7349333cfa88891f58\",\"dweb:/ipfs/QmarDMraqZoBuGcBxBdyiMydBjoCFaxgJW7wFcuPerYzAT\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol\":{\"keccak256\":\"0xba5c1a7935bb398f241f4e9ab74c813ce020945ddbca2ae25c76588195d99428\",\"urls\":[\"bzz-raw://b1e5ed76dceb549cb41c0969c4ffae3213e452d53f8e457d68c9cafeb0abd20b\",\"dweb:/ipfs/QmdUtpfrrm93RXiUP6oGDVz172dvUkrCCCRJMLymRAU9Fp\"]},\"/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol\":{\"keccak256\":\"0x0b393066e706db35b9c523d3a21b63a5d9eafde51fdefbcbc4d6c815dff574a2\",\"urls\":[\"bzz-raw://493d9041c195ee69b05ab36000021c7171816f3efb2623c8d2a1d90118fb1fd9\",\"dweb:/ipfs/QmPuhiCNVZjM4B18cEpphc5juGTDcjhNcKnBDxexXMZ3Md\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b50610105806100206000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c806383220626146037578063919cc19c14604f575b600080fd5b603d606b565b60408051918252519081900360200190f35b606960048036036020811015606357600080fd5b50356071565b005b60005481565b6002600160a01b03331460cb576040805162461bcd60e51b815260206004820152601a60248201527f4d7573742062652065786563757465642062792053797374656d000000000000604482015290519081900360640190fd5b60005556fea265627a7a723158201805a52920cd4d71872210e26d69d516e6483ab8563cf797a49c8ddffa0cc19464736f6c63430005110032",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060325760003560e01c806383220626146037578063919cc19c14604f575b600080fd5b603d606b565b60408051918252519081900360200190f35b606960048036036020811015606357600080fd5b50356071565b005b60005481565b6002600160a01b03331460cb576040805162461bcd60e51b815260206004820152601a60248201527f4d7573742062652065786563757465642062792053797374656d000000000000604482015290519081900360640190fd5b60005556fea265627a7a723158201805a52920cd4d71872210e26d69d516e6483ab8563cf797a49c8ddffa0cc19464736f6c63430005110032",
-  "sourceMap": "259:1694:5:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;259:1694:5;;;;;;;",
-  "deployedSourceMap": "259:1694:5:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;259:1694:5;;;;;;;;;;;;;;;;;;;;;;;;699:26;;;:::i;:::-;;;;;;;;;;;;;;;;1834:117;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1834:117:5;;:::i;:::-;;699:26;;;;:::o;1834:117::-;-1:-1:-1;;;;;994:10:5;:56;986:95;;;;;-1:-1:-1;;;986:95:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;1918:11;:26;1834:117::o",
-  "source": "pragma solidity ^0.5.16;\n\nimport \"./interfaces/IRandomHbbft.sol\";\nimport \"./upgradeability/UpgradeabilityAdmin.sol\";\n\n/// @dev Stores and uppdates a random seed that is used to form a new validator set by the\n/// `ValidatorSetHbbft.newValidatorSet` function.\ncontract RandomHbbft is UpgradeabilityAdmin, IRandomHbbft {\n\n    // =============================================== Storage ========================================================\n\n    // WARNING: since this contract is upgradeable, do not remove\n    // existing storage variables and do not change their types!\n\n\n    /// @dev The current random seed accumulated during RANDAO or another process\n    /// (depending on implementation).\n    uint256 public currentSeed;\n\n    // ============================================== Modifiers =======================================================\n\n    /// @dev Ensures the caller is the SYSTEM_ADDRESS. See https://wiki.parity.io/Validator-Set.html\n    modifier onlySystem() {\n        require(msg.sender == 0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE, \"Must be executed by System\");\n        _;\n    }\n    // =============================================== Setters ========================================================\n\n    /// @dev The cooperative consens mechanism in HBBFT achieves to \n    /// generate a seed, that cannot be predicted by the nodes,\n    /// but can get used within smart contracts without having to wait for\n    /// an additional block.\n    /// this is one of the biggest benefits of HBBFT.\n    /// When the nodes are able to decrypt the transaction,\n    /// they know the seed, that can be used as random base for smart contract interactions.\n    /// setCurrentSeed is always the first transaction within a block,\n    /// and currentSeed is a public available value that can get used by all smart contracts.\n    function setCurrentSeed(uint256 _currentSeed)\n    external\n    onlySystem {\n        currentSeed = _currentSeed;\n    }\n}",
-  "sourcePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol",
-  "ast": {
-    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol",
-    "exportedSymbols": {
-      "RandomHbbft": [
-        959
-      ]
-    },
-    "id": 960,
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 926,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".16"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "0:24:5"
-      },
-      {
-        "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
-        "file": "./interfaces/IRandomHbbft.sol",
-        "id": 927,
-        "nodeType": "ImportDirective",
-        "scope": 960,
-        "sourceUnit": 10016,
-        "src": "26:39:5",
-        "symbolAliases": [],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
-        "file": "./upgradeability/UpgradeabilityAdmin.sol",
-        "id": 928,
-        "nodeType": "ImportDirective",
-        "scope": 960,
-        "sourceUnit": 11398,
-        "src": "66:50:5",
-        "symbolAliases": [],
-        "unitAlias": ""
-      },
-      {
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 929,
-              "name": "UpgradeabilityAdmin",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11397,
-              "src": "283:19:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11397",
-                "typeString": "contract UpgradeabilityAdmin"
-              }
-            },
-            "id": 930,
-            "nodeType": "InheritanceSpecifier",
-            "src": "283:19:5"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 931,
-              "name": "IRandomHbbft",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10015,
-              "src": "304:12:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRandomHbbft_$10015",
-                "typeString": "contract IRandomHbbft"
-              }
-            },
-            "id": 932,
-            "nodeType": "InheritanceSpecifier",
-            "src": "304:12:5"
-          }
-        ],
-        "contractDependencies": [
-          10015,
-          11397
-        ],
-        "contractKind": "contract",
-        "documentation": "@dev Stores and uppdates a random seed that is used to form a new validator set by the\n `ValidatorSetHbbft.newValidatorSet` function.",
-        "fullyImplemented": true,
-        "id": 959,
-        "linearizedBaseContracts": [
-          959,
-          10015,
-          11397
-        ],
-        "name": "RandomHbbft",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "id": 934,
-            "name": "currentSeed",
-            "nodeType": "VariableDeclaration",
-            "scope": 959,
-            "src": "699:26:5",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_uint256",
-              "typeString": "uint256"
-            },
-            "typeName": {
-              "id": 933,
-              "name": "uint256",
-              "nodeType": "ElementaryTypeName",
-              "src": "699:7:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_uint256",
-                "typeString": "uint256"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 945,
-              "nodeType": "Block",
-              "src": "976:123:5",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_address_payable",
-                          "typeString": "address payable"
-                        },
-                        "id": 940,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 937,
-                            "name": "msg",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 11480,
-                            "src": "994:3:5",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_magic_message",
-                              "typeString": "msg"
-                            }
-                          },
-                          "id": 938,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "memberName": "sender",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
-                          "src": "994:10:5",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_address_payable",
-                            "typeString": "address payable"
-                          }
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "==",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "307866666666464646664646666666666666666666666666666646664646466666664646466646466645",
-                          "id": 939,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "1008:42:5",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_address_payable",
-                            "typeString": "address payable"
-                          },
-                          "value": "0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE"
-                        },
-                        "src": "994:56:5",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bool",
-                          "typeString": "bool"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "hexValue": "4d7573742062652065786563757465642062792053797374656d",
-                        "id": 941,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "kind": "string",
-                        "lValueRequested": false,
-                        "nodeType": "Literal",
-                        "src": "1052:28:5",
-                        "subdenomination": null,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_stringliteral_35c4871d0df407cae0d288f06d996f30d7f5c2c2a45b9b2462e95a54bd46f378",
-                          "typeString": "literal_string \"Must be executed by System\""
-                        },
-                        "value": "Must be executed by System"
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bool",
-                          "typeString": "bool"
-                        },
-                        {
-                          "typeIdentifier": "t_stringliteral_35c4871d0df407cae0d288f06d996f30d7f5c2c2a45b9b2462e95a54bd46f378",
-                          "typeString": "literal_string \"Must be executed by System\""
-                        }
-                      ],
-                      "id": 936,
-                      "name": "require",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        11483,
-                        11484
-                      ],
-                      "referencedDeclaration": 11484,
-                      "src": "986:7:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
-                        "typeString": "function (bool,string memory) pure"
-                      }
-                    },
-                    "id": 942,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "986:95:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 943,
-                  "nodeType": "ExpressionStatement",
-                  "src": "986:95:5"
-                },
-                {
-                  "id": 944,
-                  "nodeType": "PlaceholderStatement",
-                  "src": "1091:1:5"
-                }
-              ]
-            },
-            "documentation": "@dev Ensures the caller is the SYSTEM_ADDRESS. See https://wiki.parity.io/Validator-Set.html",
-            "id": 946,
-            "name": "onlySystem",
-            "nodeType": "ModifierDefinition",
-            "parameters": {
-              "id": 935,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "973:2:5"
-            },
-            "src": "954:145:5",
-            "visibility": "internal"
-          },
-          {
-            "body": {
-              "id": 957,
-              "nodeType": "Block",
-              "src": "1908:43:5",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 955,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 953,
-                      "name": "currentSeed",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 934,
-                      "src": "1918:11:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 954,
-                      "name": "_currentSeed",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 948,
-                      "src": "1932:12:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
-                    },
-                    "src": "1918:26:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "id": 956,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1918:26:5"
-                }
-              ]
-            },
-            "documentation": "@dev The cooperative consens mechanism in HBBFT achieves to \n generate a seed, that cannot be predicted by the nodes,\n but can get used within smart contracts without having to wait for\n an additional block.\n this is one of the biggest benefits of HBBFT.\n When the nodes are able to decrypt the transaction,\n they know the seed, that can be used as random base for smart contract interactions.\n setCurrentSeed is always the first transaction within a block,\n and currentSeed is a public available value that can get used by all smart contracts.",
-            "id": 958,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [
-              {
-                "arguments": null,
-                "id": 951,
-                "modifierName": {
-                  "argumentTypes": null,
-                  "id": 950,
-                  "name": "onlySystem",
-                  "nodeType": "Identifier",
-                  "overloadedDeclarations": [],
-                  "referencedDeclaration": 946,
-                  "src": "1897:10:5",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$__$",
-                    "typeString": "modifier ()"
-                  }
-                },
-                "nodeType": "ModifierInvocation",
-                "src": "1897:10:5"
-              }
-            ],
-            "name": "setCurrentSeed",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 949,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 948,
-                  "name": "_currentSeed",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 958,
-                  "src": "1858:20:5",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 947,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1858:7:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1857:22:5"
-            },
-            "returnParameters": {
-              "id": 952,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1908:0:5"
-            },
-            "scope": 959,
-            "src": "1834:117:5",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          }
-        ],
-        "scope": 960,
-        "src": "259:1694:5"
-      }
-    ],
-    "src": "0:1953:5"
-  },
-  "legacyAST": {
-    "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/RandomHbbft.sol",
-    "exportedSymbols": {
-      "RandomHbbft": [
-        959
-      ]
-    },
-    "id": 960,
-    "nodeType": "SourceUnit",
-    "nodes": [
-      {
-        "id": 926,
-        "literals": [
-          "solidity",
-          "^",
-          "0.5",
-          ".16"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "0:24:5"
-      },
-      {
-        "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/interfaces/IRandomHbbft.sol",
-        "file": "./interfaces/IRandomHbbft.sol",
-        "id": 927,
-        "nodeType": "ImportDirective",
-        "scope": 960,
-        "sourceUnit": 10016,
-        "src": "26:39:5",
-        "symbolAliases": [],
-        "unitAlias": ""
-      },
-      {
-        "absolutePath": "/home/sn/dmd/dmd-meta/hbbft-posdao-contracts/contracts/upgradeability/UpgradeabilityAdmin.sol",
-        "file": "./upgradeability/UpgradeabilityAdmin.sol",
-        "id": 928,
-        "nodeType": "ImportDirective",
-        "scope": 960,
-        "sourceUnit": 11398,
-        "src": "66:50:5",
-        "symbolAliases": [],
-        "unitAlias": ""
-      },
-      {
-        "baseContracts": [
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 929,
-              "name": "UpgradeabilityAdmin",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11397,
-              "src": "283:19:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_UpgradeabilityAdmin_$11397",
-                "typeString": "contract UpgradeabilityAdmin"
-              }
-            },
-            "id": 930,
-            "nodeType": "InheritanceSpecifier",
-            "src": "283:19:5"
-          },
-          {
-            "arguments": null,
-            "baseName": {
-              "contractScope": null,
-              "id": 931,
-              "name": "IRandomHbbft",
-              "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10015,
-              "src": "304:12:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IRandomHbbft_$10015",
-                "typeString": "contract IRandomHbbft"
-              }
-            },
-            "id": 932,
-            "nodeType": "InheritanceSpecifier",
-            "src": "304:12:5"
-          }
-        ],
-        "contractDependencies": [
-          10015,
-          11397
-        ],
-        "contractKind": "contract",
-        "documentation": "@dev Stores and uppdates a random seed that is used to form a new validator set by the\n `ValidatorSetHbbft.newValidatorSet` function.",
-        "fullyImplemented": true,
-        "id": 959,
-        "linearizedBaseContracts": [
-          959,
-          10015,
-          11397
-        ],
-        "name": "RandomHbbft",
-        "nodeType": "ContractDefinition",
-        "nodes": [
-          {
-            "constant": false,
-            "id": 934,
-            "name": "currentSeed",
-            "nodeType": "VariableDeclaration",
-            "scope": 959,
-            "src": "699:26:5",
-            "stateVariable": true,
-            "storageLocation": "default",
-            "typeDescriptions": {
-              "typeIdentifier": "t_uint256",
-              "typeString": "uint256"
-            },
-            "typeName": {
-              "id": 933,
-              "name": "uint256",
-              "nodeType": "ElementaryTypeName",
-              "src": "699:7:5",
-              "typeDescriptions": {
-                "typeIdentifier": "t_uint256",
-                "typeString": "uint256"
-              }
-            },
-            "value": null,
-            "visibility": "public"
-          },
-          {
-            "body": {
-              "id": 945,
-              "nodeType": "Block",
-              "src": "976:123:5",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "arguments": [
-                      {
-                        "argumentTypes": null,
-                        "commonType": {
-                          "typeIdentifier": "t_address_payable",
-                          "typeString": "address payable"
-                        },
-                        "id": 940,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": false,
-                        "lValueRequested": false,
-                        "leftExpression": {
-                          "argumentTypes": null,
-                          "expression": {
-                            "argumentTypes": null,
-                            "id": 937,
-                            "name": "msg",
-                            "nodeType": "Identifier",
-                            "overloadedDeclarations": [],
-                            "referencedDeclaration": 11480,
-                            "src": "994:3:5",
-                            "typeDescriptions": {
-                              "typeIdentifier": "t_magic_message",
-                              "typeString": "msg"
-                            }
-                          },
-                          "id": 938,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": false,
-                          "lValueRequested": false,
-                          "memberName": "sender",
-                          "nodeType": "MemberAccess",
-                          "referencedDeclaration": null,
-                          "src": "994:10:5",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_address_payable",
-                            "typeString": "address payable"
-                          }
-                        },
-                        "nodeType": "BinaryOperation",
-                        "operator": "==",
-                        "rightExpression": {
-                          "argumentTypes": null,
-                          "hexValue": "307866666666464646664646666666666666666666666666666646664646466666664646466646466645",
-                          "id": 939,
-                          "isConstant": false,
-                          "isLValue": false,
-                          "isPure": true,
-                          "kind": "number",
-                          "lValueRequested": false,
-                          "nodeType": "Literal",
-                          "src": "1008:42:5",
-                          "subdenomination": null,
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_address_payable",
-                            "typeString": "address payable"
-                          },
-                          "value": "0xffffFFFfFFffffffffffffffFfFFFfffFFFfFFfE"
-                        },
-                        "src": "994:56:5",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_bool",
-                          "typeString": "bool"
-                        }
-                      },
-                      {
-                        "argumentTypes": null,
-                        "hexValue": "4d7573742062652065786563757465642062792053797374656d",
-                        "id": 941,
-                        "isConstant": false,
-                        "isLValue": false,
-                        "isPure": true,
-                        "kind": "string",
-                        "lValueRequested": false,
-                        "nodeType": "Literal",
-                        "src": "1052:28:5",
-                        "subdenomination": null,
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_stringliteral_35c4871d0df407cae0d288f06d996f30d7f5c2c2a45b9b2462e95a54bd46f378",
-                          "typeString": "literal_string \"Must be executed by System\""
-                        },
-                        "value": "Must be executed by System"
-                      }
-                    ],
-                    "expression": {
-                      "argumentTypes": [
-                        {
-                          "typeIdentifier": "t_bool",
-                          "typeString": "bool"
-                        },
-                        {
-                          "typeIdentifier": "t_stringliteral_35c4871d0df407cae0d288f06d996f30d7f5c2c2a45b9b2462e95a54bd46f378",
-                          "typeString": "literal_string \"Must be executed by System\""
-                        }
-                      ],
-                      "id": 936,
-                      "name": "require",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        11483,
-                        11484
-                      ],
-                      "referencedDeclaration": 11484,
-                      "src": "986:7:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
-                        "typeString": "function (bool,string memory) pure"
-                      }
-                    },
-                    "id": 942,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "kind": "functionCall",
-                    "lValueRequested": false,
-                    "names": [],
-                    "nodeType": "FunctionCall",
-                    "src": "986:95:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_tuple$__$",
-                      "typeString": "tuple()"
-                    }
-                  },
-                  "id": 943,
-                  "nodeType": "ExpressionStatement",
-                  "src": "986:95:5"
-                },
-                {
-                  "id": 944,
-                  "nodeType": "PlaceholderStatement",
-                  "src": "1091:1:5"
-                }
-              ]
-            },
-            "documentation": "@dev Ensures the caller is the SYSTEM_ADDRESS. See https://wiki.parity.io/Validator-Set.html",
-            "id": 946,
-            "name": "onlySystem",
-            "nodeType": "ModifierDefinition",
-            "parameters": {
-              "id": 935,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "973:2:5"
-            },
-            "src": "954:145:5",
-            "visibility": "internal"
-          },
-          {
-            "body": {
-              "id": 957,
-              "nodeType": "Block",
-              "src": "1908:43:5",
-              "statements": [
-                {
-                  "expression": {
-                    "argumentTypes": null,
-                    "id": 955,
-                    "isConstant": false,
-                    "isLValue": false,
-                    "isPure": false,
-                    "lValueRequested": false,
-                    "leftHandSide": {
-                      "argumentTypes": null,
-                      "id": 953,
-                      "name": "currentSeed",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 934,
-                      "src": "1918:11:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
-                    },
-                    "nodeType": "Assignment",
-                    "operator": "=",
-                    "rightHandSide": {
-                      "argumentTypes": null,
-                      "id": 954,
-                      "name": "_currentSeed",
-                      "nodeType": "Identifier",
-                      "overloadedDeclarations": [],
-                      "referencedDeclaration": 948,
-                      "src": "1932:12:5",
-                      "typeDescriptions": {
-                        "typeIdentifier": "t_uint256",
-                        "typeString": "uint256"
-                      }
-                    },
-                    "src": "1918:26:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "id": 956,
-                  "nodeType": "ExpressionStatement",
-                  "src": "1918:26:5"
-                }
-              ]
-            },
-            "documentation": "@dev The cooperative consens mechanism in HBBFT achieves to \n generate a seed, that cannot be predicted by the nodes,\n but can get used within smart contracts without having to wait for\n an additional block.\n this is one of the biggest benefits of HBBFT.\n When the nodes are able to decrypt the transaction,\n they know the seed, that can be used as random base for smart contract interactions.\n setCurrentSeed is always the first transaction within a block,\n and currentSeed is a public available value that can get used by all smart contracts.",
-            "id": 958,
-            "implemented": true,
-            "kind": "function",
-            "modifiers": [
-              {
-                "arguments": null,
-                "id": 951,
-                "modifierName": {
-                  "argumentTypes": null,
-                  "id": 950,
-                  "name": "onlySystem",
-                  "nodeType": "Identifier",
-                  "overloadedDeclarations": [],
-                  "referencedDeclaration": 946,
-                  "src": "1897:10:5",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$__$",
-                    "typeString": "modifier ()"
-                  }
-                },
-                "nodeType": "ModifierInvocation",
-                "src": "1897:10:5"
-              }
-            ],
-            "name": "setCurrentSeed",
-            "nodeType": "FunctionDefinition",
-            "parameters": {
-              "id": 949,
-              "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 948,
-                  "name": "_currentSeed",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 958,
-                  "src": "1858:20:5",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  },
-                  "typeName": {
-                    "id": 947,
-                    "name": "uint256",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "1858:7:5",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "1857:22:5"
-            },
-            "returnParameters": {
-              "id": 952,
-              "nodeType": "ParameterList",
-              "parameters": [],
-              "src": "1908:0:5"
-            },
-            "scope": 959,
-            "src": "1834:117:5",
-            "stateMutability": "nonpayable",
-            "superFunction": null,
-            "visibility": "external"
-          }
-        ],
-        "scope": 960,
-        "src": "259:1694:5"
-      }
-    ],
-    "src": "0:1953:5"
-  },
-  "compiler": {
-    "name": "solc",
-    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
-  },
-  "networks": {},
-  "schemaVersion": "3.3.1",
-  "updatedAt": "2021-12-06T19:40:02.911Z",
-  "devdoc": {
-    "details": "Stores and uppdates a random seed that is used to form a new validator set by the `ValidatorSetHbbft.newValidatorSet` function.",
-    "methods": {
-      "setCurrentSeed(uint256)": {
-        "details": "The cooperative consens mechanism in HBBFT achieves to  generate a seed, that cannot be predicted by the nodes, but can get used within smart contracts without having to wait for an additional block. this is one of the biggest benefits of HBBFT. When the nodes are able to decrypt the transaction, they know the seed, that can be used as random base for smart contract interactions. setCurrentSeed is always the first transaction within a block, and currentSeed is a public available value that can get used by all smart contracts."
-      }
-    }
-  },
-  "userdoc": {
-    "methods": {}
-  }
+  "bytecode": "0x608060405234801561001057600080fd5b506106b5806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c8063a49904e51161005b578063a49904e51461010a578063c4d66de814610122578063d9ba8eef1461016a578063dfc8bf4e1461018a57600080fd5b8063015e23151461008d5780637e2cb34d146100c057806383220626146100e0578063919cc19c146100f5575b600080fd5b6100ad61009b3660046104ce565b60009081526001602052604090205490565b6040519081526020015b60405180910390f35b6100d36100ce3660046104e7565b6101b5565b6040516100b7919061055c565b436000908152600160205260409020546100ad565b6101086101033660046104ce565b610272565b005b610112610387565b60405190151581526020016100b7565b6101086101303660046105a2565b600380547fffffffffffffffffffffffff0000000000000000000000000000000000000000166001600160a01b0392909216919091179055565b61017d6101783660046104e7565b6103fa565b6040516100b791906105d2565b60035461019d906001600160a01b031681565b6040516001600160a01b0390911681526020016100b7565b60608160008167ffffffffffffffff8111156101d3576101d361060a565b6040519080825280602002602001820160405280156101fc578160200160208202803683370190505b50905060005b828110156102695761023686868381811061021f5761021f610620565b9050602002013560026104aa90919063ffffffff16565b1582828151811061024957610249610620565b9115156020928302919091019091015261026281610636565b9050610202565b50949350505050565b73fffffffffffffffffffffffffffffffffffffffe33146102d95760405162461bcd60e51b815260206004820152601a60248201527f4d7573742062652065786563757465642062792053797374656d000000000000604482015260640160405180910390fd5b43600090815260016020908152604091829020839055600354825163a49904e560e01b815292516001600160a01b039091169263a49904e59260048083019391928290030181865afa158015610333573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610357919061065d565b6103845743600881901c60009081526002602052604090208054600160ff9093169290921b909117905550565b50565b6003546040805163a49904e560e01b815290516000926001600160a01b03169163a49904e59160048083019260209291908290030181865afa1580156103d1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103f5919061065d565b905090565b60608160008167ffffffffffffffff8111156104185761041861060a565b604051908082528060200260200182016040528015610441578160200160208202803683370190505b50905060005b82811015610269576001600087878481811061046557610465610620565b9050602002013581526020019081526020016000205482828151811061048d5761048d610620565b6020908102919091010152806104a281610636565b915050610447565b600881901c600090815260208390526040902054600160ff83161b16151592915050565b6000602082840312156104e057600080fd5b5035919050565b600080602083850312156104fa57600080fd5b823567ffffffffffffffff8082111561051257600080fd5b818501915085601f83011261052657600080fd5b81358181111561053557600080fd5b8660208260051b850101111561054a57600080fd5b60209290920196919550909350505050565b6020808252825182820181905260009190848201906040850190845b81811015610596578351151583529284019291840191600101610578565b50909695505050505050565b6000602082840312156105b457600080fd5b81356001600160a01b03811681146105cb57600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b81811015610596578351835292840192918401916001016105ee565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b60006001820161065657634e487b7160e01b600052601160045260246000fd5b5060010190565b60006020828403121561066f57600080fd5b815180151581146105cb57600080fdfea264697066735822122097e1e099bfb3b26c8a60a2e6395ff07e767b3a02b7829d00bf3fbc8fd015452464736f6c63430008110033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100885760003560e01c8063a49904e51161005b578063a49904e51461010a578063c4d66de814610122578063d9ba8eef1461016a578063dfc8bf4e1461018a57600080fd5b8063015e23151461008d5780637e2cb34d146100c057806383220626146100e0578063919cc19c146100f5575b600080fd5b6100ad61009b3660046104ce565b60009081526001602052604090205490565b6040519081526020015b60405180910390f35b6100d36100ce3660046104e7565b6101b5565b6040516100b7919061055c565b436000908152600160205260409020546100ad565b6101086101033660046104ce565b610272565b005b610112610387565b60405190151581526020016100b7565b6101086101303660046105a2565b600380547fffffffffffffffffffffffff0000000000000000000000000000000000000000166001600160a01b0392909216919091179055565b61017d6101783660046104e7565b6103fa565b6040516100b791906105d2565b60035461019d906001600160a01b031681565b6040516001600160a01b0390911681526020016100b7565b60608160008167ffffffffffffffff8111156101d3576101d361060a565b6040519080825280602002602001820160405280156101fc578160200160208202803683370190505b50905060005b828110156102695761023686868381811061021f5761021f610620565b9050602002013560026104aa90919063ffffffff16565b1582828151811061024957610249610620565b9115156020928302919091019091015261026281610636565b9050610202565b50949350505050565b73fffffffffffffffffffffffffffffffffffffffe33146102d95760405162461bcd60e51b815260206004820152601a60248201527f4d7573742062652065786563757465642062792053797374656d000000000000604482015260640160405180910390fd5b43600090815260016020908152604091829020839055600354825163a49904e560e01b815292516001600160a01b039091169263a49904e59260048083019391928290030181865afa158015610333573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610357919061065d565b6103845743600881901c60009081526002602052604090208054600160ff9093169290921b909117905550565b50565b6003546040805163a49904e560e01b815290516000926001600160a01b03169163a49904e59160048083019260209291908290030181865afa1580156103d1573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103f5919061065d565b905090565b60608160008167ffffffffffffffff8111156104185761041861060a565b604051908082528060200260200182016040528015610441578160200160208202803683370190505b50905060005b82811015610269576001600087878481811061046557610465610620565b9050602002013581526020019081526020016000205482828151811061048d5761048d610620565b6020908102919091010152806104a281610636565b915050610447565b600881901c600090815260208390526040902054600160ff83161b16151592915050565b6000602082840312156104e057600080fd5b5035919050565b600080602083850312156104fa57600080fd5b823567ffffffffffffffff8082111561051257600080fd5b818501915085601f83011261052657600080fd5b81358181111561053557600080fd5b8660208260051b850101111561054a57600080fd5b60209290920196919550909350505050565b6020808252825182820181905260009190848201906040850190845b81811015610596578351151583529284019291840191600101610578565b50909695505050505050565b6000602082840312156105b457600080fd5b81356001600160a01b03811681146105cb57600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b81811015610596578351835292840192918401916001016105ee565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b60006001820161065657634e487b7160e01b600052601160045260246000fd5b5060010190565b60006020828403121561066f57600080fd5b815180151581146105cb57600080fdfea264697066735822122097e1e099bfb3b26c8a60a2e6395ff07e767b3a02b7829d00bf3fbc8fd015452464736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
