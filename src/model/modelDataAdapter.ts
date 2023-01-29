@@ -220,7 +220,7 @@ export class ModelDataAdapter {
   private async retrieveValuesFromContract(): Promise<void> {
     const oldStakingEpoch = this.context.stakingEpoch;
     this.context.stakingEpoch = parseInt(await this.stContract.methods.stakingEpoch().call(this.tx(), this.block()));
-    this.context.keyGenRound = parseInt(await this.kghContract.methods.currentKeyGenRound().call(this.tx(), this.block()));
+    this.context.keyGenRound = await this.contracts.getCurrentKeyGenRound(this.block());
 
     if (this.context.stakingEpoch !== oldStakingEpoch) {
       this.context.epochStartBlock = parseInt(await this.stContract.methods.stakingEpochStartBlock().call(this.tx(), this.block()));
