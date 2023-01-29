@@ -8,6 +8,7 @@ interface ReactTabulatorViewOptionsColumnSet {
 
 interface ReactTabulatorViewOptionsProps {
   allListName: string;
+  children: any;
 }
 
 

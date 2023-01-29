@@ -2,7 +2,7 @@ import { action } from 'mobx';
 import React, { Fragment } from 'react';
 import { ui } from "../ui";
 import { Button, Modal, Table} from 'react-bootstrap';
-import ReactTooltip from "react-tooltip";
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { ArrowLeft, ArrowRight, SkipEnd } from 'react-bootstrap-icons';
 import { DmdComponent } from "./dmd-component";
 
@@ -17,7 +17,7 @@ export class BlockSelectorUI extends DmdComponent {
 
     const self = this;
     const historicBlockNumberRef = React.createRef<HTMLInputElement>();
-    function onClickHistoric(e: React.MouseEvent<HTMLInputElement>) {
+    function onClickHistoric(e: any) {
 
       const number = historicBlockNumberRef.current?.valueAsNumber;
 
@@ -34,7 +34,7 @@ export class BlockSelectorUI extends DmdComponent {
 
     }
 
-    function onClickLatest(e: React.MouseEvent<HTMLInputElement>) {
+    function onClickLatest(e: any) {
       self.props.modelDataAdapter.showLatest();
       self._isModal = false;
     }
@@ -178,13 +178,13 @@ export class BlockSelectorUI extends DmdComponent {
               <Button onClick={this.right.bind(this)}>
                 <ArrowRight/>
               </Button>
-              <ReactTooltip place="top" effect="solid">
+              <ReactTooltip place="top">
                 next block
               </ReactTooltip>
               <Button data-for="latest" onClick={this.latest.bind(this)} style={{margin:'0.1rem'}}>
                 <SkipEnd />
               </Button>
-              <ReactTooltip id="latest" place="top" effect="solid">
+              <ReactTooltip id="latest" place="top">
                 latest block
               </ReactTooltip>
             </section>
