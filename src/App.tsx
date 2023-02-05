@@ -15,7 +15,7 @@ import { ModelDataAdapter } from './model/modelDataAdapter';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Tab, Tabs} from 'react-bootstrap';
+import { Tab, Tabs } from 'react-bootstrap';
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
@@ -27,15 +27,19 @@ interface AppProps {
 
 @observer
 class App extends React.Component<AppProps> {
-
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
   state = {
-    showModal: false,
+    showModal: false
   }
+  
 
   private ui(o: BN) {
     return o.toString(10);
+  }
+
+  private updatePoolsData(data: []) {
+
   }
 
   private onShowWeb3Modal() {
@@ -50,9 +54,11 @@ class App extends React.Component<AppProps> {
     })
   }
 
-  private async setupWeb3Modal() {
+  private test(e: any, row: any) {
+    console.log("Clicked:;", e, row)
+  }
 
-    
+  private async setupWeb3Modal() {
 
     const url = this.props.modelDataAdapter.url;
     //const url = 'http://localhost:8540';
@@ -84,6 +90,11 @@ class App extends React.Component<AppProps> {
   public componentDidMount() {
     console.log('component did mount.');
     this.props.modelDataAdapter.registerUIElement(this);
+
+    const { modelDataAdapter } = this.props;
+    const { context } = modelDataAdapter;
+    const poolsData = context.pools;
+    this.setState({poolsData});
   }
 
   public componentWillUnmount() {
@@ -96,6 +107,7 @@ class App extends React.Component<AppProps> {
 
     const { modelDataAdapter } = this.props;
     const { context } = modelDataAdapter;
+    
 
     const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
@@ -121,6 +133,8 @@ class App extends React.Component<AppProps> {
     ];
     
     const data = context.pools;
+    // this.setState({poolsData: []});
+    // console.log("Data:", this.state.poolsData);
 
     const padding = {
       padding: '0.5rem'
@@ -140,7 +154,7 @@ class App extends React.Component<AppProps> {
           {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null}
 
           <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
-            connect wallet
+            Connect Wallet
           </button>
 
           
@@ -153,8 +167,9 @@ class App extends React.Component<AppProps> {
             {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
             {modelDataAdapter.isReadingData ? '... Loading ...' : 
             <Fragment>
-              <Tabs className="mb-3">
-                <Tab eventKey="overview" title="" >
+              <h1>Pools Data</h1>
+              <Tabs className="mb-3" activeKey={"pools-overview"}>
+                <Tab eventKey="pools-overview" title="Pools" >
                   {validatorsWithoutPoolSection}
                   <ReactTabulatorViewOptions >
                     <ReactTabulator
@@ -162,11 +177,15 @@ class App extends React.Component<AppProps> {
                       data={data}
                       columns={columns}
                       tooltips={true}
+                      events={{ rowClick: this.test }}
                     />
                   </ReactTabulatorViewOptions>
                 </Tab>
-                <Tab eventKey="state-history" title="">
+                {/* <Tab eventKey="state-history" title="History">
                   ...history...
+                </Tab> */}
+                <Tab eventKey="pool-detail" title="Details">
+                    ... Details Page ...
                 </Tab>
               </Tabs>
             
@@ -220,6 +239,10 @@ class App extends React.Component<AppProps> {
     return result;
   }
 
+}
+
+const mapStateToProps = (state: any) => {
+    
 }
 
 
