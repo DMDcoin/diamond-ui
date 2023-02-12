@@ -5,6 +5,7 @@ import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
 import './styles/tabulator.css';
+import Web3 from "web3";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -12,11 +13,16 @@ import dmd_logo from "./logo-hor.svg";
 
 import { ReactTabulator } from 'react-tabulator';
 import { ModelDataAdapter } from './model/modelDataAdapter';
+import { Pool } from './model/model';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
 import { Tab, Tabs } from 'react-bootstrap';
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
+import PoolDetail from './PoolDetail';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
 
@@ -24,77 +30,148 @@ interface AppProps {
   modelDataAdapter: ModelDataAdapter,
 }
 
+interface AppState {
+  poolsData: Pool[],
+  activeTab: string,
+  selectedPool: any,
+  connectedAccount: string
+}
 
 @observer
-class App extends React.Component<AppProps> {
+class App extends React.Component<AppProps, AppState> {
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
-  state = {
-    showModal: false
+  constructor(props: AppProps) {
+    super(props);
+    this.state = {
+      poolsData: [],
+      activeTab: "pools-overview",
+      selectedPool: undefined,
+      connectedAccount: ""
+    }
   }
-  
 
   private ui(o: BN) {
     return o.toString(10);
   }
 
-  private updatePoolsData(data: []) {
+  viewPoolDetails = (e: any, rowData: any) => {
+    const rowStakingAddress = rowData._row.data.stakingAddress;
+    const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
 
-  }
-
-  private onShowWeb3Modal() {
-
-
-    console.log('this: ', this);
-    this.setupWeb3Modal().then(async (provider) => {
-      // Subscribe to provider connection
-      provider.on("connect", (info: { chainId: number }) => {
-        console.log(info);
-      });
+    this.setState({
+      selectedPool: poolData[0],
+      activeTab: "pool-detail"
     })
+    // console.log("Filtered Pool:", poolData)
   }
 
-  private test(e: any, row: any) {
-    console.log("Clicked:;", e, row)
+  changeTab = (e: any) => {
+    this.setState({activeTab: e})
   }
 
-  private async setupWeb3Modal() {
 
-    const url = this.props.modelDataAdapter.url;
-    //const url = 'http://localhost:8540';
+  public async connectWallet() {
+    const notify = () => <ToastContainer
+    position="bottom-center"
+    autoClose={5000}
+    hideProgressBar={false}
+    newestOnTop={false}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+    theme="dark"
+    />
+    
+    try {
+      // notify()
 
-    const providerOptions = {
-      /* See Provider Options Section */
-      walletconnect: {
-        package: WalletConnectProvider,
-        options: {
-          rpc: {
-            71117: url
+      const url = this.props.modelDataAdapter.url;
+  
+      const providerOptions = {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {rpc: {777012: url}}
+        }
+      };
+  
+      const web3Modal = new Web3Modal({
+        network: "mainnet", // optional
+        cacheProvider: false, // optional
+        providerOptions // required
+      });
+
+      web3Modal.clearCachedProvider();
+      const web3ModalInstance = await web3Modal.connect();
+
+      // handle account change
+      const classInstance = this;
+      web3ModalInstance.on('accountsChanged', function (accounts: Array<string>) {
+        if(accounts.length == 0) {
+          window.location.reload();
+        } else {
+          classInstance.connectWallet();
+        }
+      })
+
+      const provider = new Web3(web3ModalInstance)
+
+      const chainId = 777012;
+      // force user to change to DMD network
+      console.log(web3ModalInstance.networkVersion, "123213213")
+      if (web3ModalInstance.networkVersion != chainId) {
+        console.log(Object.keys(web3ModalInstance))
+        try {
+          await web3ModalInstance.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: new Web3().utils.toHex(chainId) }]
+          });
+        } catch(err: any) {
+          if (err.code === 4902) {
+            await web3ModalInstance.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'DMD',
+                  chainId: new Web3().utils.toHex(chainId),
+                  nativeCurrency: { name: 'DMD', decimals: 18, symbol: 'DMD' },
+                  rpcUrls: ['http://rpc.uniq.diamonds:8540']
+                }
+              ]
+            });
+          } else {
+            console.log("Other Error", err)
+            return undefined;
           }
         }
-      },
+      }
+      
+      this.setState({
+        connectedAccount: web3ModalInstance.selectedAddress
+      })
 
-    };
+      const { modelDataAdapter } = this.props;
+      await modelDataAdapter.setProvider(provider);
 
-    const web3Modal = new Web3Modal({
-      network: "mainnet", // optional
-      cacheProvider: true, // optional
-      providerOptions // required
-    });
-
-    const provider = await web3Modal.connect();
-    console.log('got provider: ', provider);
-    return provider;
+      return provider;
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   public componentDidMount() {
     console.log('component did mount.');
+
+    this.connectWallet();
+
     this.props.modelDataAdapter.registerUIElement(this);
 
     const { modelDataAdapter } = this.props;
     const { context } = modelDataAdapter;
-    const poolsData = context.pools;
-    this.setState({poolsData});
+    const data = context.pools;
+    this.setState({poolsData: data});
   }
 
   public componentWillUnmount() {
@@ -133,12 +210,8 @@ class App extends React.Component<AppProps> {
     ];
     
     const data = context.pools;
-    // this.setState({poolsData: []});
     // console.log("Data:", this.state.poolsData);
 
-    const padding = {
-      padding: '0.5rem'
-    };
     //const target = useRef(null);
     
     
@@ -147,54 +220,70 @@ class App extends React.Component<AppProps> {
     // TODO: css template/framework / convention to have a decent layout without writing CSS
     const result = (
       <div className="App">
-        <header>
-          <a href="?">
-            <img src={dmd_logo} alt="logo" width="250px" style={padding} />
+        <div className="navbar">
+          <a href="/">
+            <img src={dmd_logo} alt="logo" width="250px"/>
           </a>
-          {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null}
+          {/* {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null} */}
 
-          <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
-            Connect Wallet
-          </button>
+          {this.state.connectedAccount ? (
+            <button className="connectWalletBtn">
+              {this.state.connectedAccount}
+            </button>
+          ) : (
+            <button onClick={() => this.connectWallet()} className="connectWalletBtn">
+              Connect Wallet
+            </button>
+          )}
+        </div>
 
-          
-        </header>
-
-        
         <div>
-            <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
-            {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
-            {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
-            {modelDataAdapter.isReadingData ? '... Loading ...' : 
+          <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
+          {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
+          {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
+          {modelDataAdapter.isReadingData ? (
+            "... Loading ..."
+          ) : (
             <Fragment>
               <h1>Pools Data</h1>
-              <Tabs className="mb-3" activeKey={"pools-overview"}>
-                <Tab eventKey="pools-overview" title="Pools" >
+              <Tabs
+                className="mb-3"
+                activeKey={this.state.activeTab}
+                onSelect={this.changeTab}
+              >
+                <Tab eventKey="pools-overview" title="Pools">
                   {validatorsWithoutPoolSection}
-                  <ReactTabulatorViewOptions >
+                  <ReactTabulatorViewOptions>
                     <ReactTabulator
                       responsiveLayout="collapse"
                       data={data}
                       columns={columns}
                       tooltips={true}
-                      events={{ rowClick: this.test }}
+                      events={{ rowClick: this.viewPoolDetails }}
                     />
                   </ReactTabulatorViewOptions>
                 </Tab>
+
                 {/* <Tab eventKey="state-history" title="History">
                   ...history...
                 </Tab> */}
-                <Tab eventKey="pool-detail" title="Details">
-                    ... Details Page ...
-                </Tab>
-              </Tabs>
-            
-            </Fragment>
-            }
-          </div>
-        
 
-          {/* <Button onClick={() => {
+                {this.state.selectedPool ? (
+                  <Tab eventKey="pool-detail" title="Pool Details">
+                    <PoolDetail
+                      pool={this.state.selectedPool}
+                      adapter={modelDataAdapter}
+                    />
+                  </Tab>
+                ) : (
+                  <></>
+                )}
+              </Tabs>
+            </Fragment>
+          )}
+        </div>
+
+        {/* <Button onClick={() => {
             this.forceUpdate();
             }
             }>force update</Button> */}
@@ -230,7 +319,6 @@ class App extends React.Component<AppProps> {
             tab2
           </Tab>
         </Tabs> */}
-
       </div>
     );
 
@@ -247,3 +335,4 @@ const mapStateToProps = (state: any) => {
 
 
 export default App;
+

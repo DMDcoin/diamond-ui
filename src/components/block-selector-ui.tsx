@@ -5,6 +5,8 @@ import { Button, Modal, Table } from 'react-bootstrap';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { ArrowLeft, ArrowRight, SkipEnd } from 'react-bootstrap-icons';
 import { DmdComponent } from "./dmd-component";
+import Accordion from 'react-bootstrap/Accordion';
+import '../styles/blockSelector.css';
 
 export class BlockSelectorUI extends DmdComponent {
 
@@ -162,13 +164,13 @@ export class BlockSelectorUI extends DmdComponent {
     return <div style={alignLeft}>
       {this._isModal ? this.getModal() : undefined}
       {accountInfos}
-      <Table bordered>
-        <tbody>
-          <tr data-toggle="collapse" data-target=".collapseMainInfo" aria-controls="mainInfoCollapse">
-            <td>Current Block No#</td>
 
-            <td>
-              <section >
+      <Accordion className='blockAccordion'>
+        <Accordion.Item eventKey="0">
+            <Accordion.Header className="blockAccordionHeader">
+
+              <span>Current Block:</span>
+              <div>
                 <Button onClick={this.left.bind(this)}>
                   <ArrowLeft />
                 </Button>
@@ -178,57 +180,57 @@ export class BlockSelectorUI extends DmdComponent {
                 <Button onClick={this.right.bind(this)}>
                   <ArrowRight />
                 </Button>
-                <ReactTooltip place="top">
-                  Next Block
-                </ReactTooltip>
                 <Button data-for="latest" onClick={this.latest.bind(this)} style={{ margin: '0.1rem' }}>
                   <SkipEnd />
                 </Button>
-                <ReactTooltip id="latest" place="top">
-                  Latest Block
-                </ReactTooltip>
-              </section>
-            </td>
+              </div>
+              
+            </Accordion.Header>
+            <Accordion.Body>
+            <Table bordered>
+              <tbody>
+                {modelDataAdapter.isReadingData ? <tr><td>... Loading ...</td></tr> : <Fragment>
+                  <tr>
+                    <td>Current Epoch</td>
+                    <td>{context.stakingEpoch}</td>
+                  </tr>
+                  <tr>
+                    <td>Key Gen. Round</td>
+                    <td>{context.keyGenRound}</td>
+                  </tr>
+                  <tr>
+                    <td>Epoch Start Block</td>
+                    <td>{context.epochStartBlock}</td>
+                  </tr>
+                  <tr>
+                    <td>Epoch Start Time</td>
+                    <td>{context.epochStartTimeFormatted}</td>
+                  </tr>
+                  <tr>
+                    <td>Delta Pot</td>
+                    <td>{context.deltaPot}</td>
+                  </tr>
+                  <tr>
+                    <td>Reinsert Pot</td>
+                    <td>{context.reinsertPot}</td>
+                  </tr>
+                  <tr>
+                    <td>Minimum Gas Fee</td>
+                    <td>{context.minimumGasFeeFormatted}</td>
+                  </tr>
 
-          </tr>
+                  <tr>
+                    <td>Validators</td>
+                    <td>{context.pools.filter(x => x.isCurrentValidator).length}</td>
+                  </tr>
+                </Fragment>}
+              </tbody>
+            </Table>
+            </Accordion.Body>
+        </Accordion.Item>
+    </Accordion>
 
-          {modelDataAdapter.isReadingData ? <tr><td>... Loading ...</td></tr> : <Fragment>
-            <tr>
-              <td>Current Epoch</td>
-              <td>{context.stakingEpoch}</td>
-            </tr>
-            <tr>
-              <td>Key Gen. Round</td>
-              <td>{context.keyGenRound}</td>
-            </tr>
-            <tr>
-              <td>Epoch Start Block</td>
-              <td>{context.epochStartBlock}</td>
-            </tr>
-            <tr>
-              <td>Epoch Start Time</td>
-              <td>{context.epochStartTimeFormatted}</td>
-            </tr>
-            <tr>
-              <td>Delta Pot</td>
-              <td>{context.deltaPot}</td>
-            </tr>
-            <tr>
-              <td>Reinsert Pot</td>
-              <td>{context.reinsertPot}</td>
-            </tr>
-            <tr>
-              <td>Minimum Gas Fee</td>
-              <td>{context.minimumGasFeeFormatted}</td>
-            </tr>
-
-            <tr>
-              <td>Validators</td>
-              <td>{context.pools.filter(x => x.isCurrentValidator).length}</td>
-            </tr>
-          </Fragment>}
-        </tbody>
-      </Table>
+      
       {/* <Button onClick={() => {this.forceUpdate()}}>force update</Button> */}
     </div>;
   }

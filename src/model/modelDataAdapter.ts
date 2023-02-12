@@ -12,6 +12,7 @@ import { Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 import { BlockType, NonPayableTx } from '../contracts/types';
 import { IModelCache, LocalStorageModelCache } from './modelCacheProvider';
+import stakingABI from '../contract-abis/StakingHbbftBase.json';
 
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
@@ -33,6 +34,8 @@ export class ModelDataAdapter {
   public url!: URL;
 
   public hasWeb3BrowserSupport = false;
+
+  public postProvider: any;
 
   public defaultTxOpts = {
     from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
@@ -120,6 +123,15 @@ export class ModelDataAdapter {
     return result;
   }
 
+  public async reinitializeContracts(provider: Web3) {
+    const result = new ModelDataAdapter();
+    result.contracts = new ContractManager(provider);
+    this.vsContract = result.contracts.getValidatorSetHbbft();
+    this.stContract = await result.contracts.getStakingHbbft();
+    this.brContract = await result.contracts.getRewardHbbft();
+    this.kghContract = await result.contracts.getKeyGenHistory();
+  }
+
 
   public async showHistoric(blockNumber: number) {
 
@@ -142,6 +154,14 @@ export class ModelDataAdapter {
       //async call.
       this.refresh();
     }
+  }
+
+  public async setProvider(web3Provider: any) {
+    this.postProvider = web3Provider;
+    this.context.myAddr = web3Provider.currentProvider.selectedAddress;
+
+    await this.handleNewBlock();
+    await this.reinitializeContracts(web3Provider);
   }
 
   private getBlockHistoryInfoAsString() {
@@ -238,7 +258,10 @@ export class ModelDataAdapter {
       this.context.stakingEpochEndTime = parseInt(await this.stContract.methods.stakingFixedEpochEndTime().call(this.tx(), this.block()));
     }
 
+    console.log("Web3 Support:", this.hasWeb3BrowserSupport)
     if (this.hasWeb3BrowserSupport) {
+      console.log("Balance:", await this.web3.eth.getBalance(this.context.myAddr));
+      console.log("Address:", this.context.myAddr);
       this.context.myBalance = new BN(await this.web3.eth.getBalance(this.context.myAddr));
     }
 
@@ -552,9 +575,23 @@ export class ModelDataAdapter {
     await this.syncPoolsState(isNewEpoch);
   }
 
+  public async stake(poolAddr: string, amount: number): Promise<void> {
+    console.log(`${this.context.myAddr} wants to stake ${amount} DMD on pool ${poolAddr}`);
 
+    const txOpts = { ...this.defaultTxOpts };
+    txOpts.from = this.context.myAddr;
+    txOpts.value = this.web3.utils.toWei(amount.toString());
 
-
-
+    try {
+      // amount is ignored
+      // const stakingContract = new this.postProvider.eth.Contract(stakingABI.abi, '0x1100000000000000000000000000000000000001');
+      // const gasEstimate = await stakingContract.methods.stake(poolAddr).estimateGas(txOpts);
+      const receipt = await this.stContract.methods.stake(poolAddr).send(txOpts);
+      console.log(`receipt: ${JSON.stringify(receipt, null, 2)}`);
+      console.log(`tx ${receipt.transactionHash} for stake(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
 }

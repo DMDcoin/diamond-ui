@@ -1,0 +1,23 @@
+.blockAccordion {
+    min-width: 400px;
+    margin-bottom: 1rem;
+}
+
+.blockAccordionHeader > button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.blockAccordionHeader > button > div {
+    margin-left: auto;
+}
+
+.accordion-body {
+    padding: 0px
+}
+
+.table {
+    margin-bottom: 0px;
+}

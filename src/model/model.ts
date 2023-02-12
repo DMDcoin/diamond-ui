@@ -56,6 +56,7 @@ export class Pool {
   public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
   
   public isBanned(): boolean {
+    console.log(this.context.currentTimestamp)
     return this.bannedUntil.gt(this.context.currentTimestamp);
   }
   
