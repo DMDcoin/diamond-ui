@@ -22,6 +22,7 @@ import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 import PoolDetail from './PoolDetail';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import GridLoader from "react-spinners/GridLoader";
 
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
@@ -55,9 +56,13 @@ class App extends React.Component<AppProps, AppState> {
     return o.toString(10);
   }
 
+  notify = (msg: string) => toast(msg);
+
   viewPoolDetails = (e: any, rowData: any) => {
     const rowStakingAddress = rowData._row.data.stakingAddress;
     const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
+
+    console.log("Pool Data:", poolData)
 
     this.setState({
       selectedPool: poolData[0],
@@ -72,22 +77,7 @@ class App extends React.Component<AppProps, AppState> {
 
 
   public async connectWallet() {
-    const notify = () => <ToastContainer
-    position="bottom-center"
-    autoClose={5000}
-    hideProgressBar={false}
-    newestOnTop={false}
-    closeOnClick
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-    theme="dark"
-    />
-    
     try {
-      // notify()
-
       const url = this.props.modelDataAdapter.url;
   
       const providerOptions = {
@@ -120,7 +110,6 @@ class App extends React.Component<AppProps, AppState> {
 
       const chainId = 777012;
       // force user to change to DMD network
-      console.log(web3ModalInstance.networkVersion, "123213213")
       if (web3ModalInstance.networkVersion != chainId) {
         console.log(Object.keys(web3ModalInstance))
         try {
@@ -150,7 +139,8 @@ class App extends React.Component<AppProps, AppState> {
       
       this.setState({
         connectedAccount: web3ModalInstance.selectedAddress
-      })
+      });
+      
 
       const { modelDataAdapter } = this.props;
       await modelDataAdapter.setProvider(provider);
@@ -163,8 +153,6 @@ class App extends React.Component<AppProps, AppState> {
 
   public componentDidMount() {
     console.log('component did mount.');
-
-    this.connectWallet();
 
     this.props.modelDataAdapter.registerUIElement(this);
 
@@ -242,10 +230,16 @@ class App extends React.Component<AppProps, AppState> {
           {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
           {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
           {modelDataAdapter.isReadingData ? (
-            "... Loading ..."
+            <GridLoader
+              color={'#254CA0'}
+              loading={modelDataAdapter.isReadingData}
+              size={20}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
           ) : (
             <Fragment>
-              <h1>Pools Data</h1>
+              {/* <h1>Pools Data</h1> */}
               <Tabs
                 className="mb-3"
                 activeKey={this.state.activeTab}
@@ -262,6 +256,10 @@ class App extends React.Component<AppProps, AppState> {
                       events={{ rowClick: this.viewPoolDetails }}
                     />
                   </ReactTabulatorViewOptions>
+                </Tab>
+
+                <Tab eventKey="add-pool" title="Add Pool">
+                  Add a pool 
                 </Tab>
 
                 {/* <Tab eventKey="state-history" title="History">

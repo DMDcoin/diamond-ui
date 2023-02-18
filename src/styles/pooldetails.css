@@ -3,22 +3,19 @@
     margin-top: 5px;
     align-items: center;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    border-top: 1px solid grey;
 }
 
 .delegateStakeForm {
+    gap: 1rem;
+    width: 500px;
+    height: 65px;
+    padding: 10px;
     display: flex;
-    align-items: center;
-    flex-direction: column;
+    flex-wrap: wrap;
+    min-width: 320px;
     align-items: center;
     justify-content: center;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
-    gap: 1rem;
-    min-width: 320px;
-    width: 500px;
 }
 
 .delegateStakeHeading {
@@ -26,16 +23,14 @@
 }
 
 .stakeSubmitBtn {
-    height: 45px;
-    width: 180px;
+    width: 25%;
+    height: 100%;
     font-size: 14px;
     cursor: pointer;
     overflow: hidden;
     font-weight: 700;
     color: #1F45B2;
-    margin-top: 10px;
     letter-spacing: 0;
-    margin-right: 10px;
     border-radius: 99px;
     border: 1px solid #1F45B2;
     text-overflow: ellipsis;
@@ -51,17 +46,35 @@
 }
 
 input {
+    width: 70%;
+    height: 100%;
+    padding: 16px;
+    font-size: 14px;
+    color: #030a49;
+    border-radius: 5px;
+    box-sizing: border-box;
     background-color: #EEF8FF;
     border: rgba(1, 69, 178, 0.2) 1px solid;
-    width: 100%;
-    border-radius: 5px;
-    color: #030a49;
-    padding: 16px;
-    box-sizing: border-box;
-    font-size: 14px;
 }
   
 input:focus {
     border: 1px solid #0145b2;
     outline: none;
+}
+
+.stakingInfo {
+    gap: 1rem;
+    width: 500px;
+    display: flex;
+    min-width: 320px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.stakingInfo > div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #DEE2E6;
 }

@@ -1,23 +1,36 @@
 .blockAccordion {
     min-width: 400px;
-    margin-bottom: 1rem;
-}
-
-.blockAccordionHeader > button {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-}
-
-.blockAccordionHeader > button > div {
-    margin-left: auto;
+    margin-bottom: 5rem;
 }
 
 .accordion-body {
     padding: 0px
 }
 
+.accordion-body {
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+}
+
 .table {
     margin-bottom: 0px;
+    width: 100%;
+}
+
+.blocksInfo {
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+    border-bottom: 1px solid #DEE2E6;
+}
+
+.blocksInfo > div > button {
+    justify-content: center;
+    font-weight: 700;
+}
+
+.blockAccordionHeader > button {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
