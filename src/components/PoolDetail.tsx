@@ -1,12 +1,12 @@
 import BN from "bn.js";
 import React from "react";
-import "./styles/pooldetails.css";
-import { Pool } from "./model/model";
+import "../styles/pooldetails.css";
+import { Pool } from "../model/model";
 import { Table } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import Accordion from "react-bootstrap/Accordion";
 import { ToastContainer, toast } from "react-toastify";
-import { ModelDataAdapter } from "./model/modelDataAdapter";
+import { ModelDataAdapter } from "../model/modelDataAdapter";
 
 interface PoolProps {
   pool: Pool;
@@ -30,6 +30,9 @@ class PoolDetail extends React.Component<PoolProps> {
     if (!context.myAddr) {
       this.notify("Please connect wallet!");
       return true;
+    } else if (context.myAddr == 'connecting') {
+      this.notify("Please wait for wallet to connect");
+      return true;
     }
 
     const previousStakeAmount = pool.myStake;
@@ -38,29 +41,45 @@ class PoolDetail extends React.Component<PoolProps> {
         ? context.candidateMinStake
         : (context.delegatorMinStake as any) / 10 ** 18;
 
-    const accBalance = await adapter.postProvider.eth.getBalance(
-      context.myAddr
-    );
+    const accBalance = await adapter.postProvider.eth.getBalance(context.myAddr);
 
     if (stakeAmount > accBalance) {
       console.log(context.myBalance.toString());
-      alert(
-        `insufficient balance (${context.myBalance}) for selected amount ${stakeAmount}`
-      );
+
+      this.notify(`insufficient balance (${context.myBalance}) for selected amount ${stakeAmount}`);
+      return true;
     } else if (!context.canStakeOrWithdrawNow) {
-      alert("outside staking/withdraw time window");
+      this.notify("outside staking/withdraw time window");
+      return true
     } else if (
       pool !== context.myPool &&
       pool.candidateStake < context.candidateMinStake
     ) {
       // TODO: this condition should be checked before even enabling the button
-      alert("insufficient candidate (pool owner) stake");
+      this.notify("Insufficient candidate (pool owner) stake");
+      return true;
     } else if (previousStakeAmount + stakeAmount < minStake) {
-      alert(`min staking amount is ${minStake}`);
+      this.notify(`Min staking amount is ${minStake}`);
+      return true;
     } else if (pool.isBanned()) {
-      alert("cannot stake on a pool which is currently banned");
+      this.notify("Cannot stake on a pool which is currently banned");
+      return true;
     } else {
-      await adapter.stake(pool.stakingAddress, stakeAmount);
+      const id = toast.loading("Transaction Pending");
+      try {
+        const resp = await adapter.stake(pool.stakingAddress, stakeAmount);
+        if (resp) {
+          toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
+        } else {
+          toast.update(id, { render: "User deined transaction", type: "warning", isLoading: false });
+        }
+      } catch (err: any) {
+        toast.update(id, { render: err.message, type: "error", isLoading: false });
+      }
+
+      setTimeout(() => {
+        toast.dismiss(id)
+      }, 3000);
     }
   };
 
@@ -151,9 +170,14 @@ class PoolDetail extends React.Component<PoolProps> {
                     className="stakeAmountInput"
                     required
                   />
-                  <button type="submit" className="stakeSubmitBtn">
-                    Stake
-                  </button>
+
+                  {
+
+                    <button type="submit" className="stakeSubmitBtn">
+                      Stake
+                    </button>
+                  }
+                  
                 </form>
               </div>
             </Accordion.Body>

@@ -12,6 +12,9 @@ code {
     monospace;
 }
 
+.Toastify__toast {
+  background-color: #254ca0 !important;
+}
 
 button {
   display: inline-block;

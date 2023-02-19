@@ -1,0 +1,31 @@
+.mainAddPoolContainer {
+    gap: 5rem;
+    display: flex;
+    min-width: 320px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.addPoolForm {
+    gap: 1rem;
+    width: 500px;
+    display: flex;
+    min-width: 320px;
+    max-width: 500px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.addPoolForm > input {
+    width: 100%;
+}
+
+.addPoolForm > button {
+    align-self: flex-end;
+}
+
+.addPoolForm > label {
+    align-self: flex-start;
+}

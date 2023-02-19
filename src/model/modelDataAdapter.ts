@@ -126,10 +126,11 @@ export class ModelDataAdapter {
   public async reinitializeContracts(provider: Web3) {
     const result = new ModelDataAdapter();
     result.contracts = new ContractManager(provider);
-    this.vsContract = result.contracts.getValidatorSetHbbft();
     this.stContract = await result.contracts.getStakingHbbft();
-    this.brContract = await result.contracts.getRewardHbbft();
-    this.kghContract = await result.contracts.getKeyGenHistory();
+    this.vsContract = result.contracts.getValidatorSetHbbft();
+    // this.brContract = await result.contracts.getRewardHbbft();
+    // this.kghContract = await result.contracts.getKeyGenHistory();
+    return true;
   }
 
 
@@ -157,11 +158,15 @@ export class ModelDataAdapter {
   }
 
   public async setProvider(web3Provider: any) {
-    this.postProvider = web3Provider;
-    this.context.myAddr = web3Provider.currentProvider.selectedAddress;
+    this.context.myAddr = 'connecting';
 
     await this.handleNewBlock();
     await this.reinitializeContracts(web3Provider);
+
+    this.postProvider = web3Provider;
+    this.context.myAddr = web3Provider.currentProvider.selectedAddress;
+
+    return true;
   }
 
   private getBlockHistoryInfoAsString() {
@@ -575,7 +580,7 @@ export class ModelDataAdapter {
     await this.syncPoolsState(isNewEpoch);
   }
 
-  public async stake(poolAddr: string, amount: number): Promise<void> {
+  public async stake(poolAddr: string, amount: number): Promise<boolean> {
     console.log(`${this.context.myAddr} wants to stake ${amount} DMD on pool ${poolAddr}`);
 
     const txOpts = { ...this.defaultTxOpts };
@@ -583,15 +588,44 @@ export class ModelDataAdapter {
     txOpts.value = this.web3.utils.toWei(amount.toString());
 
     try {
-      // amount is ignored
-      // const stakingContract = new this.postProvider.eth.Contract(stakingABI.abi, '0x1100000000000000000000000000000000000001');
-      // const gasEstimate = await stakingContract.methods.stake(poolAddr).estimateGas(txOpts);
       const receipt = await this.stContract.methods.stake(poolAddr).send(txOpts);
-      console.log(`receipt: ${JSON.stringify(receipt, null, 2)}`);
-      console.log(`tx ${receipt.transactionHash} for stake(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+      console.log(`Receipt: ${JSON.stringify(receipt, null, 2)}`);
+      console.log(`Tx: ${receipt.transactionHash} for stake(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+      return true;
     } catch (e) {
       console.log(e);
+      return false;
     }
   }
 
+  public async areAddressesValidForCreatePool(stakingAddr: string, miningAddr: string): Promise<boolean> {
+    return (
+      stakingAddr !== miningAddr
+      && await this.vsContract.methods.miningByStakingAddress(stakingAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await this.vsContract.methods.miningByStakingAddress(miningAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await this.vsContract.methods.stakingByMiningAddress(stakingAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await this.vsContract.methods.stakingByMiningAddress(miningAddr).call() === '0x0000000000000000000000000000000000000000'
+    );
+  }
+
+  public async canStakeOrWithdrawNow(): Promise<boolean> {
+    return await this.stContract.methods.areStakeAndWithdrawAllowed().call();
+  }
+
+  public async createPool(miningAddr: string, publicKey: string, stakeAmount: number, ipAddress: string): Promise<boolean> {
+    const txOpts = { ...this.defaultTxOpts };
+    txOpts.from = this.context.myAddr;
+    txOpts.value = this.web3.utils.toWei(stakeAmount.toString());
+
+    try {
+      console.log(`adding Pool : ${miningAddr} publicKeyHex: ${publicKey} ip ${ipAddress}`);
+      // <amount> argument is ignored by the contract (exists for chains with token based staking)
+      const receipt = await this.stContract.methods.addPool(miningAddr, publicKey, ipAddress).send(txOpts);
+      console.log(`receipt: ${JSON.stringify(receipt, null, 2)}`);
+      return true;
+    } catch (e) {
+      console.log(`failed with ${e}`);
+      return false;
+    }
+  }
 }

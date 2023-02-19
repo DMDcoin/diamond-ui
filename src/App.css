@@ -53,3 +53,16 @@
   margin-right: 10px;
   text-overflow: ellipsis;
 }
+
+.nav-item > button {
+  font-weight: 700;
+  border-radius: 0px;
+  color: #254CA0 !important;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.nav-item > button:hover {
+  color: white !important;
+  background-color: #254CA0 !important;
+}

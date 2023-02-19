@@ -19,10 +19,11 @@ import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
 import { Tab, Tabs } from 'react-bootstrap';
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
-import PoolDetail from './PoolDetail';
+import PoolDetail from './components/PoolDetail';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GridLoader from "react-spinners/GridLoader";
+import AddPool from './components/AddPool';
 
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
@@ -136,14 +137,17 @@ class App extends React.Component<AppProps, AppState> {
           }
         }
       }
-      
+
       this.setState({
-        connectedAccount: web3ModalInstance.selectedAddress
+        connectedAccount: 'connecting'
       });
-      
 
       const { modelDataAdapter } = this.props;
       await modelDataAdapter.setProvider(provider);
+
+      this.setState({
+        connectedAccount: web3ModalInstance.selectedAddress
+      });
 
       return provider;
     } catch(err) {
@@ -214,7 +218,13 @@ class App extends React.Component<AppProps, AppState> {
           </a>
           {/* {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null} */}
 
-          {this.state.connectedAccount ? (
+          {this.state.connectedAccount ?
+          this.state.connectedAccount == 'connecting' ? 
+            <button className="connectWalletBtn">
+              Connecting...
+            </button>
+          :
+          (
             <button className="connectWalletBtn">
               {this.state.connectedAccount}
             </button>
@@ -222,7 +232,8 @@ class App extends React.Component<AppProps, AppState> {
             <button onClick={() => this.connectWallet()} className="connectWalletBtn">
               Connect Wallet
             </button>
-          )}
+          )
+          }
         </div>
 
         <div>
@@ -258,14 +269,6 @@ class App extends React.Component<AppProps, AppState> {
                   </ReactTabulatorViewOptions>
                 </Tab>
 
-                <Tab eventKey="add-pool" title="Add Pool">
-                  Add a pool 
-                </Tab>
-
-                {/* <Tab eventKey="state-history" title="History">
-                  ...history...
-                </Tab> */}
-
                 {this.state.selectedPool ? (
                   <Tab eventKey="pool-detail" title="Pool Details">
                     <PoolDetail
@@ -276,6 +279,14 @@ class App extends React.Component<AppProps, AppState> {
                 ) : (
                   <></>
                 )}
+
+                <Tab eventKey="add-pool" title="Add Pool">
+                  <AddPool adapter={modelDataAdapter}/>
+                </Tab>
+
+                <Tab eventKey="rng-tab" title="RNG">
+                  RNG TAB
+                </Tab>
               </Tabs>
             </Fragment>
           )}
