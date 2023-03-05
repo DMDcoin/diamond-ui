@@ -1,9 +1,11 @@
 .poolDetailsContainer {
     display: flex;
+    width: 100%;
     margin-top: 5px;
     align-items: center;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .delegateStakeForm {
@@ -13,6 +15,7 @@
     padding: 10px;
     display: flex;
     flex-wrap: wrap;
+    max-width: 500px;
     min-width: 320px;
     align-items: center;
     justify-content: center;
@@ -77,4 +80,31 @@ input:focus {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #DEE2E6;
+}
+
+.withdrawForm {
+    gap: 1rem;
+    width: 100%;
+    width: 500px;
+    padding: 10px;
+    display: flex;
+    max-width: 500px;
+    min-width: 320px;
+    align-items: center;
+    justify-content: center;
+}
+
+.claimStake {
+    gap: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.claimStake > button {
+    width: 150px;
+}
+
+label {
+    padding-left: 10px;
 }

@@ -16,8 +16,32 @@ interface PoolProps {
 class PoolDetail extends React.Component<PoolProps> {
   notify = (msg: string) => toast(msg);
 
+  private hasClaimable = false;
+
   constructor(props: PoolProps) {
     super(props);
+  }
+
+  public componentDidMount() {
+    console.log("Pool Details Loaded");
+    this.hasClaimableAmount()
+  }
+
+  public componentDidUpdate(prevProps: Readonly<PoolProps>, prevState: Readonly<{}>, snapshot?: any): void {
+    console.log("Pool Details Updated");
+    this.hasClaimableAmount()
+  }
+
+  hasClaimableAmount = async () => {
+    const { adapter, pool } = this.props;
+    const context = adapter.context;
+
+    if (context.myAddr) {
+      const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, context.myAddr).call();
+      const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, context.myAddr).call()) + 1;
+      console.log("Withdraw Claiming:", {amount}, {unlockEpoch});
+      this.hasClaimable = parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch;
+    }
   }
 
   handleDelegateStake = async (e: any) => {
@@ -71,7 +95,7 @@ class PoolDetail extends React.Component<PoolProps> {
         if (resp) {
           toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
         } else {
-          toast.update(id, { render: "User deined transaction", type: "warning", isLoading: false });
+          toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
         }
       } catch (err: any) {
         toast.update(id, { render: err.message, type: "error", isLoading: false });
@@ -82,6 +106,72 @@ class PoolDetail extends React.Component<PoolProps> {
       }, 3000);
     }
   };
+
+  handleWithdraw = async (e: any) => {
+    e.preventDefault();
+
+    const { adapter, pool } = this.props;
+    const context = adapter.context;
+
+    const withdrawAmount = e.target.withdrawAmount.value;
+    const poolAddress = this.props.pool.stakingAddress;
+
+    if (!context.myAddr) {
+      this.notify("Please connect wallet!");
+      return true;
+    } else if (context.myAddr == 'connecting') {
+      this.notify("Please wait for wallet to connect");
+      return true;
+    }
+
+    const id = toast.loading("Transaction Pending");
+
+    if (Number.isNaN(withdrawAmount)) {
+      toast.warning('No amount entered');
+    } else if (!context.canStakeOrWithdrawNow) {
+      toast.warning('Outside staking/withdraw time window');
+    } else if (new BN(withdrawAmount).gte(pool.myStake)) {
+      toast.warning('Cannot withdraw as much');
+    } else {
+      try {
+        const { success, reason } = await adapter.withdrawStake(poolAddress, withdrawAmount.toString());
+        if (!success) {
+          setTimeout(() => {
+            toast.dismiss(id)
+          }, 0);
+          toast.error(reason.charAt(0).toUpperCase() + reason.slice(1));
+        } else {
+          toast.update(id, { render: "Transaction compeleted", type: "success", isLoading: false });
+        }
+      } catch(err) {
+        toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
+      }
+    }
+
+    setTimeout(() => {
+      toast.dismiss(id)
+    }, 3000);
+    
+  }
+
+  claimStake = async () => {
+    const { adapter, pool } = this.props;
+    const context = adapter.context;
+
+    if (!context.myAddr) {
+      this.notify("Please connect wallet!");
+      return true;
+    } else if (context.myAddr == 'connecting') {
+      this.notify("Please wait for wallet to connect");
+      return true;
+    }
+
+    if (!context.canStakeOrWithdrawNow) {
+      alert('outside staking/withdraw time window');
+    } else {
+      await adapter.claimStake(pool.stakingAddress);
+    }
+  }
 
   public render(): JSX.Element {
     const result = (
@@ -160,13 +250,14 @@ class PoolDetail extends React.Component<PoolProps> {
               <div className="poolDetailsContainer">
                 {/* <h1 className="delegateStakeHeading">Delegate Stake</h1> */}
 
+                <label>Stake:</label>
                 <form
                   onSubmit={(e) => this.handleDelegateStake(e)}
                   className="delegateStakeForm"
                 >
                   <input
                     type="number"
-                    placeholder="Stake Amount"
+                    placeholder="Stake amount"
                     className="stakeAmountInput"
                     required
                   />
@@ -179,35 +270,25 @@ class PoolDetail extends React.Component<PoolProps> {
                   }
                   
                 </form>
+
+                <label>Withdraw Stake:</label>
+                <form className="withdrawForm" onSubmit={this.handleWithdraw}>
+                  <input name="withdrawAmount" type="number" placeholder="Stake amount"/>
+                  <button type="submit" className="stakeSubmitBtn">Withdraw</button>
+                </form>
+
+                {
+                  this.hasClaimable ? 
+                    <div className="claimStake">
+                      <label>Claim Stake:</label>
+                      <button type="submit" className="stakeSubmitBtn" onClick={this.claimStake}>Claim</button>
+                    </div>
+                  : ""
+                }
               </div>
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-
-        {/* <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>Bans</th>
-                            <th>Delegators</th>
-                            <th>Candidate Stake</th>
-                            <th>Total Stake</th>
-                            <th>My Stake</th>
-                            <th>Claimable Reward</th>
-                            <th>Minning Address</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{this.props.pool.banCount}</td>
-                            <td>{this.props.pool.delegators.length}</td>
-                            <td>{this.props.pool.candidateStake.toString()}</td>
-                            <td>{this.props.pool.totalStake.toString()}</td>
-                            <td>{this.props.pool.myStake.toString()}</td>
-                            <td>{this.props.pool.claimableReward}</td>
-                            <td>{this.props.pool.miningAddress}</td>
-                        </tr>
-                    </tbody>
-                </Table> */}
       </>
     );
     return result;

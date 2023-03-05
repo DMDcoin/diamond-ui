@@ -24,6 +24,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GridLoader from "react-spinners/GridLoader";
 import AddPool from './components/AddPool';
+import RNG from './components/RNG';
 
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
@@ -155,7 +156,7 @@ class App extends React.Component<AppProps, AppState> {
     }
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     console.log('component did mount.');
 
     this.props.modelDataAdapter.registerUIElement(this);
@@ -285,7 +286,7 @@ class App extends React.Component<AppProps, AppState> {
                 </Tab>
 
                 <Tab eventKey="rng-tab" title="RNG">
-                  RNG TAB
+                  <RNG adapter={modelDataAdapter}/>
                 </Tab>
               </Tabs>
             </Fragment>

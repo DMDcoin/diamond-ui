@@ -11,7 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 
 interface AddPoolProps {
-    adapter: ModelDataAdapter;
+  adapter: ModelDataAdapter;
 }
 
 class AddPool extends React.Component<AddPoolProps> {
@@ -41,8 +41,6 @@ class AddPool extends React.Component<AddPoolProps> {
 
   handleAddPool = async (e: any) => {
     e.preventDefault();
-
-    
 
     const publicKey = this.publicKey;
     this.minningAddress = this.getAddressFromPublicKey(publicKey);
@@ -82,7 +80,7 @@ class AddPool extends React.Component<AddPoolProps> {
             if (resp) {
             toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
             } else {
-            toast.update(id, { render: "User deined transaction", type: "warning", isLoading: false });
+            toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
             }
         } catch (err: any) {
             toast.update(id, { render: err.message, type: "error", isLoading: false });

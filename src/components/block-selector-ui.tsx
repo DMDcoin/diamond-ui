@@ -126,34 +126,34 @@ export class BlockSelectorUI extends DmdComponent {
 
     let accountInfos = undefined;
 
-    if (this.props.modelDataAdapter.hasWeb3BrowserSupport) {
-      accountInfos = (
-        <section>
-          <div>
-            account: <span className="text-primary">{context.myAddr}</span>
-          </div>
-          <div>
-            balance: {ui(context.myBalance)} {context.coinSymbol}
-          </div>
-          ;
-        </section>
-      );
+    // if (this.props.modelDataAdapter.hasWeb3BrowserSupport) {
+    //   accountInfos = (
+    //     <section>
+    //       <div>
+    //         account: <span className="text-primary">{context.myAddr}</span>
+    //       </div>
+    //       <div>
+    //         balance: {ui(context.myBalance)} {context.coinSymbol}
+    //       </div>
+    //       ;
+    //     </section>
+    //   );
 
-      accountInfos = (
-        <section>
-          <tr>
-            <td>account</td>
-            <td>{context.myAddr}</td>
-          </tr>
-          <tr>
-            <td>balance</td>
-            <td>
-              {ui(context.myBalance)} {context.coinSymbol}
-            </td>
-          </tr>
-        </section>
-      );
-    }
+    //   accountInfos = (
+    //     <section>
+    //       <tr>
+    //         <td>account</td>
+    //         <td>{context.myAddr}</td>
+    //       </tr>
+    //       <tr>
+    //         <td>balance</td>
+    //         <td>
+    //           {ui(context.myBalance)} {context.coinSymbol}
+    //         </td>
+    //       </tr>
+    //     </section>
+    //   );
+    // }
 
     const prompt = () => {
       const input = window.prompt(

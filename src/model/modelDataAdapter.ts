@@ -3,6 +3,7 @@ import BN from 'bn.js';
 import Web3 from "web3";
 
 import { Context } from './context';
+import { RandomHbbft } from '../contracts/RandomHbbft';
 import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
 import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
@@ -43,11 +44,13 @@ export class ModelDataAdapter {
 
   private vsContract!: ValidatorSetHbbft;
 
-  private stContract!: StakingHbbftCoins;
+  public stContract!: StakingHbbftCoins;
 
   private brContract!: BlockRewardHbbftCoins;
 
   private kghContract!: KeyGenHistory;
+
+  private rngContract!: RandomHbbft;
 
   public contracts! : ContractManager;
 
@@ -104,6 +107,7 @@ export class ModelDataAdapter {
     result.stContract = await result.contracts.getStakingHbbft();
     result.brContract = await result.contracts.getRewardHbbft();
     result.kghContract = await result.contracts.getKeyGenHistory();
+    result.rngContract = await result.contracts.getRandomHbbft();
     
     result.defaultTxOpts.from = result.context.myAddr;
 
@@ -128,6 +132,13 @@ export class ModelDataAdapter {
     result.contracts = new ContractManager(provider);
     this.stContract = await result.contracts.getStakingHbbft();
     this.vsContract = result.contracts.getValidatorSetHbbft();
+
+    
+    this.context.pools.map(async (pool: Pool) => {
+      // console.log(new BN(await this.getMyStake(pool.stakingAddress)), pool.stakingAddress)
+      pool.myStake = new BN(await this.getMyStake(pool.stakingAddress));
+    })
+    // this.rngContract = await result.contracts.getRandomHbbft();
     // this.brContract = await result.contracts.getRewardHbbft();
     // this.kghContract = await result.contracts.getKeyGenHistory();
     return true;
@@ -158,13 +169,17 @@ export class ModelDataAdapter {
   }
 
   public async setProvider(web3Provider: any) {
-    this.context.myAddr = 'connecting';
+    // this.context.myAddr = 'connecting';
+    this.context.myAddr = web3Provider.currentProvider.selectedAddress;
 
-    await this.handleNewBlock();
+    this.hasWeb3BrowserSupport = true;
+
+    
     await this.reinitializeContracts(web3Provider);
 
     this.postProvider = web3Provider;
-    this.context.myAddr = web3Provider.currentProvider.selectedAddress;
+    
+    await this.handleNewBlock();
 
     return true;
   }
@@ -239,7 +254,7 @@ export class ModelDataAdapter {
       return this.showHistoricBlock;
     }
 
-    return 'latest';
+    return this.context.currentBlockNumber;
   }
 
   private async retrieveValuesFromContract(): Promise<void> {
@@ -626,6 +641,81 @@ export class ModelDataAdapter {
     } catch (e) {
       console.log(`failed with ${e}`);
       return false;
+    }
+  }
+
+  public async getLatestRN(): Promise<string> {  
+    const latestBlockNumber = await this.web3.eth.getBlockNumber();
+    let numberOfBlocksToLog = 10;
+  
+    if ( numberOfBlocksToLog > latestBlockNumber ){
+      numberOfBlocksToLog = latestBlockNumber;
+    }
+  
+    let randomNumber = "";
+
+    for(let blockNumber = latestBlockNumber - numberOfBlocksToLog; blockNumber <= latestBlockNumber; blockNumber++) {
+      // const block = await this.web3.eth.getBlock(blockNumber);
+      
+      // let extraData = block.extraData;
+      console.log({blockNumber})
+      randomNumber = await this.rngContract.methods.currentSeed().call({}, blockNumber);    
+    }
+  
+    return randomNumber;
+  }
+  
+  public async withdrawStake(address: string, amount: string): Promise<any> {
+    const txOpts = { ...this.defaultTxOpts };
+    txOpts.from = this.context.myAddr;
+
+    const amountWeiBN = new BN(this.web3.utils.toWei(amount.toString()));
+
+    // determine available withdraw method and allowed amount
+    const maxWithdrawAmount = await this.stContract.methods.maxWithdrawAllowed(address, this.context.myAddr).call();
+    const maxWithdrawOrderAmount = await this.stContract.methods.maxWithdrawOrderAllowed(address, this.context.myAddr).call();  
+
+    console.assert(maxWithdrawAmount === '0' || maxWithdrawOrderAmount === '0', 'max withdraw amount assumption violated');
+
+    let success = false;
+    let reason;
+
+    try {
+      if (maxWithdrawAmount !== '0') {
+        if (new BN(maxWithdrawAmount).lte(amountWeiBN)) {
+          reason = 'requested withdraw amount exceeds max';
+          return {success, reason};
+        } 
+        const receipt = await this.stContract.methods.withdraw(address, amountWeiBN.toString()).send(txOpts);
+        console.log(`tx ${receipt.transactionHash} for withdraw(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+        success = true;
+      } else {
+        if (new BN(maxWithdrawOrderAmount).gte(amountWeiBN)) {
+          reason = 'requested withdraw order amount exceeds max';
+          return {success, reason};
+        }
+        const receipt = await this.stContract.methods.orderWithdraw(address, amountWeiBN.toString()).send(txOpts);
+        console.log(`tx ${receipt.transactionHash} for orderWithdraw(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+        success = true;
+        return {success, reason}
+      }
+    } catch (e) {
+      console.log(`failed with ${e}`);
+    }
+    return {success, reason}
+  }
+
+  public async claimStake(poolAddress: string) {
+    console.log(`${this.context.myAddr} wants to claim the available stake from pool ${poolAddress}`);
+    console.assert(this.canStakeOrWithdrawNow, 'withdraw currently not allowed');
+    const txOpts = { ...this.defaultTxOpts };
+    txOpts.from = this.context.myAddr;
+
+    try {
+      const receipt = await this.stContract.methods.claimOrderedWithdraw(poolAddress).send(txOpts);
+      console.log(`tx ${receipt.transactionHash} for claimOrderedWithdraw(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+    } catch (e) {
+      console.log(`failed with ${e}`);
     }
   }
 }
