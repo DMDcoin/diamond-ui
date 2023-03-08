@@ -2,7 +2,6 @@ import BN from "bn.js";
 import React from "react";
 import "../styles/pooldetails.css";
 import { Pool } from "../model/model";
-import { Table } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import Accordion from "react-bootstrap/Accordion";
 import { ToastContainer, toast } from "react-toastify";
@@ -142,8 +141,10 @@ class PoolDetail extends React.Component<PoolProps> {
           toast.error(reason.charAt(0).toUpperCase() + reason.slice(1));
         } else {
           toast.update(id, { render: "Transaction compeleted", type: "success", isLoading: false });
+          await adapter.reUpdatePool(pool);
         }
       } catch(err) {
+        console.log(err)
         toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
       }
     }
@@ -273,7 +274,7 @@ class PoolDetail extends React.Component<PoolProps> {
 
                 <label>Withdraw Stake:</label>
                 <form className="withdrawForm" onSubmit={this.handleWithdraw}>
-                  <input name="withdrawAmount" type="number" placeholder="Stake amount"/>
+                  <input name="withdrawAmount" type="number" placeholder="Stake amount" required/>
                   <button type="submit" className="stakeSubmitBtn">Withdraw</button>
                 </form>
 

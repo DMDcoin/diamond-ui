@@ -144,6 +144,14 @@ export class ModelDataAdapter {
     return true;
   }
 
+  public async reUpdatePool(pool: Pool) {
+    const activePoolAddrs: Array<string> = await this.stContract.methods.getPools().call(this.tx(), this.block());
+    const toBeElectedPoolAddrs = await this.stContract.methods.getPoolsToBeElected().call(this.tx(), this.block());
+    const pendingValidatorAddrs = await this.vsContract.methods.getPendingValidators().call(this.tx(), this.block());
+
+    this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
+  }
+
 
   public async showHistoric(blockNumber: number) {
 
@@ -644,28 +652,40 @@ export class ModelDataAdapter {
     }
   }
 
-  public async getLatestRN(): Promise<string> {  
-    const latestBlockNumber = await this.web3.eth.getBlockNumber();
-    let numberOfBlocksToLog = 10;
+  public async getLatestRN(start: number, end: number): Promise<Array<any>> {  
+    // const latestBlockNumber = await this.web3.eth.getBlockNumber();
+    // let numberOfBlocksToLog = 10;
   
-    if ( numberOfBlocksToLog > latestBlockNumber ){
-      numberOfBlocksToLog = latestBlockNumber;
-    }
+    // if ( numberOfBlocksToLog > latestBlockNumber ){
+    //   numberOfBlocksToLog = latestBlockNumber;
+    // }
   
-    let randomNumber = "";
+    // let randomNumber = "";
 
-    for(let blockNumber = latestBlockNumber - numberOfBlocksToLog; blockNumber <= latestBlockNumber; blockNumber++) {
-      // const block = await this.web3.eth.getBlock(blockNumber);
+    // for(let blockNumber = latestBlockNumber - numberOfBlocksToLog; blockNumber <= latestBlockNumber; blockNumber++) {
+    //   // const block = await this.web3.eth.getBlock(blockNumber);
       
-      // let extraData = block.extraData;
-      console.log({blockNumber})
-      randomNumber = await this.rngContract.methods.currentSeed().call({}, blockNumber);    
+    //   // let extraData = block.extraData;
+    //   console.log({blockNumber})
+    //   randomNumber = await this.rngContract.methods.currentSeed().call({}, blockNumber);    
+    // }
+    let data = [];
+
+    for (let blockNumber=start; blockNumber <= end; blockNumber++) {
+      const randomNumber = await this.rngContract.methods.currentSeed().call({}, blockNumber);    
+      data.push({'block': blockNumber, 'rn': randomNumber});
     }
   
-    return randomNumber;
+    return data;
   }
   
   public async withdrawStake(address: string, amount: string): Promise<any> {
+    // const isValidator = await this.vsContract.methods.isValidator(address).call();
+
+    // console.log({isValidator})
+
+    // if (isValidator) return false;
+
     const txOpts = { ...this.defaultTxOpts };
     txOpts.from = this.context.myAddr;
 

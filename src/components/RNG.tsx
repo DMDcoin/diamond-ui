@@ -1,36 +1,103 @@
-import React from "react";
-import '../styles/randomNumber.css'
+import React, { useEffect, useState } from "react";
+import "../styles/randomNumber.css";
+import Table from "react-bootstrap/Table";
+import GridLoader from "react-spinners/GridLoader";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 
 interface RNGProps {
   adapter: ModelDataAdapter;
 }
 
+const CustomTable = ({ props }: any) => {
+  const { adapter } = props;
+  
+  const [rangeEnd, setRangeEnd] = useState(0);
+  const [rangeStart, setRangeStart] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([{ block: "#", rn: "#" }]);
+
+  useEffect(() => {
+    (async() => {
+      const latestBlock = await adapter.web3.eth.getBlockNumber();
+      setRangeEnd(latestBlock);
+      setRangeStart(latestBlock);
+    })()
+  }, [])
+
+  const updateTable = async (e: any) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+    
+    const data = await adapter.getLatestRN(rangeStart, rangeEnd);
+    setData(data);
+    setIsLoading(false);
+  };
+
+  return (
+    <>
+      <h1>Random Number Generation</h1>
+
+      <form>
+        <input
+          name="start"
+          placeholder="Range Start"
+          type="number"
+          onChange={(e) => setRangeStart(Number(e.target.value))}
+          required
+          value={rangeStart}
+        />
+        <input
+          name="end"
+          placeholder="Range End"
+          type="number"
+          onChange={(e) => setRangeEnd(Number(e.target.value))}
+          required
+          value={rangeEnd}
+        />
+        <button onClick={updateTable} disabled={isLoading}>Generate</button>
+      </form>
+
+      {isLoading ? (
+        <GridLoader
+          color={"#254CA0"}
+          loading={true}
+          size={20}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      ) : (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Block #</th>
+              <th>Random Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item: any, key: number) => (
+              <tr key={key}>
+                <td>{item.block}</td>
+                <td>{item.rn}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
+    </>
+  );
+};
+
 class RNG extends React.Component<RNGProps> {
   constructor(props: RNGProps) {
     super(props);
   }
 
-  getRandomNumber = async (e: any) => {
-    e.preventDefault();
-    
-    const { adapter } = this.props;
-    const rn = await adapter.getLatestRN();
-    (document.getElementsByName("randomNumberField")[0] as HTMLInputElement).value = rn;
-  };
-
-  public currentRN = "";
-
   public render(): JSX.Element {
     const result = (
       <>
         <div className="rngContainer">
-          <h1>Random Number</h1>
-
-          <form>
-            <input disabled name="randomNumberField"/>
-            <button onClick={this.getRandomNumber}>Generate</button>
-          </form>
+          <CustomTable props={this.props} />
         </div>
       </>
     );
