@@ -1,15 +1,19 @@
+.blockSelectorContainer {
+    width: 100%;
+    padding: 0.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .blockAccordion {
     min-width: 400px;
     margin-bottom: 5rem;
 }
 
 .accordion-body {
-    padding: 0px
-}
-
-.accordion-body {
     display: flex;
-    padding: 10px;
+    padding: 0px !important;
     justify-content: space-between;
 }
 
@@ -33,4 +37,8 @@
 .blockAccordionHeader > button {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
+}
+
+.table {
+    margin: 0px !important;
 }

@@ -171,13 +171,8 @@ export class BlockSelectorUI extends DmdComponent {
       }
     };
 
-    const alignLeft = {
-      padding: "0.1rem",
-      width: "25rem",
-    };
-
     return (
-      <div style={alignLeft}>
+      <div className="blockSelectorContainer">
         {this._isModal ? this.getModal() : undefined}
         {accountInfos}
 

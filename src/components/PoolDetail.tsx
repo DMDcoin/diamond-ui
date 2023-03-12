@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Accordion from "react-bootstrap/Accordion";
 import { ToastContainer, toast } from "react-toastify";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
+import { Table } from "react-bootstrap";
+import DelegatorsData from "./Delegators";
 
 interface PoolProps {
   pool: Pool;
@@ -92,7 +94,9 @@ class PoolDetail extends React.Component<PoolProps> {
       try {
         const resp = await adapter.stake(pool.stakingAddress, stakeAmount);
         if (resp) {
+          await adapter.reUpdatePool(pool);
           toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
+          this.forceUpdate();
         } else {
           toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
         }
@@ -140,8 +144,9 @@ class PoolDetail extends React.Component<PoolProps> {
           }, 0);
           toast.error(reason.charAt(0).toUpperCase() + reason.slice(1));
         } else {
-          toast.update(id, { render: "Transaction compeleted", type: "success", isLoading: false });
           await adapter.reUpdatePool(pool);
+          toast.update(id, { render: "Transaction compeleted", type: "success", isLoading: false });
+          this.forceUpdate();
         }
       } catch(err) {
         console.log(err)
@@ -241,7 +246,9 @@ class PoolDetail extends React.Component<PoolProps> {
 
           <Accordion.Item eventKey="3">
             <Accordion.Header>Delegators</Accordion.Header>
-            <Accordion.Body>{this.props.pool.delegators.length}</Accordion.Body>
+            <Accordion.Body>
+              <DelegatorsData adapter={this.props.adapter} pool={this.props.pool}/>
+            </Accordion.Body>
           </Accordion.Item>
 
           <Accordion.Item eventKey="4">

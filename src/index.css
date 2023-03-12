@@ -5,6 +5,32 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url(https://bit.diamonds/wp-content/uploads/2022/02/bg_circle_diamonds_full.svg) !important;
+  background-size: 60% !important;
+  background-position: -40vh -27vw !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat
+}
+
+@media (max-width: 767px) {
+  body {
+    background-size: 75% !important;
+    background-position: -15vh -27vw !important;
+  }
+}
+
+@media (max-width: 980px) {
+  body {
+    background-size: 60% !important;
+    background-position: -25vh -27vw !important;
+  }
+}
+
+@media (max-width: 1405px) {
+  body {
+    background-size: 60% !important;
+    background-position: -25vh -27vw !important;
+  }
 }
 
 code {

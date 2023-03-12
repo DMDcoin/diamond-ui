@@ -3,7 +3,6 @@
 }
 
 .App-logo {
-  /* height: 40vmin; */
   pointer-events: none;
 }
 
@@ -12,21 +11,6 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
-/* .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-} */
 
 @keyframes App-logo-spin {
   from {
@@ -38,19 +22,23 @@
 }
 
 .navbar {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0px;
-  margin-bottom: 5vh;
+  width: 100% !important;
+  padding: 0px !important;
+  display: flex !important;
+  margin-bottom: 5vh !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.navbar > div {
+  width: 150px;
 }
 
 .connectWalletBtn {
   max-width: 150px;
   overflow: hidden;
-  margin-left: auto;
   margin-right: 10px;
+  border-radius: 8px;
   text-overflow: ellipsis;
 }
 

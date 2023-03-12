@@ -214,10 +214,11 @@ class App extends React.Component<AppProps, AppState> {
     const result = (
       <div className="App">
         <div className="navbar">
+          <div></div>
+
           <a href="/">
             <img src={dmd_logo} alt="logo" width="250px"/>
           </a>
-          {/* {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null} */}
 
           {this.state.connectedAccount ?
           this.state.connectedAccount == 'connecting' ? 

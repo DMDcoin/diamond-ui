@@ -1,5 +1,6 @@
 
 import BN from 'bn.js';
+import { observable } from 'mobx';
 import { Context } from './context';
 import { KeyGenMode } from './contracts/contractManager';
 
@@ -17,17 +18,13 @@ export class ClaimableStake {
 }
 
 
-// @observable
 export class Pool {
 
   public constructor(context: Context) {
     this.context = context;
   }
 
-  public context: Context;
-
-
-
+  @observable public context: Context;
   // public isUpdating: boolean = false;
 
   public isActive: boolean = false; // currently "active" pool
@@ -42,12 +39,12 @@ export class Pool {
   public addedInEpoch: number = 0;
   public isCurrentValidator: boolean = false;
 
-  public candidateStake: BN = new BN(0);
-  public totalStake: BN = new BN(0);
-  public myStake: BN = new BN(0);
+  @observable public candidateStake: BN = new BN(0);
+  @observable public totalStake: BN = new BN(0);
+  @observable public myStake: BN = new BN(0);
 
   public claimableStake: ClaimableStake = new ClaimableStake(this);
-  public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
+  @observable public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
   public validatorStakeShare: number = 0; // percent
   public validatorRewardShare: number = 0; // percent
@@ -108,6 +105,9 @@ export class Pool {
 
 
 export class Delegator {
+  public constructor(delegator: string) {
+    this.address = delegator;
+  }
+
   address: string = '';
 }
-

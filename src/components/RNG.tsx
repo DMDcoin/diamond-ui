@@ -55,7 +55,7 @@ const CustomTable = ({ props }: any) => {
           required
           value={rangeEnd}
         />
-        <button onClick={updateTable} disabled={isLoading}>Generate</button>
+        <button onClick={updateTable} disabled={isLoading}>{ isLoading ? 'Generating!' : 'Generate'}</button>
       </form>
 
       {isLoading ? (

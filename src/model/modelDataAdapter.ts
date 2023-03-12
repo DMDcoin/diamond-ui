@@ -9,7 +9,7 @@ import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
 import { observable } from 'mobx';
-import { Pool } from "./model";
+import { Delegator, Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 import { BlockType, NonPayableTx } from '../contracts/types';
 import { IModelCache, LocalStorageModelCache } from './modelCacheProvider';
@@ -26,7 +26,10 @@ declare global {
 
 /**Fetches data for the model. */
 export class ModelDataAdapter {
-
+  // constructor() {
+  //   this.web3 = new Web3('http://rpc.uniq.diamonds:8540');
+  //   this.getLatestBlockInfo();
+  // }
 
   @observable public context: Context = new Context();
 
@@ -90,6 +93,20 @@ export class ModelDataAdapter {
     }
   }
   
+  // private async getLatestBlockInfo() {
+  //   const latestBlock = await this.web3.eth.getBlockNumber();
+  //   while(true) {
+  //     try {
+  //       console.log("[INFO] Current Block Number", latestBlock);
+  //       if (Number(latestBlock) > Number(this.context.currentBlockNumber)) {
+  //         console.log("Block Updated:", this.context.currentBlockNumber, {latestBlock})
+  //       }
+  //     } catch(err) {
+  //       console.log("[ERROR] Latest BLock serice:", err);
+  //     }
+  //     await new Promise((resolve: any) => setTimeout(resolve, 3000));
+  //   }
+  // }
 
   // TODO: properly implement singleton pattern
   // eslint-disable-next-line max-len
@@ -149,7 +166,7 @@ export class ModelDataAdapter {
     const toBeElectedPoolAddrs = await this.stContract.methods.getPoolsToBeElected().call(this.tx(), this.block());
     const pendingValidatorAddrs = await this.vsContract.methods.getPendingValidators().call(this.tx(), this.block());
 
-    this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
+    await this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
   }
 
 
@@ -440,8 +457,8 @@ export class ModelDataAdapter {
       }
     }
 
-    // TODO: delegatorAddrs ?!
-    // pool.delegatorAddrs = Array<string> = await this.stContract.methods.poolDelegators(stakingAddress).call(this.tx(), this.block());
+    const delegators = await this.stContract.methods.poolDelegators(stakingAddress).call(this.tx(), this.block()); 
+    pool.delegators = delegators.map(delegator => new Delegator(delegator));
 
     pool.bannedUntil = new BN(await this.getBannedUntil(miningAddress));
     pool.banCount = await this.getBanCount(miningAddress);
@@ -566,10 +583,10 @@ export class ModelDataAdapter {
   // does relevant state updates and checks if the epoch changed
   private async handleNewBlock() : Promise<void> {
 
-    console.error('handling new block.');
+    console.log('[INFO] Handling new block.');
     const blockHeader = await this.web3.eth.getBlock('latest');
     this.context.currentBlockNumber = blockHeader.number;
-    console.log(`current Block Number: `, this.context.currentBlockNumber);
+    console.log(`[INFO ]Current Block Number:`, this.context.currentBlockNumber);
     this.context.currentTimestamp = new BN(blockHeader.timestamp);
 
     if (this.hasWeb3BrowserSupport) {
@@ -577,9 +594,11 @@ export class ModelDataAdapter {
     }
 
     // epoch change
-    console.log(`updating stakingEpochEndBlock at block ${this.context.currentBlockNumber}`);
+    console.log(`[INFO] updating stakingEpochEndBlock at block ${this.context.currentBlockNumber}`);
     const oldEpoch = this.context.stakingEpoch;
     await this.retrieveValuesFromContract();
+
+    console.log("[INFO] Epoch times:", {oldEpoch}, "Latest:", this.context.stakingEpoch, oldEpoch !== this.context.stakingEpoch);
 
     const isNewEpoch = oldEpoch !== this.context.stakingEpoch;
 
