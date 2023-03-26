@@ -1,6 +1,6 @@
 
 import BN from 'bn.js';
-import { observable } from 'mobx';
+import { makeAutoObservable, observable } from 'mobx';
 import { Context } from './context';
 import { KeyGenMode } from './contracts/contractManager';
 
@@ -22,6 +22,7 @@ export class Pool {
 
   public constructor(context: Context) {
     this.context = context;
+    makeAutoObservable(this);
   }
 
   @observable public context: Context;

@@ -8,7 +8,7 @@ import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
 import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
-import { observable } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { Delegator, Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 import { BlockType, NonPayableTx } from '../contracts/types';
@@ -27,9 +27,13 @@ declare global {
 /**Fetches data for the model. */
 export class ModelDataAdapter {
   // constructor() {
-  //   this.web3 = new Web3('http://rpc.uniq.diamonds:8540');
+  //   this.web3 = new Web3(process.env.REACT_APP_URL);
   //   this.getLatestBlockInfo();
   // }
+
+  constructor() {
+    makeAutoObservable(this);
+  }
 
   @observable public context: Context = new Context();
 
@@ -45,7 +49,7 @@ export class ModelDataAdapter {
     from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
   };
 
-  private vsContract!: ValidatorSetHbbft;
+  public vsContract!: ValidatorSetHbbft;
 
   public stContract!: StakingHbbftCoins;
 
@@ -61,13 +65,13 @@ export class ModelDataAdapter {
 
   private _isShowHistoric: boolean = false;
 
-  @observable public isReadingData: boolean = false;
+  public isReadingData: boolean = false;
 
-  @observable public lastError?: unknown = undefined;
+  public lastError?: unknown = undefined;
   
   private showHistoricBlock: number = 0;
 
-  @observable public isSyncingPools = true;
+  public isSyncingPools = true;
 
   private _uiElementsToUpdate = new Array<React.Component>();
 
@@ -373,10 +377,11 @@ export class ModelDataAdapter {
 
     await Promise.all(poolsToUpdate);
 
-    this.context.numbersOfValidators = this.context.pools.filter(x=>x.isCurrentValidator).length;
-
-    this.context.currentValidatorsWithoutPools = validatorWithoutPool;
-    this.context.pools = this.context.pools.sort((a, b) => a.stakingAddress.localeCompare(b.stakingAddress));
+    runInAction(() => {
+      this.context.numbersOfValidators = this.context.pools.filter(x=>x.isCurrentValidator).length;
+      this.context.currentValidatorsWithoutPools = validatorWithoutPool;
+      this.context.pools = this.context.pools.sort((a, b) => a.stakingAddress.localeCompare(b.stakingAddress));
+    })
 
     // this.cache.store(this.context);
     //storeData(this.context);
@@ -582,15 +587,21 @@ export class ModelDataAdapter {
 
   // does relevant state updates and checks if the epoch changed
   private async handleNewBlock() : Promise<void> {
-
     console.log('[INFO] Handling new block.');
     const blockHeader = await this.web3.eth.getBlock('latest');
-    this.context.currentBlockNumber = blockHeader.number;
-    console.log(`[INFO ]Current Block Number:`, this.context.currentBlockNumber);
-    this.context.currentTimestamp = new BN(blockHeader.timestamp);
+    
+    console.log(`[INFO] Current Block Number:`, this.context.currentBlockNumber);
+
+    runInAction(() => {
+      this.context.currentBlockNumber = blockHeader.number;
+      this.context.currentTimestamp = new BN(blockHeader.timestamp);
+    })
 
     if (this.hasWeb3BrowserSupport) {
-      this.context.myBalance = new BN(await this.web3.eth.getBalance(this.context.myAddr));
+      const myBalance = new BN(await this.web3.eth.getBalance(this.context.myAddr));
+      runInAction(() => {
+        this.context.myBalance = myBalance;
+      })
     }
 
     // epoch change
@@ -614,7 +625,11 @@ export class ModelDataAdapter {
     // }
 
     // TODO: due to the use of 2 different web3 instances, this bool may not always match stakingAllowedTimeframe
-    this.context.canStakeOrWithdrawNow = await this.stContract.methods.areStakeAndWithdrawAllowed().call(this.tx(), this.block());
+    const canStakeOrWithdrawNow = await this.stContract.methods.areStakeAndWithdrawAllowed().call(this.tx(), this.block());
+    runInAction(() => {
+      this.context.canStakeOrWithdrawNow = canStakeOrWithdrawNow;
+    })
+    
 
     // TODO: don't do this in every block. There's no event we can rely on, but we can be smarter than this
     // await this.updateCurrentValidators();
@@ -622,12 +637,13 @@ export class ModelDataAdapter {
     await this.syncPoolsState(isNewEpoch);
   }
 
-  public async stake(poolAddr: string, amount: number): Promise<boolean> {
+  public async stake(poolAddr: string, amount: string): Promise<boolean> {
     console.log(`${this.context.myAddr} wants to stake ${amount} DMD on pool ${poolAddr}`);
 
     const txOpts = { ...this.defaultTxOpts };
     txOpts.from = this.context.myAddr;
-    txOpts.value = this.web3.utils.toWei(amount.toString());
+    // txOpts.value = this.web3.utils.toWei(amount.toString());
+    txOpts.value = amount;
 
     try {
       const receipt = await this.stContract.methods.stake(poolAddr).send(txOpts);
@@ -699,12 +715,6 @@ export class ModelDataAdapter {
   }
   
   public async withdrawStake(address: string, amount: string): Promise<any> {
-    // const isValidator = await this.vsContract.methods.isValidator(address).call();
-
-    // console.log({isValidator})
-
-    // if (isValidator) return false;
-
     const txOpts = { ...this.defaultTxOpts };
     txOpts.from = this.context.myAddr;
 

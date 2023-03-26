@@ -17,7 +17,7 @@ interface PoolProps {
 class PoolDetail extends React.Component<PoolProps> {
   notify = (msg: string) => toast(msg);
 
-  private hasClaimable = false;
+  private hasClaimable = true;
 
   constructor(props: PoolProps) {
     super(props);
@@ -41,16 +41,18 @@ class PoolDetail extends React.Component<PoolProps> {
       const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, context.myAddr).call();
       const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, context.myAddr).call()) + 1;
       console.log("Withdraw Claiming:", {amount}, {unlockEpoch});
-      this.hasClaimable = parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch;
+      this.hasClaimable =true;
     }
   }
 
   handleDelegateStake = async (e: any) => {
     e.preventDefault();
-    const stakeAmount = e.target[0].value;
+    
 
     const { adapter, pool } = this.props;
     const context = adapter.context;
+
+    const stakeAmount = adapter.web3.utils.toWei(e.target[0].value).toString();
 
     if (!context.myAddr) {
       this.notify("Please connect wallet!");
@@ -68,10 +70,10 @@ class PoolDetail extends React.Component<PoolProps> {
 
     const accBalance = await adapter.postProvider.eth.getBalance(context.myAddr);
 
-    if (stakeAmount > accBalance) {
-      console.log(context.myBalance.toString());
+    if (new BN(stakeAmount).gt(new BN(accBalance))) {
+      console.log(context.myBalance.toString(), stakeAmount, accBalance);
 
-      this.notify(`insufficient balance (${context.myBalance}) for selected amount ${stakeAmount}`);
+      this.notify(`Insufficient balance ${context.myBalance} for selected amount ${stakeAmount}`);
       return true;
     } else if (!context.canStakeOrWithdrawNow) {
       this.notify("outside staking/withdraw time window");
@@ -83,7 +85,7 @@ class PoolDetail extends React.Component<PoolProps> {
       // TODO: this condition should be checked before even enabling the button
       this.notify("Insufficient candidate (pool owner) stake");
       return true;
-    } else if (previousStakeAmount + stakeAmount < minStake) {
+    } else if (new BN(previousStakeAmount).add(new BN(stakeAmount)).lt(new BN(minStake))) {
       this.notify(`Min staking amount is ${minStake}`);
       return true;
     } else if (pool.isBanned()) {
@@ -118,6 +120,7 @@ class PoolDetail extends React.Component<PoolProps> {
 
     const withdrawAmount = e.target.withdrawAmount.value;
     const poolAddress = this.props.pool.stakingAddress;
+    const minningAddress = this.props.pool.miningAddress;
 
     if (!context.myAddr) {
       this.notify("Please connect wallet!");
@@ -128,8 +131,11 @@ class PoolDetail extends React.Component<PoolProps> {
     }
 
     const id = toast.loading("Transaction Pending");
+    const isActiveValidator = await adapter.vsContract.methods.isValidator(minningAddress).call();
 
-    if (Number.isNaN(withdrawAmount)) {
+    if (isActiveValidator) {
+      toast.warning("Active validator, can't withdraw");
+    } else if (Number.isNaN(withdrawAmount)) {
       toast.warning('No amount entered');
     } else if (!context.canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw time window');

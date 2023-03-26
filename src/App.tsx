@@ -128,7 +128,7 @@ class App extends React.Component<AppProps, AppState> {
                   chainName: 'DMD',
                   chainId: new Web3().utils.toHex(chainId),
                   nativeCurrency: { name: 'DMD', decimals: 18, symbol: 'DMD' },
-                  rpcUrls: ['http://rpc.uniq.diamonds:8540']
+                  rpcUrls: [process.env.REACT_APP_URL]
                 }
               ]
             });
