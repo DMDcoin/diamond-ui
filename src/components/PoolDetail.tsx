@@ -17,7 +17,7 @@ interface PoolProps {
 class PoolDetail extends React.Component<PoolProps> {
   notify = (msg: string) => toast(msg);
 
-  private hasClaimable = true;
+  private hasClaimable = false;
 
   constructor(props: PoolProps) {
     super(props);
@@ -41,7 +41,7 @@ class PoolDetail extends React.Component<PoolProps> {
       const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, context.myAddr).call();
       const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, context.myAddr).call()) + 1;
       console.log("Withdraw Claiming:", {amount}, {unlockEpoch});
-      this.hasClaimable =true;
+      this.hasClaimable = parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch;
     }
   }
 
