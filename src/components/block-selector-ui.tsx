@@ -8,9 +8,11 @@ import { DmdComponent } from "./dmd-component";
 import Accordion from "react-bootstrap/Accordion";
 import "../styles/blockSelector.css";
 import BarLoader from "react-spinners/BarLoader";
+import { ToastContainer, toast } from "react-toastify";
 
 export class BlockSelectorUI extends DmdComponent {
   private _isModal = false;
+  notify = (msg: string) => toast(msg);
   private _ref_overlay = React.createRef<HTMLElement>();
 
   private getModal(): JSX.Element {
@@ -159,6 +161,10 @@ export class BlockSelectorUI extends DmdComponent {
       const input = window.prompt(
         "pleased enter a block number you want to browse historic, or latest to track the latest block."
       );
+      if (Number(input) > this.props.modelDataAdapter.context.latestBlockNumber) {
+        this.notify(`Entered block cannot be greater than ${this.props.modelDataAdapter.context.latestBlockNumber}`);
+        return false;
+      }
       if (input) {
         if (input === "latest") {
           this.props.modelDataAdapter.showLatest();
@@ -173,6 +179,19 @@ export class BlockSelectorUI extends DmdComponent {
 
     return (
       <div className="blockSelectorContainer">
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
+
         {this._isModal ? this.getModal() : undefined}
         {accountInfos}
 

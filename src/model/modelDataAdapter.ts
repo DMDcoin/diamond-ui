@@ -767,4 +767,26 @@ export class ModelDataAdapter {
       console.log(`failed with ${e}`);
     }
   }
+
+  public async claimReward(poolAddr: string): Promise<boolean | string> {
+    console.log(`[INFO] ${this.context.myAddr} wants to claim the available reward from pool ${poolAddr}`);
+    const txOpts = { ...this.defaultTxOpts };
+    txOpts.gasLimit = '800000000';
+    txOpts.from = this.context.myAddr;
+
+    const epochList = await this.brContract.methods.epochsToClaimRewardFrom(poolAddr, this.context.myAddr).call();
+    const txEpochList = epochList.slice(0, 5000);
+
+    console.log(`[INFO] ClaimReward: claiming for ${txEpochList.length} of ${epochList.length} epochs...`);
+
+    try {
+      const receipt = await this.stContract.methods.claimReward(txEpochList, poolAddr).send(txOpts);
+      console.log(`tx ${receipt.transactionHash} for claimReward(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+    } catch (e: any) {
+      console.log(`[ERROR] ClaimReward: Failed with ${e.message}`);
+      return 'error'
+    }
+
+    return epochList.length > txEpochList.length;
+  }
 }

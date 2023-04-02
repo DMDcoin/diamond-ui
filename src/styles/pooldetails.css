@@ -25,7 +25,7 @@
     margin-top: 7vh;
 }
 
-.stakeSubmitBtn {
+.submitBtn {
     width: 25%;
     height: 100%;
     font-size: 14px;
@@ -42,7 +42,7 @@
     align-self: flex-end;
 }
 
-.stakeSubmitBtn:hover {
+.submitBtn:hover {
     color:white;
     background-color: #1F45B2;
     transition: background-color .5s;
@@ -97,12 +97,13 @@ input:focus {
 .claimStake {
     gap: 1rem;
     width: 100%;
+    width: 500px;
+    padding: 10px;
     display: flex;
+    max-width: 500px;
+    min-width: 320px;
     align-items: center;
-}
-
-.claimStake > button {
-    width: 150px;
+    justify-content: center;
 }
 
 label {

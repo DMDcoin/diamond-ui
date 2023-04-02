@@ -1,13 +1,15 @@
 import BN from "bn.js";
 import React from "react";
 import "../styles/pooldetails.css";
+import BigNumber from 'bignumber.js';
 import { Pool } from "../model/model";
+import DelegatorsData from "./Delegators";
 import "react-toastify/dist/ReactToastify.css";
 import Accordion from "react-bootstrap/Accordion";
 import { ToastContainer, toast } from "react-toastify";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
-import { Table } from "react-bootstrap";
-import DelegatorsData from "./Delegators";
+
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
 
 interface PoolProps {
   pool: Pool;
@@ -17,7 +19,10 @@ interface PoolProps {
 class PoolDetail extends React.Component<PoolProps> {
   notify = (msg: string) => toast(msg);
 
-  private hasClaimable = false;
+  rewardClaimAmount = '0';
+  stakeWithdrawAmount = '0';
+  hasRewardClaimable = false;
+  hasWithdrawClaimable = false;
 
   constructor(props: PoolProps) {
     super(props);
@@ -25,23 +30,44 @@ class PoolDetail extends React.Component<PoolProps> {
 
   public componentDidMount() {
     console.log("Pool Details Loaded");
-    this.hasClaimableAmount()
+    this.getRewardClaimableAmount();
+    this.getWithdrawClaimableAmount()
   }
 
   public componentDidUpdate(prevProps: Readonly<PoolProps>, prevState: Readonly<{}>, snapshot?: any): void {
     console.log("Pool Details Updated");
-    this.hasClaimableAmount()
+    this.getRewardClaimableAmount();
+    this.getWithdrawClaimableAmount();
   }
 
-  hasClaimableAmount = async () => {
+  getWithdrawClaimableAmount = async () => {
     const { adapter, pool } = this.props;
     const context = adapter.context;
 
     if (context.myAddr) {
-      const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, context.myAddr).call();
-      const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, context.myAddr).call()) + 1;
-      console.log("Withdraw Claiming:", {amount}, {unlockEpoch});
-      this.hasClaimable = parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch;
+      const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.miningAddress, context.myAddr).call();
+      const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.miningAddress, context.myAddr).call()) + 1;
+      if (this.stakeWithdrawAmount != amount) {
+        this.stakeWithdrawAmount = amount;
+        this.hasWithdrawClaimable = parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch;
+        this.forceUpdate();
+      }
+    }
+  }
+
+  getRewardClaimableAmount = async () => {
+    const { adapter, pool } = this.props;
+    const context = adapter.context;
+
+    if (context.myAddr) {
+      const hasStake: boolean = pool.stakingAddress === context.myAddr ? true : (await adapter.stContract.methods.stakeFirstEpoch(pool.stakingAddress, context.myAddr).call()) !== '0';
+      const claimableAmount = hasStake ? await adapter.stContract.methods.getRewardAmount([], pool.stakingAddress, context.myAddr).call() : '0';
+      
+      if (this.rewardClaimAmount != claimableAmount) {
+        this.rewardClaimAmount = claimableAmount;
+        this.hasRewardClaimable = BigNumber(this.rewardClaimAmount).isGreaterThan(0) ? true : false;
+        this.forceUpdate();
+      }
     }
   }
 
@@ -134,7 +160,7 @@ class PoolDetail extends React.Component<PoolProps> {
     const isActiveValidator = await adapter.vsContract.methods.isValidator(minningAddress).call();
 
     if (isActiveValidator) {
-      toast.warning("Active validator, can't withdraw");
+      toast.update(id, { render: "Active validator, can't withdraw", type: "warning", isLoading: false });
     } else if (Number.isNaN(withdrawAmount)) {
       toast.warning('No amount entered');
     } else if (!context.canStakeOrWithdrawNow) {
@@ -166,7 +192,9 @@ class PoolDetail extends React.Component<PoolProps> {
     
   }
 
-  claimStake = async () => {
+  claimStake = async (e: any) => {
+    e.preventDefault();
+
     const { adapter, pool } = this.props;
     const context = adapter.context;
 
@@ -179,10 +207,43 @@ class PoolDetail extends React.Component<PoolProps> {
     }
 
     if (!context.canStakeOrWithdrawNow) {
-      alert('outside staking/withdraw time window');
+      this.notify('outside staking/withdraw time window');
     } else {
+      const toastId = toast.loading("Transaction Pending");
       await adapter.claimStake(pool.stakingAddress);
+      setTimeout(() => {
+        toast.dismiss(toastId)
+      }, 3000);
     }
+  }
+
+  claimReward = async (e:any) => {
+    e.preventDefault();
+
+    const { adapter, pool } = this.props;
+    const context = adapter.context;
+
+    if (!context.myAddr) {
+      this.notify("Please connect wallet!");
+      return true;
+    } else if (context.myAddr == 'connecting') {
+      this.notify("Please wait for wallet to connect");
+      return true;
+    }
+
+    const toastId = toast.loading("Transaction Pending");
+    const moreToClaim = await adapter.claimReward(pool.stakingAddress);
+    this.getRewardClaimableAmount();
+
+    if (moreToClaim == 'error') {
+      toast.update(toastId, { render: "Tx Failed, please try again", type: "error", isLoading: false });
+    } else {
+      toast.update(toastId, { render: "Claimed Successfully", type: "success", isLoading: false });
+    }
+
+    setTimeout(() => {
+      toast.dismiss(toastId)
+    }, 3000);
   }
 
   public render(): JSX.Element {
@@ -278,7 +339,7 @@ class PoolDetail extends React.Component<PoolProps> {
 
                   {
 
-                    <button type="submit" className="stakeSubmitBtn">
+                    <button type="submit" className="submitBtn">
                       Stake
                     </button>
                   }
@@ -288,15 +349,30 @@ class PoolDetail extends React.Component<PoolProps> {
                 <label>Withdraw Stake:</label>
                 <form className="withdrawForm" onSubmit={this.handleWithdraw}>
                   <input name="withdrawAmount" type="number" placeholder="Stake amount" required/>
-                  <button type="submit" className="stakeSubmitBtn">Withdraw</button>
+                  <button type="submit" className="submitBtn">Withdraw</button>
                 </form>
 
                 {
-                  this.hasClaimable ? 
-                    <div className="claimStake">
-                      <label>Claim Stake:</label>
-                      <button type="submit" className="stakeSubmitBtn" onClick={this.claimStake}>Claim</button>
-                    </div>
+                  this.hasWithdrawClaimable ? 
+                    <>
+                    <label>Claim Stake:</label>
+                    <form className="claimStake" onSubmit={this.claimStake}>
+                        <input value={`${BigNumber(this.stakeWithdrawAmount).dividedBy(Math.pow(10, 18)).toString()} DMD`} disabled></input>
+                        <button type="submit" className="submitBtn">Claim</button>
+                    </form>
+                    </>
+                  : ""
+                }
+
+                {
+                  this.hasRewardClaimable ?
+                    <>
+                    <label>Claim Reward:</label>
+                    <form className="claimStake" onSubmit={this.claimReward}>
+                        <input value={`${BigNumber(this.rewardClaimAmount).dividedBy(Math.pow(10, 18)).toString()} DMD`} disabled></input>
+                        <button type="submit" className="submitBtn">Claim</button>
+                    </form>
+                    </>
                   : ""
                 }
               </div>
