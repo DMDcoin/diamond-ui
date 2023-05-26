@@ -25,12 +25,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import GridLoader from "react-spinners/GridLoader";
 import AddPool from './components/AddPool';
 import RNG from './components/RNG';
+import BlockchainService from './utils/BlockchainService';
 
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
 
 interface AppProps {
-  modelDataAdapter: ModelDataAdapter,
+  adapter: ModelDataAdapter,
 }
 
 interface AppState {
@@ -42,6 +43,7 @@ interface AppState {
 
 @observer
 class App extends React.Component<AppProps, AppState> {
+  private blockchainService: BlockchainService;
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
   constructor(props: AppProps) {
@@ -52,6 +54,7 @@ class App extends React.Component<AppProps, AppState> {
       selectedPool: undefined,
       connectedAccount: ""
     }
+    this.blockchainService = new BlockchainService(props)
   }
 
   private ui(o: BN) {
@@ -80,7 +83,7 @@ class App extends React.Component<AppProps, AppState> {
 
   public async connectWallet() {
     try {
-      const url = this.props.modelDataAdapter.url;
+      const url = this.props.adapter.url;
   
       const providerOptions = {
         walletconnect: {
@@ -143,8 +146,8 @@ class App extends React.Component<AppProps, AppState> {
         connectedAccount: 'connecting'
       });
 
-      const { modelDataAdapter } = this.props;
-      await modelDataAdapter.setProvider(provider);
+      const { adapter } = this.props;
+      await adapter.setProvider(provider);
 
       this.setState({
         connectedAccount: web3ModalInstance.selectedAddress
@@ -159,27 +162,36 @@ class App extends React.Component<AppProps, AppState> {
   public componentDidMount(): void {
     console.log('component did mount.');
 
-    this.props.modelDataAdapter.registerUIElement(this);
+    this.props.adapter.registerUIElement(this);
 
-    const { modelDataAdapter } = this.props;
-    const { context } = modelDataAdapter;
+    const { adapter } = this.props;
+    const { context } = adapter;
     const data = context.pools;
     this.setState({poolsData: data});
   }
 
   public componentWillUnmount() {
     console.log('component will unmount.');
-    this.props.modelDataAdapter.unregisterUIElement(this);
+    this.props.adapter.unregisterUIElement(this);
   }
 
+  public rowClicked = (e: any, rowData: any) => {
+    if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
+      const rowStakingAddress = rowData._row.data.stakingAddress;
+      const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
+      this.blockchainService.claimReward(e, poolData[0]);
+    } else {
+      this.viewPoolDetails(e, rowData)
+    }
+  }
 
   public render(): JSX.Element {
 
-    const { modelDataAdapter } = this.props;
-    const { context } = modelDataAdapter;
+    const { adapter } = this.props;
+    const { context } = adapter;
     
 
-    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
+    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address: any) => (
       <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
@@ -199,7 +211,6 @@ class App extends React.Component<AppProps, AppState> {
       // { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
       /* miner fields */
       { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left",  width: 370 },
-
     ];
     
     const data = context.pools;
@@ -239,13 +250,13 @@ class App extends React.Component<AppProps, AppState> {
         </div>
 
         <div>
-          <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
-          {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
+          <BlockSelectorUI modelDataAdapter={this.props.adapter} />
+          {/* <ContractDetailsUI adapter={this.props.adapter} /> */}
           {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
-          {modelDataAdapter.isReadingData ? (
+          {adapter.isReadingData ? (
             <GridLoader
               color={'#254CA0'}
-              loading={modelDataAdapter.isReadingData}
+              loading={adapter.isReadingData}
               size={20}
               aria-label="Loading Spinner"
               data-testid="loader"
@@ -260,14 +271,7 @@ class App extends React.Component<AppProps, AppState> {
               >
                 <Tab eventKey="pools-overview" title="Pools">
                   {validatorsWithoutPoolSection}
-                  <ReactTabulatorViewOptions>
-                    <ReactTabulator
-                      responsiveLayout="collapse"
-                      data={data}
-                      columns={columns}
-                      tooltips={true}
-                      events={{ rowClick: this.viewPoolDetails }}
-                    />
+                  <ReactTabulatorViewOptions dataProp={data} columnsProp={columns} eventsProp={{ rowClick: this.rowClicked }}>
                   </ReactTabulatorViewOptions>
                 </Tab>
 
@@ -275,7 +279,7 @@ class App extends React.Component<AppProps, AppState> {
                   <Tab eventKey="pool-detail" title="Pool Details">
                     <PoolDetail
                       pool={this.state.selectedPool}
-                      adapter={modelDataAdapter}
+                      adapter={adapter}
                     />
                   </Tab>
                 ) : (
@@ -283,11 +287,11 @@ class App extends React.Component<AppProps, AppState> {
                 )}
 
                 <Tab eventKey="add-pool" title="Add Pool">
-                  <AddPool adapter={modelDataAdapter}/>
+                  <AddPool adapter={adapter}/>
                 </Tab>
 
                 <Tab eventKey="rng-tab" title="RNG">
-                  <RNG adapter={modelDataAdapter}/>
+                  <RNG adapter={adapter}/>
                 </Tab>
               </Tabs>
             </Fragment>

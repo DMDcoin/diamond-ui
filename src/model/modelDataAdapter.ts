@@ -23,6 +23,9 @@ declare global {
   }
 }
 
+interface modelAdapterState {
+  hasWeb3BrowserSupport: boolean
+}
 
 /**Fetches data for the model. */
 export class ModelDataAdapter {
@@ -202,7 +205,6 @@ export class ModelDataAdapter {
     this.context.myAddr = web3Provider.currentProvider.selectedAddress;
 
     this.hasWeb3BrowserSupport = true;
-
     
     await this.reinitializeContracts(web3Provider);
 
@@ -388,7 +390,7 @@ export class ModelDataAdapter {
   }
 
   private async getClaimableReward(stakingAddr: string): Promise<string> {
-    if (!this.hasWeb3BrowserSupport) {
+    if (!this.postProvider) {
       return '0';
     }
     // getRewardAmount() fails if invoked for a staker without stake in the pool, thus we check that beforehand
@@ -397,10 +399,13 @@ export class ModelDataAdapter {
   }
 
   private async getMyStake(stakingAddress: string): Promise<string> {
-    if (!this.hasWeb3BrowserSupport) {
+    // console.log("My Stake:", this.hasWeb3BrowserSupport)
+    if (!this.postProvider) {
       return '0';
     }
-    return this.stContract.methods.stakeAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block());
+    
+    const stakeAmount = this.stContract.methods.stakeAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block())
+    return stakeAmount;
   }
 
   private async getBannedUntil(miningAddress: string): Promise<BN> {
@@ -444,23 +449,24 @@ export class ModelDataAdapter {
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
     pool.myStake = new BN(await this.getMyStake(stakingAddress));
+    pool.claimableReward = await this.getClaimableReward(pool.stakingAddress);
 
-    if (this.hasWeb3BrowserSupport) {
-      // there is a time, after a validator was chosen,
-      // the state is still locked.
-      // so the stake can just get "unlocked" in a block between epoch phases.
+    // if (this.hasWeb3BrowserSupport) {
+    //   // there is a time, after a validator was chosen,
+    //   // the state is still locked.
+    //   // so the stake can just get "unlocked" in a block between epoch phases.
 
-      // const claimableStake = {
-      //   amount: await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()),
-      //   unlockEpoch: parseInt(await this.stContract.methods.orderWithdrawEpoch(stakingAddress, this.context.myAddr).call(this.tx(), this.block())) + 1,
-      //   // this lightweigt solution works, but will not trigger an update by itself when its value changes
-      //   canClaimNow: () => claimableStake.amount.asNumber() > 0 && claimableStake.unlockEpoch <= this.context.stakingEpoch,
-      // };
-      //pool.claimableStake = claimableStake;
-      if (isNewEpoch) {
-        pool.claimableReward = await this.getClaimableReward(pool.stakingAddress);
-      }
-    }
+    //   // const claimableStake = {
+    //   //   amount: await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()),
+    //   //   unlockEpoch: parseInt(await this.stContract.methods.orderWithdrawEpoch(stakingAddress, this.context.myAddr).call(this.tx(), this.block())) + 1,
+    //   //   // this lightweigt solution works, but will not trigger an update by itself when its value changes
+    //   //   canClaimNow: () => claimableStake.amount.asNumber() > 0 && claimableStake.unlockEpoch <= this.context.stakingEpoch,
+    //   // };
+    //   //pool.claimableStake = claimableStake;
+    //   if (isNewEpoch) {
+        
+    //   }
+    // }
 
     const delegators = await this.stContract.methods.poolDelegators(stakingAddress).call(this.tx(), this.block()); 
     pool.delegators = delegators.map(delegator => new Delegator(delegator));
