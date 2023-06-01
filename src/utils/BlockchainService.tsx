@@ -17,7 +17,6 @@ export default class BlockchainService {
   private adapter: ModelDataAdapter;
 
   constructor(props: any) {
-    console.log("Props", props)
     const { adapter, pool } = props as { adapter: ModelDataAdapter } & PoolProps;
     const context = adapter.context;
 

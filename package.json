@@ -68,6 +68,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.195",
     "@types/uuid": "^9.0.1",
     "react-error-overlay": "^6.0.9"
   }

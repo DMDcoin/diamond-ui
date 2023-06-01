@@ -65,10 +65,10 @@ const defaultColumns : ColumnDefinition[] = [
         container.appendChild(button);
         return container;
       }
-      return "";
+      return "0 DMD";
     },
   },
-  { title: "Ordered Withdraw", field: "claimableReward", formatter: (cell) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD"},
+  { title: "Ordered Withdraw", field: "orderedWithdrawAmount", formatter: (cell) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD"},
   // { title: "History Reward", field: "claimableRewards"}
 ];
 
@@ -84,8 +84,33 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     dataState: this.props.dataProp
   }
 
+  componentDidUpdate(prevProps: Readonly<ReactTabulatorViewOptionsProps>, prevState: Readonly<ReactTabulatorViewOptionsState>, snapshot?: any): void {
+    const prevData = this.state.dataState;
+    const currentData = this.props.dataProp;
+
+    // Iterate over the array and compare each object
+    for (let i = 0; i < currentData.length; i++) {
+      const prevObject = prevData[i];
+      const currentObject = currentData[i];
+
+      // Compare the properties of the objects
+      const objectKeys = ['myStake', 'orderedWithdrawAmount', 'claimableReward'];
+      // console.log(objectKeys)
+      let isObjectUpdated = false;
+
+      for (let j = 0; j < objectKeys.length; j++) {
+        const key = objectKeys[j];
+        console.log("Before:", prevObject[key].toString(), "\n",
+          "After:", currentObject[key].toString(), prevObject[key] !== currentObject[key])
+        if (prevObject[key] !== currentObject[key]) {
+          isObjectUpdated = true;
+          break;
+        }
+      }
+    }
+  }
+
   componentDidMount(): void {
-    console.log("Tabulator component mounted")
     this.setState({
       dataState: this.props.dataProp
     })
@@ -191,7 +216,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
                   <Form.Select aria-label="Default select example" onChange={e => this.presetChange(e)}>
                     {
                       presets.map((item, key) => (
-                        <option value={key}>{item}</option>    
+                        <option key={key} value={key}>{item}</option>    
                       ))
                     }
                   </Form.Select>

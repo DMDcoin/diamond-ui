@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
+import { reaction, action, runInAction } from 'mobx';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
@@ -166,13 +167,28 @@ class App extends React.Component<AppProps, AppState> {
 
     const { adapter } = this.props;
     const { context } = adapter;
-    const data = context.pools;
+    const data = [...context.pools];
+    console.log(data)
     this.setState({poolsData: data});
+
+    reaction(
+      () => context.pools.slice(), // Observe a copy of the pools array
+      (pools: Pool[]) => {
+        this.setState({ poolsData: pools });
+      }
+    );
   }
 
   public componentWillUnmount() {
     console.log('component will unmount.');
     this.props.adapter.unregisterUIElement(this);
+  }
+
+  public componentDidUpdate(prevProps:any, prevState: any, snapshot?: any): void {
+    console.log("app component updated")
+    if (this.props.adapter !== prevProps.adapter) {
+      console.log(this.props.adapter, "hehe")
+    }
   }
 
   public rowClicked = (e: any, rowData: any) => {
@@ -191,8 +207,8 @@ class App extends React.Component<AppProps, AppState> {
     const { context } = adapter;
     
 
-    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address: any) => (
-      <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
+    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address: any, key: number) => (
+      <div key={key} className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
     const columns : ColumnDefinition[] = [
@@ -213,7 +229,7 @@ class App extends React.Component<AppProps, AppState> {
       { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left",  width: 370 },
     ];
     
-    const data = context.pools;
+    // const data = [...context.pools];
     // console.log("Data:", this.state.poolsData);
 
     //const target = useRef(null);
@@ -271,7 +287,7 @@ class App extends React.Component<AppProps, AppState> {
               >
                 <Tab eventKey="pools-overview" title="Pools">
                   {validatorsWithoutPoolSection}
-                  <ReactTabulatorViewOptions dataProp={data} columnsProp={columns} eventsProp={{ rowClick: this.rowClicked }}>
+                  <ReactTabulatorViewOptions dataProp={this.state.poolsData} columnsProp={columns} eventsProp={{ rowClick: this.rowClicked }}>
                   </ReactTabulatorViewOptions>
                 </Tab>
 
