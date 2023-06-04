@@ -15,6 +15,6 @@ ModelDataAdapter.initialize(url).then((adapter) => {
   window.context = adapter;
 
   root.render(
-    <App modelDataAdapter={adapter} />,
+    <App adapter={adapter} />,
   );
 });

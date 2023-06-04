@@ -1,4 +1,4 @@
-import { observable, computed, makeAutoObservable } from 'mobx';
+import { observable, computed, makeAutoObservable, action } from 'mobx';
 import { Pool } from './model';
 import BN from 'bn.js';
 
@@ -88,5 +88,4 @@ export class Context {
     public get iHaveAPool(): boolean {
     return this.myPool !== undefined;
   }
-
  }

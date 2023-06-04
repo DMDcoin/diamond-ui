@@ -43,6 +43,7 @@ export class Pool {
   @observable public candidateStake: BN = new BN(0);
   @observable public totalStake: BN = new BN(0);
   @observable public myStake: BN = new BN(0);
+  @observable public orderedWithdrawAmount: BN = new BN(0);
 
   public claimableStake: ClaimableStake = new ClaimableStake(this);
   @observable public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
