@@ -3,9 +3,9 @@ import "../styles/viewoptions.css";
 import { FaTh } from 'react-icons/fa';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { ReactTabulator } from 'react-tabulator';
-import { React15Tabulator } from 'react-tabulator';
+import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
+import BlockchainService from "./BlockchainService";
 
 interface ReactTabulatorViewOptionsColumnSet {
   listName: string,
@@ -17,14 +17,15 @@ interface ReactTabulatorViewOptionsProps {
   children: any;
   dataProp: any;
   columnsProp: any;
-  eventsProp: any;
+  setAppDataState: any;
+  blockChainService: BlockchainService
 }
 
 interface ReactTabulatorViewOptionsState {
   customizeModalShow: boolean,
   defaultPreset: String,
   columnsState: any[];
-  dataState: any[]
+  dataState: any[],
 }
 
 const presets = [
@@ -33,92 +34,182 @@ const presets = [
   'Price Change'
 ]
 
-const handleRewardButtonClick = (e: any) => {
-  console.log("handle claim")
-}
-
-const defaultColumns : ColumnDefinition[] = [
-  { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left"},
-  { title: "Total Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
-  { title: "S", headerTooltip: "Staked - has enough stake ?" ,field: "isActive", headerFilter:true, formatter: "tickCross", width: 30},
-  { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
-  { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
-  { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", headerFilter:true, formatter: "tickCross", width: 30 },
-  { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts", headerFilter:true,  formatter: "tickCross", width: 30 },
-  { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", headerFilter:true, formatter: "tickCross", width: 30 },
-  { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", headerFilter:true, formatter: "tickCross", width: 30 },
-  { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left"},
-  { title: "My Stake", field: "myStake", formatter: (cell) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
-  {
-    title: "Rewards",
-    field: "claimableReward",
-    formatter: (cell): string | HTMLElement => {
-      const rewardValue = (cell.getValue() / (10 ** 18)).toFixed(2).toString() + " DMD";
-      if (parseInt((cell.getValue() / (10 ** 18)).toFixed(2)) > 0) {
-        const container = document.createElement("div");
-        const span = document.createElement("span");
-        span.textContent = rewardValue;
-        const button = document.createElement("button");
-        button.textContent = "Claim";
-        button.addEventListener("click", handleRewardButtonClick);
-        container.appendChild(span);
-        container.appendChild(button);
-        return container;
-      }
-      return "0 DMD";
-    },
-  },
-  { title: "Ordered Withdraw", field: "orderedWithdrawAmount", formatter: (cell) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD"},
-  // { title: "History Reward", field: "claimableRewards"}
-];
-
 /**
  * view options witch sets of colums to be displayed.
  *  
  */
+
+//  const progressWithLabelFormatter = (cell: any) => {
+//   const value = cell.getValue();
+//   const min = cell.getColumn().getDefinition().formatterParams.min;
+//   const max = cell.getColumn().getDefinition().formatterParams.max;
+
+//   const progress = Math.round(((value - min) / (max - min)) * 100);
+//   const progressBar = `<div class="progress-bar" style="width: %"></div>`;
+//   const label = `<div class="progress-label">${value}</div>`;
+
+//   return `<div class="progress-wrapper">${progressBar}${label}</div>`;
+// };
+
 export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorViewOptionsProps, ReactTabulatorViewOptionsState> {
+  defaultColumns = [
+    { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left"},
+    { title: "Total Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
+    // {
+    //   title: "Total Stake",
+    //   field: "totalStake",
+    //   formatter: "progress",
+    //   formatterParams: { min: 0, max: 5 * (10 ** 22), formatter: progressWithLabelFormatter },
+    // },
+    { title: "S", headerTooltip: "Staked - has enough stake ?" ,field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
+    { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
+    { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
+    { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", headerFilter:true, formatter: "tickCross", width: 30 },
+    { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts", headerFilter:true,  formatter: "tickCross", width: 30 },
+    { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", headerFilter:true, formatter: "tickCross", width: 30 },
+    { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", headerFilter:true, formatter: "tickCross", width: 30 },
+    { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left"},
+    { title: "My Stake", field: "myStake", formatter: (cell:any) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
+    {
+      title: "Rewards",
+      field: "claimableReward",
+      width: 200,
+      formatter: (cell:any): string | HTMLElement => {
+        const rewardValue = (cell.getValue() / (10 ** 18)).toFixed(2).toString() + " DMD";
+        if (parseInt((cell.getValue() / (10 ** 18)).toFixed(2)) > 0) {
+          const container = document.createElement("div");
+          const span = document.createElement("span");
+          span.textContent = rewardValue;
+          const button = document.createElement("button");
+          button.textContent = "Claim";
+          button.style.marginLeft = "5px";
+          button.style.flexGrow = "1";
+          // button.addEventListener("click", this.rowClicked);
+          container.appendChild(span);
+          container.appendChild(button);
+          return container;
+        }
+        return "0 DMD";
+      },
+    },
+    { title: "Ordered Withdraw", field: "orderedWithdrawAmount", formatter: (cell:any) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD"},
+    { title: "Score", field: "score"}
+  ];
+
+  el = React.createRef<HTMLDivElement>();
+
+  tabulator: Tabulator | null = null;
+  tableData = []; //data for table to display
+
+  static getDerivedStateFromProps(nextProps: ReactTabulatorViewOptionsProps, prevState: ReactTabulatorViewOptionsState):
+  ReactTabulatorViewOptionsState | null {
+    if (nextProps.dataProp !== prevState.dataState) {
+      return {
+        ...prevState,
+        dataState: [...nextProps.dataProp],
+      };
+    }
+
+    return null;
+  }
+
   state: ReactTabulatorViewOptionsState = {
     customizeModalShow: false,
     defaultPreset: 'Default',
-    columnsState: defaultColumns,
-    dataState: this.props.dataProp
+    columnsState: this.defaultColumns,
+    dataState: [],
   }
 
   componentDidUpdate(prevProps: Readonly<ReactTabulatorViewOptionsProps>, prevState: Readonly<ReactTabulatorViewOptionsState>, snapshot?: any): void {
-    const prevData = this.state.dataState;
-    const currentData = this.props.dataProp;
+    if (prevProps.dataProp !== this.props.dataProp) {
+      this.updateTableData();
+    }
+    this.addTabRowEventListeners();
+  }
 
-    // Iterate over the array and compare each object
-    for (let i = 0; i < currentData.length; i++) {
-      const prevObject = prevData[i];
-      const currentObject = currentData[i];
-
-      // Compare the properties of the objects
-      const objectKeys = ['myStake', 'orderedWithdrawAmount', 'claimableReward'];
-      // console.log(objectKeys)
-      let isObjectUpdated = false;
-
-      for (let j = 0; j < objectKeys.length; j++) {
-        const key = objectKeys[j];
-        console.log("Before:", prevObject[key].toString(), "\n",
-          "After:", currentObject[key].toString(), prevObject[key] !== currentObject[key])
-        if (prevObject[key] !== currentObject[key]) {
-          isObjectUpdated = true;
-          break;
-        }
-      }
+  updateTableData = (): void => {
+    if (this.tabulator) {
+      this.tabulator.setData(this.props.dataProp);
     }
   }
 
+  // componentDidMount(): void {
+  //   if (this.el.current) {
+  //     this.setState({
+  //       dataState: [...this.props.dataProp],
+  //     });
+  
+  //     this.tabulator = new Tabulator(this.el.current, {
+  //       responsiveLayout: "collapse",
+  //       data: this.state.dataState,
+  //       columns: this.state.columnsState,
+  //     });
+  
+  //     this.addTabRowEventListeners();
+  //   }
+  // }
+
   componentDidMount(): void {
-    this.setState({
-      dataState: this.props.dataProp
-    })
+    if (this.el.current) {
+      this.setState({
+        dataState: [...this.props.dataProp],
+      });
+  
+      this.tabulator = new Tabulator(this.el.current, {
+        responsiveLayout: "collapse",
+        data: this.state.dataState,
+        columns: this.state.columnsState,
+      });
+  
+      this.addTabRowEventListeners();
+    }
+
+    setInterval(() => {
+      // console.log("called")
+      this.updateTableData();
+      this.addTabRowEventListeners();
+    }, 6000)
+  }
+  
+
+  addTabRowEventListeners = () => {
+    setTimeout(() => {
+      const tabRows = document.querySelectorAll('.tabulator-row');
+  
+      tabRows.forEach((row: any) => {
+        row.addEventListener('click', this.rowClicked);
+
+        row.addEventListener("dblclick", this.rowClicked);
+      });
+
+      // const tabulator = document.querySelector('tabulator');
+      // tabulator?.addEventListener('click', this.rowClicked);
+
+      // tabulator?.addEventListener("dblclick", this.rowClicked);
+
+      // const btns = document.querySelectorAll('button'); 
+
+      // btns.forEach((btn: any) => {
+      //   if (btn.innerHTML == 'Claim') {
+      //     console.log(btn.innerHTML)
+      //     btn.addEventListener('click', this.rowClicked);
+
+      //     btn.addEventListener("dblclick", this.rowClicked);
+      //   }
+        
+      // });
+  
+      return () => {
+        tabRows.forEach((row: any) => {
+          row.removeEventListener('click', this.rowClicked);
+        });
+      };
+    }, 500);
   }
 
   public columnSets: Array<ReactTabulatorViewOptionsColumnSet> = [];
 
-  public reactTabulatorComponent: React15Tabulator | undefined = undefined;
+  // public reactTabulatorComponent: React15Tabulator | undefined = undefined;
 
 
   static getDefaultPropsForInit() {
@@ -200,6 +291,18 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     console.log(e.target.value)
   }
 
+  rowClicked = (e: any) => {
+    const rowStakingAddress = e.target.closest('.tabulator-row').querySelector('[tabulator-field="stakingAddress"]').textContent.trim();
+    if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
+      const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
+      this.props.blockChainService.claimReward(e, poolData[0]);
+    } else {
+      console.log({rowStakingAddress})
+      const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
+      this.props.setAppDataState(poolData)
+    }
+  };
+
   public render() {
 
     const showList = true; // in progress...
@@ -240,13 +343,14 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
             </button>
           </div>
           
-         <ReactTabulator
+          <div ref={this.el} className="tabulator-container" />
+         {/* <ReactTabulator
             responsiveLayout="collapse"
             data={this.state.dataState}
             columns={this.state.columnsState}
             tooltips={true}
-            events={this.props.eventsProp}
-          />
+            // interactions={false}
+          /> */}
        </div>
     );
   }

@@ -40,11 +40,11 @@
     justify-content: space-between;
 }
 
-.presetContainer > select {
+.presetContainer>select {
     width: 30%;
 }
 
-.presetContainer > button {
+.presetContainer>button {
     border-radius: 10px;
     align-self: flex-end;
     background-color: grey;
@@ -63,3 +63,46 @@
     color: white !important;
     background-color: #254CA0 !important;
 }
+
+.tabulator-container {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .tabulator-container {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabulator-container {
+        font-size: 12px;
+    }
+}
+
+/* .tabulator-table {
+    max-width: 360px;
+} */
+
+.tabulator-container {
+    width: 100%;
+    height: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .tabulator-container .tabulator-col {
+      width: auto !important;
+      min-width: 100px;
+      max-width: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .tabulator-container .tabulator-col {
+      width: auto !important;
+      min-width: 80px;
+      max-width: 150px;
+    }
+  }
+  

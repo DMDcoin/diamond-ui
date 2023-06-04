@@ -39,6 +39,7 @@ export class Pool {
   public miningPublicKey: string = '';
   public addedInEpoch: number = 0;
   public isCurrentValidator: boolean = false;
+  public score = 0;
 
   @observable public candidateStake: BN = new BN(0);
   @observable public totalStake: BN = new BN(0);
@@ -57,6 +58,12 @@ export class Pool {
   public isBanned(): boolean {
     console.log(this.context.currentTimestamp)
     return this.bannedUntil.gt(this.context.currentTimestamp);
+  }
+
+  private _uiElementsToUpdate = new Array<React.Component>();
+
+  public registerUIElement(element: React.Component) {
+    this._uiElementsToUpdate.push(element);
   }
   
   public bannedUntil: BN = new BN('0');
