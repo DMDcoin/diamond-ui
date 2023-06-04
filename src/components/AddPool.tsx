@@ -9,6 +9,8 @@ import Wallet  from 'ethereumjs-wallet';
 import Accordion from "react-bootstrap/Accordion";
 import { ToastContainer, toast } from "react-toastify";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
+import BigNumber from 'bignumber.js';
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
 
 interface AddPoolProps {
   adapter: ModelDataAdapter;
@@ -45,7 +47,7 @@ class AddPool extends React.Component<AddPoolProps> {
     const publicKey = this.publicKey;
     this.minningAddress = this.getAddressFromPublicKey(publicKey);
     const stakeAmount = e.target.stakeAmount.value;
-    const ipAddress = e.target.ipAddress.value;
+    // const ipAddress = e.target.ipAddress.value;
 
     const { adapter } = this.props;
     const context = adapter.context;
@@ -71,7 +73,8 @@ class AddPool extends React.Component<AddPoolProps> {
       this.notify(`Insufficient balance (${accBalance}) for selected amount ${stakeAmount}`);
     } else if (!adapter.canStakeOrWithdrawNow()) {
       this.notify("Outside staking window");
-    } else if (stakeAmount < context.candidateMinStake) {
+    } else if (stakeAmount < BigNumber(context.candidateMinStake.toString()).dividedBy(10**18)) {
+      console.log(stakeAmount, BigNumber(context.candidateMinStake.toString()).dividedBy(10**18))
       this.notify("Insufficient candidate (pool owner) stake");
     } else {
         const id = toast.loading("Transaction Pending");
@@ -131,13 +134,13 @@ class AddPool extends React.Component<AddPoolProps> {
               min={10000}
             />
 
-            <label>Ip Address</label>
+            {/* <label>Ip Address</label>
             <input
               type="text"
               name="ipAddress"
               placeholder="IP Address"
               required
-            />
+            /> */}
 
             <button type="submit">Add</button>
           </form>

@@ -257,11 +257,11 @@ export class BlockSelectorUI extends DmdComponent {
                       </tr>
                       <tr>
                         <td>Delta Pot</td>
-                        <td>{context.deltaPot}</td>
+                        <td>{parseFloat(context.deltaPot).toFixed(4)}</td>
                       </tr>
                       <tr>
                         <td>Reinsert Pot</td>
-                        <td>{context.reinsertPot}</td>
+                        <td>{parseFloat(context.reinsertPot).toFixed(4)}</td>
                       </tr>
                       <tr>
                         <td>Minimum Gas Fee</td>

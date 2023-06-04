@@ -64,17 +64,11 @@ class App extends React.Component<AppProps, AppState> {
 
   notify = (msg: string) => toast(msg);
 
-  viewPoolDetails = (e: any, rowData: any) => {
-    const rowStakingAddress = rowData._row.data.stakingAddress;
-    const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
-
-    console.log("Pool Data:", poolData)
-
+  setAppDataState = (poolData: Pool[]) => {
     this.setState({
       selectedPool: poolData[0],
       activeTab: "pool-detail"
     })
-    // console.log("Filtered Pool:", poolData)
   }
 
   changeTab = (e: any) => {
@@ -191,15 +185,15 @@ class App extends React.Component<AppProps, AppState> {
     }
   }
 
-  public rowClicked = (e: any, rowData: any) => {
-    if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
-      const rowStakingAddress = rowData._row.data.stakingAddress;
-      const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
-      this.blockchainService.claimReward(e, poolData[0]);
-    } else {
-      this.viewPoolDetails(e, rowData)
-    }
-  }
+  // public rowClicked = (e: any, rowData: any) => {
+  //   if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
+  //     const rowStakingAddress = rowData._row.data.stakingAddress;
+  //     const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
+  //     this.blockchainService.claimReward(e, poolData[0]);
+  //   } else {
+  //     this.viewPoolDetails(e, rowData)
+  //   }
+  // }
 
   public render(): JSX.Element {
 
@@ -286,8 +280,8 @@ class App extends React.Component<AppProps, AppState> {
                 onSelect={this.changeTab}
               >
                 <Tab eventKey="pools-overview" title="Pools">
-                  {validatorsWithoutPoolSection}
-                  <ReactTabulatorViewOptions dataProp={this.state.poolsData} columnsProp={columns} eventsProp={{ rowClick: this.rowClicked }}>
+                  {/* {validatorsWithoutPoolSection} */}
+                  <ReactTabulatorViewOptions dataProp={this.state.poolsData} columnsProp={columns} setAppDataState={this.setAppDataState} blockChainService={this.blockchainService}>
                   </ReactTabulatorViewOptions>
                 </Tab>
 

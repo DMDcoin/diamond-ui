@@ -453,6 +453,10 @@ export class ModelDataAdapter {
       // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
     })
 
+    if (true) {
+      pool.score = 0
+    }
+
 
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
