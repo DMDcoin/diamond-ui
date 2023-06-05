@@ -41,6 +41,19 @@ class AddPool extends React.Component<AddPoolProps> {
     return `0x${resultBuffer.toString("hex")}`;
   }
 
+  componentDidUpdate(prevProps: Readonly<AddPoolProps>, prevState: Readonly<{}>, snapshot?: any): void {
+    this.resetInputFields();
+  }
+
+  resetInputFields = () => {
+    const publicKey = document.getElementsByClassName('publicKey');
+    const stakeAmount = document.getElementsByClassName('stakeAmount');
+
+    if (publicKey.length > 0) (publicKey[0] as HTMLInputElement).value = '';
+    
+    if (stakeAmount.length > 0) (stakeAmount[0] as HTMLInputElement).value = '';
+  }
+
   handleAddPool = async (e: any) => {
     e.preventDefault();
 
@@ -62,7 +75,6 @@ class AddPool extends React.Component<AddPoolProps> {
 
     const accBalance = await adapter.postProvider.eth.getBalance(context.myAddr);
     
-
     if (!adapter.web3.utils.isAddress(this.minningAddress)) {
       this.notify("Enter valid minning address");
     } else if (context.myAddr === this.minningAddress) {
@@ -80,10 +92,12 @@ class AddPool extends React.Component<AddPoolProps> {
         const id = toast.loading("Transaction Pending");
         try {
             const resp = await adapter.createPool(this.minningAddress, this.publicKey, stakeAmount, '0x00000000000000000000000000000000');
-            if (resp) {
-            toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
+            if (resp == true) {
+              toast.update(id, { render: `Successfully Added pool with stake of ${stakeAmount} DMD`, type: "success", isLoading: false });
+            } else if (typeof resp == 'string') {
+              toast.update(id, { render: resp, type: "error", isLoading: false });
             } else {
-            toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
+              toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
             }
         } catch (err: any) {
             toast.update(id, { render: err.message, type: "error", isLoading: false });
@@ -92,6 +106,8 @@ class AddPool extends React.Component<AddPoolProps> {
             toast.dismiss(id)
         }, 3000);
     }
+    
+    this.resetInputFields();
   };
 
   public render(): JSX.Element {
@@ -120,6 +136,7 @@ class AddPool extends React.Component<AddPoolProps> {
               minLength={128}
               maxLength={130}
               name="publicKey"
+              className="publicKey"
               onChange={(e:any) => this.publicKey = e.currentTarget.value}
               placeholder="Public Key"
               required
@@ -129,6 +146,7 @@ class AddPool extends React.Component<AddPoolProps> {
             <input
               type="number"
               name="stakeAmount"
+              className="stakeAmount"
               placeholder="Initial Stake"
               required
               min={10000}

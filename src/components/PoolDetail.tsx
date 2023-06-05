@@ -44,6 +44,7 @@ class PoolDetail extends React.Component<PoolProps> {
     console.log("Pool Details Updated");
     this.getRewardClaimableAmount();
     this.getWithdrawClaimableAmount();
+    this.resetInputFields();
   }
 
   getWithdrawClaimableAmount = async () => {
@@ -57,6 +58,15 @@ class PoolDetail extends React.Component<PoolProps> {
         this.setState({stakeWithdrawAmount: amount, hasWithdrawClaimable: parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch})
       }
     }
+  }
+
+  resetInputFields = () => {
+    const stakeInput = document.getElementsByClassName('stakeAmountInput');
+    const withdrawStakeInput = document.getElementsByClassName('withdrawAmount');
+
+    if (stakeInput.length > 0) (stakeInput[0] as HTMLInputElement).value = '';
+    
+    if (withdrawStakeInput.length > 0) (withdrawStakeInput[0] as HTMLInputElement).value = '';
   }
 
   getRewardClaimableAmount = async () => {
@@ -361,8 +371,8 @@ class PoolDetail extends React.Component<PoolProps> {
                 </form>
 
                 <label>Withdraw Stake</label>
-                <form className="withdrawForm" onSubmit={this.blockchainService.handleWithdraw}>
-                  <input name="withdrawAmount" type="number" placeholder="Stake amount" required/>
+                <form className="withdrawForm" onSubmit={(e) => this.blockchainService.handleWithdraw(e, this.props.pool)}>
+                  <input className="withdrawAmount" name="withdrawAmount" type="number" placeholder="Stake amount" required/>
                   <button type="submit" className="submitBtn">Withdraw</button>
                 </form>
 

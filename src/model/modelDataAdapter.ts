@@ -49,7 +49,7 @@ export class ModelDataAdapter {
   public postProvider: any;
 
   public defaultTxOpts = {
-    from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
+    from: '', gasPrice: '1000000000', gasLimit: '8000000', value: '0',
   };
 
   public vsContract!: ValidatorSetHbbft;
@@ -635,20 +635,25 @@ export class ModelDataAdapter {
     return await this.stContract.methods.areStakeAndWithdrawAllowed().call();
   }
 
-  public async createPool(miningAddr: string, publicKey: string, stakeAmount: number, ipAddress: string): Promise<boolean> {
+  public async createPool(miningAddr: string, publicKey: string, stakeAmount: number, ipAddress: string): Promise<boolean | string> {
     const txOpts = { ...this.defaultTxOpts };
     txOpts.from = this.context.myAddr;
     txOpts.value = this.web3.utils.toWei(stakeAmount.toString());
 
     try {
-      console.log(`adding Pool : ${miningAddr} publicKeyHex: ${publicKey} ip ${ipAddress}`);
+      console.log(`adding Pool : ${miningAddr} publicKeyHex: ${publicKey}`);
       // <amount> argument is ignored by the contract (exists for chains with token based staking)
       const receipt = await this.stContract.methods.addPool(miningAddr, publicKey, ipAddress).send(txOpts);
       console.log(`receipt: ${JSON.stringify(receipt, null, 2)}`);
       return true;
-    } catch (e) {
-      console.log(`failed with ${e}`);
-      return false;
+    } catch (e:any) {
+      const errMsg = e.message;
+      console.log(errMsg)
+      if (errMsg.includes('failed with invalid arrayify value') || errMsg.includes('invalid arrayify value')) {
+        return "Invalid Public Key";
+      } else {
+        return false;
+      }
     }
   }
 
@@ -688,15 +693,15 @@ export class ModelDataAdapter {
     // determine available withdraw method and allowed amount
     const maxWithdrawAmount = await this.stContract.methods.maxWithdrawAllowed(address, this.context.myAddr).call();
     const maxWithdrawOrderAmount = await this.stContract.methods.maxWithdrawOrderAllowed(address, this.context.myAddr).call();  
-
     console.assert(maxWithdrawAmount === '0' || maxWithdrawOrderAmount === '0', 'max withdraw amount assumption violated');
 
     let success = false;
     let reason;
 
     try {
+      console.log(maxWithdrawAmount.toString(), maxWithdrawOrderAmount.toString(), amountWeiBN.toString())
       if (maxWithdrawAmount !== '0') {
-        if (new BN(maxWithdrawAmount).lte(amountWeiBN)) {
+        if (new BN(maxWithdrawAmount).gte(amountWeiBN)) {
           reason = 'requested withdraw amount exceeds max';
           return {success, reason};
         } 
