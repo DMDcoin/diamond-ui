@@ -101,17 +101,18 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   tabulator: Tabulator | null = null;
   tableData = []; //data for table to display
 
-  static getDerivedStateFromProps(nextProps: ReactTabulatorViewOptionsProps, prevState: ReactTabulatorViewOptionsState):
-  ReactTabulatorViewOptionsState | null {
-    if (nextProps.dataProp !== prevState.dataState) {
-      return {
-        ...prevState,
-        dataState: [...nextProps.dataProp],
-      };
-    }
+  // static getDerivedStateFromProps(nextProps: ReactTabulatorViewOptionsProps, prevState: ReactTabulatorViewOptionsState): ReactTabulatorViewOptionsState | null {
+  //   console.log("Derieved state outside")
+  //   if (nextProps.dataProp !== prevState.dataState) {
+  //     console.log("Derieved state inside")
+  //     return {
+  //       ...prevState,
+  //       dataState: [...nextProps.dataProp],
+  //     };
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   state: ReactTabulatorViewOptionsState = {
     customizeModalShow: false,
@@ -121,33 +122,18 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   }
 
   componentDidUpdate(prevProps: Readonly<ReactTabulatorViewOptionsProps>, prevState: Readonly<ReactTabulatorViewOptionsState>, snapshot?: any): void {
-    if (prevProps.dataProp !== this.props.dataProp) {
-      this.updateTableData();
+    if (prevProps.dataProp !== prevState.dataState) {
+      let tabulatorCheckInterval: NodeJS.Timeout | null = setInterval(() => {
+        if (this.tabulator) {
+          this.tabulator.setData(this.props.dataProp);
+          this.addTabRowEventListeners();
+          clearInterval(tabulatorCheckInterval as NodeJS.Timeout);
+          tabulatorCheckInterval = null;
+        }
+      }, 100);
     }
     this.addTabRowEventListeners();
   }
-
-  updateTableData = (): void => {
-    if (this.tabulator) {
-      this.tabulator.setData(this.props.dataProp);
-    }
-  }
-
-  // componentDidMount(): void {
-  //   if (this.el.current) {
-  //     this.setState({
-  //       dataState: [...this.props.dataProp],
-  //     });
-  
-  //     this.tabulator = new Tabulator(this.el.current, {
-  //       responsiveLayout: "collapse",
-  //       data: this.state.dataState,
-  //       columns: this.state.columnsState,
-  //     });
-  
-  //     this.addTabRowEventListeners();
-  //   }
-  // }
 
   componentDidMount(): void {
     if (this.el.current) {
@@ -163,12 +149,6 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   
       this.addTabRowEventListeners();
     }
-
-    setInterval(() => {
-      // console.log("called")
-      this.updateTableData();
-      this.addTabRowEventListeners();
-    }, 6000)
   }
   
 
