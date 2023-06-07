@@ -61,7 +61,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     //   formatter: "progress",
     //   formatterParams: { min: 0, max: 5 * (10 ** 22), formatter: progressWithLabelFormatter },
     // },
-    { title: "S", headerTooltip: "Staked - has enough stake ?" ,field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
+    { title: "S", headerTooltip: "Staked - has enough stake ?" , field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
     { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
     { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
     { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", headerFilter:true, formatter: "tickCross", width: 30 },
@@ -277,7 +277,6 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
       const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
       this.props.blockChainService.claimReward(e, poolData[0]);
     } else {
-      console.log({rowStakingAddress})
       const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
       this.props.setAppDataState(poolData)
     }

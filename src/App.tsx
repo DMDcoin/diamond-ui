@@ -71,6 +71,12 @@ class App extends React.Component<AppProps, AppState> {
     })
   }
 
+  setAppActiveTab = (tab: string) => {
+    this.setState({
+      activeTab: tab
+    })
+  }
+
   changeTab = (e: any) => {
     this.setState({activeTab: e})
   }
@@ -297,7 +303,7 @@ class App extends React.Component<AppProps, AppState> {
                 )}
 
                 <Tab eventKey="add-pool" title="Add Pool">
-                  <AddPool adapter={adapter}/>
+                  <AddPool adapter={adapter} setAppActiveTab={this.setAppActiveTab}/>
                 </Tab>
 
                 <Tab eventKey="rng-tab" title="RNG">

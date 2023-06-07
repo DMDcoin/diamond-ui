@@ -176,6 +176,10 @@ export class ModelDataAdapter {
     await this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
   }
 
+  public async addNewPool(stakingAddress: string) {
+    const pool: Pool = this.createEmptyPool(stakingAddress);
+    this.reUpdatePool(pool);
+  }
 
   public async showHistoric(blockNumber: number) {
 
@@ -222,8 +226,6 @@ export class ModelDataAdapter {
   private async refresh() {
 
     try {
-
-    
       const history_info = this.getBlockHistoryInfoAsString();
       console.log('starting data refresh', history_info);
       this.isReadingData = true;
@@ -378,9 +380,11 @@ export class ModelDataAdapter {
       if (ixValidatorWithoutPool !== -1) {
         validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
       }
+
+      
     });
 
-    await Promise.allSettled(poolsToUpdate)
+    await Promise.allSettled(poolsToUpdate);    
 
     runInAction(() => {
       this.context.numbersOfValidators = this.context.pools.filter(x=>x.isCurrentValidator).length;
@@ -439,40 +443,52 @@ export class ModelDataAdapter {
 
     const { miningAddress } = pool;
 
+    pool.delegators = (await this.stContract.methods.poolDelegators(stakingAddress).call()).map(delegator => new Delegator(delegator));
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
 
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(miningAddress) >= 0;
     pool.isCurrentValidator = this.context.currentValidators.indexOf(miningAddress) >= 0;
 
-    runInAction( async() => {
-      pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
-      pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
-      pool.myStake = new BN(await this.getMyStake(stakingAddress));
-      pool.claimableReward = await this.getClaimableReward(stakingAddress);
-      // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
-    })
+    pool.availableSince = await this.getAvailableSince(miningAddress);
+    pool.isAvailable = !pool.availableSince.isZero();
+    pool.isMe = this.context.myAddr == pool.stakingAddress;
+    pool.myStake = new BN(await this.getMyStake(stakingAddress));
 
-    if (true) {
-      pool.score = 0
+    // remove pool
+    if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
+      // console.log("Removing:", this.context.myAddr?.length, pool.myStake.toString(), pool.myStake.gt(new BN('0')), pool.isCurrentValidator,pool.isAvailable,pool.isToBeElected,pool.isPendingValidator, pool.isMe)
+      for (let i = 0; i < this.context.pools.length; i++) {
+        if (this.context.pools[i].stakingAddress == pool.stakingAddress) {
+          runInAction(() => {
+            this.context.pools.splice(i, 1);
+          })
+          return;
+        }
+      }
+    } else {
+      if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BN('0'))) {
+        pool.score = 0;
+      } else {
+        pool.score = 1000;
+      }
     }
 
+    // runInAction( async() => {
+    //   pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
+    //   pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
+    //   pool.myStake = new BN(await this.getMyStake(stakingAddress));
+    //   pool.claimableReward = await this.getClaimableReward(stakingAddress);
+    //   // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
+    // })
 
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
-    pool.myStake = new BN(await this.getMyStake(stakingAddress));
     pool.claimableReward = await this.getClaimableReward(stakingAddress);
     pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call());
 
-    
-    const delegators = await this.stContract.methods.poolDelegators(stakingAddress).call(this.tx(), this.block()); 
-    pool.delegators = delegators.map(delegator => new Delegator(delegator));
-
     pool.bannedUntil = new BN(await this.getBannedUntil(miningAddress));
     pool.banCount = await this.getBanCount(miningAddress);
-
-    pool.availableSince = await this.getAvailableSince(miningAddress);
-    pool.isAvailable = !pool.availableSince.isZero();
 
     pool.keyGenMode = await this.contracts.getPendingValidatorState(miningAddress, this.block());
 
@@ -483,7 +499,7 @@ export class ModelDataAdapter {
     } else {
       pool.parts = '';
       pool.numberOfAcks = 0;
-    }
+    }    
   }
 
 

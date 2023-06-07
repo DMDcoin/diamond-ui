@@ -8,6 +8,7 @@ const DelegatorsData = ({ adapter, pool }: any) => {
 
   useEffect(() => {
    (async() => {
+    console.log(pool.delegators)
     await getDelegatorsData();
    })()
   }, []);
