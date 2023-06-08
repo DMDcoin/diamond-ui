@@ -8,13 +8,13 @@ const DelegatorsData = ({ adapter, pool }: any) => {
 
   useEffect(() => {
    (async() => {
+    console.log(pool.delegators)
     await getDelegatorsData();
    })()
   }, []);
 
    const getDelegatorsData = async () => {
     let tempArray:any = [];
-    console.log("here", {tempArray})
     await Promise.all(delegators.map(async (delegator: Delegator, i: number) => {
       const stakedAmount = await adapter.stContract.methods
         .stakeAmount(pool.stakingAddress, delegator.address)
@@ -25,7 +25,6 @@ const DelegatorsData = ({ adapter, pool }: any) => {
       };
       tempArray.push(data)
     }))
-    console.log("here", {tempArray})
     setDelegatorsData(tempArray);
    }
 

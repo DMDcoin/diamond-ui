@@ -48,8 +48,10 @@ export class ModelDataAdapter {
 
   public postProvider: any;
 
+  public handlingNewBlock: boolean = false;
+
   public defaultTxOpts = {
-    from: '', gasPrice: '100000000000', gasLimit: '6000000', value: '0',
+    from: '', gasPrice: '1000000000', gasLimit: '8000000', value: '0',
   };
 
   public vsContract!: ValidatorSetHbbft;
@@ -63,6 +65,8 @@ export class ModelDataAdapter {
   private rngContract!: RandomHbbft;
 
   public contracts! : ContractManager;
+
+  public showAllPools: Boolean = false;
 
   // public cache: IModelCache = new LocalStorageModelCache();
 
@@ -176,6 +180,11 @@ export class ModelDataAdapter {
     await this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
   }
 
+  public async addNewPool(stakingAddress: string): Promise<Pool> {
+    const pool: Pool = this.createEmptyPool(stakingAddress);
+    await this.reUpdatePool(pool);
+    return pool;
+  }
 
   public async showHistoric(blockNumber: number) {
 
@@ -219,11 +228,9 @@ export class ModelDataAdapter {
     return this._isShowHistoric ? `historic block #${this.showHistoricBlock}` : 'latest';
   }
 
-  private async refresh() {
+  public async refresh() {
 
     try {
-
-    
       const history_info = this.getBlockHistoryInfoAsString();
       console.log('starting data refresh', history_info);
       this.isReadingData = true;
@@ -378,9 +385,11 @@ export class ModelDataAdapter {
       if (ixValidatorWithoutPool !== -1) {
         validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
       }
+
+      
     });
 
-    await Promise.allSettled(poolsToUpdate)
+    await Promise.allSettled(poolsToUpdate);    
 
     runInAction(() => {
       this.context.numbersOfValidators = this.context.pools.filter(x=>x.isCurrentValidator).length;
@@ -439,40 +448,55 @@ export class ModelDataAdapter {
 
     const { miningAddress } = pool;
 
+    pool.delegators = (await this.stContract.methods.poolDelegators(stakingAddress).call()).map(delegator => new Delegator(delegator));
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
 
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(miningAddress) >= 0;
     pool.isCurrentValidator = this.context.currentValidators.indexOf(miningAddress) >= 0;
 
-    runInAction( async() => {
-      pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
-      pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
-      pool.myStake = new BN(await this.getMyStake(stakingAddress));
-      pool.claimableReward = await this.getClaimableReward(stakingAddress);
-      // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
-    })
+    pool.availableSince = await this.getAvailableSince(miningAddress);
+    pool.isAvailable = !pool.availableSince.isZero();
+    pool.isMe = this.context.myAddr == pool.stakingAddress;
+    pool.myStake = new BN(await this.getMyStake(stakingAddress));
 
-    if (true) {
-      pool.score = 0
+    // remove pool
+    if (!this.showAllPools) {
+      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
+        // console.log("Removing:", this.context.myAddr?.length, pool.myStake.toString(), pool.myStake.gt(new BN('0')), pool.isCurrentValidator,pool.isAvailable,pool.isToBeElected,pool.isPendingValidator, pool.isMe)
+        for (let i = 0; i < this.context.pools.length; i++) {
+          if (this.context.pools[i].stakingAddress == pool.stakingAddress) {
+            runInAction(() => {
+              this.context.pools.splice(i, 1);
+            })
+            return;
+          }
+        }
+      } else {
+        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BN('0'))) {
+          pool.score = 0;
+        } else {
+          pool.score = 1000;
+        }
+      }
     }
+    
 
+    // runInAction( async() => {
+    //   pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
+    //   pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
+    //   pool.myStake = new BN(await this.getMyStake(stakingAddress));
+    //   pool.claimableReward = await this.getClaimableReward(stakingAddress);
+    //   // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
+    // })
 
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
-    pool.myStake = new BN(await this.getMyStake(stakingAddress));
     pool.claimableReward = await this.getClaimableReward(stakingAddress);
     pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call());
 
-    
-    const delegators = await this.stContract.methods.poolDelegators(stakingAddress).call(this.tx(), this.block()); 
-    pool.delegators = delegators.map(delegator => new Delegator(delegator));
-
     pool.bannedUntil = new BN(await this.getBannedUntil(miningAddress));
     pool.banCount = await this.getBanCount(miningAddress);
-
-    pool.availableSince = await this.getAvailableSince(miningAddress);
-    pool.isAvailable = !pool.availableSince.isZero();
 
     pool.keyGenMode = await this.contracts.getPendingValidatorState(miningAddress, this.block());
 
@@ -483,7 +507,7 @@ export class ModelDataAdapter {
     } else {
       pool.parts = '';
       pool.numberOfAcks = 0;
-    }
+    }    
   }
 
 
@@ -542,8 +566,10 @@ export class ModelDataAdapter {
       }
 
       const currentBlock = await this.web3.eth.getBlockNumber();
-      if (currentBlock > this.context.currentBlockNumber) {
+      if (currentBlock > this.context.currentBlockNumber && !this.handlingNewBlock) {
+        this.handlingNewBlock = true;
         await this.handleNewBlock();
+        this.handlingNewBlock = false;
       }
       // todo: what if the RPCC internet connection is slower than the interval ?
     }, 1000);
@@ -635,20 +661,27 @@ export class ModelDataAdapter {
     return await this.stContract.methods.areStakeAndWithdrawAllowed().call();
   }
 
-  public async createPool(miningAddr: string, publicKey: string, stakeAmount: number, ipAddress: string): Promise<boolean> {
+  public async createPool(miningAddr: string, publicKey: string, stakeAmount: number, ipAddress: string): Promise<boolean | string> {
     const txOpts = { ...this.defaultTxOpts };
     txOpts.from = this.context.myAddr;
     txOpts.value = this.web3.utils.toWei(stakeAmount.toString());
 
     try {
-      console.log(`adding Pool : ${miningAddr} publicKeyHex: ${publicKey} ip ${ipAddress}`);
+      console.log(`adding Pool : ${miningAddr} publicKeyHex: ${publicKey}`);
       // <amount> argument is ignored by the contract (exists for chains with token based staking)
       const receipt = await this.stContract.methods.addPool(miningAddr, publicKey, ipAddress).send(txOpts);
       console.log(`receipt: ${JSON.stringify(receipt, null, 2)}`);
       return true;
-    } catch (e) {
-      console.log(`failed with ${e}`);
-      return false;
+    } catch (e:any) {
+      const errMsg = e.message;
+      console.log("[ERROR] Add pool tx failed with: ", errMsg)
+      if (errMsg.includes('failed with invalid arrayify value') || errMsg.includes('invalid arrayify value')) {
+        return "Invalid Public Key";
+      } else if (errMsg.includes('Transaction has been reverted by the EVM')) {
+        return "Transaction Failed";
+      } else {
+        return false;
+      }
     }
   }
 
@@ -688,15 +721,15 @@ export class ModelDataAdapter {
     // determine available withdraw method and allowed amount
     const maxWithdrawAmount = await this.stContract.methods.maxWithdrawAllowed(address, this.context.myAddr).call();
     const maxWithdrawOrderAmount = await this.stContract.methods.maxWithdrawOrderAllowed(address, this.context.myAddr).call();  
-
     console.assert(maxWithdrawAmount === '0' || maxWithdrawOrderAmount === '0', 'max withdraw amount assumption violated');
 
     let success = false;
     let reason;
 
     try {
+      console.log(maxWithdrawAmount.toString(), maxWithdrawOrderAmount.toString(), amountWeiBN.toString())
       if (maxWithdrawAmount !== '0') {
-        if (new BN(maxWithdrawAmount).lte(amountWeiBN)) {
+        if (new BN(maxWithdrawAmount).gte(amountWeiBN)) {
           reason = 'requested withdraw amount exceeds max';
           return {success, reason};
         } 

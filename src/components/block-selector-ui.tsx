@@ -4,13 +4,18 @@ import { ui } from "../ui";
 import { Button, Modal, Table } from "react-bootstrap";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { ArrowLeft, ArrowRight, SkipEnd } from "react-bootstrap-icons";
-import { DmdComponent } from "./dmd-component";
+// import { DmdComponent } from "./dmd-component";
 import Accordion from "react-bootstrap/Accordion";
 import "../styles/blockSelector.css";
 import BarLoader from "react-spinners/BarLoader";
 import { ToastContainer, toast } from "react-toastify";
 
-export class BlockSelectorUI extends DmdComponent {
+interface BlockSelectorUIProps {
+  modelDataAdapter: any;
+  showBlockSelectorInfo: boolean; // New prop
+}
+
+export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
   private _isModal = false;
   notify = (msg: string) => toast(msg);
   private _ref_overlay = React.createRef<HTMLElement>();
@@ -195,95 +200,101 @@ export class BlockSelectorUI extends DmdComponent {
         {this._isModal ? this.getModal() : undefined}
         {accountInfos}
 
-        <Accordion className="blockAccordion">
-          <Accordion.Item eventKey="0">
-            <div className="blocksInfo">
-              <span>Current Block:</span>
-              <div>
-                <Button onClick={this.left.bind(this)}>
-                  <ArrowLeft />
-                </Button>
-                <Button style={{ margin: "0.1rem" }} onClick={prompt}>
-                  {context.currentBlockNumber}
-                </Button>
-                <Button onClick={this.right.bind(this)}>
-                  <ArrowRight />
-                </Button>
-                <Button
-                  data-for="latest"
-                  onClick={this.latest.bind(this)}
-                  style={{ margin: "0.1rem" }}
-                >
-                  <SkipEnd />
-                </Button>
-              </div>
-            </div>
-           
-            <Accordion.Header className="blockAccordionHeader">
-              More Info
-            </Accordion.Header>
-            <Accordion.Body>
-              <Table bordered>
-                <tbody>
-                  {modelDataAdapter.isReadingData ? (
-                    <tr>
-                      <td>
-                      <BarLoader
-                        color={'#254CA0'}
-                        loading={modelDataAdapter.isReadingData}
-                        // size={20}
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                      </td>
-                    </tr>
-                  ) : (
-                    <Fragment>
-                      <tr>
-                        <td>Current Epoch</td>
-                        <td>{context.stakingEpoch}</td>
-                      </tr>
-                      <tr>
-                        <td>Key Gen. Round</td>
-                        <td>{context.keyGenRound}</td>
-                      </tr>
-                      <tr>
-                        <td>Epoch Start Block</td>
-                        <td>{context.epochStartBlock}</td>
-                      </tr>
-                      <tr>
-                        <td>Epoch Start Time</td>
-                        <td>{context.epochStartTimeFormatted}</td>
-                      </tr>
-                      <tr>
-                        <td>Delta Pot</td>
-                        <td>{parseFloat(context.deltaPot).toFixed(4)}</td>
-                      </tr>
-                      <tr>
-                        <td>Reinsert Pot</td>
-                        <td>{parseFloat(context.reinsertPot).toFixed(4)}</td>
-                      </tr>
-                      <tr>
-                        <td>Minimum Gas Fee</td>
-                        <td>{context.minimumGasFeeFormatted}</td>
-                      </tr>
+        {
+          this.props.showBlockSelectorInfo && 
 
+          <Accordion className={`blockAccordion ${
+            this.props.showBlockSelectorInfo ? "slide-down-animating" : "slide-up-animating"
+          }`} defaultActiveKey="0">
+            <Accordion.Item eventKey="0" style={{border: "0px solid transparent"}}>
+              {/* <div className="blocksInfo">
+                <span>Current Block:</span>
+                <div>
+                  <Button onClick={this.left.bind(this)}>
+                    <ArrowLeft />
+                  </Button>
+                  <Button style={{ margin: "0.1rem" }} onClick={prompt}>
+                    {context.currentBlockNumber}
+                  </Button>
+                  <Button onClick={this.right.bind(this)}>
+                    <ArrowRight />
+                  </Button>
+                  <Button
+                    data-for="latest"
+                    onClick={this.latest.bind(this)}
+                    style={{ margin: "0.1rem" }}
+                  >
+                    <SkipEnd />
+                  </Button>
+                </div>
+              </div> */}
+            
+              {/* <Accordion.Header className="blockAccordionHeader">
+                More Info
+              </Accordion.Header> */}
+              <Accordion.Body>
+                <Table bordered>
+                  <tbody>
+                    {modelDataAdapter.isReadingData ? (
                       <tr>
-                        <td>Validators</td>
                         <td>
-                          {
-                            context.pools.filter((x) => x.isCurrentValidator)
-                              .length
-                          }
+                        <BarLoader
+                          color={'#254CA0'}
+                          loading={modelDataAdapter.isReadingData}
+                          // size={20}
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
                         </td>
                       </tr>
-                    </Fragment>
-                  )}
-                </tbody>
-              </Table>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+                    ) : (
+                      <Fragment>
+                        <tr>
+                          <td>Current Epoch</td>
+                          <td>{context.stakingEpoch}</td>
+                        </tr>
+                        <tr>
+                          <td>Key Gen. Round</td>
+                          <td>{context.keyGenRound}</td>
+                        </tr>
+                        <tr>
+                          <td>Epoch Start Block</td>
+                          <td>{context.epochStartBlock}</td>
+                        </tr>
+                        <tr>
+                          <td>Epoch Start Time</td>
+                          <td>{context.epochStartTimeFormatted}</td>
+                        </tr>
+                        <tr>
+                          <td>Delta Pot</td>
+                          <td>{parseFloat(context.deltaPot).toFixed(4)}</td>
+                        </tr>
+                        <tr>
+                          <td>Reinsert Pot</td>
+                          <td>{parseFloat(context.reinsertPot).toFixed(4)}</td>
+                        </tr>
+                        <tr>
+                          <td>Minimum Gas Fee</td>
+                          <td>{context.minimumGasFeeFormatted}</td>
+                        </tr>
+
+                        <tr>
+                          <td>Validators</td>
+                          <td>
+                            {
+                              context.pools.filter((x: any) => x.isCurrentValidator)
+                                .length
+                            }
+                          </td>
+                        </tr>
+                      </Fragment>
+                    )}
+                  </tbody>
+                </Table>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
+        }
 
         {/* <Button onClick={() => {this.forceUpdate()}}>force update</Button> */}
       </div>

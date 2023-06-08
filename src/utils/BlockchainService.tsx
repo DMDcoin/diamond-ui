@@ -118,7 +118,7 @@ export default class BlockchainService {
         const resp = await this.adapter.stake(this.pool.stakingAddress, stakeAmount);
         if (resp) {
           await this.adapter.reUpdatePool(this.pool);
-          toast.update(id, { render: `Successfully staked ${stakeAmount} DMD`, type: "success", isLoading: false });
+          toast.update(id, { render: `Successfully staked ${this.adapter.web3.utils.fromWei(stakeAmount).toString()} DMD`, type: "success", isLoading: false });
           // this.forceUpdate();
         } else {
           toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
@@ -133,8 +133,9 @@ export default class BlockchainService {
     }
   };
 
-  public async handleWithdraw (e: any) {
+  public async handleWithdraw (e: any, pool: any) {
     e.preventDefault();
+    if (pool) this.pool = pool;
 
     const withdrawAmount = e.target.withdrawAmount.value;
     const poolAddress = this.pool.stakingAddress;
@@ -149,11 +150,13 @@ export default class BlockchainService {
     }
 
     const id = toast.loading("Transaction Pending");
-    const isActiveValidator = await this.adapter.vsContract.methods.isValidator(minningAddress).call();
+    // const isActiveValidator = await this.adapter.vsContract.methods.isValidator(minningAddress).call();
 
-    if (isActiveValidator) {
-      toast.update(id, { render: "Active validator, can't withdraw", type: "warning", isLoading: false });
-    } else if (Number.isNaN(withdrawAmount)) {
+    // if (isActiveValidator) {
+    //   toast.update(id, { render: "Active validator, can't withdraw", type: "warning", isLoading: false });
+    // } else
+    
+    if (Number.isNaN(withdrawAmount)) {
       toast.warning('No amount entered');
     } else if (!this.context.canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw time window');
