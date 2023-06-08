@@ -15,6 +15,7 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
 interface AddPoolProps {
   adapter: ModelDataAdapter;
   setAppActiveTab: any;
+  setSelectedPool: any;
 }
 
 class AddPool extends React.Component<AddPoolProps> {
@@ -95,8 +96,9 @@ class AddPool extends React.Component<AddPoolProps> {
             const resp = await adapter.createPool(this.minningAddress, this.publicKey, stakeAmount, '0x00000000000000000000000000000000');
             if (resp == true) {
               toast.update(id, { render: `Successfully Added pool with stake of ${stakeAmount} DMD`, type: "success", isLoading: false });
-              this.props.adapter.addNewPool(context.myAddr);
-              this.props.setAppActiveTab('add-pool');
+              const newPool = await this.props.adapter.addNewPool(context.myAddr);
+              this.props.setSelectedPool(newPool);
+              this.props.setAppActiveTab('pool-detail');
             } else if (typeof resp == 'string') {
               toast.update(id, { render: resp, type: "error", isLoading: false });
             } else {

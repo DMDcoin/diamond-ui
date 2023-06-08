@@ -48,6 +48,8 @@ export class ModelDataAdapter {
 
   public postProvider: any;
 
+  public handlingNewBlock: boolean = false;
+
   public defaultTxOpts = {
     from: '', gasPrice: '1000000000', gasLimit: '8000000', value: '0',
   };
@@ -63,6 +65,8 @@ export class ModelDataAdapter {
   private rngContract!: RandomHbbft;
 
   public contracts! : ContractManager;
+
+  public showAllPools: Boolean = false;
 
   // public cache: IModelCache = new LocalStorageModelCache();
 
@@ -176,9 +180,10 @@ export class ModelDataAdapter {
     await this.updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, true);
   }
 
-  public async addNewPool(stakingAddress: string) {
+  public async addNewPool(stakingAddress: string): Promise<Pool> {
     const pool: Pool = this.createEmptyPool(stakingAddress);
-    this.reUpdatePool(pool);
+    await this.reUpdatePool(pool);
+    return pool;
   }
 
   public async showHistoric(blockNumber: number) {
@@ -223,7 +228,7 @@ export class ModelDataAdapter {
     return this._isShowHistoric ? `historic block #${this.showHistoricBlock}` : 'latest';
   }
 
-  private async refresh() {
+  public async refresh() {
 
     try {
       const history_info = this.getBlockHistoryInfoAsString();
@@ -456,23 +461,26 @@ export class ModelDataAdapter {
     pool.myStake = new BN(await this.getMyStake(stakingAddress));
 
     // remove pool
-    if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
-      // console.log("Removing:", this.context.myAddr?.length, pool.myStake.toString(), pool.myStake.gt(new BN('0')), pool.isCurrentValidator,pool.isAvailable,pool.isToBeElected,pool.isPendingValidator, pool.isMe)
-      for (let i = 0; i < this.context.pools.length; i++) {
-        if (this.context.pools[i].stakingAddress == pool.stakingAddress) {
-          runInAction(() => {
-            this.context.pools.splice(i, 1);
-          })
-          return;
+    if (!this.showAllPools) {
+      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
+        // console.log("Removing:", this.context.myAddr?.length, pool.myStake.toString(), pool.myStake.gt(new BN('0')), pool.isCurrentValidator,pool.isAvailable,pool.isToBeElected,pool.isPendingValidator, pool.isMe)
+        for (let i = 0; i < this.context.pools.length; i++) {
+          if (this.context.pools[i].stakingAddress == pool.stakingAddress) {
+            runInAction(() => {
+              this.context.pools.splice(i, 1);
+            })
+            return;
+          }
+        }
+      } else {
+        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BN('0'))) {
+          pool.score = 0;
+        } else {
+          pool.score = 1000;
         }
       }
-    } else {
-      if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BN('0'))) {
-        pool.score = 0;
-      } else {
-        pool.score = 1000;
-      }
     }
+    
 
     // runInAction( async() => {
     //   pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
@@ -558,8 +566,10 @@ export class ModelDataAdapter {
       }
 
       const currentBlock = await this.web3.eth.getBlockNumber();
-      if (currentBlock > this.context.currentBlockNumber) {
+      if (currentBlock > this.context.currentBlockNumber && !this.handlingNewBlock) {
+        this.handlingNewBlock = true;
         await this.handleNewBlock();
+        this.handlingNewBlock = false;
       }
       // todo: what if the RPCC internet connection is slower than the interval ?
     }, 1000);
@@ -664,9 +674,11 @@ export class ModelDataAdapter {
       return true;
     } catch (e:any) {
       const errMsg = e.message;
-      console.log(errMsg)
+      console.log("[ERROR] Add pool tx failed with: ", errMsg)
       if (errMsg.includes('failed with invalid arrayify value') || errMsg.includes('invalid arrayify value')) {
         return "Invalid Public Key";
+      } else if (errMsg.includes('Transaction has been reverted by the EVM')) {
+        return "Transaction Failed";
       } else {
         return false;
       }

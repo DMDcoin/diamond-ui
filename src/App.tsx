@@ -27,6 +27,8 @@ import GridLoader from "react-spinners/GridLoader";
 import AddPool from './components/AddPool';
 import RNG from './components/RNG';
 import BlockchainService from './utils/BlockchainService';
+import { ChevronDown } from "react-bootstrap-icons";
+
 
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
@@ -39,7 +41,9 @@ interface AppState {
   poolsData: Pool[],
   activeTab: string,
   selectedPool: any,
-  connectedAccount: string
+  connectedAccount: string,
+  tabulatorColumsPreset: string,
+  showBlockSelectorInfo: boolean
 }
 
 @observer
@@ -53,7 +57,9 @@ class App extends React.Component<AppProps, AppState> {
       poolsData: [],
       activeTab: "pools-overview",
       selectedPool: undefined,
-      connectedAccount: ""
+      connectedAccount: "",
+      tabulatorColumsPreset: 'Default',
+      showBlockSelectorInfo: false
     }
     this.blockchainService = new BlockchainService(props)
   }
@@ -74,6 +80,24 @@ class App extends React.Component<AppProps, AppState> {
   setAppActiveTab = (tab: string) => {
     this.setState({
       activeTab: tab
+    })
+  }
+
+  setSelectedPool = (pool: Pool) => {
+    this.setState({
+      selectedPool: pool
+    })
+  }
+
+  setTabulatorColumnPreset = (preset: string) => {
+    this.setState({
+      tabulatorColumsPreset: preset
+    })
+  }
+
+  setShowBlockSelectorInfo = () => {
+    this.setState({
+      showBlockSelectorInfo: !this.state.showBlockSelectorInfo
     })
   }
 
@@ -241,7 +265,11 @@ class App extends React.Component<AppProps, AppState> {
     const result = (
       <div className="App">
         <div className="navbar">
-          <div></div>
+          <div>
+              <button className="connectWalletBtn" onClick={this.setShowBlockSelectorInfo}>
+                {context.currentBlockNumber} <ChevronDown style={{marginLeft: "2px"}}/>
+              </button>
+          </div>
 
           <a href="/">
             <img src={dmd_logo} alt="logo" width="250px"/>
@@ -266,7 +294,7 @@ class App extends React.Component<AppProps, AppState> {
         </div>
 
         <div>
-          <BlockSelectorUI modelDataAdapter={this.props.adapter} />
+          <BlockSelectorUI modelDataAdapter={this.props.adapter} showBlockSelectorInfo={this.state.showBlockSelectorInfo} />
           {/* <ContractDetailsUI adapter={this.props.adapter} /> */}
           {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
           {adapter.isReadingData ? (
@@ -287,7 +315,7 @@ class App extends React.Component<AppProps, AppState> {
               >
                 <Tab eventKey="pools-overview" title="Pools">
                   {/* {validatorsWithoutPoolSection} */}
-                  <ReactTabulatorViewOptions dataProp={this.state.poolsData} columnsProp={columns} setAppDataState={this.setAppDataState} blockChainService={this.blockchainService}>
+                  <ReactTabulatorViewOptions adapter={this.props.adapter} dataProp={this.state.poolsData} columnsProp={columns} tabulatorColumsPreset={this.state.tabulatorColumsPreset} setTabulatorColumnPreset={this.setTabulatorColumnPreset} setAppDataState={this.setAppDataState} blockChainService={this.blockchainService}>
                   </ReactTabulatorViewOptions>
                 </Tab>
 
@@ -303,7 +331,7 @@ class App extends React.Component<AppProps, AppState> {
                 )}
 
                 <Tab eventKey="add-pool" title="Add Pool">
-                  <AddPool adapter={adapter} setAppActiveTab={this.setAppActiveTab}/>
+                  <AddPool adapter={adapter} setAppActiveTab={this.setAppActiveTab} setSelectedPool={this.setSelectedPool}/>
                 </Tab>
 
                 <Tab eventKey="rng-tab" title="RNG">

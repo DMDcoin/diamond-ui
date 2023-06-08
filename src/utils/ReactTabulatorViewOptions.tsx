@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 import BlockchainService from "./BlockchainService";
+import { ModelDataAdapter } from "../model/modelDataAdapter";
 
 interface ReactTabulatorViewOptionsColumnSet {
   listName: string,
@@ -13,25 +14,27 @@ interface ReactTabulatorViewOptionsColumnSet {
 }
 
 interface ReactTabulatorViewOptionsProps {
+  adapter: ModelDataAdapter;
   allListNameProp: string;
   children: any;
   dataProp: any;
   columnsProp: any;
   setAppDataState: any;
-  blockChainService: BlockchainService
+  blockChainService: BlockchainService,
+  tabulatorColumsPreset: string,
+  setTabulatorColumnPreset: any
 }
 
 interface ReactTabulatorViewOptionsState {
   customizeModalShow: boolean,
-  defaultPreset: String,
   columnsState: any[];
   dataState: any[],
 }
 
 const presets = [
   'Default',
-  'Classic',
-  'Price Change'
+  'All Pools',
+  // 'Price Change'
 ]
 
 /**
@@ -116,7 +119,6 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
   state: ReactTabulatorViewOptionsState = {
     customizeModalShow: false,
-    defaultPreset: 'Default',
     columnsState: this.defaultColumns,
     dataState: [],
   }
@@ -151,6 +153,15 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     }
   }
   
+  updateColumnsPreference = () => {
+    this.setState({customizeModalShow: false});
+    const showAllPools = this.props.tabulatorColumsPreset == 'Default' ? false : true;
+    console.log("here", this.props.tabulatorColumsPreset, this.props.adapter.showAllPools, showAllPools);
+    if (this.props.adapter.showAllPools != showAllPools) {
+      this.props.adapter.showAllPools = showAllPools;
+      this.props.adapter.refresh();
+    }
+  }
 
   addTabRowEventListeners = () => {
     setTimeout(() => {
@@ -268,7 +279,8 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   }
 
   presetChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    console.log(e.target.value)
+    const selectedValue = e.target.value;
+    this.props.setTabulatorColumnPreset(selectedValue);
   }
 
   rowClicked = (e: any) => {
@@ -295,23 +307,23 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
             <Modal.Body>
               <div className="customizeModalBody">
                 <div className="presetContainer">
-                  <Form.Select aria-label="Default select example" onChange={e => this.presetChange(e)}>
+                  Pools Preference: <Form.Select aria-label="Default select example" value={this.props.tabulatorColumsPreset} onChange={e => this.presetChange(e)}>
                     {
                       presets.map((item, key) => (
-                        <option key={key} value={key}>{item}</option>    
+                        <option key={key} value={item}>{item}</option>    
                       ))
                     }
                   </Form.Select>
 
-                  <button onClick={this.addColumn}>Add</button>
-                  <button onClick={e => this.removeColumn('Example Column')}>Remove</button>
+                  {/* <button onClick={this.addColumn}>Add</button>
+                  <button onClick={e => this.removeColumn('Example Column')}>Remove</button> */}
                 </div>
 
               </div>
             </Modal.Body>
             <Modal.Footer>
               <button onClick={() => this.setState({customizeModalShow: false})}>Close</button>
-              <button onClick={() => this.setState({customizeModalShow: false})}>Apply Changes</button>
+              <button onClick={() => this.updateColumnsPreference()}>Apply Changes</button>
             </Modal.Footer>
           </Modal>
 

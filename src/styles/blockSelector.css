@@ -29,16 +29,48 @@
     border-bottom: 1px solid #DEE2E6;
 }
 
-.blocksInfo > div > button {
+.blocksInfo>div>button {
     justify-content: center;
     font-weight: 700;
 }
 
-.blockAccordionHeader > button {
+.blockAccordionHeader>button {
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
 }
 
 .table {
     margin: 0px !important;
+}
+
+@keyframes slide-down {
+    0% {
+        max-height: 0;
+        /* opacity: 0; */
+    }
+
+    100% {
+        max-height: 1000px;
+        /* opacity: 1; */
+    }
+}
+
+.slide-down-animating {
+    animation: slide-down 1.5s ease-out;
+}
+
+.slide-up-animating {
+    animation: slide-up 1.5s ease-out;
+}
+
+@keyframes slide-up {
+    0% {
+        max-height: 1000px;
+        /* opacity: 1; */
+    }
+
+    100% {
+        max-height: 0;
+        /* opacity: 0; */
+    }
 }
