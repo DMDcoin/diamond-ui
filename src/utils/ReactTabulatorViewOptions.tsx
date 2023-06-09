@@ -144,8 +144,8 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
       });
   
       this.tabulator = new Tabulator(this.el.current, {
-        responsiveLayout: "collapse",
         data: this.state.dataState,
+        responsiveLayout: "collapse",
         columns: this.state.columnsState,
       });
   

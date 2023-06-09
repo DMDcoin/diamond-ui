@@ -106,3 +106,21 @@
     }
   }
   
+.tabulator-table {
+    padding: 5px;
+}
+
+.tabulator-responsive-collapse > table {
+    width: 100%;
+}
+
+.tabulator-responsive-collapse > tr {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+table tr {
+    height: auto !important;
+}
