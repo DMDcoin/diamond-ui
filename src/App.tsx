@@ -1,10 +1,12 @@
 import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
+import { reaction, action, runInAction } from 'mobx';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
 import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css"; // use Theme(s)
 import './styles/tabulator.css';
+import Web3 from "web3";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -12,93 +14,225 @@ import dmd_logo from "./logo-hor.svg";
 
 import { ReactTabulator } from 'react-tabulator';
 import { ModelDataAdapter } from './model/modelDataAdapter';
+import { Pool } from './model/model';
 import Web3Modal from "web3modal";
 import { ReactTabulatorViewOptions } from './utils/ReactTabulatorViewOptions';
 import { BlockSelectorUI } from './components/block-selector-ui';
-import { Tab, Tabs} from 'react-bootstrap';
+import { Tab, Tabs } from 'react-bootstrap';
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
+import PoolDetail from './components/PoolDetail';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import GridLoader from "react-spinners/GridLoader";
+import AddPool from './components/AddPool';
+import RNG from './components/RNG';
+import BlockchainService from './utils/BlockchainService';
+import { ChevronDown } from "react-bootstrap-icons";
+
+
 // import { ContractDetailsUI } from './components/contract-details-ui';
 
 
 interface AppProps {
-  modelDataAdapter: ModelDataAdapter,
+  adapter: ModelDataAdapter,
 }
 
+interface AppState {
+  poolsData: Pool[],
+  activeTab: string,
+  selectedPool: any,
+  connectedAccount: string,
+  tabulatorColumsPreset: string,
+  showBlockSelectorInfo: boolean
+}
 
 @observer
-class App extends React.Component<AppProps> {
-
+class App extends React.Component<AppProps, AppState> {
+  private blockchainService: BlockchainService;
   private examplePublicKey = '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
-  state = {
-    showModal: false,
+  constructor(props: AppProps) {
+    super(props);
+    this.state = {
+      poolsData: [],
+      activeTab: "pools-overview",
+      selectedPool: undefined,
+      connectedAccount: "",
+      tabulatorColumsPreset: 'Default',
+      showBlockSelectorInfo: false
+    }
+    this.blockchainService = new BlockchainService(props)
   }
 
   private ui(o: BN) {
     return o.toString(10);
   }
 
-  private onShowWeb3Modal() {
+  notify = (msg: string) => toast(msg);
 
-
-    console.log('this: ', this);
-    this.setupWeb3Modal().then(async (provider) => {
-      // Subscribe to provider connection
-      provider.on("connect", (info: { chainId: number }) => {
-        console.log(info);
-      });
+  setAppDataState = (poolData: Pool[]) => {
+    this.setState({
+      selectedPool: poolData[0],
+      activeTab: "pool-detail"
     })
   }
 
-  private async setupWeb3Modal() {
-
-    
-
-    const url = this.props.modelDataAdapter.url;
-    //const url = 'http://localhost:8540';
-
-    const providerOptions = {
-      /* See Provider Options Section */
-      walletconnect: {
-        package: WalletConnectProvider,
-        options: {
-          rpc: {
-            71117: url
-          }
-        }
-      },
-
-    };
-
-    const web3Modal = new Web3Modal({
-      network: "mainnet", // optional
-      cacheProvider: true, // optional
-      providerOptions // required
-    });
-
-    const provider = await web3Modal.connect();
-    console.log('got provider: ', provider);
-    return provider;
+  setAppActiveTab = (tab: string) => {
+    this.setState({
+      activeTab: tab
+    })
   }
 
-  public componentDidMount() {
+  setSelectedPool = (pool: Pool) => {
+    this.setState({
+      selectedPool: pool
+    })
+  }
+
+  setTabulatorColumnPreset = (preset: string) => {
+    this.setState({
+      tabulatorColumsPreset: preset
+    })
+  }
+
+  setShowBlockSelectorInfo = () => {
+    this.setState({
+      showBlockSelectorInfo: !this.state.showBlockSelectorInfo
+    })
+  }
+
+  changeTab = (e: any) => {
+    this.setState({activeTab: e})
+  }
+
+
+  public async connectWallet() {
+    try {
+      const url = this.props.adapter.url;
+  
+      const providerOptions = {
+        walletconnect: {
+          package: WalletConnectProvider,
+          options: {rpc: {777012: url}}
+        }
+      };
+  
+      const web3Modal = new Web3Modal({
+        network: "mainnet", // optional
+        cacheProvider: false, // optional
+        providerOptions // required
+      });
+
+      web3Modal.clearCachedProvider();
+      const web3ModalInstance = await web3Modal.connect();
+
+      // handle account change
+      const classInstance = this;
+      web3ModalInstance.on('accountsChanged', function (accounts: Array<string>) {
+        if(accounts.length == 0) {
+          window.location.reload();
+        } else {
+          classInstance.connectWallet();
+        }
+      })
+
+      const provider = new Web3(web3ModalInstance)
+
+      const chainId = 777012;
+      // force user to change to DMD network
+      if (web3ModalInstance.networkVersion != chainId) {
+        console.log(Object.keys(web3ModalInstance))
+        try {
+          await web3ModalInstance.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: new Web3().utils.toHex(chainId) }]
+          });
+        } catch(err: any) {
+          if (err.code === 4902) {
+            await web3ModalInstance.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainName: 'DMD',
+                  chainId: new Web3().utils.toHex(chainId),
+                  nativeCurrency: { name: 'DMD', decimals: 18, symbol: 'DMD' },
+                  rpcUrls: [process.env.REACT_APP_URL]
+                }
+              ]
+            });
+          } else {
+            console.log("Other Error", err)
+            return undefined;
+          }
+        }
+      }
+
+      this.setState({
+        connectedAccount: 'connecting'
+      });
+
+      const { adapter } = this.props;
+      await adapter.setProvider(provider);
+
+      this.setState({
+        connectedAccount: web3ModalInstance.selectedAddress
+      });
+
+      return provider;
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  public componentDidMount(): void {
     console.log('component did mount.');
-    this.props.modelDataAdapter.registerUIElement(this);
+
+    this.props.adapter.registerUIElement(this);
+
+    const { adapter } = this.props;
+    const { context } = adapter;
+    const data = [...context.pools];
+    console.log(data)
+    this.setState({poolsData: data});
+
+    reaction(
+      () => context.pools.slice(), // Observe a copy of the pools array
+      (pools: Pool[]) => {
+        this.setState({ poolsData: pools });
+      }
+    );
   }
 
   public componentWillUnmount() {
     console.log('component will unmount.');
-    this.props.modelDataAdapter.unregisterUIElement(this);
+    this.props.adapter.unregisterUIElement(this);
   }
 
+  public componentDidUpdate(prevProps:any, prevState: any, snapshot?: any): void {
+    console.log("app component updated")
+    if (this.props.adapter !== prevProps.adapter) {
+      console.log(this.props.adapter, "hehe")
+    }
+  }
+
+  // public rowClicked = (e: any, rowData: any) => {
+  //   if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
+  //     const rowStakingAddress = rowData._row.data.stakingAddress;
+  //     const poolData = this.state.poolsData.filter(data => data.stakingAddress == rowStakingAddress);
+  //     this.blockchainService.claimReward(e, poolData[0]);
+  //   } else {
+  //     this.viewPoolDetails(e, rowData)
+  //   }
+  // }
 
   public render(): JSX.Element {
 
-    const { modelDataAdapter } = this.props;
-    const { context } = modelDataAdapter;
+    const { adapter } = this.props;
+    const { context } = adapter;
+    
 
-    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address) => (
-      <div className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
+    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address: any, key: number) => (
+      <div key={key} className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
     const columns : ColumnDefinition[] = [
@@ -117,14 +251,11 @@ class App extends React.Component<AppProps> {
       // { title: "KeyGenMode", field: "keyGenMode", headerFilter: true },
       /* miner fields */
       { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left",  width: 370 },
-
     ];
     
-    const data = context.pools;
+    // const data = [...context.pools];
+    // console.log("Data:", this.state.poolsData);
 
-    const padding = {
-      padding: '0.5rem'
-    };
     //const target = useRef(null);
     
     
@@ -133,49 +264,85 @@ class App extends React.Component<AppProps> {
     // TODO: css template/framework / convention to have a decent layout without writing CSS
     const result = (
       <div className="App">
-        <header>
-          <a href="?">
-            <img src={dmd_logo} alt="logo" width="250px" style={padding} />
+        <div className="navbar">
+          <div>
+              <button className="connectWalletBtn" onClick={this.setShowBlockSelectorInfo}>
+                {context.currentBlockNumber} <ChevronDown style={{marginLeft: "2px"}}/>
+              </button>
+          </div>
+
+          <a href="/">
+            <img src={dmd_logo} alt="logo" width="250px"/>
           </a>
-          {modelDataAdapter.isReadingData ? <div> ... LOADING ...</div> : null}
 
-          <button onClick={() => this.onShowWeb3Modal()} style={{ float: 'right', margin: '1rem' }}>
-            connect wallet
-          </button>
+          {this.state.connectedAccount ?
+          this.state.connectedAccount == 'connecting' ? 
+            <button className="connectWalletBtn">
+              Connecting...
+            </button>
+          :
+          (
+            <button className="connectWalletBtn">
+              {this.state.connectedAccount}
+            </button>
+          ) : (
+            <button onClick={() => this.connectWallet()} className="connectWalletBtn">
+              Connect Wallet
+            </button>
+          )
+          }
+        </div>
 
-          
-        </header>
-
-        
         <div>
-            <BlockSelectorUI modelDataAdapter={this.props.modelDataAdapter} />
-            {/* <ContractDetailsUI modelDataAdapter={this.props.modelDataAdapter} /> */}
-            {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
-            {modelDataAdapter.isReadingData ? '... Loading ...' : 
+          <BlockSelectorUI modelDataAdapter={this.props.adapter} showBlockSelectorInfo={this.state.showBlockSelectorInfo} />
+          {/* <ContractDetailsUI adapter={this.props.adapter} /> */}
+          {/* <span className={`${this.isStakingAllowed ? 'text-success' : 'text-danger'}`}> staking {this.stakingAllowedState}: {context.stakingAllowedTimeframe} blocks</span> */}
+          {adapter.isReadingData ? (
+            <GridLoader
+              color={'#254CA0'}
+              loading={adapter.isReadingData}
+              size={20}
+              aria-label="Loading Spinner"
+              data-testid="loader"
+            />
+          ) : (
             <Fragment>
-              <Tabs className="mb-3">
-                <Tab eventKey="overview" title="" >
-                  {validatorsWithoutPoolSection}
-                  <ReactTabulatorViewOptions >
-                    <ReactTabulator
-                      responsiveLayout="collapse"
-                      data={data}
-                      columns={columns}
-                      tooltips={true}
-                    />
+              {/* <h1>Pools Data</h1> */}
+              <Tabs
+                className="mb-3"
+                activeKey={this.state.activeTab}
+                onSelect={this.changeTab}
+              >
+                <Tab eventKey="pools-overview" title="Pools">
+                  {/* {validatorsWithoutPoolSection} */}
+                  <ReactTabulatorViewOptions adapter={this.props.adapter} dataProp={this.state.poolsData} columnsProp={columns} tabulatorColumsPreset={this.state.tabulatorColumsPreset} setTabulatorColumnPreset={this.setTabulatorColumnPreset} setAppDataState={this.setAppDataState} blockChainService={this.blockchainService}>
                   </ReactTabulatorViewOptions>
                 </Tab>
-                <Tab eventKey="state-history" title="">
-                  ...history...
+
+                {this.state.selectedPool ? (
+                  <Tab eventKey="pool-detail" title="Pool Details">
+                    <PoolDetail
+                      pool={this.state.selectedPool}
+                      adapter={adapter}
+                    />
+                  </Tab>
+                ) : (
+                  <></>
+                )}
+
+                <Tab eventKey="add-pool" title="Add Pool">
+                  <AddPool adapter={adapter} setAppActiveTab={this.setAppActiveTab} setSelectedPool={this.setSelectedPool}/>
+                </Tab>
+
+                <Tab eventKey="rng-tab" title="RNG">
+                  <RNG adapter={adapter}/>
                 </Tab>
               </Tabs>
-            
             </Fragment>
-            }
-          </div>
-        
+          )}
+        </div>
 
-          {/* <Button onClick={() => {
+        {/* <Button onClick={() => {
             this.forceUpdate();
             }
             }>force update</Button> */}
@@ -211,7 +378,6 @@ class App extends React.Component<AppProps> {
             tab2
           </Tab>
         </Tabs> */}
-
       </div>
     );
 
@@ -222,5 +388,10 @@ class App extends React.Component<AppProps> {
 
 }
 
+const mapStateToProps = (state: any) => {
+    
+}
+
 
 export default App;
+

@@ -1,31 +1,35 @@
-import { observable, computed } from 'mobx';
+import { observable, computed, makeAutoObservable, action } from 'mobx';
 import { Pool } from './model';
 import BN from 'bn.js';
 
 
 export class Context {
 
+  constructor() {
+    makeAutoObservable(this);
+  }
+
   //public web3!: Web3;
 
-  @observable public stakingEpoch: number = 0;
+  public stakingEpoch: number = 0;
 
-  @observable public keyGenRound: number = 0;
+  public keyGenRound: number = 0;
 
-  @observable public currentBlockNumber: number = 0;
+  public currentBlockNumber: number = 0;
 
-  @observable public latestBlockNumber: number = 0;
+  public latestBlockNumber: number = 0;
 
-  @observable public currentTimestamp: any;
+  public currentTimestamp: any;
 
-  @observable public myAddr!: string;
+  public myAddr!: string;
 
   // in Ether (not wei!)
   // TODO: initializing to 0 is a lazy shortcut
-  @observable public myBalance: BN  = new BN(0);
+  public myBalance: BN  = new BN(0);
 
   public coinSymbol = 'DMD';
 
-  @observable public epochDuration: number = 0; // currently not changeable
+  public epochDuration: number = 0; // currently not changeable
 
   public stakeWithdrawDisallowPeriod!: number;
 
@@ -37,19 +41,19 @@ export class Context {
 
   // public hasWeb3BrowserSupport = false;
 
-  @observable public epochStartBlock!: number;
+  public epochStartBlock!: number;
 
-  @observable public epochStartTime!: number;
+  public epochStartTime!: number;
 
-  @observable public stakingEpochEndTime!: number;
+  public stakingEpochEndTime!: number;
   
 
-  @observable public deltaPot!: string;
+  public deltaPot!: string;
 
-  @observable public reinsertPot!: string;
+  public reinsertPot!: string;
 
   // TODO: find better name
-  @observable public canStakeOrWithdrawNow = false;
+  public canStakeOrWithdrawNow = false;
 
   // positive value: allowed for n more blocks
   // negative value: allowed in n blocks
@@ -65,25 +69,23 @@ export class Context {
   // this can happen, in situations,
   // where the first node(s) should take over ownership of the
   // network, but they can't.
-  @observable public currentValidatorsWithoutPools: string[] = [];
+  public currentValidatorsWithoutPools: string[] = [];
 
-  @observable public numbersOfValidators: number = 0;
+  public numbersOfValidators: number = 0;
 
-  @computed get myPool(): Pool | undefined {
+  get myPool(): Pool | undefined {
     return this.pools.filter((p) => p.stakingAddress === this.myAddr)[0];
   }
 
-  @computed get epochStartTimeFormatted() : string {
+  get epochStartTimeFormatted() : string {
     return new Date(this.epochStartTime * 1000).toLocaleString();
   }
 
-  @computed get minimumGasFeeFormatted() : string {
+  get minimumGasFeeFormatted() : string {
     return this.minimumGasFee.toNumber().toString();
   }
 
-  @computed
-  public get iHaveAPool(): boolean {
+    public get iHaveAPool(): boolean {
     return this.myPool !== undefined;
   }
-
  }

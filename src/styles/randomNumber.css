@@ -1,0 +1,29 @@
+.rngContainer {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rngContainer > form {
+    gap: 1rem;
+    width: 500px;
+    display: flex;
+    min-width: 320px;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rngContainer > form > input {
+    width: 100%;
+}
+
+.rngContainer > form > button {
+    align-self: flex-end;
+}
+
+h1 {
+    margin: 5%;
+}

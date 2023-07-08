@@ -1,5 +1,6 @@
 
 import BN from 'bn.js';
+import { makeAutoObservable, observable } from 'mobx';
 import { Context } from './context';
 import { KeyGenMode } from './contracts/contractManager';
 
@@ -17,17 +18,14 @@ export class ClaimableStake {
 }
 
 
-// @observable
 export class Pool {
 
   public constructor(context: Context) {
     this.context = context;
+    makeAutoObservable(this);
   }
 
-  public context: Context;
-
-
-
+  @observable public context: Context;
   // public isUpdating: boolean = false;
 
   public isActive: boolean = false; // currently "active" pool
@@ -41,13 +39,15 @@ export class Pool {
   public miningPublicKey: string = '';
   public addedInEpoch: number = 0;
   public isCurrentValidator: boolean = false;
+  public score = 0;
 
-  public candidateStake: BN = new BN(0);
-  public totalStake: BN = new BN(0);
-  public myStake: BN = new BN(0);
+  @observable public candidateStake: BN = new BN(0);
+  @observable public totalStake: BN = new BN(0);
+  @observable public myStake: BN = new BN(0);
+  @observable public orderedWithdrawAmount: BN = new BN(0);
 
   public claimableStake: ClaimableStake = new ClaimableStake(this);
-  public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
+  @observable public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
   public validatorStakeShare: number = 0; // percent
   public validatorRewardShare: number = 0; // percent
@@ -56,7 +56,14 @@ export class Pool {
   public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
   
   public isBanned(): boolean {
+    console.log(this.context.currentTimestamp)
     return this.bannedUntil.gt(this.context.currentTimestamp);
+  }
+
+  private _uiElementsToUpdate = new Array<React.Component>();
+
+  public registerUIElement(element: React.Component) {
+    this._uiElementsToUpdate.push(element);
   }
   
   public bannedUntil: BN = new BN('0');
@@ -107,6 +114,9 @@ export class Pool {
 
 
 export class Delegator {
+  public constructor(delegator: string) {
+    this.address = delegator;
+  }
+
   address: string = '';
 }
-

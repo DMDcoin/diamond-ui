@@ -21,6 +21,9 @@ import JsonTxPermissionHbbft from '../../contract-abis/TxPermissionHbbft.json';
 import { AdminUpgradeabilityProxy } from '../../contracts/AdminUpgradeabilityProxy';
 import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilityProxy.json';
 
+import { RandomHbbft } from '../../contracts/RandomHbbft';
+import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
+
 import BigNumber from 'bignumber.js';
 import { BlockType } from '../../contracts/types';
 
@@ -204,4 +207,13 @@ export class ContractManager {
     return h2n(await (await this.getKeyGenHistory()).methods.getCurrentKeyGenRound().call({}, blockNumber));
   }
 
- }
+
+  public async getRandomHbbft(): Promise<RandomHbbft> {
+
+    let contractAddress = await this.getValidatorSetHbbft().methods.randomContract().call();
+
+    const abi: any = JsonRandomHbbft.abi;
+    const contract: any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+}
