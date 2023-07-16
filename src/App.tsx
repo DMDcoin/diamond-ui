@@ -265,11 +265,11 @@ class App extends React.Component<AppProps, AppState> {
     const result = (
       <div className="App">
         <div className="navbar">
-          <div>
+          {/* <div> */}
               <button className="connectWalletBtn" onClick={this.setShowBlockSelectorInfo}>
                 {context.currentBlockNumber} <ChevronDown style={{marginLeft: "2px"}}/>
               </button>
-          </div>
+          {/* </div> */}
 
           <a href="/">
             <img src={dmd_logo} alt="logo" width="250px"/>
