@@ -47,7 +47,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "update-contract-abis": "mkdir -p src/contract-abis && find ../hbbft-posdao-contracts/artifacts/contracts/ -name '*.json' -exec cp {} src/contract-abis \\; && rm src/contract-abis/*.dbg.json",
+    "update-contract-abis": "mkdir -p src/contract-abis && find ../diamond-contracts-core/artifacts/contracts/ -name '*.json' -exec cp {} src/contract-abis \\; && rm src/contract-abis/*.dbg.json",
     "typechain": "node_modules/.bin/typechain --target web3-v1 --out-dir src/contracts/ 'src/contract-abis/**/*.json'"
   },
   "eslintConfig": {
