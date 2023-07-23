@@ -1,10 +1,6 @@
 import { action } from "mobx";
 import React, { Fragment } from "react";
-import { ui } from "../ui";
 import { Button, Modal, Table } from "react-bootstrap";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import { ArrowLeft, ArrowRight, SkipEnd } from "react-bootstrap-icons";
-// import { DmdComponent } from "./dmd-component";
 import Accordion from "react-bootstrap/Accordion";
 import "../styles/blockSelector.css";
 import BarLoader from "react-spinners/BarLoader";
@@ -162,25 +158,25 @@ export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
     //   );
     // }
 
-    const prompt = () => {
-      const input = window.prompt(
-        "pleased enter a block number you want to browse historic, or latest to track the latest block."
-      );
-      if (Number(input) > this.props.modelDataAdapter.context.latestBlockNumber) {
-        this.notify(`Entered block cannot be greater than ${this.props.modelDataAdapter.context.latestBlockNumber}`);
-        return false;
-      }
-      if (input) {
-        if (input === "latest") {
-          this.props.modelDataAdapter.showLatest();
-        } else {
-          const number = Number.parseInt(input);
-          if (Number.isInteger(number)) {
-            this.props.modelDataAdapter.showHistoric(number);
-          }
-        }
-      }
-    };
+    // const prompt = () => {
+    //   const input = window.prompt(
+    //     "pleased enter a block number you want to browse historic, or latest to track the latest block."
+    //   );
+    //   if (Number(input) > this.props.modelDataAdapter.context.latestBlockNumber) {
+    //     this.notify(`Entered block cannot be greater than ${this.props.modelDataAdapter.context.latestBlockNumber}`);
+    //     return false;
+    //   }
+    //   if (input) {
+    //     if (input === "latest") {
+    //       this.props.modelDataAdapter.showLatest();
+    //     } else {
+    //       const number = Number.parseInt(input);
+    //       if (Number.isInteger(number)) {
+    //         this.props.modelDataAdapter.showHistoric(number);
+    //       }
+    //     }
+    //   }
+    // };
 
     return (
       <div className="blockSelectorContainer">

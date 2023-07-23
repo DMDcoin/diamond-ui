@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { observer } from 'mobx-react';
-import { reaction, action, runInAction } from 'mobx';
+import { reaction } from 'mobx';
 import './App.css';
 import BN from "bn.js";
 import 'react-tabulator/lib/styles.css';
@@ -12,7 +13,6 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import dmd_logo from "./logo-hor.svg";
 
-import { ReactTabulator } from 'react-tabulator';
 import { ModelDataAdapter } from './model/modelDataAdapter';
 import { Pool } from './model/model';
 import Web3Modal from "web3modal";
@@ -21,7 +21,7 @@ import { BlockSelectorUI } from './components/block-selector-ui';
 import { Tab, Tabs } from 'react-bootstrap';
 import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 import PoolDetail from './components/PoolDetail';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GridLoader from "react-spinners/GridLoader";
 import AddPool from './components/AddPool';
@@ -129,7 +129,7 @@ class App extends React.Component<AppProps, AppState> {
       // handle account change
       const classInstance = this;
       web3ModalInstance.on('accountsChanged', function (accounts: Array<string>) {
-        if(accounts.length == 0) {
+        if(accounts.length === 0) {
           window.location.reload();
         } else {
           classInstance.connectWallet();
@@ -140,7 +140,7 @@ class App extends React.Component<AppProps, AppState> {
 
       const chainId = 777012;
       // force user to change to DMD network
-      if (web3ModalInstance.networkVersion != chainId) {
+      if (web3ModalInstance.networkVersion !== chainId) {
         console.log(Object.keys(web3ModalInstance))
         try {
           await web3ModalInstance.request({
@@ -231,7 +231,7 @@ class App extends React.Component<AppProps, AppState> {
     const { context } = adapter;
     
 
-    const validatorsWithoutPoolSection = context.currentValidatorsWithoutPools.map((address: any, key: number) => (
+    context.currentValidatorsWithoutPools.map((address: any, key: number) => (
       <div key={key} className="text-danger" title="Validators can loose their pool association when the first validators after chain launch fail to take over control. (missed out key generation ?)">Validator without a Pool Association: {address}</div>
     ));
 
@@ -276,7 +276,7 @@ class App extends React.Component<AppProps, AppState> {
           </a>
 
           {this.state.connectedAccount ?
-          this.state.connectedAccount == 'connecting' ? 
+          this.state.connectedAccount === 'connecting' ? 
             <button className="connectWalletBtn">
               Connecting...
             </button>
@@ -386,10 +386,6 @@ class App extends React.Component<AppProps, AppState> {
     return result;
   }
 
-}
-
-const mapStateToProps = (state: any) => {
-    
 }
 
 

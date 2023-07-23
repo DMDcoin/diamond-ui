@@ -8,12 +8,11 @@ import { ValidatorSetHbbft } from '../contracts/ValidatorSetHbbft';
 import { StakingHbbftCoins } from '../contracts/StakingHbbftCoins';
 import { BlockRewardHbbftCoins } from '../contracts/BlockRewardHbbftCoins';
 import { KeyGenHistory } from '../contracts/KeyGenHistory';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { Delegator, Pool } from "./model";
 import { ContractManager } from "./contracts/contractManager";
 import { BlockType, NonPayableTx } from '../contracts/types';
-import { IModelCache, LocalStorageModelCache } from './modelCacheProvider';
-import stakingABI from '../contract-abis/StakingHbbftBase.json';
 
 // needed for querying injected web3 (e.g. from Metamask)
 declare global {
@@ -23,9 +22,9 @@ declare global {
   }
 }
 
-interface modelAdapterState {
-  hasWeb3BrowserSupport: boolean
-}
+// interface modelAdapterState {
+//   hasWeb3BrowserSupport: boolean
+// }
 
 /**Fetches data for the model. */
 export class ModelDataAdapter {
@@ -457,7 +456,7 @@ export class ModelDataAdapter {
 
     pool.availableSince = await this.getAvailableSince(miningAddress);
     pool.isAvailable = !pool.availableSince.isZero();
-    pool.isMe = this.context.myAddr == pool.stakingAddress;
+    pool.isMe = this.context.myAddr === pool.stakingAddress;
     pool.myStake = new BN(await this.getMyStake(stakingAddress));
 
     // remove pool
@@ -465,7 +464,7 @@ export class ModelDataAdapter {
       if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
         // console.log("Removing:", this.context.myAddr?.length, pool.myStake.toString(), pool.myStake.gt(new BN('0')), pool.isCurrentValidator,pool.isAvailable,pool.isToBeElected,pool.isPendingValidator, pool.isMe)
         for (let i = 0; i < this.context.pools.length; i++) {
-          if (this.context.pools[i].stakingAddress == pool.stakingAddress) {
+          if (this.context.pools[i].stakingAddress === pool.stakingAddress) {
             runInAction(() => {
               this.context.pools.splice(i, 1);
             })

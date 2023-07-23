@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import BlockchainService from "./BlockchainService";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
-import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
+// import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 
 interface ReactTabulatorViewOptionsColumnSet {
   listName: string,
@@ -57,6 +57,7 @@ const presets = [
 export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorViewOptionsProps, ReactTabulatorViewOptionsState> {
   defaultColumns = [
     { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left"},
+    { title: "Public address", field: "miningAddress", hozAlign: "left"},
     { title: "Total Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
     { title: "S", headerTooltip: "Staked - has enough stake ?" , field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
     { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
@@ -157,9 +158,9 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   
   updateColumnsPreference = () => {
     this.setState({customizeModalShow: false});
-    const showAllPools = this.props.tabulatorColumsPreset == 'Default' ? false : true;
+    const showAllPools = this.props.tabulatorColumsPreset === 'Default' ? false : true;
     console.log("here", this.props.tabulatorColumsPreset, this.props.adapter.showAllPools, showAllPools);
-    if (this.props.adapter.showAllPools != showAllPools) {
+    if (this.props.adapter.showAllPools !== showAllPools) {
       this.props.adapter.showAllPools = showAllPools;
       this.props.adapter.refresh();
     }
@@ -177,7 +178,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     let colsToAdd: any = [];
     let colsToRemove: any = [];
 
-    this.state.selectedColumns.map(col => {
+    this.state.selectedColumns.forEach(col => {
       if (currColState.includes(col.title) && !col.status) {
         colsToRemove.push(col.title);
       } else if (!currColState.includes(col.title) && col.status) {
@@ -275,7 +276,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
       const titleToAdd = titleArr[i];
       for (let j = 0; j < this.defaultColumns.length; j++) {
         const defaultCol = this.defaultColumns[j];
-        if (defaultCol.title == titleToAdd) {
+        if (defaultCol.title === titleToAdd) {
           const newColumn = {
             title: titleArr[i],
             field: defaultCol.field,
@@ -377,10 +378,10 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     const rowStakingAddress = e.target.closest('.tabulator-row').querySelector('[tabulator-field="stakingAddress"]').textContent.trim();
     console.log(rowStakingAddress, "thiss")
     if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
-      const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
+      const poolData = this.state.dataState.filter(data => data.stakingAddress === rowStakingAddress);
       this.props.blockChainService.claimReward(e, poolData[0]);
     } else {
-      const poolData = this.state.dataState.filter(data => data.stakingAddress == rowStakingAddress);
+      const poolData = this.state.dataState.filter(data => data.stakingAddress === rowStakingAddress);
       this.props.setAppDataState(poolData)
     }
   };
@@ -389,7 +390,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     e.preventDefault();
 
     const updatedCols = this.state.selectedColumns.map(item => {
-      if (item.title == e.target.innerHTML) {
+      if (item.title === e.target.innerHTML) {
         item.status = !item.status;
       }
       return item;
@@ -402,7 +403,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
   public render() {
 
-    const showList = true; // in progress...
+    // const showList = true; // in progress...
     //return <div />
     return (
        <div>
@@ -427,8 +428,39 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
               </div>
 
               <div className="selectableOptionContainer">
+                <legend>Key Generation</legend>
                 {this.state.selectedColumns.map((item) => (
+                  ['k1', 'p', 'k2'].includes(item.title.toLowerCase()) ? 
+                  <React.Fragment>
                     <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
+                  </React.Fragment>
+                   : 
+                  ""
+                ))}
+
+                <legend>Node status</legend>
+                {this.state.selectedColumns.map((item) => (
+                  ['s', 'a', 'c', 'e'].includes(item.title.toLowerCase()) ? 
+                  <React.Fragment>
+                    <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
+                  </React.Fragment>
+                   : 
+                  ""
+                ))}
+
+                <legend>My Finance</legend>
+                {this.state.selectedColumns.map((item) => (
+                  [
+                    'Miner address',
+                    'My Stake',
+                    'Rewards',
+                    'Ordered Withdraw'
+                  ].includes(item.title) ? 
+                  <React.Fragment>
+                    <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
+                  </React.Fragment>
+                   : 
+                  ""
                 ))}
               </div>
 

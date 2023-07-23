@@ -149,3 +149,13 @@ table tr {
     color: #3861fb;
     background-color: #e6f0ff;
 }
+
+legend {
+    font-size: 12px;
+    font-weight: 500;
+    color: #58667e;
+    border-bottom: 1px solid rgb(224, 224, 224);
+    margin-bottom: 0px;
+    padding: 5px;
+    margin-top: 10px;
+}

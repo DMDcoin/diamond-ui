@@ -1,14 +1,12 @@
-import BN from "bn.js";
 import React from "react";
 import "../styles/pooldetails.css";
 import BigNumber from 'bignumber.js';
 import { Pool } from "../model/model";
 import { Table } from "react-bootstrap";
-import DelegatorsData from "./Delegators";
 import { Delegator } from "../model/model";
 import "react-toastify/dist/ReactToastify.css";
 import Accordion from "react-bootstrap/Accordion";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import BlockchainService from '../utils/BlockchainService';
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 
@@ -81,7 +79,7 @@ class PoolDetail extends React.Component<PoolProps> {
     if (context.myAddr) {
       const amount = await adapter.stContract.methods.orderedWithdrawAmount(pool.miningAddress, context.myAddr).call();
       const unlockEpoch = parseInt(await adapter.stContract.methods.orderWithdrawEpoch(pool.miningAddress, context.myAddr).call()) + 1;
-      if (this.state.stakeWithdrawAmount != amount) {
+      if (this.state.stakeWithdrawAmount !== amount) {
         this.setState({stakeWithdrawAmount: amount, hasWithdrawClaimable: parseInt(amount) > 0 && unlockEpoch <= context.stakingEpoch})
       }
     }
@@ -104,7 +102,7 @@ class PoolDetail extends React.Component<PoolProps> {
     //   const hasStake: boolean = pool.stakingAddress === context.myAddr ? true : (await adapter.stContract.methods.stakeFirstEpoch(pool.stakingAddress, context.myAddr).call()) !== '0';
     //   const claimableAmount = hasStake ? await adapter.stContract.methods.getRewardAmount([], pool.stakingAddress, context.myAddr).call() : '0';
       const claimableAmount = await this.blockchainService.getRewardClaimableAmount();
-      if (this.state.rewardClaimAmount != claimableAmount) {
+      if (this.state.rewardClaimAmount !== claimableAmount) {
         this.setState({rewardClaimAmount: claimableAmount})
         this.setState({hasRewardClaimable: BigNumber(claimableAmount).isGreaterThan(0) ? true : false});
         this.props.pool.claimableReward = BigNumber(claimableAmount).dividedBy(Math.pow(10, 18)).toFixed(2);

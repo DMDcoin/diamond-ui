@@ -7,14 +7,14 @@
     //filterParams - params object passed to the headerFilterFuncParams property
   
         if(rowValue){
-            if(headerValue.start != ""){
-                if(headerValue.end != ""){
+            if(headerValue.start !== ""){
+                if(headerValue.end !== ""){
                     return rowValue >= headerValue.start && rowValue <= headerValue.end;
                 } else{
                     return rowValue >= headerValue.start;
                 }
             } else{
-                if(headerValue.end != ""){
+                if(headerValue.end !== ""){
                     return rowValue <= headerValue.end;
                 }
             }

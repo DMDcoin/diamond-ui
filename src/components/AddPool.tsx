@@ -1,12 +1,7 @@
-import BN from "bn.js";
 import React from "react";
 import "../styles/addpool.css";
-import { Pool } from "../model/model";
-import { Table } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
-import { publicToAddress, toBuffer } from "ethereumjs-util";
-import Wallet  from 'ethereumjs-wallet';
-import Accordion from "react-bootstrap/Accordion";
+import { publicToAddress } from "ethereumjs-util";
 import { ToastContainer, toast } from "react-toastify";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import BigNumber from 'bignumber.js';
@@ -24,9 +19,9 @@ class AddPool extends React.Component<AddPoolProps> {
 
   notify = (msg: string) => toast(msg);
 
-    constructor(props: AddPoolProps) {
-      super(props);
-    }
+  // constructor(props: AddPoolProps) {
+  //   super(props);
+  // }
 
   getAddressFromPublicKey(publicKey: string): string {
     let publicKeyCleaned = publicKey;
@@ -70,7 +65,7 @@ class AddPool extends React.Component<AddPoolProps> {
     if (!context.myAddr) {
         this.notify("Please connect wallet!");
         return true;
-    } else if (context.myAddr == 'connecting') {
+    } else if (context.myAddr === 'connecting') {
         this.notify("Please wait for wallet to connect");
         return true;
     }
@@ -94,7 +89,7 @@ class AddPool extends React.Component<AddPoolProps> {
         const id = toast.loading("Transaction Pending");
         try {
             const resp = await adapter.createPool(this.minningAddress, this.publicKey, stakeAmount, '0x00000000000000000000000000000000');
-            if (resp == true) {
+            if (resp === true) {
               toast.update(id, { render: `Successfully Added pool with stake of ${stakeAmount} DMD`, type: "success", isLoading: false });
               const newPool = await this.props.adapter.addNewPool(context.myAddr);
               this.props.setSelectedPool(newPool);
