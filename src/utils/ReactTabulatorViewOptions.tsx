@@ -1,11 +1,16 @@
 import React from "react";
 import "../styles/viewoptions.css";
-import { FaTh } from 'react-icons/fa';
+import copy from "copy-to-clipboard";
+import { FaCopy, FaTh } from 'react-icons/fa';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import BlockchainService from "./BlockchainService";
 import { ModelDataAdapter } from "../model/modelDataAdapter";
 import { TabulatorFull as Tabulator } from "tabulator-tables";
+import ReactDOMServer from "react-dom/server";
+import BigNumber from "bignumber.js";
+import { toast } from "react-toastify";
+
 // import { ColumnDefinition } from 'react-tabulator/lib/ReactTabulator';
 
 interface ReactTabulatorViewOptionsColumnSet {
@@ -54,11 +59,41 @@ const presets = [
 //   return `<div class="progress-wrapper">${progressBar}${label}</div>`;
 // };
 
+const copyFormatter = (cell: any) => {
+    const cellValue = cell.getValue();
+    const container = document.createElement("div");
+    const span = document.createElement("span");
+    const copyBtn = document.createElement("div");
+    copyBtn.className = "copyBtn";
+    const faCopyIcon = ReactDOMServer.renderToStaticMarkup(<FaCopy />);
+    copyBtn.innerHTML = `${faCopyIcon}`;
+    span.textContent = cellValue;
+    container.appendChild(span);
+    container.appendChild(copyBtn);
+    return container;
+};
+
 export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorViewOptionsProps, ReactTabulatorViewOptionsState> {
+  notify = (msg: string) => toast(msg);
+
   defaultColumns = [
-    { title: "Pool address", field: "stakingAddress", headerFilter:true, hozAlign: "left"},
-    { title: "Public address", field: "miningAddress", hozAlign: "left"},
-    { title: "Total Stake", field: "totalStake", formatter: "progress", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
+    { title: "Pool address", field: "stakingAddress", headerFilter: true, hozAlign: "left", formatter: (cell: any) => copyFormatter(cell)},
+    { title: "Public Key", field: "miningAddress", hozAlign: "left", formatter: (cell: any) => copyFormatter(cell)},
+    { 
+      title: "Total Stake", 
+      field: "totalStake", 
+      formatter: function(cell: any) {
+        const value = cell.getValue();
+        const min = cell.getColumn().getDefinition().formatterParams.min;
+        const max = cell.getColumn().getDefinition().formatterParams.max;
+        const progress = Math.round(((value - min) / (max - min)) * 100);
+        const progressBar = `<div class="progress-bar" data-max="${5 * (10 ** 22)}" data-min="0" style="display: inline-block; width: ${progress}%; background-color: rgb(45, 194, 20); height: 100%;"></div>`;
+        const numericValue = `<div class="numeric-value">${BigNumber(value).dividedBy(10**18)} DMD</div>`;
+        const combinedHTML = `<div class="progress-wrapper">${progressBar}${numericValue}</div>`;
+        return combinedHTML;
+      },
+      formatterParams: { min: 0, max: 5 * (10 ** 22) }
+    },
     { title: "S", headerTooltip: "Staked - has enough stake ?" , field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
     { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
     { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
@@ -66,7 +101,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts", headerFilter:true,  formatter: "tickCross", width: 30 },
     { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", headerFilter:true, formatter: "tickCross", width: 30 },
     { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", headerFilter:true, formatter: "tickCross", width: 30 },
-    { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left"},
+    { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", formatter: (cell: any) => copyFormatter(cell)},
     { title: "My Stake", field: "myStake", formatter: (cell:any) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
     {
       title: "Rewards",
@@ -82,7 +117,6 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
           button.textContent = "Claim";
           button.style.marginLeft = "5px";
           button.style.flexGrow = "1";
-          // button.addEventListener("click", this.rowClicked);
           container.appendChild(span);
           container.appendChild(button);
           return container;
@@ -111,6 +145,11 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
   //   return null;
   // }
+
+  copyText(text: string): void {
+    copy(text);
+    this.notify(`Copied!`);
+  }
 
   state: ReactTabulatorViewOptionsState = {
     customizeModalShow: false,
@@ -363,6 +402,14 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
         data: data,
         responsiveLayout: "collapse",
         columns: [...columns],
+        pagination: true,
+        paginationSize: 15,
+        paginationCounter:"rows",
+        columnDefaults:{
+          title: "",
+          tooltip:true,
+          headerTooltip: true
+        }
       });
   
       this.addTabRowEventListeners();
@@ -376,10 +423,12 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
   rowClicked = (e: any) => {
     const rowStakingAddress = e.target.closest('.tabulator-row').querySelector('[tabulator-field="stakingAddress"]').textContent.trim();
-    console.log(rowStakingAddress, "thiss")
+
     if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {
       const poolData = this.state.dataState.filter(data => data.stakingAddress === rowStakingAddress);
       this.props.blockChainService.claimReward(e, poolData[0]);
+    } else if (e.target.parentElement.parentElement.className === "copyBtn") {
+      this.copyText(e.target.parentElement.parentElement.parentElement.querySelector('span').textContent);
     } else {
       const poolData = this.state.dataState.filter(data => data.stakingAddress === rowStakingAddress);
       this.props.setAppDataState(poolData)

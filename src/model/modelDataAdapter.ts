@@ -571,7 +571,7 @@ export class ModelDataAdapter {
         this.handlingNewBlock = false;
       }
       // todo: what if the RPCC internet connection is slower than the interval ?
-    }, 1000);
+    }, 300000);
   }
 
 
