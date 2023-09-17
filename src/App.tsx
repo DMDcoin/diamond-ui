@@ -141,7 +141,6 @@ class App extends React.Component<AppProps, AppState> {
       const chainId = 777012;
       // force user to change to DMD network
       if (web3ModalInstance.networkVersion !== chainId) {
-        console.log(Object.keys(web3ModalInstance))
         try {
           await web3ModalInstance.request({
             method: 'wallet_switchEthereumChain',
@@ -208,12 +207,12 @@ class App extends React.Component<AppProps, AppState> {
     this.props.adapter.unregisterUIElement(this);
   }
 
-  public componentDidUpdate(prevProps:any, prevState: any, snapshot?: any): void {
-    console.log("app component updated")
-    if (this.props.adapter !== prevProps.adapter) {
-      console.log(this.props.adapter, "hehe")
-    }
-  }
+  // public componentDidUpdate(prevProps:any, prevState: any, snapshot?: any): void {
+  //   console.log("app component updated")
+  //   if (this.props.adapter !== prevProps.adapter) {
+  //     console.log(this.props.adapter, "hehe")
+  //   }
+  // }
 
   // public rowClicked = (e: any, rowData: any) => {
   //   if (e.target instanceof HTMLButtonElement && e.target.textContent === "Claim") {

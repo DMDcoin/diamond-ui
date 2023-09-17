@@ -19,6 +19,7 @@
     "bignumber.js": "^9.1.1",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.3",
+    "caniuse-lite": "^1.0.30001534",
     "ethereumjs-wallet": "^1.0.2",
     "mobx": "^6.7.0",
     "mobx-react": "^7.6.0",

@@ -45,7 +45,7 @@ class PoolDetail extends React.Component<PoolProps> {
     console.log("Pool Details Updated");
     this.getRewardClaimableAmount();
     this.getWithdrawClaimableAmount();
-    this.resetInputFields();
+    // this.resetInputFields();
     if (prevProps.pool.stakingAddress !== this.props.pool.stakingAddress) {
       this.getDelegatorsData();
     }
@@ -421,7 +421,7 @@ class PoolDetail extends React.Component<PoolProps> {
 
                 <label htmlFor="stakeamount">Stake</label>
                 <form
-                  onSubmit={(e) => this.blockchainService.handleDelegateStake(e)}
+                  onSubmit={async(e) => {await this.blockchainService.handleDelegateStake(e)}}
                   className="delegateStakeForm"
                 >
                   <input

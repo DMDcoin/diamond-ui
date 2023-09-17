@@ -481,13 +481,13 @@ export class ModelDataAdapter {
     }
     
 
-    // runInAction( async() => {
-    //   pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
-    //   pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
-    //   pool.myStake = new BN(await this.getMyStake(stakingAddress));
-    //   pool.claimableReward = await this.getClaimableReward(stakingAddress);
-    //   // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
-    // })
+    runInAction( async() => {
+      pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
+      pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));
+      pool.myStake = new BN(await this.getMyStake(stakingAddress));
+      pool.claimableReward = await this.getClaimableReward(stakingAddress);
+      // pool.orderedWithdrawAmount = new BN(await this.stContract.methods.orderedWithdrawAmount(stakingAddress, this.context.myAddr).call(this.tx(), this.block()));
+    })
 
     pool.candidateStake = new BN(await this.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(this.tx(), this.block()));
     pool.totalStake = new BN(await this.stContract.methods.stakeAmountTotal(stakingAddress).call(this.tx(), this.block()));

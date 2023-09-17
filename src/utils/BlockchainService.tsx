@@ -94,7 +94,7 @@ export default class BlockchainService {
     if (new BN(stakeAmount).gt(new BN(accBalance))) {
       console.log(this.context.myBalance.toString(), stakeAmount, accBalance);
 
-      this.notify(`Insufficient balance ${this.context.myBalance} for selected amount ${stakeAmount}`);
+      this.notify(`Insufficient balance ${this.context.myBalance} for selected amount ${(stakeAmount as any) / 10 ** 18}`);
       return true;
     } else if (!this.context.canStakeOrWithdrawNow) {
       this.notify("outside staking/withdraw time window");
@@ -117,9 +117,7 @@ export default class BlockchainService {
       try {
         const resp = await this.adapter.stake(this.pool.stakingAddress, stakeAmount);
         if (resp) {
-          await this.adapter.reUpdatePool(this.pool);
           toast.update(id, { render: `Successfully staked ${this.adapter.web3.utils.fromWei(stakeAmount).toString()} DMD`, type: "success", isLoading: false });
-          // this.forceUpdate();
         } else {
           toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
         }
