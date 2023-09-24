@@ -209,7 +209,6 @@ export class ModelDataAdapter {
   }
 
   public async setProvider(web3Provider: any) {
-    // this.context.myAddr = 'connecting';
     this.context.myAddr = web3Provider.currentProvider.selectedAddress;
 
     this.hasWeb3BrowserSupport = true;
@@ -219,6 +218,8 @@ export class ModelDataAdapter {
     this.postProvider = web3Provider;
     
     await this.handleNewBlock();
+
+    await this.refresh();
 
     return true;
   }

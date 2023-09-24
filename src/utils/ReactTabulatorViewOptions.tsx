@@ -94,14 +94,14 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
       },
       formatterParams: { min: 0, max: 5 * (10 ** 22) }
     },
-    { title: "S", headerTooltip: "Staked - has enough stake ?" , field: "isActive", headerFilter:true, formatter: "tickCross", width: 30, tooltip: true},
-    { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", headerFilter:true, formatter: "tickCross",  width: 30 },
-    { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", headerFilter:true, formatter: "tickCross", width: 30 },
-    { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", headerFilter:true, formatter: "tickCross", width: 30 },
-    { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts", headerFilter:true,  formatter: "tickCross", width: 30 },
-    { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", headerFilter:true, formatter: "tickCross", width: 30 },
-    { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", headerFilter:true, formatter: "tickCross", width: 30 },
-    { title: "Miner address", field: "miningAddress", headerFilter:true, hozAlign: "left", formatter: (cell: any) => copyFormatter(cell)},
+    { title: "S", headerTooltip: "Staked - has enough stake ?" , field: "isActive", formatter: "tickCross", width: 30, tooltip: true},
+    { title: "A", headerTooltip: "Available - is marked as available for upcomming validator set selection", field: "isAvailable", formatter: "tickCross",  width: 30 },
+    { title: "C", headerTooltip: "Current - is part of current validator set", field: "isCurrentValidator", formatter: "tickCross", width: 30 },
+    { title: "E", field: "isToBeElected", headerTooltip: "to be Elected - fulfills all requirements to be elected as validator for the upcomming epoch.", formatter: "tickCross", width: 30 },
+    { title: "P", field: "isPendingValidator", headerTooltip: "Pending - Validator in key generation phase that should write it's acks and parts",  formatter: "tickCross", width: 30 },
+    { title: "K1", field: "isWrittenParts", headerTooltip: "Key 1 (Parts) was contributed", formatter: "tickCross", width: 30 },
+    { title: "K2", field: "isWrittenAcks", headerTooltip: "Key 2 (Acks) was contributed - Node has written all keys", formatter: "tickCross", width: 30 },
+    { title: "Miner address", field: "miningAddress", headerFilter: true, hozAlign: "left", formatter: (cell: any) => copyFormatter(cell)},
     { title: "My Stake", field: "myStake", formatter: (cell:any) => ((cell.getValue() / 10**18).toFixed(2)).toString() + " DMD", formatterParams: { min: 0, max: 5 * (10 ** 22) }},
     {
       title: "Rewards",
@@ -198,7 +198,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
   updateColumnsPreference = () => {
     this.setState({customizeModalShow: false});
     const showAllPools = this.props.tabulatorColumsPreset === 'Default' ? false : true;
-    console.log("here", this.props.tabulatorColumsPreset, this.props.adapter.showAllPools, showAllPools);
+
     if (this.props.adapter.showAllPools !== showAllPools) {
       this.props.adapter.showAllPools = showAllPools;
       this.props.adapter.refresh();
@@ -224,6 +224,9 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
         colsToAdd.push(col.title);
       }
     })
+
+    console.log({colsToAdd})
+    console.log({colsToRemove})
 
     this.addColumn(colsToAdd);
     this.removeColumn(colsToRemove);
@@ -374,12 +377,15 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
     setTimeout(() => {
       this.initializeTabulator(this.state.dataState, [...currColsCopy]);
+      this.forceUpdate();
     }, 500);
   };
 
   removeColumn = (titlesArr: string[]): void => {
     // console.log(this.state.columnsState)
+    console.log(this.state.columnsState)
     const filteredColumns = this.state.columnsState.filter(item => !titlesArr.includes(item.title));
+    console.log({filteredColumns})
     // const updatedDataState = this.state.dataState.map(obj => {
     //   const { [title]: omittedKey, ...rest } = obj;
     //   return rest;
@@ -394,6 +400,7 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
     });
 
     this.initializeTabulator(this.state.dataState, filteredColumns);
+    this.forceUpdate();
   }
 
   initializeTabulator = (data: any, columns: any) => {

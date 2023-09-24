@@ -27,11 +27,7 @@ import GridLoader from "react-spinners/GridLoader";
 import AddPool from './components/AddPool';
 import RNG from './components/RNG';
 import BlockchainService from './utils/BlockchainService';
-import { ChevronDown } from "react-bootstrap-icons";
-
-
-// import { ContractDetailsUI } from './components/contract-details-ui';
-
+import { ChevronDown, ArrowClockwise } from "react-bootstrap-icons";
 
 interface AppProps {
   adapter: ModelDataAdapter,
@@ -99,6 +95,10 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       showBlockSelectorInfo: !this.state.showBlockSelectorInfo
     })
+  }
+
+  refreshBlockData = (e:any) => {
+    this.props.adapter.refresh();
   }
 
   changeTab = (e: any) => {
@@ -264,11 +264,12 @@ class App extends React.Component<AppProps, AppState> {
     const result = (
       <div className="App">
         <div className="navbar">
-          {/* <div> */}
-              <button className="connectWalletBtn" onClick={this.setShowBlockSelectorInfo}>
+          <div className="blockInfo">
+              <button  onClick={this.setShowBlockSelectorInfo}>
                 {context.currentBlockNumber} <ChevronDown style={{marginLeft: "2px"}}/>
               </button>
-          {/* </div> */}
+              <button onClick={this.refreshBlockData}><ArrowClockwise/></button>
+          </div>
 
           <a href="/">
             <img src={dmd_logo} alt="logo" width="250px"/>
