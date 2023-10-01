@@ -485,9 +485,9 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
 
               <div className="selectableOptionContainer">
                 <legend>Key Generation</legend>
-                {this.state.selectedColumns.map((item) => (
+                {this.state.selectedColumns.map((item, key) => (
                   ['k1', 'p', 'k2'].includes(item.title.toLowerCase()) ? 
-                  <React.Fragment>
+                  <React.Fragment key={key}>
                     <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
                   </React.Fragment>
                    : 
@@ -495,9 +495,9 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
                 ))}
 
                 <legend>Node status</legend>
-                {this.state.selectedColumns.map((item) => (
+                {this.state.selectedColumns.map((item, key) => (
                   ['s', 'a', 'c', 'e'].includes(item.title.toLowerCase()) ? 
-                  <React.Fragment>
+                  <React.Fragment key={key}>
                     <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
                   </React.Fragment>
                    : 
@@ -505,14 +505,14 @@ export class ReactTabulatorViewOptions extends React.Component<ReactTabulatorVie
                 ))}
 
                 <legend>My Finance</legend>
-                {this.state.selectedColumns.map((item) => (
+                {this.state.selectedColumns.map((item, key) => (
                   [
                     'Miner address',
                     'My Stake',
                     'Rewards',
                     'Ordered Withdraw'
                   ].includes(item.title) ? 
-                  <React.Fragment>
+                  <React.Fragment key={key}>
                     <span className={item.status ? 'selectedOption' : ''} onClick={this.handleOptionSelect}>{item.title}</span>
                   </React.Fragment>
                    : 
