@@ -1,5 +1,5 @@
-
 import BN from 'bn.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { makeAutoObservable, observable } from 'mobx';
 import { Context } from './context';
 import { KeyGenMode } from './contracts/contractManager';

@@ -70,11 +70,6 @@
   margin-right: 0px;
   margin-left: 10px;
 } */
-
-.navbar > div {
-  width: 150px;
-}
-
 .connectWalletBtn {
   width: 145px;
   max-width: 150px;
@@ -95,4 +90,20 @@
 .nav-item > button:hover {
   color: white !important;
   background-color: #254CA0 !important;
+}
+
+.blockInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blockInfo > button:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.blockInfo > button:nth-child(2) {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }

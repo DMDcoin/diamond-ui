@@ -22,6 +22,7 @@ const CustomTable = ({ props }: any) => {
       setRangeEnd(latestBlock);
       setRangeStart(latestBlock);
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const updateTable = async (e: any) => {
@@ -91,9 +92,9 @@ const CustomTable = ({ props }: any) => {
 };
 
 class RNG extends React.Component<RNGProps> {
-  constructor(props: RNGProps) {
-    super(props);
-  }
+  // constructor(props: RNGProps) {
+  //   super(props);
+  // }
 
   public render(): JSX.Element {
     const result = (
