@@ -11,6 +11,7 @@ const DelegatorsData = ({ adapter, pool }: any) => {
     console.log(pool.delegators)
     await getDelegatorsData();
    })()
+   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
    const getDelegatorsData = async () => {

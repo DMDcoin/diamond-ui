@@ -1,4 +1,5 @@
-import { observable, computed, makeAutoObservable, action } from 'mobx';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { observable, makeAutoObservable } from 'mobx';
 import { Pool } from './model';
 import BN from 'bn.js';
 

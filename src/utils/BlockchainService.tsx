@@ -2,7 +2,7 @@ import BN from "bn.js";
 import { Pool } from "../model/model";
 import { Context } from '../model/context';
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { ModelDataAdapter } from '../model/modelDataAdapter';
 
 interface PoolProps {
@@ -50,7 +50,7 @@ export default class BlockchainService {
     if (!this.context.myAddr) {
       this.notify("Please connect wallet!");
       return true;
-    } else if (this.context.myAddr == 'connecting') {
+    } else if (this.context.myAddr === 'connecting') {
       this.notify("Please wait for wallet to connect");
       return true;
     }
@@ -59,7 +59,7 @@ export default class BlockchainService {
     const moreToClaim = await this.adapter.claimReward(this.pool.stakingAddress);
     this.getRewardClaimableAmount();
 
-    if (moreToClaim == 'error') {
+    if (moreToClaim === 'error') {
       toast.update(toastId, { render: "Tx Failed, please try again", type: "error", isLoading: false });
     } else {
       toast.update(toastId, { render: "Claimed Successfully", type: "success", isLoading: false });
@@ -78,7 +78,7 @@ export default class BlockchainService {
     if (!this.context.myAddr) {
       this.notify("Please connect wallet!");
       return true;
-    } else if (this.context.myAddr == 'connecting') {
+    } else if (this.context.myAddr === 'connecting') {
       this.notify("Please wait for wallet to connect");
       return true;
     }
@@ -94,7 +94,7 @@ export default class BlockchainService {
     if (new BN(stakeAmount).gt(new BN(accBalance))) {
       console.log(this.context.myBalance.toString(), stakeAmount, accBalance);
 
-      this.notify(`Insufficient balance ${this.context.myBalance} for selected amount ${stakeAmount}`);
+      this.notify(`Insufficient balance ${this.context.myBalance} for selected amount ${(stakeAmount as any) / 10 ** 18}`);
       return true;
     } else if (!this.context.canStakeOrWithdrawNow) {
       this.notify("outside staking/withdraw time window");
@@ -117,9 +117,7 @@ export default class BlockchainService {
       try {
         const resp = await this.adapter.stake(this.pool.stakingAddress, stakeAmount);
         if (resp) {
-          await this.adapter.reUpdatePool(this.pool);
           toast.update(id, { render: `Successfully staked ${this.adapter.web3.utils.fromWei(stakeAmount).toString()} DMD`, type: "success", isLoading: false });
-          // this.forceUpdate();
         } else {
           toast.update(id, { render: "User denied transaction", type: "warning", isLoading: false });
         }
@@ -139,12 +137,12 @@ export default class BlockchainService {
 
     const withdrawAmount = e.target.withdrawAmount.value;
     const poolAddress = this.pool.stakingAddress;
-    const minningAddress = this.pool.miningAddress;
+    // const minningAddress = this.pool.miningAddress;
 
     if (!this.context.myAddr) {
       this.notify("Please connect wallet!");
       return true;
-    } else if (this.context.myAddr == 'connecting') {
+    } else if (this.context.myAddr === 'connecting') {
       this.notify("Please wait for wallet to connect");
       return true;
     }
@@ -193,7 +191,7 @@ export default class BlockchainService {
     if (!this.context.myAddr) {
       this.notify("Please connect wallet!");
       return true;
-    } else if (this.context.myAddr == 'connecting') {
+    } else if (this.context.myAddr === 'connecting') {
       this.notify("Please wait for wallet to connect");
       return true;
     }

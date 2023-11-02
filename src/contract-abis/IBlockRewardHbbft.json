@@ -4,6 +4,13 @@
   "sourceName": "contracts/interfaces/IBlockRewardHbbft.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "addToReinsertPot",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -17,6 +24,19 @@
           "internalType": "uint256[]",
           "name": "",
           "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "governancePotAddress",
+      "outputs": [
+        {
+          "internalType": "address payable",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",

@@ -1,10 +1,6 @@
 import { action } from "mobx";
 import React, { Fragment } from "react";
-import { ui } from "../ui";
 import { Button, Modal, Table } from "react-bootstrap";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import { ArrowLeft, ArrowRight, SkipEnd } from "react-bootstrap-icons";
-// import { DmdComponent } from "./dmd-component";
 import Accordion from "react-bootstrap/Accordion";
 import "../styles/blockSelector.css";
 import BarLoader from "react-spinners/BarLoader";
@@ -15,10 +11,23 @@ interface BlockSelectorUIProps {
   showBlockSelectorInfo: boolean; // New prop
 }
 
-export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
+interface BlockSelectorState {
+  activeValidators: number | null,
+  validValidators: number | null
+}
+
+export class BlockSelectorUI extends React.Component<BlockSelectorUIProps, BlockSelectorState> {
   private _isModal = false;
   notify = (msg: string) => toast(msg);
   private _ref_overlay = React.createRef<HTMLElement>();
+
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      activeValidators: null,
+      validValidators: null
+    };
+  }
 
   private getModal(): JSX.Element {
     //this.props.modelDataAdapter.context.latestBlockNumber
@@ -118,14 +127,26 @@ export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
   }
 
   private showModal() {
-    console.log("showModal.");
     this._isModal = true;
     this.forceUpdate();
   }
 
-  public render(): JSX.Element {
-    console.log("render.");
+  private async getValidatorsCount() {
+    const inactivePools = await this.props.modelDataAdapter.stContract.methods.getPoolsInactive().call();
+    const activeValidators = this.props.modelDataAdapter.context.pools.filter((x: any) => x.isCurrentValidator);
+    const validValidators = activeValidators.filter((x: any) => !inactivePools.includes(x.stakingAddress)).length;
+    this.setState({ activeValidators: activeValidators.length, validValidators });
+  }
 
+  componentDidMount() {
+    this.getValidatorsCount();
+  }
+
+  componentDidUpdate() {
+    this.getValidatorsCount();
+  }
+
+  public render(): JSX.Element {
     const { modelDataAdapter } = this.props;
     const { context } = modelDataAdapter;
 
@@ -162,25 +183,25 @@ export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
     //   );
     // }
 
-    const prompt = () => {
-      const input = window.prompt(
-        "pleased enter a block number you want to browse historic, or latest to track the latest block."
-      );
-      if (Number(input) > this.props.modelDataAdapter.context.latestBlockNumber) {
-        this.notify(`Entered block cannot be greater than ${this.props.modelDataAdapter.context.latestBlockNumber}`);
-        return false;
-      }
-      if (input) {
-        if (input === "latest") {
-          this.props.modelDataAdapter.showLatest();
-        } else {
-          const number = Number.parseInt(input);
-          if (Number.isInteger(number)) {
-            this.props.modelDataAdapter.showHistoric(number);
-          }
-        }
-      }
-    };
+    // const prompt = () => {
+    //   const input = window.prompt(
+    //     "pleased enter a block number you want to browse historic, or latest to track the latest block."
+    //   );
+    //   if (Number(input) > this.props.modelDataAdapter.context.latestBlockNumber) {
+    //     this.notify(`Entered block cannot be greater than ${this.props.modelDataAdapter.context.latestBlockNumber}`);
+    //     return false;
+    //   }
+    //   if (input) {
+    //     if (input === "latest") {
+    //       this.props.modelDataAdapter.showLatest();
+    //     } else {
+    //       const number = Number.parseInt(input);
+    //       if (Number.isInteger(number)) {
+    //         this.props.modelDataAdapter.showHistoric(number);
+    //       }
+    //     }
+    //   }
+    // };
 
     return (
       <div className="blockSelectorContainer">
@@ -279,13 +300,13 @@ export class BlockSelectorUI extends React.Component<BlockSelectorUIProps> {
                         </tr>
 
                         <tr>
-                          <td>Validators</td>
-                          <td>
-                            {
-                              context.pools.filter((x: any) => x.isCurrentValidator)
-                                .length
-                            }
-                          </td>
+                          <td>Active Validators Set</td>
+                          <td>{this.state.activeValidators}</td>
+                        </tr>
+
+                        <tr>
+                          <td>Valid Candidates</td>
+                          <td>{this.state.validValidators}</td>
                         </tr>
                       </Fragment>
                     )}

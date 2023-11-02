@@ -23,21 +23,58 @@
 
 .navbar {
   width: 100% !important;
-  padding: 0px !important;
   display: flex !important;
   margin-bottom: 5vh !important;
   align-items: center !important;
   justify-content: space-between !important;
+  padding: 0 10px 0 10px !important;
 }
 
-.navbar > div {
-  width: 150px;
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .connectWalletBtn {
+    margin: 5px;
+  }
+
+  .navbar > a > img {
+    width: 200px;
+  }
+
+  .navbar > a {
+    order: 0;
+  }
+
+  .navbar > button:last-child {
+    order: 1;
+    margin-top: 20px;
+  }
+
+  .navbar > button:first-child {
+    order: 2;
+    
+  }
+}
+
+/* .navbar > button:first-child {
+  margin-right: 0px;
+  margin-left: 10px;
+} */
 .connectWalletBtn {
+  width: 145px;
   max-width: 150px;
   overflow: hidden;
-  margin-right: 10px;
+  /* margin-right: 10px; */
   border-radius: 8px;
   text-overflow: ellipsis;
 }
@@ -53,4 +90,20 @@
 .nav-item > button:hover {
   color: white !important;
   background-color: #254CA0 !important;
+}
+
+.blockInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blockInfo > button:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.blockInfo > button:nth-child(2) {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
 }

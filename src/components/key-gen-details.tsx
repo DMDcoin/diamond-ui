@@ -1,6 +1,4 @@
-import { ModelDataAdapter } from "../model/modelDataAdapter";
-import { observer } from 'mobx-react';
-import { DmdComponent, ethValueFormatted } from "./dmd-component";
+import { DmdComponent } from "./dmd-component";
 import { Table } from "react-bootstrap";
 
 function formatEth(input: string) {

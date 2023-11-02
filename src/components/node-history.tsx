@@ -1,18 +1,18 @@
-import { ModelDataAdapter } from "../model/modelDataAdapter";
-import { observer } from 'mobx-react';
-import { DmdComponent, ethValueFormatted } from "./dmd-component";
-import { Table } from "react-bootstrap";
-import React, { FunctionComponent, useState } from "react";
+// import { ModelDataAdapter } from "../model/modelDataAdapter";
+// import { observer } from 'mobx-react';
+// import { DmdComponent, ethValueFormatted } from "./dmd-component";
+// import { Table } from "react-bootstrap";
+// import React, { FunctionComponent, useState } from "react";
 
 
-const ContractDetailsUI:FunctionComponent<{ initial?: number }> = ({ initial = 0 }) => { 
-  const [clicks, setClicks] = useState(initial);
-  return <>
-    <p>Clicks: {clicks}</p>
-    <button onClick={() => setClicks(clicks+1)}>+</button>
-    <button onClick={() => setClicks(clicks-1)}>-</button>
-  </>
-}
+// const ContractDetailsUI:FunctionComponent<{ initial?: number }> = ({ initial = 0 }) => { 
+//   const [clicks, setClicks] = useState(initial);
+//   return <>
+//     <p>Clicks: {clicks}</p>
+//     <button onClick={() => setClicks(clicks+1)}>+</button>
+//     <button onClick={() => setClicks(clicks-1)}>-</button>
+//   </>
+// }
 
 
 
@@ -60,3 +60,4 @@ const ContractDetailsUI:FunctionComponent<{ initial?: number }> = ({ initial = 0
 //   }
 // }
 
+export {}
