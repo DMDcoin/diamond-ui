@@ -1,0 +1,39 @@
+.homeContainer {
+  display: flex;
+  padding: 50px 100px;
+  justify-content: center;
+}
+
+.getStartedContainer {
+  width: 70vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.getStartedContainer > div {
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Each div takes 50% of the container */
+  padding: 0 10px; /* Adjust the padding as needed */
+}
+
+.getStartedContainer > div > button {
+  height: 35px;
+  width: 100px;
+  color: #0E44B2;
+  font-size: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  font-weight: 900;
+  border-radius: 5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 2px solid #0E44B2;
+  background-color: transparent;
+}
+
+/* .getStartedContainer > div > img {
+    height: 400px;
+} */

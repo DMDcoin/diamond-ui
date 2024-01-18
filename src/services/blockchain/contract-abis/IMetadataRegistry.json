@@ -1,0 +1,108 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IMetadataRegistry",
+  "sourceName": "contracts/interfaces/IMetadataRegistry.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "name",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "plainKey",
+          "type": "string"
+        }
+      ],
+      "name": "DataChanged",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_name",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "_key",
+          "type": "string"
+        }
+      ],
+      "name": "getAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_name",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "_key",
+          "type": "string"
+        }
+      ],
+      "name": "getData",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_name",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "_key",
+          "type": "string"
+        }
+      ],
+      "name": "getUint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

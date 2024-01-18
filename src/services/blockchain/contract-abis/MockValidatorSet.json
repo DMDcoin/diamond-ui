@@ -1,0 +1,95 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MockValidatorSet",
+  "sourceName": "contracts/mockContracts/TxPermissionHbbftMock.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "getPendingValidatorKeyGenerationMode",
+      "outputs": [
+        {
+          "internalType": "enum IValidatorSetHbbft.KeyGenMode",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getStakingContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "keyGenMode",
+      "outputs": [
+        {
+          "internalType": "enum IValidatorSetHbbft.KeyGenMode",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum IValidatorSetHbbft.KeyGenMode",
+          "name": "_mode",
+          "type": "uint8"
+        }
+      ],
+      "name": "setKeyGenMode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "setStakingContract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "stakingContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b50610242806100206000396000f3fe608060405234801561001057600080fd5b50600436106100725760003560e01c80639dd373b9116100505780639dd373b9146100dc578063b95d32c31461012b578063ee99205c1461013e57600080fd5b806314e28d90146100775780632b783756146100a55780638e68dce4146100b2575b600080fd5b61008f61008536600461017d565b5060005460ff1690565b60405161009c91906101c3565b60405180910390f35b60005461008f9060ff1681565b60005461010090046001600160a01b03165b6040516001600160a01b03909116815260200161009c565b6101296100ea36600461017d565b600080546001600160a01b03909216610100027fffffffffffffffffffffff0000000000000000000000000000000000000000ff909216919091179055565b005b6101296101393660046101eb565b610156565b6000546100c49061010090046001600160a01b031681565b6000805482919060ff19166001836005811115610175576101756101ad565b021790555050565b60006020828403121561018f57600080fd5b81356001600160a01b03811681146101a657600080fd5b9392505050565b634e487b7160e01b600052602160045260246000fd5b60208101600683106101e557634e487b7160e01b600052602160045260246000fd5b91905290565b6000602082840312156101fd57600080fd5b8135600681106101a657600080fdfea26469706673582212208f31ee25973601b5dec09cd3fa4258fcac99a6da9738d7bb84d85cda1be9388c64736f6c63430008110033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100725760003560e01c80639dd373b9116100505780639dd373b9146100dc578063b95d32c31461012b578063ee99205c1461013e57600080fd5b806314e28d90146100775780632b783756146100a55780638e68dce4146100b2575b600080fd5b61008f61008536600461017d565b5060005460ff1690565b60405161009c91906101c3565b60405180910390f35b60005461008f9060ff1681565b60005461010090046001600160a01b03165b6040516001600160a01b03909116815260200161009c565b6101296100ea36600461017d565b600080546001600160a01b03909216610100027fffffffffffffffffffffff0000000000000000000000000000000000000000ff909216919091179055565b005b6101296101393660046101eb565b610156565b6000546100c49061010090046001600160a01b031681565b6000805482919060ff19166001836005811115610175576101756101ad565b021790555050565b60006020828403121561018f57600080fd5b81356001600160a01b03811681146101a657600080fd5b9392505050565b634e487b7160e01b600052602160045260246000fd5b60208101600683106101e557634e487b7160e01b600052602160045260246000fd5b91905290565b6000602082840312156101fd57600080fd5b8135600681106101a657600080fdfea26469706673582212208f31ee25973601b5dec09cd3fa4258fcac99a6da9738d7bb84d85cda1be9388c64736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

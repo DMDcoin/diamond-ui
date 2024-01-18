@@ -1,0 +1,22 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Sacrifice2",
+  "sourceName": "contracts/StakingHbbft.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address payable",
+          "name": "_recipient",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x608060405260405160593803806059833981016040819052601e91602a565b806001600160a01b0316ff5b600060208284031215603b57600080fd5b81516001600160a01b0381168114605157600080fd5b939250505056fe",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220f61fd97fcf2e20c5ee84d8280b982cb4ee472f889880831e4b4c1e2b3284d1ce64736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
