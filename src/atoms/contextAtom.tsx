@@ -1,5 +1,5 @@
 import { atom, selector } from "recoil";
-import { Context } from "../services/blockchain/models/context";
+import { Context } from "../contexts/StakingContext/models/context";
 
 // Atom for Context
 const contextAtom = atom<Context>({

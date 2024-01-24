@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@typechain/web3-v1": "^6.0.7",
     "@web3modal/wagmi": "^3.5.6",
     "bignumber.js": "^9.1.2",
     "bn.js": "^5.2.1",
@@ -15,6 +16,7 @@
     "react-router-dom": "^6.21.2",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
+    "typechain": "^8.3.2",
     "viem": "^1.21.4",
     "wagmi": "^1.4.13",
     "web-vitals": "^2.1.4",
@@ -25,7 +27,9 @@
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "update-contract-abis": "cp ../diamond-contracts-core/build/contracts/*.json ./src/contexts/contract-abis",
+    "typechain": "node_modules/.bin/typechain --target web3-v1 --out-dir src/contexts/contracts/ 'src/contexts/contract-abis/**/*.json'"
   },
   "eslintConfig": {
     "extends": [

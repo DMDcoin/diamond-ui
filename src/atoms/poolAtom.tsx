@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { Pool } from "../services/blockchain/models/model";
+import { Pool } from "../contexts/StakingContext/models/model";
 
 // Atom definition
 export const poolAtom = (stakingAddress: string) => {

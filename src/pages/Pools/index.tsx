@@ -10,12 +10,12 @@ const Pools: React.FC<PoolsProps> = ({}) => {
   let StakingContext = useStakingContext();
 
   useEffect(() => {
-    StakingContext.initializeDataAdapter();
+    StakingContext.initializeStakingDataAdapter();
   }, []);
 
   return (
     <div className="App">
-      <span>Pools Synced: {StakingContext.dataAdapter ? (StakingContext.dataAdapter.context.pools.length).toString() : ""}</span>
+      <span>Pools Synced: {StakingContext.stakingDataAdapter ? (StakingContext.stakingDataAdapter.context.pools.length).toString() : ""}</span>
     </div>
   );
 };
