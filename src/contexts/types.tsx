@@ -11,10 +11,8 @@ import {
 } from "../services/blockchain/contracts";
 import { ReactNode } from "react";
 
-export interface DataContextState {
+export interface StakingContextState {
   initialized: boolean;
-  web3: Web3;
-  wallet: UserWallet | null;
   context: Context;
   handlingNewBlock: boolean;
   contracts: ContractManager;
@@ -32,6 +30,6 @@ export interface DataContextState {
   newBlockPolling?: NodeJS.Timeout;
 }
 
-export interface DataContextProviderProps {
+export interface ContextProviderProps {
   children: ReactNode;
 }

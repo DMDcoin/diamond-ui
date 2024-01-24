@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import NavBar from "./layout/Navbar";
 
+const Dao = lazy(() => import("./pages/Dao"));
 const Home = lazy(() => import("./pages/Home"));
 const Pools = lazy(() => import("./pages/Pools"));
 const PoolDetails = lazy(() => import("./pages/PoolDetails"));
@@ -15,6 +16,7 @@ const App: React.FC<AppProps> = () => {
       <NavBar />
       <Routes>
         <Route index element={<Home />} />
+        <Route path="dao" element={<Dao />} />
         <Route path="pools" element={<Pools />} />
         <Route path="pool-details/:poolAddress" element={<PoolDetails />} />
         <Route path="*" element={<NotFound />} />

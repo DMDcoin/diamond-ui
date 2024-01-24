@@ -1,48 +1,43 @@
 import React, { createContext, useContext, useState } from "react";
 
-import Web3 from "web3";
 import { BN } from "bn.js";
-import Web3Modal from "web3modal";
-import { walletConnectProvider } from "@web3modal/wagmi";
 import { Context } from "../services/blockchain/models/context";
-import { DataContextProviderProps, DataContextState } from "./types";
+import { ContextProviderProps, StakingContextState } from "./types";
 import { Delegator, Pool } from "../services/blockchain/models/model";
 import { ContractManager } from "../services/blockchain/models/contractManager";
 import { BlockType, NonPayableTx } from "../services/blockchain/types/contracts";
-import { UserWallet } from "../services/blockchain/models/wallet";
+import { useWeb3Context } from "./Web3Context";
 
-interface DataContextProps {
-  dataAdapter: DataContextState | null,
-  initializeDataAdapter: () => {},
-  connectWallet: () => {}
+interface StakingContextProps {
+  dataAdapter: StakingContextState | null,
+  initializeDataAdapter: () => {}
 }
 
-const web3 = new Web3("https://rpc.uniq.diamonds");
-const contracts = new ContractManager(web3);
-const initialDataContextState: DataContextState = {
-  initialized: false,
-  web3: web3,
-  wallet: null,
-  context: new Context(),
-  handlingNewBlock: false,
-  contracts: contracts,
-  vsContract: contracts.getValidatorSetHbbft(),
-  showAllPools: false,
-  isShowHistoric: false,
-  isReadingData: false,
-  showHistoricBlock: 0,
-  defaultTxOpts: {
-    from: '',
-    gasPrice: '1000000000',
-    gasLimit: '8000000',
-    value: '0'
-  },
-};
+const StakingContext = createContext<StakingContextProps | undefined>(undefined);
 
-const DataContext = createContext<DataContextProps | undefined>(undefined);
-
-const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => {
-  const [dataAdapter, setDataAdapter] = useState<DataContextState>(initialDataContextState);
+const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
+  const web3Context = useWeb3Context();
+  const web3 = web3Context.web3;
+  const userWallet = web3Context.userWallet;
+  const contracts = new ContractManager(web3);
+  const initialStakingContextState: StakingContextState = {
+    initialized: false,
+    context: new Context(),
+    handlingNewBlock: false,
+    contracts: contracts,
+    vsContract: contracts.getValidatorSetHbbft(),
+    showAllPools: false,
+    isShowHistoric: false,
+    isReadingData: false,
+    showHistoricBlock: 0,
+    defaultTxOpts: {
+      from: '',
+      gasPrice: '1000000000',
+      gasLimit: '8000000',
+      value: '0'
+    },
+  };
+  const [dataAdapter, setDataAdapter] = useState<StakingContextState>(initialStakingContextState);
 
   const initializeDataAdapter = async () => {
     if (dataAdapter.initialized) return;
@@ -94,7 +89,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
         return;
       }
 
-      const currentBlock = await dataAdapter.web3.eth.getBlockNumber();
+      const currentBlock = await web3.eth.getBlockNumber();
       if (currentBlock > dataAdapter.context.currentBlockNumber && !dataAdapter.handlingNewBlock) {
         dataAdapter.handlingNewBlock = true;
         await handleNewBlock();
@@ -104,18 +99,18 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
   }
 
   const handleNewBlock = async () : Promise<void> => {
-    const currWallet = dataAdapter.wallet;
+    const currWallet = userWallet;
     const currContext = dataAdapter.context;
 
     console.log('[INFO] Handling new block.');
-    const blockHeader = await dataAdapter.web3.eth.getBlock('latest');
+    const blockHeader = await web3.eth.getBlock('latest');
     console.log(`[INFO] Current Block Number:`, currContext.currentBlockNumber);
 
     currContext.currentBlockNumber = blockHeader.number;
     currContext.currentTimestamp = new BN(blockHeader.timestamp);
 
     if (currWallet) {
-      const myBalance = new BN(await dataAdapter.web3.eth.getBalance(currWallet.myAddr));
+      const myBalance = new BN(await web3.eth.getBalance(currWallet.myAddr));
       currWallet.myBalance = myBalance;
     }
 
@@ -130,9 +125,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
 
     setDataAdapter((prevDataAdapter) => ({
       ...prevDataAdapter, 
-      context: currContext,
-      wallet: currWallet
+      context: currContext
     }));
+    web3Context.setUserWallet(currWallet);
     await syncPoolsState(isNewEpoch);
   }
 
@@ -170,11 +165,11 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
   }
 
   const getMyStake = async (stakingAddress: string): Promise<string> => {
-    if (!dataAdapter.web3 || !dataAdapter.wallet || !dataAdapter.stContract) {
+    if (!web3 || !userWallet || !dataAdapter.stContract) {
       return '0';
     }
     
-    const stakeAmount = dataAdapter.stContract.methods.stakeAmount(stakingAddress, dataAdapter.wallet.myAddr).call(tx(), block());
+    const stakeAmount = dataAdapter.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), block());
     return stakeAmount;
   }
 
@@ -193,7 +188,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
 
   const retrieveGlobalValues = async () => {
     console.log("[INFO] Retrieving Global Values")
-    const currWeb3 = dataAdapter.web3;
+    const currWeb3 = web3;
     const currContext = dataAdapter.context;
     if (currWeb3.eth.defaultBlock === undefined || currWeb3.eth.defaultBlock === 'latest') {
       currContext.currentBlockNumber = await currWeb3.eth.getBlockNumber();
@@ -250,10 +245,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
           currContext.epochStartTime = parseInt(result);
         }),
         dataAdapter.brContract.methods.deltaPot().call(tx(), block()).then((result) => {
-          currContext.deltaPot = dataAdapter.web3.utils.fromWei(result, 'ether');
+          currContext.deltaPot = web3.utils.fromWei(result, 'ether');
         }),
         dataAdapter.brContract.methods.reinsertPot().call(tx(), block()).then((result) => {
-          currContext.reinsertPot = dataAdapter.web3.utils.fromWei(result, 'ether');
+          currContext.reinsertPot = web3.utils.fromWei(result, 'ether');
         }),
         dataAdapter.stContract.methods.stakingFixedEpochEndTime().call(tx(), block()).then((result) => {
           currContext.stakingEpochEndTime = parseInt(result);
@@ -264,8 +259,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
       );
   
       promises.push(
-        dataAdapter.web3.eth.getBalance('0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
-          currContext.daoPot = dataAdapter.web3.utils.fromWei(daoPotValue, 'ether');
+        web3.eth.getBalance('0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
+          currContext.daoPot = web3.utils.fromWei(daoPotValue, 'ether');
         })
       );
     }
@@ -382,7 +377,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
         dataAdapter.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), block()).then((result) => {
           pool.totalStake = new BN(result);
         }),
-        dataAdapter.wallet ? dataAdapter.stContract.methods.orderedWithdrawAmount(stakingAddress, dataAdapter.wallet.myAddr).call(tx(), block()).then((result) => {
+        userWallet ? dataAdapter.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), block()).then((result) => {
           pool.orderedWithdrawAmount = new BN(result);
         }) : new BN(0),
         // dataAdapter.getClaimableReward(stakingAddress).then((result) => {
@@ -404,7 +399,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
-    pool.isMe = dataAdapter.wallet ? dataAdapter.wallet.myAddr === pool.stakingAddress : false;
+    pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
     pool.isCurrentValidator = dataAdapter.context.currentValidators.indexOf(pool.miningAddress) >= 0;    
 
     // remove pool if required
@@ -435,101 +430,24 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({children}) => 
     }
     return pool;
   }
-
-  const connectWallet = async () => {
-    try {
-      const chainId = 777012;
-      const url = "https://rpc.uniq.diamonds";
-      const chainOptions: { rpc: Record<number, string> } = { rpc: { [chainId]: url } };
-
-      const providerOptions = {
-        walletconnect: {
-          package: walletConnectProvider,
-          options: chainOptions,
-        },
-      };
   
-      const web3Modal = new Web3Modal({
-        network: "mainnet", // optional
-        cacheProvider: false, // optional
-        providerOptions, // required
-      });
-  
-      web3Modal.clearCachedProvider();
-      const web3ModalInstance = await web3Modal.connect();
-  
-      // handle account change
-      web3ModalInstance.on("accountsChanged", function (accounts: Array<string>) {
-        if (accounts.length === 0) {
-          window.location.reload();
-        } else {
-          connectWallet();
-        }
-      });
-  
-      const provider = new Web3(web3ModalInstance);
-  
-      // force user to change to DMD network
-      if (web3ModalInstance.chainId !== chainId) {
-        try {
-          await web3ModalInstance.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: new Web3().utils.toHex(chainId) }],
-          });
-        } catch (err: any) {
-          if (err.code === 4902) {
-            await web3ModalInstance.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainName: "DMD",
-                  chainId: new Web3().utils.toHex(chainId),
-                  nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
-                  rpcUrls: [url],
-                },
-              ],
-            });
-          } else {
-            console.error("[Wallet Connect] Other Error", err);
-            return undefined;
-          }
-        }
-      }
-  
-      const myBalance = new BN(await dataAdapter.web3.eth.getBalance(web3ModalInstance.selectedAddress));
-      const wallet = new UserWallet(web3ModalInstance.selectedAddress, myBalance);
-
-      setDataAdapter((prevDataAdapter) => ({
-        ...prevDataAdapter, 
-        web3: provider,
-        wallet: wallet
-      }));
-
-      return true;
-    } catch (err) {
-      console.error("[Wallet Connect]", err);
-    }
-  };
-  
-
   const contextValue = {
     // states
     dataAdapter,
     
     // methods
-    initializeDataAdapter,
-    connectWallet
+    initializeDataAdapter
   };
 
   return (
-    <DataContext.Provider value={contextValue}>
+    <StakingContext.Provider value={contextValue}>
       {children}
-    </DataContext.Provider>
+    </StakingContext.Provider>
   );
 };
 
-const useDataContext = (): DataContextProps => {
-  const context = useContext(DataContext);
+const useStakingContext = (): StakingContextProps => {
+  const context = useContext(StakingContext);
 
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -538,4 +456,4 @@ const useDataContext = (): DataContextProps => {
   return context;
 };
 
-export { DataContextProvider, useDataContext };
+export { StakingContextProvider, useStakingContext };

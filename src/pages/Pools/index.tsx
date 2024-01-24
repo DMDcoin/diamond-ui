@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDataContext } from "../../contexts/DataContext";
+import { useStakingContext } from "../../contexts/StakingContext";
 import { useRecoilState } from "recoil";
 
 
@@ -7,15 +7,15 @@ interface PoolsProps {}
 
 const Pools: React.FC<PoolsProps> = ({}) => {
   
-  let dataContext = useDataContext();
+  let StakingContext = useStakingContext();
 
   useEffect(() => {
-    dataContext.initializeDataAdapter();
+    StakingContext.initializeDataAdapter();
   }, []);
 
   return (
     <div className="App">
-      <span>Pools Synced: {dataContext.dataAdapter ? (dataContext.dataAdapter.context.pools.length).toString() : ""}</span>
+      <span>Pools Synced: {StakingContext.dataAdapter ? (StakingContext.dataAdapter.context.pools.length).toString() : ""}</span>
     </div>
   );
 };
