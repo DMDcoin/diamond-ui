@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import { useStakingContext } from "../../contexts/StakingContext";
-import { useRecoilState } from "recoil";
-
 
 interface PoolsProps {}
 

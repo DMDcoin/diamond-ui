@@ -6,7 +6,7 @@ interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   return (
-    <div className="homeContainer">
+    <div className="mainContainer">
       <div className="getStartedContainer">
         <div>
           <p>

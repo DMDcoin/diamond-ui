@@ -1,0 +1,68 @@
+.daoHeading {
+  align-self: start;
+  margin: 0px;
+}
+
+.daoSearch {
+  /* width: 100%; */
+}
+
+.myDaoProposals {
+  overflow-x: scroll;
+}
+
+.allDaoProposals {
+  overflow-x: scroll;
+}
+
+.daoInfoContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.daoInfoContainer > div {
+  height: 150px;
+}
+
+.daoInfoContainer > div:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.daoInfoContainer > div:nth-child(2) {
+  display: flex;
+  padding: 20px;
+  min-width: 350px;
+  text-align: center;
+  border-radius: 50px;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  justify-content: space-between;  
+}
+
+.daoInfoContainer > div:nth-child(1) > * {
+  margin: 0px;
+}
+
+.daoInfoContainer > div:nth-child(2) > * {
+  margin: 0px;
+}
+
+.historicProposalsLink {
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+@media only screen and (max-width: 710px) {
+  .daoInfoContainer {
+    gap: 2rem;
+    flex-direction: column;
+  }
+
+  .daoInfoContainer > div {
+    width: 100%;
+  }
+}

@@ -25,6 +25,7 @@ interface Web3ContextProps {
   contractsManager: ContractsState,
   connectWallet: () => Promise<{ provider: Web3; wallet: UserWallet } | undefined>,
   setUserWallet: (newUserWallet: UserWallet) => void;
+  setContractsManager: (newContractsManager: ContractsState) => void;
 }
 
 
@@ -100,7 +101,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
   
       const myBalance = new BN(await web3.eth.getBalance(web3ModalInstance.selectedAddress));
-      const wallet = new UserWallet(web3ModalInstance.selectedAddress, myBalance);
+      const wallet = new UserWallet(web3.utils.toChecksumAddress(web3ModalInstance.selectedAddress), myBalance);
 
       setWeb3(provider);
       setUserWallet(wallet);
@@ -119,6 +120,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     // state functions
     setUserWallet: (newUserWallet: UserWallet) => setUserWallet(newUserWallet),  // Set the new userWallet state
+    setContractsManager,  // Set the new contractsManager state
 
     // other functions
     connectWallet,

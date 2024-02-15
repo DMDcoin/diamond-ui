@@ -58,7 +58,11 @@
   background-color: transparent;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 890px) {
+  .nav {
+    padding: 0px 20px;
+  }
+
   .nav-logo {
     width: 150px;
   }

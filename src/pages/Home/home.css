@@ -1,11 +1,11 @@
 .homeContainer {
   display: flex;
+  align-items: center;
   padding: 50px 100px;
   justify-content: center;
 }
 
 .getStartedContainer {
-  width: 70vw;
   display: flex;
   align-items: center;
   justify-content: center;
