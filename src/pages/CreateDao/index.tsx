@@ -18,7 +18,10 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [selectedOption, setSelectedOption] = useState<string>("open");
+  const [proposalType, setProposalType] = useState<string>("open");
+
+  const [epcGasValue, setEpcGasValue] = useState<string>("50");
+  const [epcType, setEpcType] = useState<string>("gas-price-value");
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; txText: string }[]>([]);
 
   useEffect(() => {}, []);
@@ -62,10 +65,10 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
 
       <div className="proposalTypeContainer">
         <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
-        <select name="proposalType" id="proposalType" value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
-            <option value="open">Open Proposal</option>
-            <option value="community-decision">Contract upgrade</option>
-            <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
+        <select name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
+          <option value="open">Open Proposal</option>
+          <option value="contract-upgrade">Contract upgrade</option>
+          <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
         </select>
       </div>
 
@@ -73,7 +76,7 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
         <input type="text" className="formInput" value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" />
         <input type="text" className="formInput" value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" />
 
-        {selectedOption === "open" && (
+        {proposalType === "open" && (
           openProposalFields.map((field, index) => (
             <div key={index}>
               <span className="addRemoveOpenTransaction" onClick={() => handleRemoveOpenProposalField(index)}>
@@ -107,12 +110,45 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
           ))
         )}
 
-        {selectedOption === "open" && ( // Render the "Add" button only if the selected option is "open"
+        {proposalType === "open" && ( // Render the "Add" button only if the selected option is "open"
           <span className="addRemoveOpenTransaction" onClick={handleAddOpenProposalField}>
             Add Transaction
             <HiMiniPlusCircle size={20} color="green" />
           </span>
         )}
+
+        {
+          proposalType === "contract-upgrade" && (
+            <div>
+              <input type="text" className="formInput" placeholder="Contract Address" />
+              <input type="text" className="formInput" placeholder="Contract Calldata" />
+            </div>
+          )
+        }
+
+        {
+          proposalType === "ecosystem-parameter-change" && (
+            <div>
+              <input type="text" className="formInput" placeholder="Discussion Link" />
+              <select name="epcType" id="epcType" value={epcType} onChange={(e) => setEpcType(e.target.value)}>
+                <option value="gas-price-value">Gas price value</option>
+              </select>
+              {
+                epcType === "gas-price-value" && (
+                  <div className="slider-container">
+                    <span>{epcGasValue}</span>
+                    <div>
+                      <span>0</span>
+                      <input type="range" className="formInput" min="0" max="100" value={epcGasValue} onChange={e => setEpcGasValue(e.target.value)} />
+                      <span>100</span>
+                    </div>
+                  </div>
+                  
+                )
+              }
+            </div>
+          )
+        }
 
         <p>
           Please note that you pay a proposal fee when you submit a new voting

@@ -6,6 +6,42 @@
 }
 
 .daoDetailsContainer {
+  display: flex;
   margin-top: 10px;
   text-align: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.daoDetailsContainer > div {
+  width: 250px;
+  display: flex;
+  align-items: center;
+}
+
+.daoDetailsContainer > div > span {
+  width: 100%;
+}
+
+.daoDetailsContainer > div > div {
+  direction: rtl;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.daoDetailsContainer > p {
+  margin-top: 100px;
+}
+
+.daoDetailsHeading > button {
+  height: 35px;
+  width: 100px;
+  margin: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  align-self: center;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
 }

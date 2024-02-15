@@ -51,6 +51,7 @@
   cursor: pointer;
   overflow: hidden;
   font-weight: 700;
+  align-self: center;
   border-radius: 5px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -100,10 +101,6 @@
     top: 65px;
     left: 0px;
     padding: 0.625rem 70px 0 70px;
-  }
-
-  .nav-links > button {
-    align-self: center;
   }
 
   .nav-links > a {

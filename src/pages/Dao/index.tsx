@@ -86,8 +86,8 @@ const Dao: React.FC<DaoProps> = ({}) => {
         <div>
           <h1 className="daoHeading">Governance</h1>
 
-          <p>Stake:</p>
-          <p>% of total total DAO weight 0.05%</p>
+          <p>Stake: 10000 DMD</p>
+          <p>10% of total total DAO weight 0.05%</p>
 
           <input type="text" placeholder="Search" className="daoSearch" onChange={e => tableSearch(e)}/>
         </div>

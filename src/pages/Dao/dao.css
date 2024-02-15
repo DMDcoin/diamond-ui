@@ -4,7 +4,11 @@
 }
 
 .daoSearch {
-  /* width: 100%; */
+  height: 30px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
 }
 
 .myDaoProposals {
@@ -52,8 +56,25 @@
 }
 
 .historicProposalsLink {
+  font-size: 12px;
   cursor: pointer;
+  margin-top: 5rem;
   font-weight: bolder;
+  text-decoration: underline;
+}
+
+.daoInfoContainer button {
+  height: 35px;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: center;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
+}
+
+.daoInfoContainer button:hover {
+  background-color: #f2f2f2;
 }
 
 @media only screen and (max-width: 710px) {
