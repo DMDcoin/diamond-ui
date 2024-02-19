@@ -40,6 +40,16 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     vsContract: initialContracts.getValidatorSetHbbft(),
   });
 
+  const reinitializeContractsWithProvider = async (provider: Web3) => {
+    const newContracts = new ContractManager(provider);
+    const daoContract = await newContracts.getDaoContract();
+    setContractsManager({
+      contracts: newContracts,
+      vsContract: newContracts.getValidatorSetHbbft(),
+      daoContract: daoContract
+    });
+  }
+
   const connectWallet = async () => {
     try {
       const chainId = 777012;
@@ -105,6 +115,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
       setWeb3(provider);
       setUserWallet(wallet);
+      reinitializeContractsWithProvider(provider);
 
       return {provider, wallet};
     } catch (err) {

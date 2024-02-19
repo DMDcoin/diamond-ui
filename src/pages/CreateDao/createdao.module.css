@@ -11,7 +11,7 @@
   text-align: center;
 }
 
-#proposalType {
+.proposalType {
   width: 250px;
   height: 40px;
   display: flex;
@@ -60,28 +60,12 @@
   align-items: center;
 }
 
-#epcType {
+.epcType {
   height: 40px;
   display: flex;
   margin-top: 20px;
   align-items: center;
   justify-content: center;
-}
-
-.slider-container {
-  width: 100%;
-  text-align: center;
-}
-
-.slider-container > div {
-    display: flex;
-    font-size: 12px;
-    align-items: center;
-    justify-content: center;
-}
-
-.slider-container > div > span {
-    width: 10px;
 }
 
 input[type="range"] {

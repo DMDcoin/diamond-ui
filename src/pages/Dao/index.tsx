@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import "./dao.css";
+import styles from "./dao.module.css";
 
 import { useDaoContext } from "../../contexts/DaoContext";
 import { useWeb3Context } from "../../contexts/Web3Context";
@@ -82,45 +82,49 @@ const Dao: React.FC<DaoProps> = ({}) => {
 
   return (
     <div className="mainContainer">
-      <div className="daoInfoContainer">
+      <div className={styles.daoInfoContainer}>
         <div>
-          <h1 className="daoHeading">Governance</h1>
+          <h1 className={styles.daoHeading}>Governance</h1>
 
           <p>Stake: 10000 DMD</p>
           <p>10% of total total DAO weight 0.05%</p>
 
-          <input type="text" placeholder="Search" className="daoSearch" onChange={e => tableSearch(e)}/>
+          <input type="text" placeholder="Search" className={styles.daoSearch} onChange={e => tableSearch(e)}/>
         </div>
 
         <div>
-          <h4>Proposal Phase 3</h4>
+          <h4>{daoContext.daoPhase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
           <p>24h 33m till the end</p>
-          <button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>
+          {daoContext.daoPhase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>)}
         </div>
       </div>
       
-      <div className="myDaoProposals">
+      <div className={styles.myDaoProposals}>
         <h2>My Proposals</h2>
-        <Table
-          columns={columns}
-          data={filteredData}
-          userWallet={web3Context.userWallet}
-          handleDetailsClick={handleDetailsClick}
-          getStateString={getStateString}
-        />
+        <div>
+          <Table
+            columns={columns}
+            data={filteredData}
+            userWallet={web3Context.userWallet}
+            handleDetailsClick={handleDetailsClick}
+            getStateString={getStateString}
+          />
+        </div>
       </div>
 
-      <div className="allDaoProposals">
+      <div className={styles.allDaoProposals}>
         <h2>All Proposals</h2>
-        <Table
-          columns={columns}
-          data={filteredData}
-          handleDetailsClick={handleDetailsClick}
-          getStateString={getStateString}
-        />
+        <div>
+          <Table
+            columns={columns}
+            data={filteredData}
+            handleDetailsClick={handleDetailsClick}
+            getStateString={getStateString}
+          />
+        </div>
       </div>
 
-      <span className="historicProposalsLink">Historic Proposals</span>
+      <span className={styles.historicProposalsLink}>Historic Proposals</span>
     </div>
   );
 };

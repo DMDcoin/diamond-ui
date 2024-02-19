@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './table.css';
+import './table.module.css';
 
 interface TableProps {
   columns: string[];

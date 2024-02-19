@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import "./daoDetails.css";
+import styles from "./daodetails.module.css";
 
 import { useDaoContext } from "../../contexts/DaoContext";
 import { useWeb3Context } from "../../contexts/Web3Context";
@@ -36,11 +36,11 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
 
   return (
     <div className="mainContainer">
-      <div className="daoDetailsHeading">
+      <div className={styles.daoDetailsHeading}>
         <h4>Date: 14 Nov 2024</h4>
         <button>Created</button>
       </div>
-      <div className="daoDetailsContainer">
+      <div className={styles.daoDetailsContainer}>
         <h1>{proposal.description}</h1>
         <div>
           <span>Created By: </span>

@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import "./createDao.css";
+import styles from "./createdao.module.css";
 
 import { useDaoContext } from "../../contexts/DaoContext";
 import { useWeb3Context } from "../../contexts/Web3Context";
@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import { IconContext } from "react-icons";
+import RangeSlider from "../../components/RangeSlider";
 
 interface CreateDaoProps {}
 
@@ -24,24 +25,13 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
   const [epcType, setEpcType] = useState<string>("gas-price-value");
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; txText: string }[]>([]);
 
-  useEffect(() => {}, []);
-
-  const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      // await web3Context.contractsManager.daoContract?.methods.propose(
-      //   [targets],
-      //   [amounts],
-      //   callDatas,
-      //   description,
-      // ).send({from: web3Context.userWallet.myAddr});
-    } catch(err) {
-      console.log(err);
+  useEffect(() => {
+    if (!daoContext.daoInitialized) {
+      daoContext.initialize().then(() => {
+        daoContext.getActiveProposals();
+      });
     }
-
-    startTransition(() => {navigate('/dao')});
-  }
+  }, [daoContext.activeProposals]);
 
   const handleAddOpenProposalField = () => {
     setOpenProposalFields([...openProposalFields, { target: "", amount: "", txText: "" }]);
@@ -59,59 +49,66 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
     setOpenProposalFields(newFields);
   }
 
+  const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await daoContext.createProposal(proposalType, title, description);
+      daoContext.getActiveProposals();
+      startTransition(() => {navigate('/dao')});
+    } catch(err) {}
+  }
+
   return (
     <div className="mainContainer">
-      <span className="createDaoHeading">Create a Proposal</span>
+      <span className={styles.createDaoHeading}>Create a Proposal</span>
 
-      <div className="proposalTypeContainer">
+      <div className={styles.proposalTypeContainer}>
         <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
-        <select name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
+        <select className={styles.proposalType}    name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
           <option value="open">Open Proposal</option>
           <option value="contract-upgrade">Contract upgrade</option>
           <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
         </select>
       </div>
 
-      <form className="propsalForm" onSubmit={createProposal}>
-        <input type="text" className="formInput" value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" />
-        <input type="text" className="formInput" value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" />
+      <form className={styles.propsalForm} onSubmit={createProposal}>
+        <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
+        <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
 
         {proposalType === "open" && (
           openProposalFields.map((field, index) => (
             <div key={index}>
-              <span className="addRemoveOpenTransaction" onClick={() => handleRemoveOpenProposalField(index)}>
+              <span className={styles.addRemoveOpenTransaction} onClick={() => handleRemoveOpenProposalField(index)}>
                 Transaction {index + 1}
-                {/* <IconContext.Provider value={{ color: 'blue', size: '50px' }}> */}
                   <HiMiniMinusCircle size={20} color="red" />
-                {/* </IconContext.Provider> */}
               </span>
               <input
                 type="text"
                 value={field.target}
                 onChange={(e) => handleAddOpenProposalFieldInputChange(index, "target", e.target.value)}
                 placeholder="Payout Address"
-                className="formInput"
+                className={styles.formInput}
               />
               <input
                 type="text"
                 value={field.amount}
                 onChange={(e) => handleAddOpenProposalFieldInputChange(index, "amount", e.target.value)}
                 placeholder="Payout Amount"
-                className="formInput"
+                className={styles.formInput}
               />
               <input
                 type="text"
                 value={field.txText}
                 onChange={(e) => handleAddOpenProposalFieldInputChange(index, "txText", e.target.value)}
                 placeholder="Transaction Text"
-                className="formInput"
+                className={styles.formInput}
               />
             </div>
           ))
         )}
 
         {proposalType === "open" && ( // Render the "Add" button only if the selected option is "open"
-          <span className="addRemoveOpenTransaction" onClick={handleAddOpenProposalField}>
+          <span className={styles.addRemoveOpenTransaction} onClick={handleAddOpenProposalField}>
             Add Transaction
             <HiMiniPlusCircle size={20} color="green" />
           </span>
@@ -120,8 +117,8 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
         {
           proposalType === "contract-upgrade" && (
             <div>
-              <input type="text" className="formInput" placeholder="Contract Address" />
-              <input type="text" className="formInput" placeholder="Contract Calldata" />
+              <input type="text" className={styles.formInput} placeholder="Contract Address" />
+              <input type="text" className={styles.formInput} placeholder="Contract Calldata" />
             </div>
           )
         }
@@ -129,21 +126,21 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
         {
           proposalType === "ecosystem-parameter-change" && (
             <div>
-              <input type="text" className="formInput" placeholder="Discussion Link" />
-              <select name="epcType" id="epcType" value={epcType} onChange={(e) => setEpcType(e.target.value)}>
+              <input type="text" className={styles.formInput} placeholder="Discussion Link" />
+              <select className={styles.epcType} name="epcType" id="epcType" value={epcType} onChange={(e) => setEpcType(e.target.value)}>
                 <option value="gas-price-value">Gas price value</option>
               </select>
               {
                 epcType === "gas-price-value" && (
-                  <div className="slider-container">
-                    <span>{epcGasValue}</span>
-                    <div>
-                      <span>0</span>
-                      <input type="range" className="formInput" min="0" max="100" value={epcGasValue} onChange={e => setEpcGasValue(e.target.value)} />
-                      <span>100</span>
-                    </div>
-                  </div>
-                  
+                  <RangeSlider min={0} max={100} state={epcGasValue} setState={setEpcGasValue} />
+                  // <div className={styles.sliderContainer}>
+                  //   <span>{epcGasValue}</span>
+                  //   <div>
+                  //     <span>0</span>
+                  //     <input type="range" className={styles.formInput} min="0" max="100" value={epcGasValue} onChange={e => setEpcGasValue(e.target.value)} />
+                  //     <span>100</span>
+                  //   </div>
+                  // </div>
                 )
               }
             </div>

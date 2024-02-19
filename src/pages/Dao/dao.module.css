@@ -11,11 +11,11 @@
   background-color: transparent;
 }
 
-.myDaoProposals {
+.myDaoProposals > div {
   overflow-x: scroll;
 }
 
-.allDaoProposals {
+.allDaoProposals > div {
   overflow-x: scroll;
 }
 

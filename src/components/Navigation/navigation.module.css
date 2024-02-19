@@ -1,0 +1,15 @@
+.navigationContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    justify-content: space-between;
+}
+
+.navigationContainer > div {
+    gap: 10px;
+    width: 100px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+}
