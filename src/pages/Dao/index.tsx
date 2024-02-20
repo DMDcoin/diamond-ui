@@ -1,12 +1,10 @@
-import React, { startTransition, useEffect, useState } from "react";
-
 import styles from "./dao.module.css";
-
-import { useDaoContext } from "../../contexts/DaoContext";
-import { useWeb3Context } from "../../contexts/Web3Context";
-import { useNavigate } from "react-router-dom";
 import Table from "../../components/Table";
+import { useNavigate } from "react-router-dom";
+import { useDaoContext } from "../../contexts/DaoContext";
 import { Proposal } from "../../contexts/DaoContext/types";
+import { useWeb3Context } from "../../contexts/Web3Context";
+import { startTransition, useEffect, useState } from "react";
 
 interface DaoProps {}
 
@@ -18,11 +16,11 @@ const Dao: React.FC<DaoProps> = ({}) => {
   const [filteredData, setFilteredData] = useState<Proposal[]>([]);
 
   const columns = [
-    'Proposer',
-    'Description',
-    'Votes',
-    'Status',
-    'Timer',
+    'Date',
+    'Wallet',
+    'Username',
+    'Title',
+    'Type',
     ''
   ]
 
@@ -35,27 +33,6 @@ const Dao: React.FC<DaoProps> = ({}) => {
       setFilteredData(daoContext.activeProposals)
     }
   }, [daoContext.activeProposals]);
-
-  const getStateString = (stateValue: string) => {
-    switch (stateValue) {
-      case '0':
-        return 'Created';
-      case '1':
-        return 'Canceled';
-      case '2':
-        return 'Active';
-      case '3':
-        return 'VotingFinished';
-      case '4':
-        return 'Accepted';
-      case '5':
-        return 'Declined';
-      case '6':
-        return 'Executed';
-      default:
-        return 'Unknown';
-    }
-  };
 
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter
@@ -93,9 +70,9 @@ const Dao: React.FC<DaoProps> = ({}) => {
         </div>
 
         <div>
-          <h4>{daoContext.daoPhase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
-          <p>24h 33m till the end</p>
-          {daoContext.daoPhase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>)}
+          <h4>{daoContext.daoPhase?.phase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
+          <p>{daoContext.getPhaseEndTime()} till the end</p>
+          {daoContext.daoPhase?.phase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>)}
         </div>
       </div>
       
@@ -107,7 +84,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
             data={filteredData}
             userWallet={web3Context.userWallet}
             handleDetailsClick={handleDetailsClick}
-            getStateString={getStateString}
+            getStateString={daoContext.getStateString}
           />
         </div>
       </div>
@@ -119,7 +96,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
             columns={columns}
             data={filteredData}
             handleDetailsClick={handleDetailsClick}
-            getStateString={getStateString}
+            getStateString={daoContext.getStateString}
           />
         </div>
       </div>

@@ -10,28 +10,24 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ start }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [hasForward, setHasForward] = React.useState(false);
 
   const canGoBack = () => {
     return location.pathname !== start;  
   }
 
   const canGoForward = () => {
-    return location.pathname === start && hasForward;
+    return location.pathname === start;
   }
 
   const goBack = () => {
-    console.log({hasForward})
     if (location.pathname !== start) {
       startTransition(() => {
         navigate(-1);
-        setHasForward(true);
       });
     }
   };
 
   const goForward = () => {
-    console.log({hasForward})
     startTransition(() => {
       navigate(1);
     });
@@ -43,15 +39,15 @@ const Navigation: React.FC<NavigationProps> = ({ start }) => {
         {
           canGoBack() ? 
           (
-          <div>
-            <HiArrowCircleLeft size={30} color="rgb(25 39 53 / 1" onClick={goBack} /> Back
+          <div onClick={goBack}>
+            <HiArrowCircleLeft size={30} color="rgb(25 39 53 / 1" /> Back
           </div>
           ) : (
             <React.Fragment></React.Fragment>
           )
         }
 
-      <div>
+      {/* <div>
         {
           canGoForward() ? 
           (
@@ -62,7 +58,7 @@ const Navigation: React.FC<NavigationProps> = ({ start }) => {
             <React.Fragment></React.Fragment>
           )
         }
-      </div>
+      </div> */}
     </div>
   );
 };

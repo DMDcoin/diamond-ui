@@ -49,15 +49,16 @@ const Table = (props: TableProps) => {
             if (!userWallet || proposal.proposer === userWallet.myAddr) {
                 return (
                 <tr key={key}>
+                    <td>{proposal.timestamp}</td>
                     <td>{proposal.proposer}</td>
-                    <td>{proposal.description}</td>
-                    <td>{proposal.votes}</td>
-                    <td>{getStateString(proposal.state)}</td>
-                    <td>14 Hours</td>
+                    <td>Username</td>
+                    <td>Title</td>
+                    <td>Type</td>
+                    
                     <td>
-                    <button onClick={() => handleDetailsClick(proposal.id)}>
-                        Details
-                    </button>
+                        <button onClick={() => handleDetailsClick(proposal.id)}>
+                            Details
+                        </button>
                     </td>
                 </tr>
                 );

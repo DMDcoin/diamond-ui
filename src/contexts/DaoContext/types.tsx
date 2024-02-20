@@ -3,6 +3,7 @@ export interface Proposal {
   votingDaoEpoch: string;
   state: string;
   targets: string[];
+  values: string[];
   calldatas: string[];
   description: string;
   votes: string;

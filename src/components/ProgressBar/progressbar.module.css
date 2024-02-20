@@ -1,0 +1,36 @@
+.progressContainer {
+    width: 100%;
+    position: relative;
+  }
+  
+  .progressLabel {
+    left: 50%;
+    top: -20px;
+    position: absolute;
+    transform: translateX(-50%);
+  }
+  
+  .progressBar {
+    width: 100%;
+    opacity: 0.7;
+    height: 25px;
+    position: relative;
+    border: 1px solid grey;
+    background-color: transparent;
+  }
+  
+  .progressFill {
+    top: 0;
+    left: 0;
+    height: 100%;
+    position: absolute;
+  }
+  
+  .progressText {
+    top: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    position: absolute;
+    transform: translateY(-50%);
+  }
+  

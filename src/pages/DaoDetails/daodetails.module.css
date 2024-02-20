@@ -13,17 +13,17 @@
   flex-direction: column;
 }
 
-.daoDetailsContainer > div {
+.proposalCreatedBy {
   width: 250px;
   display: flex;
   align-items: center;
 }
 
-.daoDetailsContainer > div > span {
+.proposalCreatedBy > span {
   width: 100%;
 }
 
-.daoDetailsContainer > div > div {
+.proposalCreatedBy > div {
   direction: rtl;
   overflow: hidden;
   white-space: nowrap;
@@ -31,7 +31,7 @@
 }
 
 .daoDetailsContainer > p {
-  margin-top: 100px;
+  margin: 50px;
 }
 
 .daoDetailsHeading > button {
@@ -44,4 +44,152 @@
   border-radius: 5px;
   border: 0.5px solid black;
   background-color: transparent;
+}
+
+.daoDetailsFooter {
+  width: 100%;
+  display: flex;
+  margin-top: 100px;
+  justify-content: space-between;
+}
+
+.daoDetailsFooter > span {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.payoutDetailsContainer {
+  margin: 50px;
+  min-width: 50%;
+  font-weight: 800;
+}
+
+.payoutDetailsContainer > div {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.payoutDetailsContainer > div > div {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.payoutDetailsContainer > div > div > span:nth-child(2) {
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dismissProposalContainer {
+  gap: 1rem;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dismissProposalContainer > button {
+  height: 30px;
+  width: 150px;
+  cursor: pointer;
+  font-weight: 700;
+  align-self: center;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
+}
+
+.dismissProposalContainer > div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dismissProposalContainer > div > div > button {
+  margin: 10px;
+  width: 70px;
+  height: 30px;
+  cursor: pointer;
+  font-weight: 700;
+  align-self: center;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
+}
+
+.dismissProposalContainer > div > div > button:nth-child(1):hover {
+  background-color: #00ff00;
+  color: white;
+}
+
+.dismissProposalContainer > div > div > button:nth-child(2):hover {
+  background-color: #ff0000;
+  color: white;
+}
+
+.votingPhaseContainer {
+  gap: 1rem;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.votingPhaseStats {
+  gap: 0.5rem;
+  display: flex;
+  margin-top: 10px;
+  flex-direction: column;
+}
+
+.votingPhaseProgress {
+  gap: 0.5rem;
+  display: flex;
+  min-width: 320px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.votingPhaseProgress > input {
+  width: 100%;
+  cursor: default;
+}
+
+.votingPhaseButtons {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.votingPhaseButtons > button {
+  height: 30px;
+  width: 150px;
+  cursor: pointer;
+  font-weight: 700;
+  align-self: center;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
+}
+
+.votingPhaseButtons > button:nth-child(1):hover {
+  background-color: #00ff00;
+  color: white;
+}
+
+.votingPhaseButtons > button:nth-child(2):hover {
+  background-color: #ff0000;
+  color: white;
 }

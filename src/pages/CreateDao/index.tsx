@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import { IconContext } from "react-icons";
 import RangeSlider from "../../components/RangeSlider";
+import Navigation from "../../components/Navigation";
 
 interface CreateDaoProps {}
 
@@ -60,6 +61,8 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
 
   return (
     <div className="mainContainer">
+      <Navigation start="/dao" />
+
       <span className={styles.createDaoHeading}>Create a Proposal</span>
 
       <div className={styles.proposalTypeContainer}>
