@@ -70,6 +70,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
         </div>
 
         <div>
+          {daoContext.daoPhase?.phase === '1' && (<div></div>)}
           <h4>{daoContext.daoPhase?.phase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
           <p>{daoContext.getPhaseEndTime()} till the end</p>
           {daoContext.daoPhase?.phase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>)}

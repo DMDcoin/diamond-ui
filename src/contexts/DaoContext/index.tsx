@@ -13,6 +13,7 @@ interface DaoContextProps {
   getPhaseEndTime: () => string;
   dismissProposal: (proposalId: string, reason: string) => Promise<void>;
   getStateString: (stateValue: string) => string;
+  castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
 }
 
 
@@ -38,6 +39,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setDaoPhase(phase);
 
     setDaoInitialized(true);
+  }
+
+  const ensureWalletConnection = (): boolean => {
+    if (!web3Context.userWallet.myAddr) {
+      toast.warn("Please connect your wallet first");
+      return false;
+    }
+    return true;
   }
 
   const timestampToDate = (timestamp: number) => {
@@ -103,7 +112,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       const proposalTimestamp: number = await getProposalTimestamp(proposalId);
       const proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
       const proposalVotes = await web3Context.contractsManager.daoContract?.methods.getProposalVotersCount(proposalId).call();
-      details.push({...proposalDetails, values: proposalDetails?.[4], votes: proposalVotes, id: proposalId, timestamp: timestampToDate(proposalTimestamp)});
+      details.push({
+        ...proposalDetails,
+        values: proposalDetails?.[4],
+        votes: proposalVotes,
+        id: proposalId,
+        timestamp: timestampToDate(proposalTimestamp),
+        type: 'open'
+      });
     }
 
     setActiveProposals(details as any);
@@ -111,11 +127,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const createProposal = async (type: string, title: string, description: string) => {
     return new Promise<void>(async (resolve, reject) => {
-        if (!web3Context.userWallet.myAddr) {
-          toast.warn("Please connect your wallet first");
-          reject("Wallet not connected");
-          return;
-        }
+        if (!ensureWalletConnection()) return reject("Wallet not connected");
   
         if (type === 'open') {
           const toastid = toast.loading("Creating proposal");
@@ -142,11 +154,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const dismissProposal = async (proposalId: string, reason: string) => {
     return new Promise<void>(async (resolve, reject) => {
-        if (!web3Context.userWallet.myAddr) {
-          toast.warn("Please connect your wallet first");
-          reject("Wallet not connected");
-          return;
-        }
+        if (!ensureWalletConnection()) return reject("Wallet not connected");
   
         const toastid = toast.loading("Dismissing proposal");
         try {       
@@ -161,6 +169,27 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   };
 
+  const castVote = async (proposalId: number, vote: number, reason: string) => {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!ensureWalletConnection()) return reject("Wallet not connected");
+      
+      const toastid = toast.loading("Casting vote");
+      try {
+        if (reason.length > 0) {
+          await web3Context.contractsManager.daoContract?.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+        } else {
+          await web3Context.contractsManager.daoContract?.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+        }
+        toast.update(toastid, { render: "Vote Casted!", type: "success", isLoading: false, autoClose: 5000 });
+        resolve();
+      } catch(err) {
+        console.error(err);
+        toast.update(toastid, { render: "Voting Failed!", type: "error", isLoading: false, autoClose: 5000 });
+        reject(err);
+      }
+    });
+  }
+
   const contextValue = {
     // states
     daoPhase,
@@ -173,7 +202,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     createProposal,
     dismissProposal,
     getPhaseEndTime,
-    getStateString
+    getStateString,
+    castVote
   };
 
   return (

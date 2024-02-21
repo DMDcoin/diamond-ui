@@ -2,19 +2,25 @@ import React, { startTransition, useEffect, useState } from "react";
 
 import styles from "./daodetails.module.css";
 
-import { useDaoContext } from "../../contexts/DaoContext";
-import { useWeb3Context } from "../../contexts/Web3Context";
-import { useNavigate, useParams } from "react-router-dom";
-import Navigation from "../../components/Navigation";
 import Modal from "../../components/Modal";
+import Navigation from "../../components/Navigation";
 import ProgressBar from "../../components/ProgressBar";
+import { useDaoContext } from "../../contexts/DaoContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { useWeb3Context } from "../../contexts/Web3Context";
+import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
+
 
 interface DaoDetailsProps {}
 
 const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
   const { proposalId } = useParams();
+  
+  const [myVote, setMyVote] = useState<number>(-1);
   const [proposal, setProposal] = useState<any>({});
+  const [voteReason, setVoteReason] = useState<string>("");
   const [dismissProposal, setDismissProposal] = useState<boolean>(false);
+  const [proposalDismissReason, setProposalDismissReason] = useState<string>("");
 
   const navigate = useNavigate();
   const daoContext = useDaoContext();
@@ -36,17 +42,18 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
   }
 
   const handleDismissProposal = async () => {
-    daoContext.dismissProposal(proposal.id, "Dismissed by proposer").then(() => {
-      console.log("here")
+    daoContext.dismissProposal(proposal.id, proposalDismissReason).then(() => {
       navigate("/dao");
     }).catch((err) => {
-      console.log("there")
       setDismissProposal(false);
     });
   }
 
-  const handleCastVote = async () => {
-
+  const handleCastVote = async (vote: number) => {
+    daoContext.castVote(proposal.id, vote, voteReason).then(() => {
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   useEffect(() => {
@@ -77,8 +84,9 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
           culpa qui officia deserunt mollit anim id est laborum.
         </p>
 
+        {/* open proposals */}
         {
-          // proposal.type === "open" ? (
+          proposal.type === "open" && (
             <div className={styles.payoutDetailsContainer}>
               {
                 proposal.targets?.map((target: any, i: number) => (
@@ -95,12 +103,48 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
                 ))
               }
             </div>
-          // ) : (<></>)
+          )
         }
 
-        {/* user is proposer and proposal is in open state */}
+        {/* ecosystem proposals */}
         {
-          web3Context.userWallet.myAddr === proposal.proposer && proposal.state == '0' ? (
+          proposal.type === "epc" && (
+            <div className={styles.ecpDetailsContainer}>
+              <div>
+                <span>Parameter</span>
+                <span>Gas price</span>
+              </div>
+
+              <div>
+                <span>Proposed value</span>
+                <span>1.02 DMD</span>
+              </div>
+            </div>
+          )
+        }
+
+        {/* contract upgrade */}
+        {
+          proposal.type === "cup" && (
+            <div className={styles.cupDetailsContainer}>
+              <div>
+                <span>Target Address</span>
+                <span>0x000000....</span>
+              </div>
+
+              <div>
+                <span>Call Data</span>
+                <span>0X5Basd....</span>
+              </div>
+            </div>
+          )
+        }
+
+        {/* user is proposer and proposal is in created state */}
+        {
+          web3Context.userWallet.myAddr === proposal.proposer &&
+          proposal.state == "0" &&
+          daoContext.daoPhase?.phase == "0" && (
             <div className={styles.dismissProposalContainer}>
               {
                 dismissProposal ? (
@@ -117,12 +161,12 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
               }
               
             </div>
-          ) : (<></>)
+          )
         }
 
         {/* voting phase */}
         {
-          proposal.state === '0' ? (
+          daoContext.daoPhase?.phase === '1' && (
             <div className={styles.votingPhaseContainer}>
               <div className={styles.votingPhaseProgress}>
                 <ProgressBar min={0} max={100} progress={65} bgColor="green" />
@@ -135,11 +179,17 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
               </div>
 
               <div className={styles.votingPhaseButtons}>
-                <button onClick={handleCastVote}>Vote for</button>
-                <button onClick={handleCastVote}>Vote against</button>
+                {myVote === -1 && (
+                  <>
+                    <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For <FaRegThumbsUp /></button>
+                    <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(2)}>Vote Against <FaRegThumbsDown /></button>
+                  </>
+                )}
+                {myVote === 0 && <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For</button>}
+                {myVote === 1 && <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(2)}>Vote Against</button>}
               </div>
             </div>
-          ) : (<></>)
+          )
         }
       </div>
 
