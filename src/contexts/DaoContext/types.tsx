@@ -9,3 +9,8 @@ export interface Proposal {
   votes: string;
   id: string;
 }
+
+export interface TotalVotingStats {
+  positive: number;
+  negative: number;
+}

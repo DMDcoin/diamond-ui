@@ -1,8 +1,8 @@
 import { toast } from 'react-toastify';
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useWeb3Context } from "../Web3Context";
 import { ContextProviderProps } from "../Web3Context/types";
-import { Proposal } from "./types";
+import { Proposal, TotalVotingStats } from "./types";
 interface DaoContextProps {
   daoPhase: any,
   daoInitialized: boolean;
@@ -10,10 +10,11 @@ interface DaoContextProps {
   initialize: () => Promise<void>;
   getActiveProposals: () => Promise<void>;
   createProposal: (type: string, title: string, description: string) => Promise<void>;
-  getPhaseEndTime: () => string;
+  phaseEndTimer: string;
   dismissProposal: (proposalId: string, reason: string) => Promise<void>;
   getStateString: (stateValue: string) => string;
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
+  getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
 }
 
 
@@ -24,8 +25,31 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const [daoPhase, setDaoPhase] = useState<any>();
   const [proposalFee, setProposalFee] = useState<string>('0');
+  const [phaseEndTimer, setPhaseEndTime] = useState<string>('');
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
+
+  useEffect(() => {
+    if (!phaseEndTimer && daoPhase) {
+      // Initialize phaseEndTimer and setInterval only once
+      setPhaseEndTime('0h 0m');
+      const intervalId = setInterval(() => {
+        // Current time in seconds
+        const currTime = Math.floor(new Date().getTime() / 1000);
+
+        // Calculate remaining time in seconds
+        const remainingSeconds = Math.max(parseFloat(daoPhase?.end) - currTime, 0);
+
+        // Calculate hours and minutes from remaining seconds
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+
+        setPhaseEndTime(`${hours}h ${minutes}m`);
+      }, 1000);
+
+      return () => clearInterval(intervalId); // Cleanup function to clear interval on unmount
+    }
+  }, [daoPhase]);
 
   const initialize = async () => {
     if (daoInitialized) return;
@@ -39,14 +63,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setDaoPhase(phase);
 
     setDaoInitialized(true);
-  }
-
-  const ensureWalletConnection = (): boolean => {
-    if (!web3Context.userWallet.myAddr) {
-      toast.warn("Please connect your wallet first");
-      return false;
-    }
-    return true;
   }
 
   const timestampToDate = (timestamp: number) => {
@@ -94,14 +110,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       })
   };
 
-  const getPhaseEndTime = (): string => {
-    const timestamp = daoPhase?.end - new Date().getTime() / 1000;
-    const date = new Date(timestamp * 1000); // Convert Unix timestamp to milliseconds
-    const hours = date.getHours().toString().padStart(2, '0'); // Get hours and pad with leading zero if needed
-    const minutes = date.getMinutes().toString().padStart(2, '0'); // Get minutes and pad with leading zero if needed
-    return `${hours}h ${minutes}m`;
-  }
-
   const getActiveProposals = async () => {
     const proposalIds = await web3Context.contractsManager.daoContract?.methods.getCurrentPhaseProposals().call();
     if (!proposalIds) return;
@@ -112,6 +120,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       const proposalTimestamp: number = await getProposalTimestamp(proposalId);
       const proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
       const proposalVotes = await web3Context.contractsManager.daoContract?.methods.getProposalVotersCount(proposalId).call();
+      console.log({proposalVotes}, {proposalId})
       details.push({
         ...proposalDetails,
         values: proposalDetails?.[4],
@@ -125,9 +134,45 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setActiveProposals(details as any);
   }
 
+  const getProposalVotingStats = (proposalId: string): Promise<TotalVotingStats> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+          let stats = { positive: 0, negative: 0 };
+          const proposalVoters = await web3Context.contractsManager.daoContract?.methods.getProposalVoters(proposalId).call();
+
+          if (!proposalVoters) return resolve(stats);
+
+          let totalVotes = 0;
+          let positiveVotes = 0;
+          let negativeVotes = 0;
+          for (let i = 0; i < proposalVoters.length; i++) {
+              const voter = proposalVoters[i];
+              const vote = await web3Context.contractsManager.daoContract?.methods.votes(proposalId, voter).call();
+              if (vote?.vote === '2') {
+                positiveVotes++;
+              } else if (vote?.vote === '1') {
+                negativeVotes++;
+              }
+              totalVotes++;
+          }
+
+          const positivePercentage = Math.round((positiveVotes / totalVotes) * 100);
+          const negativePercentage = Math.round((negativeVotes / totalVotes) * 100);
+          stats = {
+              positive: positivePercentage ? positivePercentage : 0,
+              negative: negativePercentage ? negativePercentage : 0
+          };
+          
+          resolve(stats);
+        } catch (error) {
+          reject(error);
+        }
+    });
+  };
+
   const createProposal = async (type: string, title: string, description: string) => {
     return new Promise<void>(async (resolve, reject) => {
-        if (!ensureWalletConnection()) return reject("Wallet not connected");
+        if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
   
         if (type === 'open') {
           const toastid = toast.loading("Creating proposal");
@@ -154,7 +199,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const dismissProposal = async (proposalId: string, reason: string) => {
     return new Promise<void>(async (resolve, reject) => {
-        if (!ensureWalletConnection()) return reject("Wallet not connected");
+        if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
   
         const toastid = toast.loading("Dismissing proposal");
         try {       
@@ -171,7 +216,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const castVote = async (proposalId: number, vote: number, reason: string) => {
     return new Promise<void>(async (resolve, reject) => {
-      if (!ensureWalletConnection()) return reject("Wallet not connected");
+      if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
       
       const toastid = toast.loading("Casting vote");
       try {
@@ -193,6 +238,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const contextValue = {
     // states
     daoPhase,
+    phaseEndTimer,
     daoInitialized,
     activeProposals,
 
@@ -201,9 +247,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getActiveProposals,
     createProposal,
     dismissProposal,
-    getPhaseEndTime,
     getStateString,
-    castVote
+    castVote,
+    getProposalVotingStats
   };
 
   return (

@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import React, { createContext, useContext, useState } from "react";
 import { ContextProviderProps } from "./types";
 import Web3 from "web3";
@@ -8,6 +9,7 @@ import { walletConnectProvider } from "@web3modal/wagmi";
 import { ContractManager } from "../StakingContext/models/contractManager";
 import { UserWallet } from "../StakingContext/models/wallet";
 import { BlockRewardHbbftCoins, DiamondDao, KeyGenHistory, RandomHbbft, StakingHbbft, ValidatorSetHbbft } from "../contracts";
+import Loader from '../../components/Loader';
 
 interface ContractsState {
   contracts: ContractManager;
@@ -26,12 +28,15 @@ interface Web3ContextProps {
   connectWallet: () => Promise<{ provider: Web3; wallet: UserWallet } | undefined>,
   setUserWallet: (newUserWallet: UserWallet) => void;
   setContractsManager: (newContractsManager: ContractsState) => void;
+  ensureWalletConnection: () => boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [web3, setWeb3] = useState<Web3>(new Web3("https://rpc.uniq.diamonds"));
   const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BN(0)));
   const initialContracts = new ContractManager(web3);
@@ -123,6 +128,14 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   };
 
+  const ensureWalletConnection = (): boolean => {
+    if (!userWallet.myAddr) {
+      toast.warn("Please connect your wallet first");
+      return false;
+    }
+    return true;
+  }
+
   const contextValue = {
     // state
     web3,
@@ -135,10 +148,15 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     // other functions
     connectWallet,
+    ensureWalletConnection,
+    setIsLoading
   };
 
   return (
-    <Web3Context.Provider value={contextValue}>{children}</Web3Context.Provider>
+    <Web3Context.Provider value={contextValue}>
+      <Loader isLoading={isLoading}/>
+      {children}
+    </Web3Context.Provider>
   );
 };
 
