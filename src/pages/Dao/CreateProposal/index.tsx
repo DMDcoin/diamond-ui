@@ -1,19 +1,19 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import styles from "./createdao.module.css";
+import styles from "./createproposal.module.css";
 
-import { useDaoContext } from "../../contexts/DaoContext";
-import { useWeb3Context } from "../../contexts/Web3Context";
+import { useDaoContext } from "../../../contexts/DaoContext";
+import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useNavigate } from "react-router-dom";
 
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import { IconContext } from "react-icons";
-import RangeSlider from "../../components/RangeSlider";
-import Navigation from "../../components/Navigation";
+import RangeSlider from "../../../components/RangeSlider";
+import Navigation from "../../../components/Navigation";
 
-interface CreateDaoProps {}
+interface CreateProposalProps {}
 
-const CreateDao: React.FC<CreateDaoProps> = ({}) => {
+const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
@@ -162,4 +162,4 @@ const CreateDao: React.FC<CreateDaoProps> = ({}) => {
   );
 };
 
-export default CreateDao;
+export default CreateProposal;

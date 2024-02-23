@@ -1,14 +1,14 @@
 import styles from "./dao.module.css";
-import Table from "../../components/Table";
+import Table from "../../../components/Table";
 import { useNavigate } from "react-router-dom";
-import { useDaoContext } from "../../contexts/DaoContext";
-import { Proposal } from "../../contexts/DaoContext/types";
-import { useWeb3Context } from "../../contexts/Web3Context";
+import { useDaoContext } from "../../../contexts/DaoContext";
+import { Proposal } from "../../../contexts/DaoContext/types";
+import { useWeb3Context } from "../../../contexts/Web3Context";
 import { startTransition, useEffect, useState } from "react";
 
 interface DaoProps {}
 
-const Dao: React.FC<DaoProps> = ({}) => {
+const DaoHome: React.FC<DaoProps> = ({}) => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
@@ -17,8 +17,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
 
   const columns = [
     'Date',
-    'Wallet',
-    'Username',
+    'Account',
     'Title',
     'Type',
     ''
@@ -39,7 +38,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter
     startTransition(() => {
-      navigate(`/dao-details/${proposalId}`);
+      navigate(`/proposal-details/${proposalId}`);
     });
   };
 
@@ -75,7 +74,7 @@ const Dao: React.FC<DaoProps> = ({}) => {
           {daoContext.daoPhase?.phase === '1' && (<div></div>)}
           <h4>{daoContext.daoPhase?.phase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
           <p>{daoContext.phaseEndTimer} till the end</p>
-          {daoContext.daoPhase?.phase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-dao')})}}>Create Proposal</button>)}
+          {daoContext.daoPhase?.phase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-proposal')})}}>Create Proposal</button>)}
         </div>
       </div>
       
@@ -109,4 +108,4 @@ const Dao: React.FC<DaoProps> = ({}) => {
   );
 };
 
-export default Dao;
+export default DaoHome;

@@ -51,8 +51,7 @@ const Table = (props: TableProps) => {
                 <tr key={key}>
                     <td>{proposal.timestamp}</td>
                     <td>{proposal.proposer}</td>
-                    <td>Username</td>
-                    <td>Title</td>
+                    <td>{proposal.description}</td>
                     <td>Type</td>
                     
                     <td>

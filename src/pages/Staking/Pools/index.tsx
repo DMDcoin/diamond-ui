@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useStakingContext } from "../../contexts/StakingContext";
+import { useStakingContext } from "../../../contexts/StakingContext";
 
 import "./pools.module.css";
 

@@ -1,20 +1,20 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import styles from "./daodetails.module.css";
+import styles from "./proposaldetails.module.css";
 
-import Modal from "../../components/Modal";
-import Navigation from "../../components/Navigation";
-import ProgressBar from "../../components/ProgressBar";
-import { useDaoContext } from "../../contexts/DaoContext";
+import Modal from "../../../components/Modal";
+import Navigation from "../../../components/Navigation";
+import ProgressBar from "../../../components/ProgressBar";
+import { useDaoContext } from "../../../contexts/DaoContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { useWeb3Context } from "../../contexts/Web3Context";
+import { useWeb3Context } from "../../../contexts/Web3Context";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
-import { TotalVotingStats } from "../../contexts/DaoContext/types";
+import { TotalVotingStats } from "../../../contexts/DaoContext/types";
 
 
-interface DaoDetailsProps {}
+interface ProposalDetailsProps {}
 
-const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
+const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const { proposalId } = useParams();
   
   const [myVote, setMyVote] = useState<number>(-1);
@@ -218,4 +218,4 @@ const DaoDetails: React.FC<DaoDetailsProps> = ({}) => {
   );
 };
 
-export default DaoDetails;
+export default ProposalDetails;
