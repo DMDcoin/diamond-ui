@@ -14,7 +14,7 @@ const NavBar: React.FC<NavBarProps> = () => {
 
   return (
     <div className="nav">
-      <input type="checkbox" id="nav-check" checked={openSideBar} onClick={() => setOpenSideBar(!openSideBar)}/>
+      <input type="checkbox" id="nav-check" checked={openSideBar} onChange={() => {}} onClick={() => setOpenSideBar(!openSideBar)}/>
       <div className="nav-header" onClick={() => {startTransition(() => {navigate('')})}}>
         <div className="nav-title">
             <img src={dmdLogo} alt="logo" className="nav-logo"/>

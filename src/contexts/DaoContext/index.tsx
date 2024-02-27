@@ -9,12 +9,12 @@ interface DaoContextProps {
   activeProposals: Proposal[];
   initialize: () => Promise<void>;
   getActiveProposals: () => Promise<void>;
-  createProposal: (type: string, title: string, description: string) => Promise<void>;
   phaseEndTimer: string;
   dismissProposal: (proposalId: string, reason: string) => Promise<void>;
   getStateString: (stateValue: string) => string;
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
+  createProposal: (type: string, title: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<void>;
 }
 
 
@@ -26,6 +26,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoPhase, setDaoPhase] = useState<any>();
   const [proposalFee, setProposalFee] = useState<string>('0');
   const [phaseEndTimer, setPhaseEndTime] = useState<string>('');
+  const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
 
@@ -49,6 +50,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
       return () => clearInterval(intervalId); // Cleanup function to clear interval on unmount
     }
+    subscribeToEvents();
   }, [daoPhase]);
 
   const initialize = async () => {
@@ -170,29 +172,30 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   };
 
-  const createProposal = async (type: string, title: string, description: string) => {
+  const createProposal = async (type: string, title: string, targets: string[], values: string[], callDatas: string[], description: string) => {
     return new Promise<void>(async (resolve, reject) => {
+        if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
-  
-        if (type === 'open') {
-          const toastid = toast.loading("Creating proposal");
-          try {       
-            const zeroAddress = '0x' + '0'.repeat(40);
-            await web3Context.contractsManager.daoContract?.methods.propose(
-              [zeroAddress],
-              [0],
-              [zeroAddress],
-              description,
-            ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
-            toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
-            resolve();
-          } catch(err) {
-            console.error(err);
-            toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 5000 });
-            reject(err);
-          }
-        } else {
+
+        const toastid = toast.loading("Creating proposal");
+        try {
+          console.log(
+            targets,
+            values,
+            callDatas,
+            description
+          )
+          await web3Context.contractsManager.daoContract?.methods.propose(
+            targets,
+            values,
+            callDatas,
+            description,
+          ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
+          toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
           resolve();
+        } catch(err) {
+          toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 1 });
+          reject(err);
         }
     });
   };
@@ -233,6 +236,16 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         reject(err);
       }
     });
+  }
+
+  const subscribeToEvents = async () => {
+    if (!events) {
+      const interval = setInterval(async() => {
+        const phase = await web3Context.contractsManager.daoContract?.methods.daoPhase().call();
+        setDaoPhase(phase);
+      }, 5000);
+      setEvents(interval);
+    }
   }
 
   const contextValue = {

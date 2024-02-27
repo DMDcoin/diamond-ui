@@ -103,7 +103,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         </div>
       </div>
 
-      <span className={styles.historicProposalsLink}>Historic Proposals</span>
+      <span onClick={() => startTransition(() => navigate('/historic-proposals'))} className={styles.historicProposalsLink}>Historic Proposals</span>
     </div>
   );
 };
