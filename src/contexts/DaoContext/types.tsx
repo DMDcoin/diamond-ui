@@ -3,11 +3,13 @@ export interface Proposal {
   votingDaoEpoch: string;
   state: string;
   targets: string[];
-  values: string[];
+  values: string[] | undefined;
   calldatas: string[];
   description: string;
-  votes: string;
+  votes: string | undefined;
   id: string;
+  timestamp: string;
+  type: string;
 }
 
 export interface TotalVotingStats {

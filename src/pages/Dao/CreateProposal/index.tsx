@@ -10,6 +10,10 @@ import Navigation from "../../../components/Navigation";
 import RangeSlider from "../../../components/RangeSlider";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import { toast } from "react-toastify";
+import BigNumber from "bignumber.js";
+
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+
 
 interface CreateProposalProps {}
 
@@ -63,7 +67,8 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [proposalType, setProposalType] = useState<string>("open");
 
   const [epcValue, setEpcValue] = useState<string>("");
-  const [epcType, setEpcType] = useState<string>("gas-price-value");
+  const [epcType, setEpcType] = useState<string>("Staking");
+  const [epcOption, setEpcOption] = useState<string>("setDelegatorMinStake");
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; txText: string }[]>([
     { target: "", amount: "", txText: "" }
   ]);
@@ -150,13 +155,80 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           daoContext.getActiveProposals();
           startTransition(() => {navigate('/dao')});
       } else if (proposalType === 'ecosystem-parameter-change') {
+        let encodedCallData;
+        let contractAddress;
 
+        if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcType)
+        && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${epcOption} value`);
+
+        if (epcType === 'Staking') {
+          if (!web3Context.contractsManager.stContract) {
+            web3Context.contractsManager.stContract =
+              await web3Context.contractsManager.contracts.getStakingHbbft();
+          }
+          encodedCallData = (web3Context.contractsManager.stContract?.methods as any)
+            [epcOption](new BigNumber(epcValue)).encodeABI();
+          contractAddress = web3Context.contractsManager.stContract.options.address;
+        } else if (epcType === 'Certifier') {
+          if (!web3Context.contractsManager.crContract) {
+            web3Context.contractsManager.crContract =
+              await web3Context.contractsManager.contracts.getCertifierHbbft();
+          }
+          if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcOption} address`);
+          encodedCallData = (web3Context.contractsManager.crContract?.methods as any)
+            [epcOption](epcValue).encodeABI();
+          contractAddress = web3Context.contractsManager.crContract.options.address;
+        } else if (epcType === 'Validator') {
+          if (!web3Context.contractsManager.vsContract) {
+            web3Context.contractsManager.vsContract =
+              web3Context.contractsManager.contracts.getValidatorSetHbbft();
+          }
+          encodedCallData = (web3Context.contractsManager.vsContract?.methods as any)
+            [epcOption](new BigNumber(epcValue)).encodeABI();
+          contractAddress = web3Context.contractsManager.vsContract.options.address;
+        } else if (epcType === 'Tx Permission') {
+          if (!web3Context.contractsManager.tpContract) {
+            web3Context.contractsManager.tpContract =
+              web3Context.contractsManager.contracts.getContractPermission();
+          }
+          if (epcOption === 'addAllowedSender' || epcOption === 'removeAllowedSender') {
+            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcOption} address`);
+          }
+          encodedCallData = (web3Context.contractsManager.tpContract?.methods as any)
+            [epcOption](epcValue).encodeABI();
+          contractAddress = web3Context.contractsManager.tpContract.options.address;
+        } else if (epcType === 'Block Reward') {
+          if (!web3Context.contractsManager.brContract) {
+            web3Context.contractsManager.brContract =
+              await web3Context.contractsManager.contracts.getRewardHbbft();
+          }
+          encodedCallData = (web3Context.contractsManager.brContract?.methods as any)
+            [epcOption](new BigNumber(epcValue)).encodeABI();
+          contractAddress = web3Context.contractsManager.brContract.options.address;
+        } else if (epcType === 'Connectivity Tracker') {
+          if (!web3Context.contractsManager.ctContract) {
+            web3Context.contractsManager.ctContract =
+              await web3Context.contractsManager.contracts.getConnectivityTracker();
+          }
+          encodedCallData = (web3Context.contractsManager.ctContract?.methods as any)
+            [epcOption](new BigNumber(epcValue)).encodeABI();
+          contractAddress = web3Context.contractsManager.ctContract.options.address;
+        }
+
+        await daoContext.createProposal(
+          proposalType,
+          title,
+          [contractAddress as string],
+          ["0"],
+          [encodedCallData as string],
+          description
+        );
+        daoContext.getActiveProposals();
+        startTransition(() => {navigate('/dao')});
       }
     } catch(err: any) {
-      if (err.message.includes("MetaMask") || err.message.includes("Transaction")) {
+      if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
         toast.error(err.message);
-      } else {
-        toast.error("Proposal creation failed. Please try again.");
       }
     }
   }
@@ -169,7 +241,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
       <div className={styles.proposalTypeContainer}>
         <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
-        <select className={styles.proposalType}    name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
+        <select className={styles.proposalType} name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
           <option value="open">Open Proposal</option>
           <option value="contract-upgrade">Contract upgrade</option>
           <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
@@ -265,14 +337,17 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           proposalType === "ecosystem-parameter-change" && (
             <div>
               <input type="text" className={styles.formInput} placeholder="Discussion Link" />
-              <select className={styles.epcType} name="epcType" id="epcType" value={epcType} onChange={(e) => setEpcType(e.target.value)}>
+              <select className={styles.epcType} name="epcType" id="epcType" value={epcOption} onChange={(e) => {
+                setEpcOption(e.target.value)
+                setEpcType(e.target.options[e.target.selectedIndex].dataset.category as string);
+              }}>
                 {Object.keys(EcosystemParameters).map((category) => {
                   return (
                     <optgroup key={category} label={category}>
                       {EcosystemParameters[category].map((parameter: any) => {
                         const key = Object.keys(parameter)[0];
                         const value = parameter[key];
-                        return <option key={value} value={value}>{key}</option>;
+                        return <option data-category={category} key={value} value={value}>{key}</option>;
                       })}
                     </optgroup>
                   );

@@ -15,6 +15,8 @@ interface DaoContextProps {
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
   createProposal: (type: string, title: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<void>;
+  getProposalTimestamp: (proposalId: string) => Promise<number>;
+  timestampToDate: (timestamp: number) => string;
 }
 
 
@@ -262,7 +264,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     dismissProposal,
     getStateString,
     castVote,
-    getProposalVotingStats
+    getProposalVotingStats,
+    getProposalTimestamp,
+    timestampToDate
   };
 
   return (

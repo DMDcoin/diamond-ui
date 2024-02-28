@@ -24,8 +24,10 @@ import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilit
 import { RandomHbbft } from '../../contracts/RandomHbbft';
 import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
 
-import { DiamondDao } from '../../contracts';
+import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao } from '../../contracts';
 import JsonDiamonDao  from '../../contract-abis/DiamondDao.json';
+import JsonCertifierHbbft from '../../contract-abis/CertifierHbbft.json';
+import JsonConnectivityTrackerHbbft from '../../contract-abis/ConnectivityTrackerHbbft.json';
 
 import BigNumber from 'bignumber.js';
 import { BlockType } from '../types/contracts';
@@ -222,6 +224,22 @@ export class ContractManager {
     let contractAddress = '0x65219102B1AFBC624C56CDbf02186B8341703456';
 
     const abi: any = JsonDiamonDao.abi;
+    const contract: any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+
+  public async getCertifierHbbft(): Promise<CertifierHbbft> {
+    let contractAddress = '0x65219102B1AFBC624C56CDbf02186B8341703456';
+
+    const abi: any = JsonCertifierHbbft.abi;
+    const contract: any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+
+  public async getConnectivityTracker(): Promise<ConnectivityTrackerHbbft> {
+    let contractAddress = '0x65219102B1AFBC624C56CDbf02186B8341703456';
+
+    const abi: any = JsonConnectivityTrackerHbbft.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;
   }

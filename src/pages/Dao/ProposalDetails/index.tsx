@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
 import { TotalVotingStats } from "../../../contexts/DaoContext/types";
+import BigNumber from "bignumber.js";
 
 
 interface ProposalDetailsProps {}
@@ -114,7 +115,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                     </div>
                     <div>
                       <span>Payout Amount</span>
-                      <span>{proposal.values[i] / 10**18} DMD</span>
+                      <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
                     </div>
                   </div>   
                 ))

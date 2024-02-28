@@ -8,8 +8,18 @@ import Web3Modal from "web3modal";
 import { walletConnectProvider } from "@web3modal/wagmi";
 import { ContractManager } from "../StakingContext/models/contractManager";
 import { UserWallet } from "../StakingContext/models/wallet";
-import { BlockRewardHbbftCoins, DiamondDao, KeyGenHistory, RandomHbbft, StakingHbbft, ValidatorSetHbbft } from "../contracts";
 import Loader from '../../components/Loader';
+import {
+  BlockRewardHbbftCoins,
+  CertifierHbbft,
+  ConnectivityTrackerHbbft,
+  DiamondDao,
+  KeyGenHistory,
+  RandomHbbft,
+  StakingHbbft,
+  TxPermissionHbbft,
+  ValidatorSetHbbft,
+} from "../contracts";
 
 interface ContractsState {
   contracts: ContractManager;
@@ -19,6 +29,9 @@ interface ContractsState {
   kghContract?: KeyGenHistory;
   rngContract?: RandomHbbft;
   daoContract?: DiamondDao;
+  crContract?: CertifierHbbft;
+  tpContract?: TxPermissionHbbft;
+  ctContract?: ConnectivityTrackerHbbft;
 }
 
 interface Web3ContextProps {

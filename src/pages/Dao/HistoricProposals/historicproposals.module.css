@@ -1,0 +1,31 @@
+.historicProposalsInfoContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.historicProposalsInfoContainer > div {
+  height: 150px;
+  display: flex;
+  max-width: 400px;
+  padding: 20px 0px;
+    margin-bottom: 50px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.historicProposalsHeading {
+  align-self: start;
+  margin: 0px;
+}
+
+.historicProposalsSearch {
+  height: 30px;
+  padding: 5px;
+  width: 100%;
+  border-radius: 5px;
+  border: 0.5px solid black;
+  background-color: transparent;
+}

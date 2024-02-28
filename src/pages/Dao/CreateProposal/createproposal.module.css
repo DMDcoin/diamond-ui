@@ -20,6 +20,10 @@
   justify-content: center;
 }
 
+.proposalType:focus {
+  /* outline: none; */
+}
+
 .proposalTypeContainer > label {
   font-size: 16px;
 }

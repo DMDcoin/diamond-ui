@@ -13,27 +13,18 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
   
-  const [filteredData, setFilteredData] = useState<Proposal[]>([]);
-
-  const columns = [
-    'Date',
-    'Account',
-    'Title',
-    'Type',
-    ''
-  ]
+  const [filterQuery, setFilterQuery] = useState<string>('');
 
   useEffect(() => {
-    web3Context.setIsLoading(true);
     if (!daoContext.daoInitialized) {
+      web3Context.setIsLoading(true);
       daoContext.initialize().then(() => {
-        daoContext.getActiveProposals();
+        daoContext.getActiveProposals().then(() => {
+          web3Context.setIsLoading(false);
+        });
       });
-    } else {
-      setFilteredData(daoContext.activeProposals);
-      web3Context.setIsLoading(false);
     }
-  }, [daoContext.activeProposals]);
+  }, []);
 
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter
@@ -41,22 +32,6 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
       navigate(`/proposal-details/${proposalId}`);
     });
   };
-
-  const tableSearch = (e: any) => {
-    const searchQuery = e.target.value;
-
-    if (searchQuery) {
-      const data = daoContext.activeProposals.filter(proposal =>
-        proposal.proposer.toLowerCase().match(searchQuery.toLowerCase()) ||
-        proposal.description.toLowerCase().match(searchQuery.toLowerCase()) ||
-        proposal.state.toLowerCase().match(searchQuery.toLowerCase())
-      );
-
-      setFilteredData(data);
-    } else {
-      setFilteredData(daoContext.activeProposals);
-    }
-  }
 
   return (
     <div className="mainContainer">
@@ -67,7 +42,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
           <p>Stake: 10000 DMD</p>
           <p>10% of total total DAO weight 0.05%</p>
 
-          <input type="text" placeholder="Search" className={styles.daoSearch} onChange={e => tableSearch(e)}/>
+          <input type="text" placeholder="Search" className={styles.daoSearch} onChange={e => setFilterQuery(e.target.value)}/>
         </div>
 
         <div>
@@ -82,11 +57,11 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         <h2>My Proposals</h2>
         <div>
           <Table
-            columns={columns}
-            data={filteredData}
+            data={daoContext.activeProposals}
             userWallet={web3Context.userWallet}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
+            filterQuery={filterQuery}
           />
         </div>
       </div>
@@ -95,10 +70,10 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         <h2>All Proposals</h2>
         <div>
           <Table
-            columns={columns}
-            data={filteredData}
+            data={daoContext.activeProposals}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
+            filterQuery={filterQuery}
           />
         </div>
       </div>
