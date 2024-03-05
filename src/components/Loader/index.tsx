@@ -8,20 +8,13 @@ interface LoaderProps {
 }
 
 const Loader: React.FC<LoaderProps> = ({ isLoading, size = 50 }) => {
-  const [pulseState, setPulseState] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => setPulseState(!pulseState), 500);
-    return () => clearInterval(interval);
-  }, [isLoading]);
-
   return (
     <div className={isLoading ? styles.loaderActive : styles.loaderHidden}>
       <div className={styles.backdrop} />
       <img
         src={dmdLogoWithoutText}
         alt="Loading"
-        className={`${styles.image} ${pulseState ? styles.pulse : ""}`}
+        className={`${styles.image} ${styles.pulse}`}
         style={{ width: `${size}px`, height: `${size}px` }}
       />
     </div>

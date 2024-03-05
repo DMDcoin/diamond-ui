@@ -13,7 +13,7 @@ const HistoricProposals = () => {
   const web3Context = useWeb3Context();
 
   const [filterQuery, setFilterQuery] = useState<string>('');
-  const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
+  const [indexingStatus, setIndexingStatus] = useState<string | null>('Indexing: Fetching historic proposals count');
 
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter
@@ -22,51 +22,28 @@ const HistoricProposals = () => {
     });
   };
 
-  const fetchHistoricProposals = async () => {
-    await web3Context.contractsManager.daoContract?.getPastEvents(
-      'ProposalCreated',
-      {
-        filter: {},
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).then(async (events) => {
-        const detailsPromises = events.map(async (event) => {
-          const proposalId = event.returnValues.proposalId;
-          const proposalTimestamp: number = await daoContext.getProposalTimestamp(proposalId);
-          const proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
-          const proposalVotes = await web3Context.contractsManager.daoContract?.methods.getProposalVotersCount(proposalId).call();
-  
-          return {
-            ...proposalDetails,
-            values: proposalDetails?.[4],
-            votes: proposalVotes,
-            id: proposalId,
-            timestamp: daoContext.timestampToDate(proposalTimestamp),
-            type: 'open'
-          };
-        });
-  
-        const details = await Promise.all(detailsPromises);
-        setAllDaoProposals(details as any);
-        web3Context.setIsLoading(false);
-      });
-  };
-
   useEffect(() => {
     if (!daoContext.daoInitialized) {
       web3Context.setIsLoading(true);
       daoContext.initialize().then(() => {
-        daoContext.getActiveProposals().then(() => {
-          web3Context.setIsLoading(false);
-        });
+        daoContext.getActiveProposals();
       });
     } else {
-      if (!allDaoProposals.length) {
+      if(!daoContext.allDaoProposals.length) {
         web3Context.setIsLoading(true);
-        fetchHistoricProposals();
+        daoContext.getHistoricProposals();
+      } else {
+        const totalProposals = daoContext.allDaoProposals.length;
+        const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.values !== undefined).length;
+        const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
+        if (indexingPercentage === 100) {
+          setIndexingStatus(null);
+        } else {
+          setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
+        }
       }
     }
-  }, [daoContext.activeProposals])
+  }, [daoContext.activeProposals, daoContext.allDaoProposals])
 
   return (
     <div className="mainContainer">
@@ -77,15 +54,29 @@ const HistoricProposals = () => {
           <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
           <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+
+          <div>{indexingStatus ? indexingStatus : ""}</div>
         </div>
       </div>
 
-      <Table
-        data={allDaoProposals}
-        handleDetailsClick={handleDetailsClick}
-        getStateString={daoContext.getStateString}
-        filterQuery={filterQuery}
-      />
+      {
+        daoContext.allDaoProposals.length !== 0 ? (
+          <Table
+            data={daoContext.allDaoProposals}
+            handleDetailsClick={handleDetailsClick}
+            getStateString={daoContext.getStateString}
+            filterQuery={filterQuery}
+          />
+        ) : (
+          <div className={styles.historicProposalsInfoContainer}>
+            <div>
+              <div>No historic proposals found</div>
+            </div>
+          </div>
+        )
+      }
+
+      
     </div>
   );
 };

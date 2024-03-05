@@ -120,7 +120,6 @@ export class ContractManager {
   }
 
   public async getStakingHbbft() : Promise<StakingHbbft> {
-    
     if (this.cachedStakingHbbft) {
       return this.cachedStakingHbbft;
     }
@@ -132,9 +131,8 @@ export class ContractManager {
     this.cachedStakingHbbft = stakingContract;
     return stakingContract;
   }
-  public getContractPermission() : TxPermissionHbbft {
-    
-        
+
+  public getContractPermission() : TxPermissionHbbft {        
     if (this.cachedPermission ) {
       return this.cachedPermission;
     }

@@ -40,7 +40,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
           resolve(false);
         }).catch(reject);
       } else {
-        daoContext.activeProposals.forEach((proposal: any) => {
+        [...daoContext.allDaoProposals ,...daoContext.activeProposals].forEach((proposal: any) => {
           if (proposal.id === proposalId) {
             daoContext.getProposalVotingStats(proposal.id).then((res) => {
               setVotingStats(res);
@@ -76,7 +76,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
     getProposalDetails().then((res) => {
       if (res) web3Context.setIsLoading(false);
     });
-  }, [daoContext.activeProposals]);
+  }, [daoContext.activeProposals, daoContext.allDaoProposals]);
 
   return (
     <div className="mainContainer">
@@ -101,6 +101,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
           pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
           culpa qui officia deserunt mollit anim id est laborum.
         </p>
+
+        {/* discussion link */}
+        <a className={styles.proposalDiscussionLink} href={proposal.link} target="_blank">Discussion Link...</a>
 
         {/* open proposals */}
         {
@@ -135,7 +138,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
               <div>
                 <span>Proposed value</span>
-                <span>1.02 DMD</span>
+                <span>{(new BigNumber(proposal.values[0]).dividedBy(10**18)).toString()} DMD</span>
               </div>
             </div>
           )
@@ -145,15 +148,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         {
           proposal.type === "cup" && (
             <div className={styles.cupDetailsContainer}>
-              <div>
-                <span>Target Address</span>
-                <span>0x000000....</span>
-              </div>
-
-              <div>
-                <span>Call Data</span>
-                <span>0X5Basd....</span>
-              </div>
+              {
+                proposal.targets?.map((target: any, i: number) => (
+                  <div key={i}>
+                    <div>
+                      <span>Target Address</span>
+                      <span>{proposal.targets[i]}</span>
+                    </div>
+                    <div>
+                      <span>Call Data</span>
+                      <span>{proposal.calldatas[i]}</span>
+                    </div>
+                  </div>   
+                ))
+              }
             </div>
           )
         }
@@ -178,6 +186,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                 )
               }
               
+            </div>
+          )
+        }
+
+        {/* proposal voting phase finished and can be finalized */}
+        {
+          proposal.state === "3" && (
+            <div className={styles.finalizeProposalContainer}>
+              <button onClick={() => daoContext.finalizeProposal(proposal.id)}>Finalize Proposal</button>
             </div>
           )
         }

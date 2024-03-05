@@ -39,8 +39,24 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         <div>
           <h1 className={styles.daoHeading}>Governance</h1>
 
-          <p>Stake: 10000 DMD</p>
-          <p>10% of total total DAO weight 0.05%</p>
+          <p>
+            Stake:{" "}
+            {daoContext.myTotalStake
+              ? daoContext.myTotalStake.dividedBy(10 ** 18).toString()
+              : 0}{" "}
+            DMD
+          </p>
+          <p>
+            of total DAO weight{" "}
+            <span style={{"fontWeight": "bold"}}>
+              {daoContext.totalStakedAmount && daoContext.myTotalStake
+                ? daoContext.myTotalStake
+                    .dividedBy(daoContext.totalStakedAmount)
+                    .toString()
+                : 0}
+                %
+            </span>
+          </p>
 
           <input type="text" placeholder="Search" className={styles.daoSearch} onChange={e => setFilterQuery(e.target.value)}/>
         </div>

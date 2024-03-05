@@ -452,7 +452,7 @@ const useStakingContext = (): StakingContextProps => {
   const context = useContext(StakingContext);
 
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("Couldn't fetch StakingContext!");
   }
 
   return context;
