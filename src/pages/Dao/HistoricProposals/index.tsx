@@ -24,23 +24,22 @@ const HistoricProposals = () => {
 
   useEffect(() => {
     if (!daoContext.daoInitialized) {
-      web3Context.setIsLoading(true);
       daoContext.initialize().then(() => {
         daoContext.getActiveProposals();
-      });
-    } else {
-      if(!daoContext.allDaoProposals.length) {
-        web3Context.setIsLoading(true);
         daoContext.getHistoricProposals();
+      });
+    } else if (!daoContext.allDaoProposals.length) {
+      web3Context.setIsLoading(true);
+      daoContext.getHistoricProposals();
+    } else {
+      const totalProposals = daoContext.allDaoProposals.length;
+      totalProposals > 0 && web3Context.setIsLoading(false);
+      const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.proposer !== '').length;
+      const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
+      if (indexingPercentage === 100) {
+        setIndexingStatus(null);
       } else {
-        const totalProposals = daoContext.allDaoProposals.length;
-        const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.values !== undefined).length;
-        const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
-        if (indexingPercentage === 100) {
-          setIndexingStatus(null);
-        } else {
-          setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
-        }
+        setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
       }
     }
   }, [daoContext.activeProposals, daoContext.allDaoProposals])

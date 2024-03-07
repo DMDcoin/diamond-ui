@@ -36,19 +36,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
     return new Promise((resolve, reject) => {
       if (!daoContext.daoInitialized) {
         daoContext.initialize().then(() => {
-          daoContext.getActiveProposals();
+          daoContext.getHistoricProposals().then(() => {
+            daoContext.getActiveProposals();
+          });
           resolve(false);
         }).catch(reject);
       } else {
-        [...daoContext.allDaoProposals ,...daoContext.activeProposals].forEach((proposal: any) => {
-          if (proposal.id === proposalId) {
-            daoContext.getProposalVotingStats(proposal.id).then((res) => {
-              setVotingStats(res);
-            });
-            setProposal(proposal);
-          }
-        });
-        resolve(true);
+        const pFilterred = daoContext.allDaoProposals.filter((proposal: any) => proposal.id === proposalId);
+        if (pFilterred.length && pFilterred[0].proposer) {
+          daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
+            setVotingStats(res);
+          });
+          setProposal(pFilterred[0]);
+          resolve(true);
+        }
       }
     });
   }
@@ -72,11 +73,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   }
 
   useEffect(() => {
-    web3Context.setIsLoading(true);
-    getProposalDetails().then((res) => {
-      if (res) web3Context.setIsLoading(false);
-    });
-  }, [daoContext.activeProposals, daoContext.allDaoProposals]);
+    if (!proposal.proposer) {
+      web3Context.setIsLoading(true);
+      getProposalDetails().then((res) => {
+        if (res) web3Context.setIsLoading(false);
+      });
+    }
+  }, [daoContext.allDaoProposals]);
 
   return (
     <div className="mainContainer">

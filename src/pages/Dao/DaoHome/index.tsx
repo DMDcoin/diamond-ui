@@ -19,10 +19,11 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
     if (!daoContext.daoInitialized) {
       web3Context.setIsLoading(true);
       daoContext.initialize().then(() => {
-        daoContext.getActiveProposals().then(() => {
-          web3Context.setIsLoading(false);
-        });
+        daoContext.getActiveProposals();
       });
+    } else if (!daoContext.activeProposals.length) {
+      web3Context.setIsLoading(true);
+      daoContext.getActiveProposals();
     }
   }, []);
 

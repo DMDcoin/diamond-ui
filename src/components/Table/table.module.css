@@ -1,3 +1,20 @@
+.tableContainer {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tableContainer > * {
+  width: 100%;
+}
+
+.tableContainer > div:nth-child(1) {
+  overflow-x: scroll;
+}
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -15,11 +32,20 @@ tr:nth-child(even) {
 }
 
 .tablePagination {
-    gap: 0.5rem;
-    float: right;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  gap: 0.5rem;
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.tablePagination > button {
+  font-size: 14px;
+  cursor: pointer;
+  align-self: center;
+  border-radius: 3px;
+  border: 0.5px solid black;
+  background-color: transparent;
 }
 
 table button {
@@ -34,4 +60,31 @@ table button {
 
 table button:hover {
   background-color: #f2f2f2;
+}
+
+.loader {
+  background-color: #ededed;
+  height: 18px;
+  border-radius: 7px;
+  width: 100%;
+}
+
+td .loader {
+  background-color: #ededed;
+  background: linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 60%
+    )
+    #ededed;
+  background-size: 200% 100%;
+  background-position-x: 180%;
+  animation: 1s loading ease-in-out infinite;
+}
+
+@keyframes loading {
+  to {
+    background-position-x: -30%;
+  }
 }

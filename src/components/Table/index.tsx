@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import './table.module.css';
-import { useWeb3Context } from '../../contexts/Web3Context';
+import styles from './table.module.css';
 import { toast } from 'react-toastify';
-import { Proposal } from '../../contexts/DaoContext/types';
+import React, { useEffect, useState } from 'react';
 import { useDaoContext } from '../../contexts/DaoContext';
+import { Proposal } from '../../contexts/DaoContext/types';
+import { useWeb3Context } from '../../contexts/Web3Context';
 
 interface TableProps {
   data: any[];
@@ -27,13 +27,10 @@ const Table = (props: TableProps) => {
   } = props;
 
   const daoContext = useDaoContext();
-  const web3Context = useWeb3Context();
+  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState<Proposal[]>([]);
-  const [indexOfLastItem, setIndexOfLastItem] = useState(0);
-  const [indexOfFirstItem, setIndexOfFirstItem] = useState(0);
   const [currentItems, setCurrentItems] = useState<Proposal[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
 
   const columns = [
     'Date',
@@ -47,26 +44,36 @@ const Table = (props: TableProps) => {
   useEffect(() => {
     const lastItemIndex = currentPage * itemsPerPage;
     const firstItemIndex = lastItemIndex - itemsPerPage;
-    setIndexOfLastItem(lastItemIndex);
-    setIndexOfFirstItem(firstItemIndex);
 
     if (filterQuery) {
-      const updatedData = data.filter((proposal: Proposal) =>
+      let updatedData = data.filter((proposal: Proposal) =>
         proposal.proposer.toLowerCase().match(filterQuery.toLowerCase()) ||
         proposal.description.toLowerCase().match(filterQuery.toLowerCase()) ||
         getStateString(proposal.state).toLowerCase().match(filterQuery.toLowerCase()) ||
         proposal.timestamp.toLowerCase().match(filterQuery.toLowerCase())
       );
 
+      if (userWallet) {
+        updatedData = updatedData.filter(
+          (proposal: Proposal) => proposal.proposer === userWallet.myAddr
+        );
+      }
+
       setCurrentItems(updatedData.slice(firstItemIndex, lastItemIndex))
       setTotalPages(Math.ceil(updatedData.length / itemsPerPage));
       setFilteredData(updatedData);
     } else {
-      setCurrentItems(data.slice(firstItemIndex, lastItemIndex))
-      setTotalPages(Math.ceil(data.length / itemsPerPage));
-      setFilteredData(data);
+      let dataCopy = data;
+      if (userWallet) {
+        dataCopy = dataCopy.filter(
+          (proposal: Proposal) => proposal.proposer === userWallet.myAddr && userWallet.myAddr !== ""
+        );
+      }
+      setCurrentItems(dataCopy.slice(firstItemIndex, lastItemIndex))
+      setTotalPages(Math.ceil(dataCopy.length / itemsPerPage));
+      setFilteredData(dataCopy);
     }
-  }, [data, filterQuery]);
+  }, [data, filterQuery, currentPage]);
 
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
@@ -79,24 +86,40 @@ const Table = (props: TableProps) => {
   }
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            {columns.map((column: string, key: number) => (
-              <th key={key}>{column}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((proposal: any, key: number) => {
-            if (!userWallet || proposal.proposer === userWallet.myAddr) {
+    <div className={styles.tableContainer}>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              {columns.map((column: string, key: number) => (
+                <th key={key}>{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.map((proposal: any, key: number) => {
               return (
-                <tr key={key}>
-                  <td>{proposal.timestamp || 'Loading...'}</td>
-                  <td>{proposal.proposer || 'Loading...'}</td>
-                  <td>{proposal.description || 'Loading...'}</td>
-                  <td>Type</td>
+                <tr className={styles.tr} key={key}>
+                  <td className={styles.td}>
+                    {
+                    proposal.timestamp || (<div className={styles.loader}></div>)
+                    }
+                  </td>
+                  <td className={styles.td}>
+                    {
+                    proposal.proposer || (<div className={styles.loader}></div>)
+                    }
+                  </td>
+                  <td className={styles.td}>
+                    {
+                    proposal.description || (<div className={styles.loader}></div>)
+                    }
+                  </td>
+                  <td className={styles.td}>
+                    {
+                      proposal.type || (<div className={styles.loader}></div>)
+                    }
+                  </td>
 
                   <td>
                     {proposal.state === "3" ? (
@@ -110,24 +133,36 @@ const Table = (props: TableProps) => {
                     )}
                   </td>
 
-                  <td>
-                    <button onClick={() => handleDetailsClick(proposal.id)}>
-                      Details
-                    </button>
+                  <td className={styles.td}>
+                    {
+                      proposal.description ? (
+                        <button onClick={() => handleDetailsClick(proposal.id)}>
+                          Details
+                        </button>
+                      ) : (<div className={styles.loader}></div>)
+                    }
                   </td>
                 </tr>
               );
-            } else {
-              return null;
-            }
-          })}
-        </tbody>
-      </table>
-
+            })}
+          </tbody>
+        </table>
+      </div>
+      
       {filteredData.length > itemsPerPage && (
-        <div className='tablePagination'>
-          {/* Pagination buttons... */}
-        </div>
+          <div className={styles.tablePagination}>
+              <button disabled={currentPage === 1} onClick={() => handleChangePage(currentPage - 1)}>
+                  Previous
+              </button>
+              {Array.from({ length: totalPages }, (_, index) => (
+                  <button key={index} onClick={() => handleChangePage(index + 1)} disabled={currentPage === index + 1}>
+                      {index + 1}
+                  </button>
+              ))}
+              <button disabled={currentPage === totalPages} onClick={() => handleChangePage(currentPage + 1)}>
+                  Next
+              </button>
+          </div>
       )}
     </div>
   );

@@ -11,14 +11,6 @@
   background-color: transparent;
 }
 
-.myDaoProposals > div {
-  overflow-x: scroll;
-}
-
-.allDaoProposals > div {
-  overflow-x: scroll;
-}
-
 .daoInfoContainer {
   width: 100%;
   display: flex;
