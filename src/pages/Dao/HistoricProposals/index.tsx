@@ -13,23 +13,20 @@ const HistoricProposals = () => {
   const web3Context = useWeb3Context();
 
   const [filterQuery, setFilterQuery] = useState<string>('');
-  const [indexingStatus, setIndexingStatus] = useState<string | null>('Indexing: Fetching historic proposals count');
+  const [indexingStatus, setIndexingStatus] = useState<string | null>(
+    "Indexing: Fetching historic proposals count"
+  );
 
   const handleDetailsClick = (proposalId: string) => {
-    // Navigate to the dynamic route with the proposalId parameter
     startTransition(() => {
       navigate(`/proposal-details/${proposalId}`);
     });
   };
 
   useEffect(() => {
-    if (!daoContext.daoInitialized) {
-      daoContext.initialize().then(() => {
-        daoContext.getActiveProposals();
-        daoContext.getHistoricProposals();
-      });
-    } else if (!daoContext.allDaoProposals.length) {
+    if (!daoContext.allDaoProposals.length) {
       web3Context.setIsLoading(true);
+      if (!daoContext.daoInitialized) daoContext.initialize();
       daoContext.getHistoricProposals();
     } else {
       const totalProposals = daoContext.allDaoProposals.length;
@@ -65,6 +62,7 @@ const HistoricProposals = () => {
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
             filterQuery={filterQuery}
+            extraColumns={["Result"]}
           />
         ) : (
           <div className={styles.historicProposalsInfoContainer}>

@@ -34,40 +34,18 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const [daoPhase, setDaoPhase] = useState<any>();
   const [proposalFee, setProposalFee] = useState<string>('0');
-  const [phaseEndTimer, setPhaseEndTime] = useState<string>('');
+  const [phaseEndTimer, setPhaseEndTime] = useState<string>('0h 0m');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
-  const [myTotalStake, setMyTotalStake] = useState<BigNumber | undefined>(undefined);
-  const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber | undefined>(undefined);
+  const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
+  const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
 
   useEffect(() => {
-    if (!myTotalStake && web3Context.userWallet.myAddr) {
-      getTotalStakedAmount();
-    }
-
-    if (!phaseEndTimer && daoPhase) {
-      // Initialize phaseEndTimer and setInterval only once
-      setPhaseEndTime('0h 0m');
-      const intervalId = setInterval(() => {
-        // Current time in seconds
-        const currTime = Math.floor(new Date().getTime() / 1000);
-
-        // Calculate remaining time in seconds
-        const remainingSeconds = Math.max(parseFloat(daoPhase?.end) - currTime, 0);
-
-        // Calculate hours and minutes from remaining seconds
-        const hours = Math.floor(remainingSeconds / 3600);
-        const minutes = Math.floor((remainingSeconds % 3600) / 60);
-
-        setPhaseEndTime(`${hours}h ${minutes}m`);
-      }, 1000);
-
-      return () => clearInterval(intervalId); // Cleanup function to clear interval on unmount
-    }
+    getTotalStakedAmount();
     subscribeToEvents();
-  }, [daoPhase, web3Context.userWallet.myAddr]);
+  }, [web3Context.userWallet]);
 
   const initialize = async () => {
     if (daoInitialized) return;
@@ -225,6 +203,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   }
 
   const getProposalVotingStats = (proposalId: string): Promise<TotalVotingStats> => {
+    console.log("[INFO] Getting Proposal Voting Stats")
     return new Promise(async (resolve, reject) => {
         try {
           let stats = { positive: 0, negative: 0 };
@@ -331,9 +310,23 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       const interval = setInterval(async() => {
         const phase = await web3Context.contractsManager.daoContract?.methods.daoPhase().call();
         setDaoPhase(phase);
-      }, 5000);
+        setPhaseTimer(phase);
+      }, 2000);
       setEvents(interval);
     }
+  }
+
+  const setPhaseTimer = (phase: any) => {
+    const currTime = Math.floor(new Date().getTime() / 1000);
+
+    // Calculate remaining time in seconds
+    const remainingSeconds = Math.max(parseFloat(phase?.end) - currTime, 0);
+
+    // Calculate hours and minutes from remaining seconds
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+
+    setPhaseEndTime(`${hours}h ${minutes}m`);
   }
 
   const getHistoricProposalsIds = async (): Promise<Array<string>> => {
@@ -376,24 +369,24 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getHistoricProposals = async () => {
     console.log("Getting historic proposals");
     const allProposalIds = await getHistoricProposalsIds();
+    if (allProposalIds.length == allDaoProposals.length) return;
 
     const chunkSize = 10;
     const numChunks = Math.ceil(allProposalIds.length / chunkSize);
 
     // Process each chunk sequentially
     for (let i = 0; i < numChunks; i++) {
-        const start = i * chunkSize;
-        const end = (i + 1) * chunkSize;
-        const chunkProposalIds = allProposalIds.slice(start, end);
+      const start = i * chunkSize;
+      const end = (i + 1) * chunkSize;
+      const chunkProposalIds = allProposalIds.slice(start, end);
 
-        // Fetch details for the current chunk of proposalIds
-        const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
-        const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
+      // Fetch details for the current chunk of proposalIds
+      const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
+      const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
 
-        // Update local storage and state with the details of the current chunk of proposals
-        const updatedProposals = await Promise.all(chunkProposalDetails);
-        setAllProposalsState(updatedProposals);
-        // web3Context.setIsLoading(false);
+      // Update local storage and state with the details of the current chunk of proposals
+      const updatedProposals = await Promise.all(chunkProposalDetails);
+      setAllProposalsState(updatedProposals);
     }
 
     console.log("All historic proposals fetched and updated");
@@ -428,7 +421,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         const toastid = toast.loading("Finalizing proposal");
         try {
           await web3Context.contractsManager.daoContract?.methods.finalize(proposalId).send({ from: web3Context.userWallet.myAddr });
-          await getHistoricProposals();
+          const proposalUpdated = await getProposalDetails(proposalId);
+          await setAllProposalsState([proposalUpdated]);
           toast.update(toastid, { render: "Proposal Finalized!", type: "success", isLoading: false, autoClose: 5000 });
           resolve();
         } catch(err) {
@@ -439,16 +433,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   }
 
   const getTotalStakedAmount = async () => {
+    console.log("[INFO] Getting Total Staked Amounts");
     let myStakedAmount = new BigNumber(0);
     let totalStakedAmount = new BigNumber(0);
-
-    if (!myTotalStake) {
-        setMyTotalStake(new BigNumber(0));
-    } else {
-        return;
-    }
-
-    console.log("[INFO] Getting Total Staked Amounts");
 
     if (!web3Context.contractsManager.stContract) {
         web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
@@ -476,15 +463,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     totalStakeAmounts.forEach((result) => {
         if (result.status === 'fulfilled') {
           const totalStake = result.value;
-          if (totalStake) totalStakedAmount.plus(totalStake);
+          if (totalStake) totalStakedAmount = totalStakedAmount.plus(totalStake);
         } else {
           console.error("Failed to fetch total stake amount:", result.reason);
         }
     });
 
-    setTotalStakedAmount(myStakedAmount);
+    setTotalStakedAmount(totalStakedAmount);
     setMyTotalStake(myStakedAmount);
-    return myStakedAmount;
   }
 
   const decodeCallData = (callData: string) => {

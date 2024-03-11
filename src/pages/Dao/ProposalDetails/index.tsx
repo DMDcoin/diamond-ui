@@ -32,19 +32,27 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
 
+  useEffect(() => {
+    if (!proposal.proposer) {
+      web3Context.setIsLoading(true);
+      getProposalDetails().then((res) => {
+        if (res) web3Context.setIsLoading(false);
+      });
+    } else if (daoContext.daoInitialized) {
+      getProposalDetails();
+    }
+  }, [daoContext.allDaoProposals]);
+
   const getProposalDetails = async () => {
+    console.log("[INFO] Getting proposal details");
     return new Promise((resolve, reject) => {
-      if (!daoContext.daoInitialized) {
-        daoContext.initialize().then(() => {
-          daoContext.getHistoricProposals().then(() => {
-            daoContext.getActiveProposals();
-          });
-          resolve(false);
-        }).catch(reject);
+      if (!daoContext.allDaoProposals.length) {
+        if (!daoContext.daoInitialized) daoContext.initialize();
+        daoContext.getHistoricProposals();
       } else {
         const pFilterred = daoContext.allDaoProposals.filter((proposal: any) => proposal.id === proposalId);
         if (pFilterred.length && pFilterred[0].proposer) {
-          daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
+          if (pFilterred[0].state == "2") daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
             setVotingStats(res);
           });
           setProposal(pFilterred[0]);
@@ -71,15 +79,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       console.log(err);
     });
   }
-
-  useEffect(() => {
-    if (!proposal.proposer) {
-      web3Context.setIsLoading(true);
-      getProposalDetails().then((res) => {
-        if (res) web3Context.setIsLoading(false);
-      });
-    }
-  }, [daoContext.allDaoProposals]);
 
   return (
     <div className="mainContainer">
@@ -204,28 +203,46 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
         {/* voting phase */}
         {
-          daoContext.daoPhase?.phase === '1' && (
             <div className={styles.votingPhaseContainer}>
-              <div className={styles.votingPhaseProgress}>
-                <ProgressBar min={0} max={100} progress={votingStats.positive} bgColor="green" />
-                <ProgressBar min={0} max={100} progress={votingStats.negative} bgColor="red" />
-              </div>
-
-              <div className={styles.votingPhaseStats}>
-                <span>Positive Answers: (25% exceeding | 33% required)</span>
-                <span>Participation: 15000000 DMD (75% | 33% required)</span>
-              </div>
-
-              <div className={styles.votingPhaseButtons}>
-                {myVote === -1 && (
+              {
+                daoContext.daoPhase?.phase !== '0' && (
                   <>
-                    <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                    <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                    <div className={styles.votingPhaseProgress}>
+                      <ProgressBar min={0} max={100} progress={votingStats.positive} bgColor="green" />
+                      <ProgressBar min={0} max={100} progress={votingStats.negative} bgColor="red" />
+                    </div>
+
+                    <div className={styles.votingPhaseStats}>
+                      <span>Positive Answers: (25% exceeding | 33% required)</span>
+                      <span>Participation: 15000000 DMD (75% | 33% required)</span>
+                    </div>
                   </>
-                )}
-                {myVote === 0 && <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For</button>}
-                {myVote === 1 && <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against</button>}
-              </div>
+                )
+              }
+
+              {
+                proposal.state == '2' && (
+                  <div className={styles.votingPhaseButtons}>
+                    {myVote === -1 && (
+                      <>
+                        <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                        <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                      </>
+                    )}
+                    {myVote === 0 && <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For</button>}
+                    {myVote === 1 && <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against</button>}
+                  </div>
+                )
+              }
+              
+            </div>
+        }
+
+        {/* proposal finalized */}
+        {
+          ['1', '4', '5', '6'].includes(proposal.state) && (
+            <div className={styles.finalizedProposalContainer}>
+              <span>The proposal was {daoContext.getStateString(proposal.state)} by the community</span>
             </div>
           )
         }

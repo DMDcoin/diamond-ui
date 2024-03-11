@@ -14,6 +14,7 @@ interface TableProps {
   handleDetailsClick: (id: string) => void;
   getStateString: (state: string) => string;
   itemsPerPage?: number;
+  extraColumns?: string[];
 }
 
 const Table = (props: TableProps) => {
@@ -23,7 +24,8 @@ const Table = (props: TableProps) => {
     filterQuery,
     handleDetailsClick,
     getStateString,
-    itemsPerPage = 10
+    itemsPerPage = 10,
+    extraColumns = []
   } = props;
 
   const daoContext = useDaoContext();
@@ -37,6 +39,7 @@ const Table = (props: TableProps) => {
     'Account',
     'Title',
     'Type',
+    ...extraColumns,
     '',
     ''
   ]
@@ -73,7 +76,7 @@ const Table = (props: TableProps) => {
       setTotalPages(Math.ceil(dataCopy.length / itemsPerPage));
       setFilteredData(dataCopy);
     }
-  }, [data, filterQuery, currentPage]);
+  }, [data, filterQuery, currentPage, userWallet]);
 
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
@@ -120,6 +123,16 @@ const Table = (props: TableProps) => {
                       proposal.type || (<div className={styles.loader}></div>)
                     }
                   </td>
+
+                  {
+                    extraColumns.length > 0 && (
+                      <td className={styles.td}>
+                        {
+                          daoContext.getStateString(proposal.state) || (<div className={styles.loader}></div>)
+                        }
+                      </td>
+                    )
+                  }
 
                   <td>
                     {proposal.state === "3" ? (

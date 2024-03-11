@@ -136,7 +136,7 @@
 }
 
 .votingPhaseContainer {
-  gap: 3rem;
+  gap: 1rem;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -252,6 +252,7 @@
   font-weight: 700;
   align-self: center;
   border-radius: 5px;
+  margin-bottom: 20px;
   border: 0.5px solid black;
   background-color: transparent;
 }
@@ -259,4 +260,13 @@
 .proposalDiscussionLink {
   color: black;
   font-weight: bold;
+}
+
+.finalizedProposalContainer {
+  gap: 1rem;
+  display: flex;
+  min-width: 50%;
+  margin-top: 20px;
+  font-weight: 700;
+  flex-direction: column;
 }

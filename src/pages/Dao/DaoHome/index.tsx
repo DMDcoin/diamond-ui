@@ -49,27 +49,49 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
           </p>
           <p>
             of total DAO weight{" "}
-            <span style={{"fontWeight": "bold"}}>
-              {daoContext.totalStakedAmount && daoContext.myTotalStake
-                ? daoContext.myTotalStake
-                    .dividedBy(daoContext.totalStakedAmount)
-                    .toString()
+            <span style={{ fontWeight: "bold" }}>
+              {daoContext.totalStakedAmount &&
+              daoContext.myTotalStake &&
+              Number(daoContext.totalStakedAmount) !== 0 &&
+              Number(daoContext.myTotalStake) !== 0
+                ? Number(
+                    daoContext.myTotalStake.dividedBy(
+                      daoContext.totalStakedAmount
+                    )
+                  ).toFixed(2)
                 : 0}
-                %
+              %
             </span>
           </p>
 
-          <input type="text" placeholder="Search" className={styles.daoSearch} onChange={e => setFilterQuery(e.target.value)}/>
+          <input
+            type="text"
+            placeholder="Search"
+            className={styles.daoSearch}
+            onChange={(e) => setFilterQuery(e.target.value)}
+          />
         </div>
 
         <div>
-          {daoContext.daoPhase?.phase === '1' && (<div></div>)}
-          <h4>{daoContext.daoPhase?.phase === '0' ? "Proposal" : "Voting"} Phase 3</h4>
+          {daoContext.daoPhase?.phase === "1" && <div></div>}
+          <h4>
+            {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase 3
+          </h4>
           <p>{daoContext.phaseEndTimer} till the end</p>
-          {daoContext.daoPhase?.phase === '0' && (<button onClick={() => {startTransition(() => {navigate('/create-proposal')})}}>Create Proposal</button>)}
+          {daoContext.daoPhase?.phase === "0" && (
+            <button
+              onClick={() => {
+                startTransition(() => {
+                  navigate("/create-proposal");
+                });
+              }}
+            >
+              Create Proposal
+            </button>
+          )}
         </div>
       </div>
-      
+
       <div className={styles.myDaoProposals}>
         <h2>My Proposals</h2>
         <div>
@@ -95,7 +117,12 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         </div>
       </div>
 
-      <span onClick={() => startTransition(() => navigate('/historic-proposals'))} className={styles.historicProposalsLink}>Historic Proposals</span>
+      <span
+        onClick={() => startTransition(() => navigate("/historic-proposals"))}
+        className={styles.historicProposalsLink}
+      >
+        Historic Proposals
+      </span>
     </div>
   );
 };
