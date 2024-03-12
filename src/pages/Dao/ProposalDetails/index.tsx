@@ -10,8 +10,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
 import { TotalVotingStats } from "../../../contexts/DaoContext/types";
-import BigNumber from "bignumber.js";
 
+import BigNumber from "bignumber.js";
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
 
@@ -21,12 +22,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const [myVote, setMyVote] = useState<number>(-1);
   const [proposal, setProposal] = useState<any>({});
   const [voteReason, setVoteReason] = useState<string>("");
-  const [votingStats, setVotingStats] = useState<TotalVotingStats>({
-    positive: 0,
-    negative: 0
-  });
   const [dismissProposal, setDismissProposal] = useState<boolean>(false);
   const [proposalDismissReason, setProposalDismissReason] = useState<string>("");
+  const [votingStats, setVotingStats] = useState<TotalVotingStats | undefined>(undefined);
 
   const navigate = useNavigate();
   const daoContext = useDaoContext();
@@ -38,13 +36,18 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       getProposalDetails().then((res) => {
         if (res) web3Context.setIsLoading(false);
       });
-    } else if (daoContext.daoInitialized) {
+    } else if (daoContext.daoInitialized && !daoContext.fetchingHistoricProposals) {
       getProposalDetails();
     }
-  }, [daoContext.allDaoProposals]);
+
+    if (daoContext.fetchingHistoricProposals) {
+      web3Context.setIsLoading(true);
+    } else {
+      web3Context.setIsLoading(false);
+    }
+  }, [daoContext.allDaoProposals, daoContext.fetchingHistoricProposals]);
 
   const getProposalDetails = async () => {
-    console.log("[INFO] Getting proposal details");
     return new Promise((resolve, reject) => {
       if (!daoContext.allDaoProposals.length) {
         if (!daoContext.daoInitialized) daoContext.initialize();
@@ -52,7 +55,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       } else {
         const pFilterred = daoContext.allDaoProposals.filter((proposal: any) => proposal.id === proposalId);
         if (pFilterred.length && pFilterred[0].proposer) {
-          if (pFilterred[0].state == "2") daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
+          if (!votingStats) daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
             setVotingStats(res);
           });
           setProposal(pFilterred[0]);
@@ -208,13 +211,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                 daoContext.daoPhase?.phase !== '0' && (
                   <>
                     <div className={styles.votingPhaseProgress}>
-                      <ProgressBar min={0} max={100} progress={votingStats.positive} bgColor="green" />
-                      <ProgressBar min={0} max={100} progress={votingStats.negative} bgColor="red" />
+                      <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.positive) : 0} bgColor="green" />
+                      <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.negative) : 0} bgColor="red" />
                     </div>
 
                     <div className={styles.votingPhaseStats}>
-                      <span>Positive Answers: (25% exceeding | 33% required)</span>
-                      <span>Participation: 15000000 DMD (75% | 33% required)</span>
+                      <span>Positive Answers: ({votingStats ? Number(votingStats.positive) : 0} % exceeding | 33% required)</span>
+                      <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toString() : 0} DMD (75% | 33% required)</span>
                     </div>
                   </>
                 )
@@ -234,7 +237,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                   </div>
                 )
               }
-              
             </div>
         }
 

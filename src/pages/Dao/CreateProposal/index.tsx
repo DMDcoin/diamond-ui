@@ -11,7 +11,6 @@ import RangeSlider from "../../../components/RangeSlider";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import { toast } from "react-toastify";
 import BigNumber from "bignumber.js";
-
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
 
 
@@ -137,8 +136,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           return (field.txText ? web3Context.web3.utils.encodePacked(field.txText) : '') as string;
         });
 
-        await daoContext.createProposal(proposalType, title, targets, values, texts, description);
-        daoContext.getActiveProposals();
+        const proposalId = await daoContext.createProposal(proposalType, title, targets, values, texts, description);
+        daoContext.getActiveProposals().then(async () => {
+          if (proposalId) {
+            const proposalDetails = await daoContext.getProposalDetails(proposalId);
+            daoContext.setAllProposalsState([proposalDetails]);
+          }
+        })
         startTransition(() => {navigate('/dao')});
         
       } else if (proposalType === 'contract-upgrade') {
@@ -154,6 +158,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           await daoContext.createProposal(proposalType, title, addresses, values, calldatas, description);
           daoContext.getActiveProposals();
           startTransition(() => {navigate('/dao')});
+          
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData;
         let contractAddress;

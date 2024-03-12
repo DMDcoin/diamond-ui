@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 export interface Proposal {
   proposer: string;
   votingDaoEpoch: string;
@@ -13,6 +15,7 @@ export interface Proposal {
 }
 
 export interface TotalVotingStats {
-  positive: number;
-  negative: number;
+  positive: BigNumber;
+  negative: BigNumber;
+  total: BigNumber;
 }
