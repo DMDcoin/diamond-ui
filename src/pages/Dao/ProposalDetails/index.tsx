@@ -81,7 +81,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
   const handleDismissProposal = async () => {
     daoContext.dismissProposal(proposal.id, proposalDismissReason).then(() => {
-      navigate("/dao");
+      getProposalDetails();
     }).catch((err) => {
       setDismissProposal(false);
     });
