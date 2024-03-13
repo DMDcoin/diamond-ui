@@ -12,6 +12,7 @@ const HistoricProposals = () => {
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
 
+  const [fetching, setFetching] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [indexingStatus, setIndexingStatus] = useState<string | null>(
     "Indexing: Fetching historic proposals count"
@@ -24,10 +25,11 @@ const HistoricProposals = () => {
   };
 
   useEffect(() => {
-    if (!daoContext.allDaoProposals.length) {
+    if (!fetching) {
+      localStorage.clear()
       web3Context.setIsLoading(true);
-      if (!daoContext.daoInitialized) daoContext.initialize();
       daoContext.getHistoricProposals();
+      setFetching(true);
     } else {
       const totalProposals = daoContext.allDaoProposals.length;
       totalProposals > 0 && web3Context.setIsLoading(false);
@@ -39,7 +41,7 @@ const HistoricProposals = () => {
         setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
       }
     }
-  }, [daoContext.activeProposals, daoContext.allDaoProposals])
+  }, [daoContext.allDaoProposals]);
 
   return (
     <div className="mainContainer">
@@ -58,7 +60,7 @@ const HistoricProposals = () => {
       {
         daoContext.allDaoProposals.length !== 0 ? (
           <Table
-            data={daoContext.allDaoProposals}
+            data={daoContext.allDaoProposals.reverse()} // show latest first
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
             filterQuery={filterQuery}

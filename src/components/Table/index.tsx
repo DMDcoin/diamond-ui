@@ -128,7 +128,7 @@ const Table = (props: TableProps) => {
                     extraColumns.length > 0 && (
                       <td className={styles.td}>
                         {
-                          daoContext.getStateString(proposal.state) || (<div className={styles.loader}></div>)
+                          daoContext.getStateString(proposal.state) !== 'Unknown' ? daoContext.getStateString(proposal.state) : (<div className={styles.loader}></div>)
                         }
                       </td>
                     )

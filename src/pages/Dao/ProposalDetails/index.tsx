@@ -9,7 +9,7 @@ import { useDaoContext } from "../../../contexts/DaoContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
-import { TotalVotingStats } from "../../../contexts/DaoContext/types";
+import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
@@ -19,8 +19,21 @@ interface ProposalDetailsProps {}
 const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const { proposalId } = useParams();
   
-  const [myVote, setMyVote] = useState<number>(-1);
-  const [proposal, setProposal] = useState<any>({});
+  const [proposalState, setProposalState] = useState<any>([]);
+  const [myVote, setMyVote] = useState<Vote | undefined>(undefined);
+  const [proposal, setProposal] = useState<any>({
+    id: "",
+    description: "",
+    proposer: "",
+    state: "",
+    timestamp: "",
+    type: "",
+    link: "",
+    targets: [],
+    values: [],
+    calldatas: [],
+    votes: 0
+  });
   const [voteReason, setVoteReason] = useState<string>("");
   const [dismissProposal, setDismissProposal] = useState<boolean>(false);
   const [proposalDismissReason, setProposalDismissReason] = useState<string>("");
@@ -31,38 +44,39 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const web3Context = useWeb3Context();
 
   useEffect(() => {
-    if (!proposal.proposer) {
-      web3Context.setIsLoading(true);
-      getProposalDetails().then((res) => {
-        if (res) web3Context.setIsLoading(false);
-      });
-    } else if (daoContext.daoInitialized && !daoContext.fetchingHistoricProposals) {
-      getProposalDetails();
-    }
-
-    if (daoContext.fetchingHistoricProposals) {
-      web3Context.setIsLoading(true);
-    } else {
-      web3Context.setIsLoading(false);
-    }
-  }, [daoContext.allDaoProposals, daoContext.fetchingHistoricProposals]);
+    if (proposalId) getProposalDetails();
+  }, [web3Context.userWallet, daoContext.daoPhase]);
 
   const getProposalDetails = async () => {
-    return new Promise((resolve, reject) => {
-      if (!daoContext.allDaoProposals.length) {
-        if (!daoContext.daoInitialized) daoContext.initialize();
-        daoContext.getHistoricProposals();
-      } else {
-        const pFilterred = daoContext.allDaoProposals.filter((proposal: any) => proposal.id === proposalId);
-        if (pFilterred.length && pFilterred[0].proposer) {
-          if (!votingStats) daoContext.getProposalVotingStats(pFilterred[0].id).then((res) => {
-            setVotingStats(res);
-          });
-          setProposal(pFilterred[0]);
-          resolve(true);
-        }
+    return new Promise(async (resolve, reject) => {
+      if (web3Context.userWallet.myAddr)  setMyVote(await daoContext.getMyVote(proposalId));
+
+      const storedProposals = daoContext.getProposalsDetails();
+      const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
+      web3Context.setIsLoading(true);
+      if (!filProposals.length) await daoContext.getHistoricProposalsIds();
+
+      // fetch proposal details and store in localStorage
+      if (proposalId) {
+        daoContext.getProposalDetails(proposalId).then((res) => {
+          setProposalDetails(res);
+        });
       }
     });
+  }
+
+  const setProposalDetails = (proposal: any) => {
+    if (proposal) {
+      setProposal(proposal);
+      daoContext.setProposalsState([proposal]);
+      daoContext.getProposalVotingStats(proposal.id).then((res) => {
+        setVotingStats(res);
+      })
+      setProposalState(daoContext.getStateString(proposal.state))
+    } else {
+      startTransition(() => { navigate("/404"); });
+    }
+    web3Context.setIsLoading(false);
   }
 
   const handleDismissProposal = async () => {
@@ -75,12 +89,16 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
   const handleCastVote = async (vote: number) => {
     daoContext.castVote(proposal.id, vote, voteReason).then(() => {
-      daoContext.getProposalVotingStats(proposal.id).then((res) => {
-        setVotingStats(res);
-      });
+      getProposalDetails();
     }).catch((err) => {
       console.log(err);
     });
+  }
+
+  const handleProposalFinalization = async (proposalId: string) => {
+    daoContext.finalizeProposal(proposalId).then(() => {
+      getProposalDetails();
+    })
   }
 
   return (
@@ -89,7 +107,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
       <div className={styles.daoDetailsHeading}>
         <h4>Date: {proposal.timestamp}</h4>
-        <button>{daoContext.getStateString(proposal.state)}</button>
+        <button>{proposalState}</button>
       </div>
       <div className={styles.daoDetailsContainer}>
         <h1>{proposal.description}</h1>
@@ -199,7 +217,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         {
           proposal.state === "3" && (
             <div className={styles.finalizeProposalContainer}>
-              <button onClick={() => daoContext.finalizeProposal(proposal.id)}>Finalize Proposal</button>
+              <button onClick={() => handleProposalFinalization(proposal.id)}>Finalize Proposal</button>
             </div>
           )
         }
@@ -226,14 +244,26 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
               {
                 proposal.state == '2' && (
                   <div className={styles.votingPhaseButtons}>
-                    {myVote === -1 && (
+                    {myVote?.vote === 0 && (
                       <>
                         <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
                         <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
                       </>
                     )}
-                    {myVote === 0 && <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For</button>}
-                    {myVote === 1 && <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against</button>}
+                    {myVote?.vote === 1 && (
+                      <>
+                        <p>You have already votes against the proposal, do you want to change your decision?</p>
+                        <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                      </>
+                      )
+                    }
+                    {myVote?.vote === 2 && (
+                      <>
+                        <p>You have already votes for the proposal, do you want to change your decision?</p>
+                        <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                      </>
+                      )
+                    }
                   </div>
                 )
               }
@@ -244,7 +274,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         {
           ['1', '4', '5', '6'].includes(proposal.state) && (
             <div className={styles.finalizedProposalContainer}>
-              <span>The proposal was {daoContext.getStateString(proposal.state)} by the community</span>
+              <span>The proposal was {proposalState} by the community</span>
             </div>
           )
         }

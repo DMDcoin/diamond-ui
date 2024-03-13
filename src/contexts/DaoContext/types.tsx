@@ -19,3 +19,9 @@ export interface TotalVotingStats {
   negative: BigNumber;
   total: BigNumber;
 }
+
+export interface Vote {
+  timestamp: Number;
+  vote: Number;
+  reason: string;
+}

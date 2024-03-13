@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useWeb3Context } from "../Web3Context";
 import { ContextProviderProps } from "../Web3Context/types";
-import { Proposal, TotalVotingStats } from "./types";
+import { Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
@@ -13,7 +13,6 @@ interface DaoContextProps {
   allDaoProposals: Proposal[];
   myTotalStake: BigNumber | undefined;
   totalStakedAmount: BigNumber | undefined;
-  fetchingHistoricProposals: boolean;
 
   initialize: () => Promise<void>;
   getActiveProposals: () => Promise<void>;
@@ -26,9 +25,11 @@ interface DaoContextProps {
   timestampToDate: (timestamp: number) => string;
   getHistoricProposals: () => Promise<void>;
   finalizeProposal: (proposalId: string) => Promise<void>;
-  getAllProposalsDetail: () => Proposal[];
+  getProposalsDetails: () => Proposal[];
   getProposalDetails: (proposalId: string) => Promise<Proposal>;
-  setAllProposalsState: (proposals: Proposal[]) => Promise<void>;
+  setProposalsState: (proposals: Proposal[]) => Promise<void>;
+  getHistoricProposalsIds: () => Promise<Array<string>>;
+  getMyVote: (proposalId: string | undefined) => Promise<Vote | undefined>;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
@@ -44,10 +45,10 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
   const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
-  const [fetchingHistoricProposals, setFetchingHistoricProposals] = useState<boolean>(false);
   const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
 
   useEffect(() => {
+    initialize();
     getTotalStakedAmount();
     subscribeToEvents();
   }, [web3Context.userWallet]);
@@ -111,7 +112,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       })
   };
 
-  const getAllProposalsDetail = () => {
+  const getProposalsDetails = () => {
     let storedProposals: Proposal[] = [];
     const storedProposalsString = localStorage.getItem('allDaoProposals');
     if (storedProposalsString) {
@@ -123,7 +124,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getProposalDetails = async (proposalId: string) => {
     // Retrieve allDaoProposals from localStorage
-    let updatedData: Proposal | undefined = getAllProposalsDetail().find((proposal) => proposal.id === proposalId);
+    let updatedData: Proposal | undefined = getProposalsDetails().find((proposal) => proposal.id === proposalId);
     
     let proposalDetails;
     let proposalTimestamp;
@@ -214,7 +215,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         try {
           const proposalVoters = await web3Context.contractsManager.daoContract?.methods.getProposalVoters(proposalId).call();
 
-          if (!proposalVoters) return resolve(stats);
+          if (!proposalVoters?.length) return resolve(stats);
           
           let stakeNo = new BigNumber(0);
           let stakeYes = new BigNumber(0);
@@ -322,11 +323,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         const phase = await web3Context.contractsManager.daoContract?.methods.daoPhase().call();
         setDaoPhase((prevPhase: any) => {
           if (prevPhase && phase && prevPhase?.phase !== phase?.phase) {
+            console.log("Phase changed");
             getActiveProposals();
             getHistoricProposals();
-            console.log("Phase changed");
+            return phase;
           }
-          return phase
+          return prevPhase;
         });
         setPhaseTimer(phase);
       }, 2000);
@@ -385,33 +387,31 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   }
 
   const getHistoricProposals = async () => {
-    setFetchingHistoricProposals(true);
     console.log("Getting historic proposals");
     const allProposalIds = await getHistoricProposalsIds();
 
     const chunkSize = 20;
     const numChunks = Math.ceil(allProposalIds.length / chunkSize);
 
-    // Process each chunk sequentially
-    for (let i = 0; i < numChunks; i++) {
-      const start = i * chunkSize;
-      const end = (i + 1) * chunkSize;
-      const chunkProposalIds = allProposalIds.slice(start, end);
+    // Process each chunk sequentially, starting from the last chunk
+    for (let i = numChunks - 1; i >= 0; i--) {
+        const start = i * chunkSize;
+        const end = (i + 1) * chunkSize;
+        const chunkProposalIds = allProposalIds.slice(start, end);
 
-      // Fetch details for the current chunk of proposalIds
-      const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
-      const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
+        // Fetch details for the current chunk of proposalIds
+        const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
+        const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
 
-      // Update local storage and state with the details of the current chunk of proposals
-      const updatedProposals = await Promise.all(chunkProposalDetails);
-      setAllProposalsState(updatedProposals);
+        // Update local storage and state with the details of the current chunk of proposals
+        const updatedProposals = await Promise.all(chunkProposalDetails);
+        setProposalsState(updatedProposals);
     }
 
     console.log("All historic proposals fetched and updated");
-    setFetchingHistoricProposals(false);
   };
 
-  const setAllProposalsState = async (proposals: Proposal[]) => {
+  const setProposalsState = async (proposals: Proposal[]) => {
     let storedProposals: Proposal[] = [];
     const storedProposalsString = localStorage.getItem('allDaoProposals');
     if (storedProposalsString) {
@@ -441,7 +441,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         try {
           await web3Context.contractsManager.daoContract?.methods.finalize(proposalId).send({ from: web3Context.userWallet.myAddr });
           const proposalUpdated = await getProposalDetails(proposalId);
-          await setAllProposalsState([proposalUpdated]);
+          await setProposalsState([proposalUpdated]);
           toast.update(toastid, { render: "Proposal Finalized!", type: "success", isLoading: false, autoClose: 5000 });
           resolve();
         } catch(err) {
@@ -492,6 +492,23 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setMyTotalStake(myStakedAmount);
   }
 
+  const getMyVote = async (proposalId: string | undefined): Promise<Vote | undefined> => {
+    console.log("[INFO] Getting My Vote");
+    let myVote;
+
+    if (proposalId) {
+      myVote = await web3Context.contractsManager.daoContract?.methods.votes(proposalId, web3Context.userWallet.myAddr).call();
+      if (myVote) 
+        myVote = {
+          timestamp: Number(myVote[0]),
+          vote: Number(myVote[1]),
+          reason: myVote[2]
+        };
+    }
+    
+    return myVote;
+  }
+
   const decodeCallData = (callData: string) => {
     // const selector = callData.slice(0, 10);
     // const matchedFunction = abi.find((func: any) => func.signature === selector);
@@ -507,7 +524,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     allDaoProposals,
     myTotalStake,
     totalStakedAmount,
-    fetchingHistoricProposals,
 
     // functions
     initialize,
@@ -521,9 +537,11 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     timestampToDate,
     getHistoricProposals,
     finalizeProposal,
-    getAllProposalsDetail,
+    getProposalsDetails,
     getProposalDetails,
-    setAllProposalsState
+    setProposalsState,
+    getHistoricProposalsIds,
+    getMyVote
   };
 
   return (

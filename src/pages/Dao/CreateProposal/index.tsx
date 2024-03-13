@@ -140,7 +140,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         daoContext.getActiveProposals().then(async () => {
           if (proposalId) {
             const proposalDetails = await daoContext.getProposalDetails(proposalId);
-            daoContext.setAllProposalsState([proposalDetails]);
+            daoContext.setProposalsState([proposalDetails]);
           }
         })
         startTransition(() => {navigate('/dao')});
