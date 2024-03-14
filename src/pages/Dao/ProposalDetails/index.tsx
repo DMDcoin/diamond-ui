@@ -75,7 +75,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       daoContext.getProposalVotingStats(proposal.id).then((res) => {
         setVotingStats(res);
       })
-      console.log(daoContext.getStateString(proposal.state), "STATE")
       setProposalState(daoContext.getStateString(proposal.state))
     } else {
       startTransition(() => { navigate("/404"); });
@@ -217,20 +216,11 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
           )
         }
 
-        {/* proposal voting phase finished and can be finalized */}
-        {
-          proposal.state === "3" && (
-            <div className={styles.finalizeProposalContainer}>
-              <button onClick={() => handleProposalFinalization(proposal.id)}>Finalize Proposal</button>
-            </div>
-          )
-        }
-
         {/* voting phase */}
         {
             <div className={styles.votingPhaseContainer}>
               {
-                daoContext.daoPhase?.phase !== '0' && (
+                daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state) && (
                   <>
                     <div className={styles.votingPhaseProgress}>
                       <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.positive) : 0} bgColor="green" />
@@ -274,6 +264,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                 )
               }
             </div>
+        }
+
+        {/* proposal voting phase finished and can be finalized */}
+        {
+          proposal.state === "3" && (
+            <div className={styles.finalizeProposalContainer}>
+              <button onClick={() => handleProposalFinalization(proposal.id)}>Finalize Proposal</button>
+            </div>
+          )
         }
 
         {/* proposal finalized */}
