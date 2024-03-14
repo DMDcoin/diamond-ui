@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 
 export interface Proposal {
   proposer: string;
-  votingDaoEpoch: string;
   state: string;
   targets: string[];
   values: string[] | undefined;

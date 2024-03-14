@@ -16,21 +16,23 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
   const [filterQuery, setFilterQuery] = useState<string>('');
 
   useEffect(() => {
-    if (!daoContext.daoInitialized) {
-      web3Context.setIsLoading(true);
-      daoContext.initialize().then(() => {
+    try {
+      if (!daoContext.daoInitialized) {
+        web3Context.setIsLoading(true);
+        daoContext.initialize().then(() => {
+          daoContext.getActiveProposals();
+        });
+      } else if (!daoContext.activeProposals.length) {
+        web3Context.setIsLoading(true);
         daoContext.getActiveProposals();
-      });
-    } else if (!daoContext.activeProposals.length) {
-      web3Context.setIsLoading(true);
-      daoContext.getActiveProposals();
-    }
+      }
+    } catch(err) {}
   }, []);
 
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter
     startTransition(() => {
-      navigate(`/proposal-details/${proposalId}`);
+      navigate(`/dao/details/${proposalId}`);
     });
   };
 
@@ -82,7 +84,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
             <button
               onClick={() => {
                 startTransition(() => {
-                  navigate("/create-proposal");
+                  navigate("/dao/create");
                 });
               }}
             >
@@ -118,7 +120,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
       </div>
 
       <span
-        onClick={() => startTransition(() => navigate("/historic-proposals"))}
+        onClick={() => startTransition(() => navigate("/dao/historic"))}
         className={styles.historicProposalsLink}
       >
         Historic Proposals

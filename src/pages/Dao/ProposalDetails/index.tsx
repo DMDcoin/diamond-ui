@@ -2,7 +2,6 @@ import React, { startTransition, useEffect, useState } from "react";
 
 import styles from "./proposaldetails.module.css";
 
-import Modal from "../../../components/Modal";
 import Navigation from "../../../components/Navigation";
 import ProgressBar from "../../../components/ProgressBar";
 import { useDaoContext } from "../../../contexts/DaoContext";
@@ -51,16 +50,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
     return new Promise(async (resolve, reject) => {
       if (web3Context.userWallet.myAddr)  setMyVote(await daoContext.getMyVote(proposalId));
 
-      const storedProposals = daoContext.getProposalsDetails();
+      const storedProposals = daoContext.getCachedProposals();
       const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
       web3Context.setIsLoading(true);
-      if (!filProposals.length) await daoContext.getHistoricProposalsIds();
+      if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
 
       // fetch proposal details and store in localStorage
       if (proposalId) {
-        daoContext.getProposalDetails(proposalId).then((res) => {
-          setProposalDetails(res);
-        });
+        // adding 1 second delay as sometimes the RPC doesn't return
+        // the updated proposal details immediately after phase change
+        setTimeout(() => {
+          daoContext.getProposalDetails(proposalId).then((res) => {
+            setProposalDetails(res);
+          });
+        }, 1000);
       }
     });
   }
@@ -72,6 +75,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       daoContext.getProposalVotingStats(proposal.id).then((res) => {
         setVotingStats(res);
       })
+      console.log(daoContext.getStateString(proposal.state), "STATE")
       setProposalState(daoContext.getStateString(proposal.state))
     } else {
       startTransition(() => { navigate("/404"); });
@@ -96,8 +100,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   }
 
   const handleProposalFinalization = async (proposalId: string) => {
-    daoContext.finalizeProposal(proposalId).then(() => {
-      getProposalDetails();
+    daoContext.finalizeProposal(proposalId).then((res) => {
+      if (res == "success") getProposalDetails();
     })
   }
 
@@ -192,8 +196,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         {/* user is proposer and proposal is in created state */}
         {
           web3Context.userWallet.myAddr === proposal.proposer &&
-          proposal.state == "0" &&
-          daoContext.daoPhase?.phase == "0" && (
+          proposal.state === "0" &&
+          daoContext.daoPhase?.phase === "0" && (
             <div className={styles.dismissProposalContainer}>
               {
                 dismissProposal ? (
@@ -235,14 +239,16 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
                     <div className={styles.votingPhaseStats}>
                       <span>Positive Answers: ({votingStats ? Number(votingStats.positive) : 0} % exceeding | 33% required)</span>
-                      <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toString() : 0} DMD (75% | 33% required)</span>
+                      <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toString() : 0} DMD ({
+                        votingStats && daoContext.totalStakedAmount && votingStats.total.dividedBy(daoContext.totalStakedAmount).toFixed(2)
+                      }% | 33% required)</span>
                     </div>
                   </>
                 )
               }
 
               {
-                proposal.state == '2' && (
+                proposal.state === '2' && (
                   <div className={styles.votingPhaseButtons}>
                     {myVote?.vote === 0 && (
                       <>
@@ -252,14 +258,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                     )}
                     {myVote?.vote === 1 && (
                       <>
-                        <p>You have already votes against the proposal, do you want to change your decision?</p>
+                        <p>You have already voted against the proposal, do you want to change your decision?</p>
                         <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
                       </>
                       )
                     }
                     {myVote?.vote === 2 && (
                       <>
-                        <p>You have already votes for the proposal, do you want to change your decision?</p>
+                        <p>You have already voted for the proposal, do you want to change your decision?</p>
                         <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
                       </>
                       )
@@ -281,7 +287,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       </div>
 
       <div className={styles.daoDetailsFooter}>
-        {daoContext.daoPhase?.phase === "1" ? (<span>{proposal.votes} voted</span>) : (<span></span>)}
+        {daoContext.daoPhase?.phase === "1" || !['0', '1'].includes(proposal.state) ? (<span>{proposal.votes} voted</span>) : (<span></span>)}
         <span>{daoContext.phaseEndTimer} till end of {daoContext.daoPhase?.phase === "1" ? "Voting" : "Proposal"} Phase</span>
       </div>
     </div>

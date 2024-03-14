@@ -22,9 +22,9 @@ const App: React.FC<AppProps> = () => {
         <Routes>
           <Route index element={<Home />} />
           <Route path="dao" element={<DaoHome />} />
-          <Route path="create-proposal" element={<CreateProposal />} />
-          <Route path="historic-proposals" element={<HistoricProposals />} />
-          <Route path="proposal-details/:proposalId" element={<ProposalDetails />} />
+          <Route path="dao/create" element={<CreateProposal />} />
+          <Route path="dao/historic" element={<HistoricProposals />} />
+          <Route path="dao/details/:proposalId" element={<ProposalDetails />} />
           
           <Route path="pools" element={<Pools />} />
           <Route path="pool-details/:poolAddress" element={<PoolDetails />} />

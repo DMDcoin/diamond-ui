@@ -129,7 +129,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           else return field.target;
         });
         const values = openProposalFields.map((field, i) => {        
-          if (!Number(field.amount)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
+          if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
           else return field.amount;
         });
         const texts = openProposalFields.map((field) => {

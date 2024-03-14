@@ -24,11 +24,11 @@ interface DaoContextProps {
   getProposalTimestamp: (proposalId: string) => Promise<number>;
   timestampToDate: (timestamp: number) => string;
   getHistoricProposals: () => Promise<void>;
-  finalizeProposal: (proposalId: string) => Promise<void>;
-  getProposalsDetails: () => Proposal[];
+  finalizeProposal: (proposalId: string) => Promise<string>;
+  getCachedProposals: () => Proposal[];
   getProposalDetails: (proposalId: string) => Promise<Proposal>;
   setProposalsState: (proposals: Proposal[]) => Promise<void>;
-  getHistoricProposalsIds: () => Promise<Array<string>>;
+  getHistoricProposalsEvents: () => Promise<Array<string>>;
   getMyVote: (proposalId: string | undefined) => Promise<Vote | undefined>;
 }
 
@@ -39,8 +39,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const [daoPhase, setDaoPhase] = useState<any>(undefined);
   const [proposalFee, setProposalFee] = useState<string>('0');
-  const [phaseEndTimer, setPhaseEndTime] = useState<string>('0h 0m');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
+  const [phaseEndTimer, setPhaseEndTime] = useState<string>('0h 0m');
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
@@ -112,26 +112,26 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       })
   };
 
-  const getProposalsDetails = () => {
-    let storedProposals: Proposal[] = [];
-    const storedProposalsString = localStorage.getItem('allDaoProposals');
-    if (storedProposalsString) {
-      storedProposals = JSON.parse(storedProposalsString);
+  const getCachedProposals = () => {
+    let cachedProposals: Proposal[] = [];
+    const cachedProposalsString = localStorage.getItem('allDaoProposals');
+    if (cachedProposalsString) {
+      cachedProposals = JSON.parse(cachedProposalsString);
     }
 
-    return storedProposals;
+    return cachedProposals;
   }
 
   const getProposalDetails = async (proposalId: string) => {
     // Retrieve allDaoProposals from localStorage
-    let updatedData: Proposal | undefined = getProposalsDetails().find((proposal) => proposal.id === proposalId);
+    let updatedData: Proposal | undefined = getCachedProposals().find((proposal) => proposal.id === proposalId);
     
     let proposalDetails;
     let proposalTimestamp;
 
     const proposalVotes = await web3Context.contractsManager.daoContract?.methods.getProposalVotersCount(proposalId).call();
     
-    if (!updatedData) updatedData = createEmptyProposal(proposalId);
+    if (!updatedData) updatedData = initializeProposal(proposalId);
 
     if (updatedData && (!updatedData.proposer || !['1', '4', '5', '6'].includes(updatedData.state))) {
       proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
@@ -150,15 +150,21 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return updatedData;
   }
 
-  const createEmptyProposal = (proposalId: string): Proposal => {
+  const initializeProposal = (
+    proposalId: string,
+    calldatas: Array<string> = [],
+    description: string = "",
+    proposer: string = "",
+    targets: Array<string> = [],
+    values: Array<string> = []
+  ): Proposal => {
     return {
-      proposer: '',
-      votingDaoEpoch: '',
+      proposer: proposer,
       state: '',
-      targets: [],
-      values: [],
-      calldatas: [],
-      description: '',
+      targets: targets,
+      values: values,
+      calldatas: calldatas,
+      description: description,
       votes: '',
       id: proposalId,
       timestamp: '',
@@ -171,7 +177,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const activePs = await web3Context.contractsManager.daoContract?.methods.getCurrentPhaseProposals().call();
     if (!activePs) return;
 
-    let proposalDetails = activePs.map((proposalId: string) => createEmptyProposal(proposalId));
+    let proposalDetails = activePs.map((proposalId: string) => initializeProposal(proposalId));
     setActiveProposals(proposalDetails);
     web3Context.setIsLoading(false);
 
@@ -273,6 +279,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           ).call();
           resolve(proposalId);
         } catch(err) {
+          console.log(err)
           toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 1 });
           reject(err);
         }
@@ -349,8 +356,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setPhaseEndTime(`${hours}h ${minutes}m`);
   }
 
-  const getHistoricProposalsIds = async (): Promise<Array<string>> => {
-    let allProposalIds: Array<string> = [];
+  const getHistoricProposalsEvents = async (): Promise<Array<string>> => {
+    let allProposals: Array<any> = [];
     const currentBlock = await web3Context.web3.eth.getBlockNumber();
 
     const eventsBatchSize = 100000;
@@ -367,7 +374,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           toBlock: end
         }).then(async (events) => {
           events.map(async (event) => {
-            allProposalIds.push(event.returnValues.proposalId);
+            allProposals.push(event.returnValues);
           });
         });
     }
@@ -375,37 +382,37 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const storedProposalsString = localStorage.getItem('allDaoProposals');
     let storedProposals: Proposal[] = storedProposalsString ? JSON.parse(storedProposalsString) : [];
 
-    allProposalIds.forEach(async (proposalId) => {
-      const proposalIndex = storedProposals.findIndex((proposal) => proposal.id === proposalId);
+    allProposals.forEach(async (p) => {
+      const proposalIndex = storedProposals.findIndex((proposal) => proposal.id === p[1]);
       if (proposalIndex === -1) {
-        storedProposals.push(createEmptyProposal(proposalId));
+        storedProposals.push(initializeProposal(p[1], p[4], p[5], p[0], p[2], p[3]));
       }
     });
     localStorage.setItem('allDaoProposals', JSON.stringify(storedProposals));
 
-    return allProposalIds;
+    return allProposals.map((proposal) => proposal[1]);
   }
 
   const getHistoricProposals = async () => {
     console.log("Getting historic proposals");
-    const allProposalIds = await getHistoricProposalsIds();
+    const allProposalIds = await getHistoricProposalsEvents();
 
     const chunkSize = 20;
     const numChunks = Math.ceil(allProposalIds.length / chunkSize);
 
-    // Process each chunk sequentially, starting from the last chunk
-    for (let i = numChunks - 1; i >= 0; i--) {
-        const start = i * chunkSize;
-        const end = (i + 1) * chunkSize;
-        const chunkProposalIds = allProposalIds.slice(start, end);
+    // Process each chunk sequentially
+    for (let i = 0; i < numChunks; i++) {
+      const start = i * chunkSize;
+      const end = (i + 1) * chunkSize;
+      const chunkProposalIds = allProposalIds.slice(start, end);
 
-        // Fetch details for the current chunk of proposalIds
-        const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
-        const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
+      // Fetch details for the current chunk of proposalIds
+      const chunkProposalDetailsPromises = chunkProposalIds.map(proposalId => getProposalDetails(proposalId));
+      const chunkProposalDetails = await Promise.all(chunkProposalDetailsPromises);
 
-        // Update local storage and state with the details of the current chunk of proposals
-        const updatedProposals = await Promise.all(chunkProposalDetails);
-        setProposalsState(updatedProposals);
+      // Update local storage and state with the details of the current chunk of proposals
+      const updatedProposals = await Promise.all(chunkProposalDetails);
+      setProposalsState(updatedProposals);
     }
 
     console.log("All historic proposals fetched and updated");
@@ -434,8 +441,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   };
 
   const finalizeProposal = async (proposalId: string) => {
-    return new Promise<void>(async (resolve, reject) => {
-        if (!web3Context.ensureWalletConnection()) return resolve();
+    return new Promise<string>(async (resolve, reject) => {
+        if (!web3Context.ensureWalletConnection()) return resolve("");
 
         const toastid = toast.loading("Finalizing proposal");
         try {
@@ -443,10 +450,10 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           const proposalUpdated = await getProposalDetails(proposalId);
           await setProposalsState([proposalUpdated]);
           toast.update(toastid, { render: "Proposal Finalized!", type: "success", isLoading: false, autoClose: 5000 });
-          resolve();
+          resolve("success");
         } catch(err) {
           toast.update(toastid, { render: "Proposal Finalization Failed!", type: "error", isLoading: false, autoClose: 5000 });
-          resolve();
+          resolve("failed");
         }
     });
   }
@@ -457,24 +464,26 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     let totalStakedAmount = new BigNumber(0);
 
     if (!web3Context.contractsManager.stContract) {
-        web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
+      web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
     }
     const allPools = await web3Context.contractsManager.stContract?.methods.getPools().call();
-    if (!allPools || !web3Context.userWallet.myAddr) return myStakedAmount;
+    if (!allPools) return myStakedAmount;
 
-    const myStakePromises = allPools.map(pool => {
-      return web3Context.contractsManager.stContract?.methods.stakeAmount(pool, web3Context.userWallet.myAddr).call();
-    });
-    const myStakeAmounts = await Promise.allSettled(myStakePromises);
-    myStakeAmounts.forEach((result) => {
-        if (result.status === 'fulfilled') {
-          const myStake = result.value;
-          if (myStake) myStakedAmount = myStakedAmount.plus(myStake);
-        } else {
-          console.error("Failed to fetch stake amount:", result.reason);
-        }
-    });
-
+    if (web3Context.userWallet.myAddr) {
+      const myStakePromises = allPools.map(pool => {
+        return web3Context.contractsManager.stContract?.methods.stakeAmount(pool, web3Context.userWallet.myAddr).call();
+      });
+      const myStakeAmounts = await Promise.allSettled(myStakePromises);
+      myStakeAmounts.forEach((result) => {
+          if (result.status === 'fulfilled') {
+            const myStake = result.value;
+            if (myStake) myStakedAmount = myStakedAmount.plus(myStake);
+          } else {
+            console.error("Failed to fetch stake amount:", result.reason);
+          }
+      });
+    }
+    
     const totalStakedPromises = allPools.map(pool => {
       return web3Context.contractsManager.stContract?.methods.stakeAmountTotal(pool).call();
     })
@@ -537,10 +546,10 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     timestampToDate,
     getHistoricProposals,
     finalizeProposal,
-    getProposalsDetails,
+    getCachedProposals,
     getProposalDetails,
     setProposalsState,
-    getHistoricProposalsIds,
+    getHistoricProposalsEvents,
     getMyVote
   };
 

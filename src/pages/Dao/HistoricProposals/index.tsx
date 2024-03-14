@@ -20,20 +20,19 @@ const HistoricProposals = () => {
 
   const handleDetailsClick = (proposalId: string) => {
     startTransition(() => {
-      navigate(`/proposal-details/${proposalId}`);
+      navigate(`/dao/details/${proposalId}`);
     });
   };
 
   useEffect(() => {
     if (!fetching) {
-      localStorage.clear()
       web3Context.setIsLoading(true);
       daoContext.getHistoricProposals();
       setFetching(true);
     } else {
       const totalProposals = daoContext.allDaoProposals.length;
       totalProposals > 0 && web3Context.setIsLoading(false);
-      const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.proposer !== '').length;
+      const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.state !== '').length;
       const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
       if (indexingPercentage === 100) {
         setIndexingStatus(null);
@@ -60,7 +59,7 @@ const HistoricProposals = () => {
       {
         daoContext.allDaoProposals.length !== 0 ? (
           <Table
-            data={daoContext.allDaoProposals.reverse()} // show latest first
+            data={daoContext.allDaoProposals} // show latest first
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
             filterQuery={filterQuery}
