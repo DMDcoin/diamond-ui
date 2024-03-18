@@ -35,7 +35,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   });
   const [voteReason, setVoteReason] = useState<string>("");
   const [dismissProposal, setDismissProposal] = useState<boolean>(false);
-  const [proposalDismissReason, setProposalDismissReason] = useState<string>("");
+  const [dismissReason, setDismissReason] = useState<string>("");
   const [votingStats, setVotingStats] = useState<TotalVotingStats | undefined>(undefined);
 
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   }
 
   const handleDismissProposal = async () => {
-    daoContext.dismissProposal(proposal.id, proposalDismissReason).then(() => {
+    daoContext.dismissProposal(proposal.id, dismissReason).then(() => {
       getProposalDetails();
     }).catch((err) => {
       setDismissProposal(false);
@@ -201,6 +201,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
               {
                 dismissProposal ? (
                   <div>
+                    <input type="text" placeholder="Dismissal Reason" value={dismissReason} onChange={e => setDismissReason(e.target.value)}/>
                     <span>Are you sure you want to dismiss this proposal?</span>
                     <div>
                       <button onClick={handleDismissProposal}>Yes</button>
@@ -240,26 +241,37 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
               {
                 proposal.state === '2' && (
                   <div className={styles.votingPhaseButtons}>
-                    {myVote?.vote === 0 && (
-                      <>
-                        <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                        <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
-                      </>
-                    )}
-                    {myVote?.vote === 1 && (
-                      <>
-                        <p>You have already voted against the proposal, do you want to change your decision?</p>
-                        <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                      </>
+
+                    {
+                      web3Context.userWallet?.myAddr && (
+                        <div>
+                          <input type="text" placeholder="Vote Reason" value={voteReason} onChange={e => setVoteReason(e.target.value)}/>
+                        </div>
                       )
                     }
-                    {myVote?.vote === 2 && (
-                      <>
-                        <p>You have already voted for the proposal, do you want to change your decision?</p>
-                        <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
-                      </>
-                      )
-                    }
+                  
+                    <div>
+                      {myVote?.vote === 0 && (
+                        <>
+                          <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                          <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                        </>
+                      )}
+                      {myVote?.vote === 1 && (
+                        <>
+                          <p>You have already voted against the proposal, do you want to change your decision?</p>
+                          <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                        </>
+                        )
+                      }
+                      {myVote?.vote === 2 && (
+                        <>
+                          <p>You have already voted for the proposal, do you want to change your decision?</p>
+                          <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                        </>
+                        )
+                      }
+                    </div>
                   </div>
                 )
               }

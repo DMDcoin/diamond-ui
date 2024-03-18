@@ -14,7 +14,7 @@ interface TableProps {
   handleDetailsClick: (id: string) => void;
   getStateString: (state: string) => string;
   itemsPerPage?: number;
-  extraColumns?: string[];
+  columns?: string[];
 }
 
 const Table = (props: TableProps) => {
@@ -25,7 +25,7 @@ const Table = (props: TableProps) => {
     handleDetailsClick,
     getStateString,
     itemsPerPage = 10,
-    extraColumns = []
+    columns = []
   } = props;
 
   const daoContext = useDaoContext();
@@ -34,12 +34,12 @@ const Table = (props: TableProps) => {
   const [filteredData, setFilteredData] = useState<Proposal[]>([]);
   const [currentItems, setCurrentItems] = useState<Proposal[]>([]);
 
-  const columns = [
+  const defaultCoulmns = [
     'Date',
     'Account',
     'Title',
     'Type',
-    ...extraColumns,
+    ...columns,
     '',
     ''
   ]
@@ -48,13 +48,19 @@ const Table = (props: TableProps) => {
     const lastItemIndex = currentPage * itemsPerPage;
     const firstItemIndex = lastItemIndex - itemsPerPage;
 
+    console.log({filterQuery})
     if (filterQuery) {
-      let updatedData = data.filter((proposal: Proposal) =>
-        proposal.proposer.toLowerCase().match(filterQuery.toLowerCase()) ||
-        proposal.description.toLowerCase().match(filterQuery.toLowerCase()) ||
-        getStateString(proposal.state).toLowerCase().match(filterQuery.toLowerCase()) ||
-        proposal.timestamp.toLowerCase().match(filterQuery.toLowerCase())
-      );
+      let updatedData: any[] = [];
+      if (filterQuery === 'unfinalized') {
+        updatedData = data.filter((proposal: Proposal) => proposal.state === "3");
+      } else {
+        updatedData = data.filter((proposal: Proposal) =>
+          proposal.proposer.toLowerCase().match(filterQuery.toLowerCase()) ||
+          proposal.description.toLowerCase().match(filterQuery.toLowerCase()) ||
+          getStateString(proposal.state).toLowerCase().match(filterQuery.toLowerCase()) ||
+          proposal.timestamp.toLowerCase().match(filterQuery.toLowerCase())
+        );
+      }
 
       if (userWallet) {
         updatedData = updatedData.filter(
@@ -94,7 +100,7 @@ const Table = (props: TableProps) => {
         <table>
           <thead>
             <tr>
-              {columns.map((column: string, key: number) => (
+              {defaultCoulmns.map((column: string, key: number) => (
                 <th key={key}>{column}</th>
               ))}
             </tr>
@@ -125,7 +131,7 @@ const Table = (props: TableProps) => {
                   </td>
 
                   {
-                    extraColumns.length > 0 && (
+                    defaultCoulmns.length > 0 && (
                       <td className={styles.td}>
                         {
                           daoContext.getStateString(proposal.state) !== 'Unknown' ? daoContext.getStateString(proposal.state) : (<div className={styles.loader}></div>)

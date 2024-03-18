@@ -1,19 +1,22 @@
 import { startTransition, useEffect, useState } from "react";
+import { FaFilter } from "react-icons/fa";
+
+import Table from "../../../components/Table";
 import { useNavigate } from "react-router-dom";
 import styles from "./historicproposals.module.css";
-import Table from "../../../components/Table";
+import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
-import Navigation from "../../../components/Navigation";
 import { Proposal } from "../../../contexts/DaoContext/types";
 
 const HistoricProposals = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
-
+  
   const [fetching, setFetching] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [filterFinalize, setFilterFinalize] = useState<boolean>(true);
   const [indexingStatus, setIndexingStatus] = useState<string | null>(
     "Indexing: Fetching historic proposals count"
   );
@@ -42,6 +45,15 @@ const HistoricProposals = () => {
     }
   }, [daoContext.allDaoProposals]);
 
+  const filterUnFinalized = () => {
+    setFilterFinalize(!filterFinalize);
+    if (filterFinalize) {
+      setFilterQuery('unfinalized');
+    } else {
+      setFilterQuery('');
+    }
+  }
+
   return (
     <div className="mainContainer">
       <Navigation start="/dao" />
@@ -50,7 +62,13 @@ const HistoricProposals = () => {
         <div>
           <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
-          <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+          <div>
+            <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+
+            <div className={filterFinalize ? '' : styles.filterActive} onClick={filterUnFinalized}>
+              <FaFilter size={25}/>
+            </div>
+          </div>
 
           <div>{indexingStatus ? indexingStatus : ""}</div>
         </div>
@@ -59,11 +77,11 @@ const HistoricProposals = () => {
       {
         daoContext.allDaoProposals.length !== 0 ? (
           <Table
-            data={daoContext.allDaoProposals} // show latest first
+            data={daoContext.allDaoProposals}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
             filterQuery={filterQuery}
-            extraColumns={["Result"]}
+            columns={["Result"]}
           />
         ) : (
           <div className={styles.historicProposalsInfoContainer}>

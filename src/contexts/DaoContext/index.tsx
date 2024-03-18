@@ -358,6 +358,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const getHistoricProposalsEvents = async (): Promise<Array<string>> => {
     let allProposals: Array<any> = [];
+    const storedProposalsString = localStorage.getItem('allDaoProposals');
+    let storedProposals: Proposal[] = storedProposalsString ? JSON.parse(storedProposalsString) : [];
+
+    const stats = await web3Context.contractsManager.daoContract?.methods.statistic().call();
+    if (storedProposals.length >= Number(stats?.total)) {
+      return storedProposals.map((proposal) => proposal.id);
+    }
+
     const currentBlock = await web3Context.web3.eth.getBlockNumber();
 
     const eventsBatchSize = 100000;
@@ -378,9 +386,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           });
         });
     }
-
-    const storedProposalsString = localStorage.getItem('allDaoProposals');
-    let storedProposals: Proposal[] = storedProposalsString ? JSON.parse(storedProposalsString) : [];
 
     allProposals.forEach(async (p) => {
       const proposalIndex = storedProposals.findIndex((proposal) => proposal.id === p[1]);
