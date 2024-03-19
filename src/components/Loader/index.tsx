@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./loader.module.css";
+import styles from "./styles.module.css";
 import dmdLogoWithoutText from "../../assets/images/logoWithoutText.png";
 
 interface LoaderProps {

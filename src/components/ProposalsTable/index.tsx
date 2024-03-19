@@ -1,4 +1,4 @@
-import styles from './table.module.css';
+import styles from './styles.module.css';
 import { toast } from 'react-toastify';
 import React, { useEffect, useState } from 'react';
 import { useDaoContext } from '../../contexts/DaoContext';
@@ -17,7 +17,7 @@ interface TableProps {
   columns?: string[];
 }
 
-const Table = (props: TableProps) => {
+const ProposalsTable = (props: TableProps) => {
   const {
     data,
     userWallet,
@@ -48,7 +48,6 @@ const Table = (props: TableProps) => {
     const lastItemIndex = currentPage * itemsPerPage;
     const firstItemIndex = lastItemIndex - itemsPerPage;
 
-    console.log({filterQuery})
     if (filterQuery) {
       let updatedData: any[] = [];
       if (filterQuery === 'unfinalized') {
@@ -187,4 +186,4 @@ const Table = (props: TableProps) => {
   );
 };
 
-export default Table;
+export default ProposalsTable;

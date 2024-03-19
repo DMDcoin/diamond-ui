@@ -1,60 +1,18 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import styles from "./createproposal.module.css";
-
+import BigNumber from "bignumber.js";
+import { toast } from "react-toastify";
+import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
+import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
-
-import Navigation from "../../../components/Navigation";
-import RangeSlider from "../../../components/RangeSlider";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
-import { toast } from "react-toastify";
-import BigNumber from "bignumber.js";
-BigNumber.config({ EXPONENTIAL_AT: 1e+9 })
+import ProposalStepSlider from "../../../components/ProposalStepSlider";
+import { EcosystemParameters } from "../../../utils/ecosystemParameters";
 
-
+BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface CreateProposalProps {}
-
-interface ParameterAction {
-  [key: string]: string;
-}
-
-interface EcosystemParameters {
-  [key: string]: ParameterAction[];
-}
-
-const EcosystemParameters: EcosystemParameters = {
-  "Staking": [
-    {'Delegator Min. Stake': 'setDelegatorMinStake'},
-    {'Candidate Min. Stake': 'setCandidateMinStake'},
-    {'Staking Transition Timeframe Length': 'setStakingTransitionTimeframeLength'},
-    {'Staking Fixed Epoch Duration': 'setStakingFixedEpochDuration'}
-  ],
-  "Certifier": [
-    {'Add as certified': 'certify'},
-    {'Remove Certified': 'revoke'}
-  ],
-  "Validator": [
-    {'Validator Inacticity Threshold': 'setValidatorInactivityThreshold'},
-    {'Max Validators': 'setMaxValidators'},
-    {'Ban Duration': 'setBanDuration'}
-  ],
-  "Tx Permission": [
-    {'Minimum Gas Price': 'setMinimumGasPrice'},
-    {'Block Gas Limit': 'setBlockGasLimit'},
-    {'Add Allowed Sender': 'addAllowedSender'},
-    {'Remove Allowed Sender': 'removeAllowedSender'}
-  ],
-  "Block Reward": [
-    {"Delta Pot Payout Fraction": 'setdeltaPotPayoutFraction'},
-    {'Reinsert Pot Payout Fraction': 'setReinsertPotPayoutFraction'}
-  ],
-  "Connectivity Tracker": [
-    {'Min. Report Age Blocks': 'setMinReportAge'},
-    {'Early Epoch End Tolerance Level': 'setEarlyEpochEndToleranceLevel'}
-  ]
-}
 
 const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const navigate = useNavigate();
@@ -64,10 +22,12 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [proposalType, setProposalType] = useState<string>("open");
-
-  const [epcValue, setEpcValue] = useState<string>("");
+  
+  const [epcValue, setEpcValue] = useState<string>("0");
   const [epcType, setEpcType] = useState<string>("Staking");
   const [epcOption, setEpcOption] = useState<string>("setDelegatorMinStake");
+  const [epcParameter, setEpcParameter] = useState<string>("Delegator Min. Stake");
+  const [epcData, setEpcData] = useState<{ min: string, max: string, step: string, stepOperation: string }>({min: "0", max: "0", step: "0", stepOperation: "add"});
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; txText: string }[]>([
     { target: "", amount: "", txText: "" }
   ]);
@@ -79,6 +39,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     if (!daoContext.daoInitialized) {
       daoContext.initialize().then(() => {
         daoContext.getActiveProposals();
+      });
+    }
+    
+    if (epcValue === "0") {
+      getEpcContractValue(epcType, epcParameter).then((val) => {
+        setEpcValue(val);
+        loadEpcData(epcType, epcParameter);
       });
     }
   }, [daoContext.activeProposals]);
@@ -238,6 +205,45 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     }
   }
 
+  const getEpcContractValue = async (type: string, parameter: string) => {
+    const parameterData = EcosystemParameters[type][parameter];
+    let val: BigNumber = BigNumber('0');
+    
+    if (parameterData.value) return BigNumber(parameterData.value).dividedBy(10**parameterData.decimals).toString();
+
+    const getMethod = parameterData.getter;
+
+    if (type == 'Staking') {
+      if (!web3Context.contractsManager.stContract) {
+        web3Context.contractsManager.stContract =
+          await web3Context.contractsManager.contracts.getStakingHbbft();
+      }
+      val = BigNumber(await (web3Context.contractsManager.stContract?.methods as any)
+      [getMethod]().call());
+    } else if (type === 'Tx Permission') {
+      if (!web3Context.contractsManager.tpContract) {
+        web3Context.contractsManager.tpContract =
+          web3Context.contractsManager.contracts.getContractPermission();
+      }
+      val = BigNumber(await (web3Context.contractsManager.tpContract?.methods as any)
+      [getMethod]().call());
+    }
+
+    EcosystemParameters[type][parameter].value = val.toString();
+    return BigNumber(val).dividedBy(10**parameterData.decimals).toString();
+  }
+
+  const loadEpcData = async (type: string, parameter: string) => {
+    const parameterData = EcosystemParameters[type][parameter];
+    let epcData = {
+      min: parameterData.min,
+      max: parameterData.max,
+      step: parameterData.step,
+      stepOperation: parameterData.stepOperation
+    }
+    setEpcData(epcData);
+  }
+
   return (
     <div className="mainContainer">
       <Navigation start="/dao" />
@@ -327,8 +333,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                 />
               </div>
             )
-          )
-          )
+          ))
         }
 
         {proposalType === "contract-upgrade" && (
@@ -342,24 +347,27 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           proposalType === "ecosystem-parameter-change" && (
             <div>
               <input type="text" className={styles.formInput} placeholder="Discussion Link" />
-              <select className={styles.epcType} name="epcType" id="epcType" value={epcOption} onChange={(e) => {
-                setEpcOption(e.target.value)
-                setEpcType(e.target.options[e.target.selectedIndex].dataset.category as string);
+              <select className={styles.epcType} name="epcType" id="epcType" value={epcOption} onChange={async (e) => {
+                const [type, parameter, value] = e.target.value.split(":");
+                const epcContractVal = await getEpcContractValue(type, parameter);
+                setEpcValue(epcContractVal);
+                setEpcOption(`${type}:${parameter}:${value}`)
+                setEpcType(type);
+                loadEpcData(type, parameter);
               }}>
                 {Object.keys(EcosystemParameters).map((category) => {
                   return (
                     <optgroup key={category} label={category}>
-                      {EcosystemParameters[category].map((parameter: any) => {
-                        const key = Object.keys(parameter)[0];
-                        const value = parameter[key];
-                        return <option data-category={category} key={value} value={value}>{key}</option>;
+                      {Object.keys(EcosystemParameters[category]).map((parameter: any) => {
+                        const value = EcosystemParameters[category][parameter].setter;
+                        return <option key={value} value={`${category}:${parameter}:${value}`}>{parameter}</option>;
                       })}
                     </optgroup>
                   );
                 })}
               </select>
-              
-              <input type="text" className={styles.formInput} placeholder="Enter value" value={epcValue} onChange={e => setEpcValue(e.target.value)}/>
+
+              <ProposalStepSlider min={epcData.min} max={epcData.max} step={epcData.step} state={epcValue} stepOperation={epcData.stepOperation} setState={setEpcValue} />
             </div>
           )
         }

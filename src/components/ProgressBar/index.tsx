@@ -1,4 +1,4 @@
-import styles from "./progressbar.module.css";
+import styles from "./styles.module.css";
 
 interface ProgressProps {
   min: number;
@@ -13,8 +13,7 @@ const ProgressBar: React.FC<ProgressProps> = ({
   progress,
   bgColor,
 }) => {
-  const percentage =
-    Math.min(Math.max((progress - min) / (max - min), 0), 1) * 100;
+  const percentage = Math.min(Math.max((progress - min) / (max - min), 0), 1) * 100;
 
   return (
     <div className={styles.progressContainer}>

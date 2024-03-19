@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 
-import styles from "./proposaldetails.module.css";
+import styles from "./styles.module.css";
 
 import Navigation from "../../../components/Navigation";
 import ProgressBar from "../../../components/ProgressBar";

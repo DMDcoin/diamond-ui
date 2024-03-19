@@ -1,5 +1,5 @@
-import styles from "./dao.module.css";
-import Table from "../../../components/Table";
+import styles from "./styles.module.css";
+import ProposalsTable from "../../../components/ProposalsTable";
 import { useNavigate } from "react-router-dom";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { Proposal } from "../../../contexts/DaoContext/types";
@@ -97,7 +97,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
       <div className={styles.myDaoProposals}>
         <h2>My Proposals</h2>
         <div>
-          <Table
+          <ProposalsTable
             data={daoContext.activeProposals}
             userWallet={web3Context.userWallet}
             handleDetailsClick={handleDetailsClick}
@@ -110,7 +110,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
       <div className={styles.allDaoProposals}>
         <h2>All Proposals</h2>
         <div>
-          <Table
+          <ProposalsTable
             data={daoContext.activeProposals}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}

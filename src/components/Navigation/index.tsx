@@ -1,5 +1,5 @@
 import React, { startTransition, useEffect } from "react";
-import styles from "./navigation.module.css";
+import styles from "./styles.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 

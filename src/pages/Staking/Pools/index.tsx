@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 
-import "./pools.module.css";
+import "./styles.module.css";
 
 interface PoolsProps {}
 

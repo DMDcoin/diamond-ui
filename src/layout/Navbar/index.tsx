@@ -1,5 +1,5 @@
 import React, { startTransition } from "react";
-import "./navbar.css";
+import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import dmdLogo from "../../assets/images/logo.png";
 import menuIcon from "../../assets/images/menu-icon.svg";

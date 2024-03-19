@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
-import "./pooldetails.module.css";
+import "./styles.module.css";
 
 interface PoolDetailsProps {}
 

@@ -1,9 +1,9 @@
 import { startTransition, useEffect, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 
-import Table from "../../../components/Table";
+import ProposalsTable from "../../../components/ProposalsTable";
 import { useNavigate } from "react-router-dom";
-import styles from "./historicproposals.module.css";
+import styles from "./styles.module.css";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -76,7 +76,7 @@ const HistoricProposals = () => {
 
       {
         daoContext.allDaoProposals.length !== 0 ? (
-          <Table
+          <ProposalsTable
             data={daoContext.allDaoProposals}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}

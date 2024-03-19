@@ -1,7 +1,7 @@
 import React from "react";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 
-import styles from "./home.module.css";
+import styles from "./styles.module.css";
 
 interface HomeProps {}
 

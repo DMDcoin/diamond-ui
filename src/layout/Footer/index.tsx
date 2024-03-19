@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./footer.module.css";
+import styles from "./styles.module.css";
 
 interface FooterProps {}
 

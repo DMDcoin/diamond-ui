@@ -1,5 +1,5 @@
 import React from "react";
-import "./notfound.module.css";
+import "./styles.module.css";
 
 interface NotFoundProps {}
 
