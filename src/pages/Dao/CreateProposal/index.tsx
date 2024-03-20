@@ -4,6 +4,7 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
+import { isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -36,23 +37,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   ]);
 
   useEffect(() => {
-    if (!daoContext.daoInitialized) {
-      daoContext.initialize().then(() => {
-        daoContext.getActiveProposals();
-      });
-    }
-    
     if (epcValue === "0") {
       getEpcContractValue(epcType, epcParameter).then((val) => {
         setEpcValue(val);
         loadEpcData(epcType, epcParameter);
       });
     }
-  }, [daoContext.activeProposals]);
-
-  const isValidAddress = (address: string): boolean => {
-    return /^0x[0-9a-fA-F]{40}$/.test(address);
-  };
+  });
 
   const handleAddOpenProposalField = () => {
     setOpenProposalFields([...openProposalFields, { target: "", amount: "", txText: "" }]);
@@ -86,46 +77,54 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     setContractUpgradeFields(newFields);
   }
 
+  const getContractByType = async (type: string) => {
+    switch (type) {
+      case "Staking":
+        return web3Context.contractsManager.stContract;
+      case "Certifier":
+        return web3Context.contractsManager.crContract;
+      case "Validator":
+        return web3Context.contractsManager.vsContract;
+      case "Tx Permission":
+        return web3Context.contractsManager.tpContract;
+      case "Block Reward":
+        return web3Context.contractsManager.brContract;
+      case "Connectivity Tracker":
+        return web3Context.contractsManager.ctContract;
+      default:
+        return null;
+    }
+  };
+  
   const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    let targets: string[] = [];
+    let values: string[] = [];
+    let calldatas: string[] = [];
+
     try {
       if (proposalType === 'open') {
-        const targets = openProposalFields.map((field, i) => {
+        targets = openProposalFields.map((field, i) => {
           if (!isValidAddress(field.target)) throw new Error(`Invalid Transaction ${i+1} payout address`);
           else return field.target;
         });
-        const values = openProposalFields.map((field, i) => {        
+        values = openProposalFields.map((field, i) => {        
           if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
           else return field.amount;
         });
-        const texts = openProposalFields.map((field) => {
+        calldatas = openProposalFields.map((field) => {
           return (field.txText ? web3Context.web3.utils.encodePacked(field.txText) : '') as string;
         });
-
-        const proposalId = await daoContext.createProposal(proposalType, title, targets, values, texts, description);
-        daoContext.getActiveProposals().then(async () => {
-          if (proposalId) {
-            const proposalDetails = await daoContext.getProposalDetails(proposalId);
-            daoContext.setProposalsState([proposalDetails]);
-          }
-        })
-        startTransition(() => {navigate('/dao')});
-        
       } else if (proposalType === 'contract-upgrade') {
-          const addresses = contractUpgradeFields.map((field, i) => {
+          targets = contractUpgradeFields.map((field, i) => {
             if (!isValidAddress(field.contractAddress)) throw new Error(`Invalid Transaction ${i+1} Contract Address`);
             else return field.contractAddress;
           });
-          const values = addresses.map(() => "0");
-          const calldatas = contractUpgradeFields.map((field, i) => {
+          values = targets.map(() => "0");
+          calldatas = contractUpgradeFields.map((field, i) => {
             return field.contractCalldata;
-          });
-
-          await daoContext.createProposal(proposalType, title, addresses, values, calldatas, description);
-          daoContext.getActiveProposals();
-          startTransition(() => {navigate('/dao')});
-          
+          });          
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData;
         let contractAddress;
@@ -133,71 +132,31 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcType)
         && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${epcOption} value`);
 
-        if (epcType === 'Staking') {
-          if (!web3Context.contractsManager.stContract) {
-            web3Context.contractsManager.stContract =
-              await web3Context.contractsManager.contracts.getStakingHbbft();
-          }
-          encodedCallData = (web3Context.contractsManager.stContract?.methods as any)
-            [epcOption](new BigNumber(epcValue)).encodeABI();
-          contractAddress = web3Context.contractsManager.stContract.options.address;
-        } else if (epcType === 'Certifier') {
-          if (!web3Context.contractsManager.crContract) {
-            web3Context.contractsManager.crContract =
-              await web3Context.contractsManager.contracts.getCertifierHbbft();
-          }
-          if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcOption} address`);
-          encodedCallData = (web3Context.contractsManager.crContract?.methods as any)
-            [epcOption](epcValue).encodeABI();
-          contractAddress = web3Context.contractsManager.crContract.options.address;
-        } else if (epcType === 'Validator') {
-          if (!web3Context.contractsManager.vsContract) {
-            web3Context.contractsManager.vsContract =
-              web3Context.contractsManager.contracts.getValidatorSetHbbft();
-          }
-          encodedCallData = (web3Context.contractsManager.vsContract?.methods as any)
-            [epcOption](new BigNumber(epcValue)).encodeABI();
-          contractAddress = web3Context.contractsManager.vsContract.options.address;
-        } else if (epcType === 'Tx Permission') {
-          if (!web3Context.contractsManager.tpContract) {
-            web3Context.contractsManager.tpContract =
-              web3Context.contractsManager.contracts.getContractPermission();
-          }
+        const contract = await getContractByType(epcType);
+        contractAddress = contract?.options.address;
+
+        if (["Certifier", "Tx Permission"].includes(epcType)) {
           if (epcOption === 'addAllowedSender' || epcOption === 'removeAllowedSender') {
             if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcOption} address`);
           }
-          encodedCallData = (web3Context.contractsManager.tpContract?.methods as any)
-            [epcOption](epcValue).encodeABI();
-          contractAddress = web3Context.contractsManager.tpContract.options.address;
-        } else if (epcType === 'Block Reward') {
-          if (!web3Context.contractsManager.brContract) {
-            web3Context.contractsManager.brContract =
-              await web3Context.contractsManager.contracts.getRewardHbbft();
-          }
-          encodedCallData = (web3Context.contractsManager.brContract?.methods as any)
-            [epcOption](new BigNumber(epcValue)).encodeABI();
-          contractAddress = web3Context.contractsManager.brContract.options.address;
-        } else if (epcType === 'Connectivity Tracker') {
-          if (!web3Context.contractsManager.ctContract) {
-            web3Context.contractsManager.ctContract =
-              await web3Context.contractsManager.contracts.getConnectivityTracker();
-          }
-          encodedCallData = (web3Context.contractsManager.ctContract?.methods as any)
-            [epcOption](new BigNumber(epcValue)).encodeABI();
-          contractAddress = web3Context.contractsManager.ctContract.options.address;
+          encodedCallData = (contract?.methods as any)[epcOption](epcValue).encodeABI();
+        } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcType)) {
+          encodedCallData = (contract?.methods as any)[epcOption](new BigNumber(epcValue)).encodeABI();
         }
 
-        await daoContext.createProposal(
-          proposalType,
-          title,
-          [contractAddress as string],
-          ["0"],
-          [encodedCallData as string],
-          description
-        );
-        daoContext.getActiveProposals();
-        startTransition(() => {navigate('/dao')});
+        targets = [contractAddress as string];
+        values = ["0"];
+        calldatas = [encodedCallData as string];
       }
+
+      const proposalId = await daoContext.createProposal(proposalType, title, targets, values, calldatas, description);
+      daoContext.getActiveProposals().then(async () => {
+        if (proposalId) {
+          const proposalDetails = await daoContext.getProposalDetails(proposalId);
+          daoContext.setProposalsState([proposalDetails]);
+        }
+      });
+      startTransition(() => {navigate('/dao')});
     } catch(err: any) {
       if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
         toast.error(err.message);
@@ -209,27 +168,16 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     const parameterData = EcosystemParameters[type][parameter];
     let val: BigNumber = BigNumber('0');
     
-    if (parameterData.value) return BigNumber(parameterData.value).dividedBy(10**parameterData.decimals).toString();
+    if (parameterData.value)
+      return BigNumber(parameterData.value).dividedBy(10**parameterData.decimals).toString();
 
     const getMethod = parameterData.getter;
-
-    if (type == 'Staking') {
-      if (!web3Context.contractsManager.stContract) {
-        web3Context.contractsManager.stContract =
-          await web3Context.contractsManager.contracts.getStakingHbbft();
-      }
-      val = BigNumber(await (web3Context.contractsManager.stContract?.methods as any)
-      [getMethod]().call());
-    } else if (type === 'Tx Permission') {
-      if (!web3Context.contractsManager.tpContract) {
-        web3Context.contractsManager.tpContract =
-          web3Context.contractsManager.contracts.getContractPermission();
-      }
-      val = BigNumber(await (web3Context.contractsManager.tpContract?.methods as any)
-      [getMethod]().call());
+    const contract = await getContractByType(type);
+    if (contract) {
+      val = BigNumber(await (contract.methods as any)[getMethod]().call());
+      EcosystemParameters[type][parameter].value = val.toString();
     }
-
-    EcosystemParameters[type][parameter].value = val.toString();
+    
     return BigNumber(val).dividedBy(10**parameterData.decimals).toString();
   }
 

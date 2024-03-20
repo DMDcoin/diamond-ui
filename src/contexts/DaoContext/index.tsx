@@ -58,6 +58,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setDaoInitialized(true);
 
     web3Context.contractsManager.daoContract = await web3Context.contractsManager.contracts.getDaoContract();
+    web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
+    web3Context.contractsManager.crContract = await web3Context.contractsManager.contracts.getCertifierHbbft();
+    web3Context.contractsManager.vsContract = web3Context.contractsManager.contracts.getValidatorSetHbbft();
+    web3Context.contractsManager.tpContract = web3Context.contractsManager.contracts.getContractPermission();
+    web3Context.contractsManager.brContract = await web3Context.contractsManager.contracts.getRewardHbbft();
+    web3Context.contractsManager.ctContract = await web3Context.contractsManager.contracts.getConnectivityTracker();
+
     web3Context.setContractsManager(web3Context.contractsManager);
     
     const pFee = await web3Context.contractsManager.daoContract?.methods.createProposalFee().call();
