@@ -13,7 +13,7 @@ web3.eth.accounts.wallet.add(account);
 web3.eth.defaultAccount = account.address;
 
 async function getDiamondContract() {
-  let contractAddress = "0x65219102B1AFBC624C56CDbf02186B8341703456";
+  let contractAddress = "0xAfCD1595ceFDc2FE3B4Cba90185497A28A9E2612";
 
   const abi = JsonDiamonDao.abi;
   const contract = new web3.eth.Contract(abi, contractAddress);

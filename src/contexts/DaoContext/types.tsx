@@ -10,7 +10,8 @@ export interface Proposal {
   votes: string | undefined;
   id: string;
   timestamp: string;
-  type: string;
+  daoPhaseCount: string;
+  proposalType: string;
 }
 
 export interface TotalVotingStats {

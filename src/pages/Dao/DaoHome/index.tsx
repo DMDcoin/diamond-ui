@@ -77,7 +77,7 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
         <div>
           {daoContext.daoPhase?.phase === "1" && <div></div>}
           <h4>
-            {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase 3
+            {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
           </h4>
           <p>{daoContext.phaseEndTimer} till the end</p>
           {daoContext.daoPhase?.phase === "0" && (

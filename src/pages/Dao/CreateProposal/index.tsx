@@ -22,6 +22,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [discussionUrl, setDiscussionUrl] = useState<string>("");
   const [proposalType, setProposalType] = useState<string>("open");
   
   const [epcValue, setEpcValue] = useState<string>("0");
@@ -29,8 +30,8 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [epcOption, setEpcOption] = useState<string>("setDelegatorMinStake");
   const [epcParameter, setEpcParameter] = useState<string>("Delegator Min. Stake");
   const [epcData, setEpcData] = useState<{ min: string, max: string, step: string, stepOperation: string }>({min: "0", max: "0", step: "0", stepOperation: "add"});
-  const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; txText: string }[]>([
-    { target: "", amount: "", txText: "" }
+  const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; }[]>([
+    { target: "", amount: "" }
   ]);
   const [contractUpgradeFields, setContractUpgradeFields] = useState<{ contractAddress: string; contractCalldata: string }[]>([
     { contractAddress: "", contractCalldata: "" }
@@ -46,7 +47,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   });
 
   const handleAddOpenProposalField = () => {
-    setOpenProposalFields([...openProposalFields, { target: "", amount: "", txText: "" }]);
+    setOpenProposalFields([...openProposalFields, { target: "", amount: "" }]);
   }
 
   const handleRemoveOpenProposalField = (index: number) => {
@@ -114,7 +115,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           else return field.amount;
         });
         calldatas = openProposalFields.map((field) => {
-          return (field.txText ? web3Context.web3.utils.encodePacked(field.txText) : '') as string;
+          return '0x'
         });
       } else if (proposalType === 'contract-upgrade') {
           targets = contractUpgradeFields.map((field, i) => {
@@ -141,7 +142,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           }
           encodedCallData = (contract?.methods as any)[epcOption](epcValue).encodeABI();
         } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcType)) {
-          encodedCallData = (contract?.methods as any)[epcOption](new BigNumber(epcValue)).encodeABI();
+          encodedCallData = (contract?.methods as any)[epcOption](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
         }
 
         targets = [contractAddress as string];
@@ -149,7 +150,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         calldatas = [encodedCallData as string];
       }
 
-      const proposalId = await daoContext.createProposal(proposalType, title, targets, values, calldatas, description);
+      const proposalId = await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description);
       daoContext.getActiveProposals().then(async () => {
         if (proposalId) {
           const proposalDetails = await daoContext.getProposalDetails(proposalId);
@@ -210,6 +211,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       <form className={styles.propsalForm} onSubmit={createProposal}>
         <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
         <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
+        <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>
 
         {proposalType === "open" && (
           openProposalFields.map((field, index) => (
@@ -232,14 +234,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                 value={field.amount}
                 onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
                 placeholder="Payout Amount"
-                className={styles.formInput}
-                required
-              />
-              <input
-                type="text"
-                value={field.txText}
-                onChange={(e) => handleOpenProposalFieldInputChange(index, "txText", e.target.value)}
-                placeholder="Transaction Text"
                 className={styles.formInput}
                 required
               />

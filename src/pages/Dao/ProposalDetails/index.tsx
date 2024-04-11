@@ -113,23 +113,17 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         <button>{proposalState}</button>
       </div>
       <div className={styles.daoDetailsContainer}>
-        <h1>{proposal.description}</h1>
+        <h1>{proposal.title}</h1>
         <div className={styles.proposalCreatedBy}>
           <span>Created By: </span>
           <div>{proposal.proposer}</div>
         </div>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
+          {proposal.description}
         </p>
 
         {/* discussion link */}
-        <a className={styles.proposalDiscussionLink} href={proposal.link} target="_blank">Discussion Link...</a>
+        <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} target="_blank">Discussion Link...</a>
 
         {/* open proposals */}
         {
@@ -201,7 +195,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
               {
                 dismissProposal ? (
                   <div>
-                    <input type="text" placeholder="Dismissal Reason" value={dismissReason} onChange={e => setDismissReason(e.target.value)}/>
+                    <input type="text" placeholder="Dismissal Reason (Optional)" value={dismissReason} onChange={e => setDismissReason(e.target.value)}/>
                     <span>Are you sure you want to dismiss this proposal?</span>
                     <div>
                       <button onClick={handleDismissProposal}>Yes</button>

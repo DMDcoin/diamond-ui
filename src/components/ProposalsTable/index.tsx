@@ -120,12 +120,12 @@ const ProposalsTable = (props: TableProps) => {
                   </td>
                   <td className={styles.td}>
                     {
-                    proposal.description || (<div className={styles.loader}></div>)
+                    proposal.title || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td className={styles.td}>
                     {
-                      proposal.type || (<div className={styles.loader}></div>)
+                      proposal.proposalType || (<div className={styles.loader}></div>)
                     }
                   </td>
 

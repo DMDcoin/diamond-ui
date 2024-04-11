@@ -39,13 +39,17 @@ export type ProposalCreated = ContractEventLog<{
   targets: string[];
   values: string[];
   calldatas: string[];
+  title: string;
   description: string;
+  discussionUrl: string;
   0: string;
   1: string;
   2: string[];
   3: string[];
   4: string[];
   5: string;
+  6: string;
+  7: string;
 }>;
 export type ProposalExecuted = ContractEventLog<{
   caller: string;
@@ -53,9 +57,25 @@ export type ProposalExecuted = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type SetChangeAbleParameters = ContractEventLog<{
+  allowed: boolean;
+  setter: string;
+  getter: string;
+  params: string[];
+  0: boolean;
+  1: string;
+  2: string;
+  3: string[];
+}>;
 export type SetCreateProposalFee = ContractEventLog<{
   fee: string;
   0: string;
+}>;
+export type SetIsCoreContract = ContractEventLog<{
+  contractAddress: string;
+  isCore: boolean;
+  0: string;
+  1: boolean;
 }>;
 export type SubmitVote = ContractEventLog<{
   voter: string;
@@ -111,9 +131,7 @@ export interface DiamondDao extends BaseContract {
 
     countVotes(
       proposalId: number | string | BN
-    ): NonPayableTransactionObject<
-      [string, string, string, string, string, string]
-    >;
+    ): NonPayableTransactionObject<[string, string, string, string]>;
 
     createProposalFee(): NonPayableTransactionObject<string>;
 
@@ -137,6 +155,8 @@ export interface DiamondDao extends BaseContract {
       3: string;
     }>;
 
+    daoPhaseCount(): NonPayableTransactionObject<string>;
+
     execute(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<void>;
@@ -150,7 +170,19 @@ export interface DiamondDao extends BaseContract {
     getProposal(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<
-      [string, string, string, string[], string[], string[], string]
+      [
+        string,
+        string,
+        string,
+        string[],
+        string[],
+        string[],
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
     >;
 
     getProposalVoters(
@@ -178,6 +210,8 @@ export interface DiamondDao extends BaseContract {
       _startTimestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
+
     proposalExists(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<boolean>;
@@ -186,24 +220,33 @@ export interface DiamondDao extends BaseContract {
       proposer: string;
       votingDaoEpoch: string;
       state: string;
+      title: string;
       description: string;
+      discussionUrl: string;
+      daoPhaseCount: string;
+      proposalType: string;
       0: string;
       1: string;
       2: string;
       3: string;
+      4: string;
+      5: string;
+      6: string;
+      7: string;
     }>;
 
     propose(
       targets: string[],
       values: (number | string | BN)[],
       calldatas: (string | number[])[],
-      description: string
+      title: string,
+      description: string,
+      discussionUrl: string
     ): PayableTransactionObject<void>;
 
     quorumReached(
+      _type: number | string | BN,
       result: [
-        number | string | BN,
-        number | string | BN,
         number | string | BN,
         number | string | BN,
         number | string | BN,
@@ -214,22 +257,23 @@ export interface DiamondDao extends BaseContract {
     reinsertPot(): NonPayableTransactionObject<string>;
 
     results(arg0: number | string | BN): NonPayableTransactionObject<{
-      countAbstain: string;
       countYes: string;
       countNo: string;
-      stakeAbstain: string;
       stakeYes: string;
       stakeNo: string;
       0: string;
       1: string;
       2: string;
       3: string;
-      4: string;
-      5: string;
     }>;
 
     setCreateProposalFee(
       _fee: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    setIsCoreContract(
+      _add: string,
+      isCore: boolean
     ): NonPayableTransactionObject<void>;
 
     stakingHbbft(): NonPayableTransactionObject<string>;
@@ -297,10 +341,24 @@ export interface DiamondDao extends BaseContract {
       cb?: Callback<ProposalExecuted>
     ): EventEmitter;
 
+    SetChangeAbleParameters(
+      cb?: Callback<SetChangeAbleParameters>
+    ): EventEmitter;
+    SetChangeAbleParameters(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameters>
+    ): EventEmitter;
+
     SetCreateProposalFee(cb?: Callback<SetCreateProposalFee>): EventEmitter;
     SetCreateProposalFee(
       options?: EventOptions,
       cb?: Callback<SetCreateProposalFee>
+    ): EventEmitter;
+
+    SetIsCoreContract(cb?: Callback<SetIsCoreContract>): EventEmitter;
+    SetIsCoreContract(
+      options?: EventOptions,
+      cb?: Callback<SetIsCoreContract>
     ): EventEmitter;
 
     SubmitVote(cb?: Callback<SubmitVote>): EventEmitter;
@@ -355,11 +413,28 @@ export interface DiamondDao extends BaseContract {
     cb: Callback<ProposalExecuted>
   ): void;
 
+  once(
+    event: "SetChangeAbleParameters",
+    cb: Callback<SetChangeAbleParameters>
+  ): void;
+  once(
+    event: "SetChangeAbleParameters",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameters>
+  ): void;
+
   once(event: "SetCreateProposalFee", cb: Callback<SetCreateProposalFee>): void;
   once(
     event: "SetCreateProposalFee",
     options: EventOptions,
     cb: Callback<SetCreateProposalFee>
+  ): void;
+
+  once(event: "SetIsCoreContract", cb: Callback<SetIsCoreContract>): void;
+  once(
+    event: "SetIsCoreContract",
+    options: EventOptions,
+    cb: Callback<SetIsCoreContract>
   ): void;
 
   once(event: "SubmitVote", cb: Callback<SubmitVote>): void;

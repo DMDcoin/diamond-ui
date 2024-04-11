@@ -7,6 +7,7 @@ import BigNumber from 'bignumber.js';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
   daoPhase: any,
+  daoPhaseCount: string;
   daoInitialized: boolean;
   activeProposals: Proposal[];
   phaseEndTimer: string;
@@ -20,7 +21,7 @@ interface DaoContextProps {
   getStateString: (stateValue: string) => string;
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
-  createProposal: (type: string, title: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string | undefined>;
+  createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string | undefined>;
   getProposalTimestamp: (proposalId: string) => Promise<number>;
   timestampToDate: (timestamp: number) => string;
   getHistoricProposals: () => Promise<void>;
@@ -37,6 +38,7 @@ const DaoContext = createContext<DaoContextProps | undefined>(undefined);
 const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const web3Context = useWeb3Context();
 
+  const [daoPhaseCount, setDaoPhaseCount] = useState("1");
   const [daoPhase, setDaoPhase] = useState<any>(undefined);
   const [proposalFee, setProposalFee] = useState<string>('0');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
@@ -72,6 +74,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const phase = await web3Context.contractsManager.daoContract?.methods.daoPhase().call();
     setDaoPhase(phase);
+
+    const phaseCount = await web3Context.contractsManager.daoContract?.methods.daoPhaseCount().call();
+    setDaoPhaseCount(phaseCount);
   }
 
   const timestampToDate = (timestamp: number) => {
@@ -80,6 +85,19 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const day = date.getDate();
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
+  }
+
+  const getProposalTypeString = (proposalType: string) => {
+    switch (proposalType) {
+      case '0':
+        return 'Open';
+      case '1':
+        return 'Contract upgrade';
+      case '2':
+        return 'Ecosystem Paramaeter Change';
+      default:
+        return 'Unknown';
+    }
   }
 
   const getStateString = (stateValue: string) => {
@@ -140,17 +158,24 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     
     if (!updatedData) updatedData = initializeProposal(proposalId);
 
-    if (updatedData && (!updatedData.proposer || !['1', '4', '5', '6'].includes(updatedData.state))) {
-      proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
-      updatedData = {...updatedData, ...proposalDetails, values: proposalDetails?.[4]};
-    }
+    try {
+      if (updatedData && (!updatedData.proposer || !['1', '4', '5', '6'].includes(updatedData.state))) {
+        proposalDetails = await web3Context.contractsManager.daoContract?.methods.getProposal(proposalId).call();
+        updatedData = {
+          ...updatedData,
+          ...proposalDetails,
+          values: proposalDetails?.[4],
+          daoPhaseCount: proposalDetails?.[9] || "1",
+          proposalType: getProposalTypeString(proposalDetails?.[10] || "3"),
+        };
+      }
 
-    if (updatedData && !updatedData.timestamp) {
-      proposalTimestamp = await getProposalTimestamp(proposalId);
-      updatedData.timestamp = timestampToDate(proposalTimestamp);
-    }
+      if (updatedData && !updatedData.timestamp) {
+        proposalTimestamp = await getProposalTimestamp(proposalId);
+        updatedData.timestamp = timestampToDate(proposalTimestamp);
+      }
+    } catch (error) {}
 
-    updatedData["type"] = 'open';
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
 
@@ -175,7 +200,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       votes: '',
       id: proposalId,
       timestamp: '',
-      type: ''
+      daoPhaseCount: '',
+      proposalType: ''
     };
   }
 
@@ -238,9 +264,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           const votingStats = await web3Context.contractsManager.daoContract?.methods.countVotes(proposalId).call();
 
           if (votingStats) {
-            stakeAbstain = new BigNumber(votingStats[3]);
-            stakeNo = new BigNumber(votingStats[5]);
-            stakeYes = new BigNumber(votingStats[4]);
+            stakeNo = new BigNumber(votingStats[3]);
+            stakeYes = new BigNumber(votingStats[2]);
 
             totalStake = stakeAbstain.plus(stakeNo).plus(stakeYes);
           }
@@ -261,7 +286,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   };
 
-  const createProposal = async (type: string, title: string, targets: string[], values: string[], callDatas: string[], description: string) => {
+  const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => {
     return new Promise<string | undefined>(async (resolve, reject) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
@@ -278,7 +303,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             targets,
             values,
             callDatas,
+            title,
             description,
+            discussionUrl
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
           toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
           const proposalId = await web3Context.contractsManager.daoContract?.methods.hashProposal(
@@ -340,6 +367,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             console.log("Phase changed");
             getActiveProposals();
             getHistoricProposals();
+            web3Context.contractsManager.daoContract?.methods.daoPhaseCount().call().then((count) => setDaoPhaseCount(count));
             return phase;
           }
           return prevPhase;
@@ -539,6 +567,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const contextValue = {
     // states
     daoPhase,
+    daoPhaseCount,
     phaseEndTimer,
     daoInitialized,
     activeProposals,
