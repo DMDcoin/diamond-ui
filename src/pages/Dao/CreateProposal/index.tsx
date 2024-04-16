@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
-import { isValidAddress } from "../../../utils/common";
+import { getFunctionName, getFunctionSelector, isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -26,10 +26,11 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [proposalType, setProposalType] = useState<string>("open");
   
   const [epcValue, setEpcValue] = useState<string>("0");
-  const [epcType, setEpcType] = useState<string>("Staking");
-  const [epcOption, setEpcOption] = useState<string>("setDelegatorMinStake");
-  const [epcParameter, setEpcParameter] = useState<string>("Delegator Min. Stake");
-  const [epcData, setEpcData] = useState<{ min: string, max: string, step: string, stepOperation: string }>({min: "0", max: "0", step: "0", stepOperation: "add"});
+  const [epcParamRange, setEpcParamRange] = useState<string[]>([]);
+  const [epcContractName, setEpcContractName] = useState<string>("Staking");
+  const [epcMethodName, setEpcMethodName] = useState<string>("Delegator Min. Stake");
+  const [epcMethodSetter, setEpcMethodSetter] = useState<string>("setDelegatorMinStake(uint256)");
+  
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; }[]>([
     { target: "", amount: "" }
   ]);
@@ -39,9 +40,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
   useEffect(() => {
     if (epcValue === "0") {
-      getEpcContractValue(epcType, epcParameter).then((val) => {
+      getEpcContractValue(epcContractName, epcMethodName).then((val) => {
         setEpcValue(val);
-        loadEpcData(epcType, epcParameter);
+        loadEpcData(epcContractName, epcMethodName);
       });
     }
   });
@@ -78,8 +79,8 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     setContractUpgradeFields(newFields);
   }
 
-  const getContractByType = async (type: string) => {
-    switch (type) {
+  const getContractByName = (name: string) => {
+    switch (name) {
       case "Staking":
         return web3Context.contractsManager.stContract;
       case "Certifier":
@@ -93,7 +94,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       case "Connectivity Tracker":
         return web3Context.contractsManager.ctContract;
       default:
-        return null;
+        return web3Context.contractsManager.stContract;
     }
   };
   
@@ -130,19 +131,19 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         let encodedCallData;
         let contractAddress;
 
-        if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcType)
-        && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${epcOption} value`);
+        if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcContractName)
+        && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${epcMethodSetter} value`);
 
-        const contract = await getContractByType(epcType);
+        const contract = getContractByName(epcContractName);
         contractAddress = contract?.options.address;
 
-        if (["Certifier", "Tx Permission"].includes(epcType)) {
-          if (epcOption === 'addAllowedSender' || epcOption === 'removeAllowedSender') {
-            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcOption} address`);
+        if (["Certifier", "Tx Permission"].includes(epcContractName)) {
+          if (epcMethodSetter === 'addAllowedSender' || epcMethodSetter === 'removeAllowedSender') {
+            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcMethodSetter} address`);
           }
-          encodedCallData = (contract?.methods as any)[epcOption](epcValue).encodeABI();
-        } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcType)) {
-          encodedCallData = (contract?.methods as any)[epcOption](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
+          encodedCallData = (contract?.methods as any)[epcMethodSetter](epcValue).encodeABI();
+        } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcContractName)) {
+          encodedCallData = (contract?.methods as any)[epcMethodSetter](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
         }
 
         targets = [contractAddress as string];
@@ -165,32 +166,33 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     }
   }
 
-  const getEpcContractValue = async (type: string, parameter: string) => {
-    const parameterData = EcosystemParameters[type][parameter];
-    let val: BigNumber = BigNumber('0');
-    
-    if (parameterData.value)
-      return BigNumber(parameterData.value).dividedBy(10**parameterData.decimals).toString();
+  const getEpcContractValue = async (contractName: string, methodName: string) => {
+    const contract = getContractByName(contractName);
 
-    const getMethod = parameterData.getter;
-    const contract = await getContractByType(type);
     if (contract) {
-      val = BigNumber(await (contract.methods as any)[getMethod]().call());
-      EcosystemParameters[type][parameter].value = val.toString();
+      return await (contract?.methods as any)[EcosystemParameters[contractName][methodName].getter]().call();
+    } else {
+      return '0';
     }
-    
-    return BigNumber(val).dividedBy(10**parameterData.decimals).toString();
   }
 
-  const loadEpcData = async (type: string, parameter: string) => {
-    const parameterData = EcosystemParameters[type][parameter];
-    let epcData = {
-      min: parameterData.min,
-      max: parameterData.max,
-      step: parameterData.step,
-      stepOperation: parameterData.stepOperation
-    }
-    setEpcData(epcData);
+  const loadEpcData = async (contractName: string, methodName: string) => {
+    // const contract = getContractByName(contractName);
+    // const functionSelector = getFunctionSelector(EcosystemParameters[contractName][methodName].setter);
+    // const parameterData = await (contract?.methods as any)['allowedParameterRange'](functionSelector).call();
+    // setEpcParamRange(parameterData.params);
+    setEpcParamRange([
+      "50000000000000000000",
+      "100000000000000000000",
+      "150000000000000000000",
+      "200000000000000000000",
+      "250000000000000000000",
+      "300000000000000000000",
+      "350000000000000000000",
+      "400000000000000000000",
+      "450000000000000000000",
+      "500000000000000000000",
+    ]);
   }
 
   return (
@@ -289,27 +291,27 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           proposalType === "ecosystem-parameter-change" && (
             <div>
               <input type="text" className={styles.formInput} placeholder="Discussion Link" />
-              <select className={styles.epcType} name="epcType" id="epcType" value={epcOption} onChange={async (e) => {
-                const [type, parameter, value] = e.target.value.split(":");
-                const epcContractVal = await getEpcContractValue(type, parameter);
+              <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
+                const [contractName, methodName, methodSetter] = e.target.value.split(":");
+                const epcContractVal = await getEpcContractValue(contractName, methodName);
                 setEpcValue(epcContractVal);
-                setEpcOption(`${type}:${parameter}:${value}`)
-                setEpcType(type);
-                loadEpcData(type, parameter);
+                setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
+                setEpcContractName(contractName);
+                loadEpcData(contractName, methodName);
               }}>
-                {Object.keys(EcosystemParameters).map((category) => {
+                {Object.keys(EcosystemParameters).map((contractName) => {
                   return (
-                    <optgroup key={category} label={category}>
-                      {Object.keys(EcosystemParameters[category]).map((parameter: any) => {
-                        const value = EcosystemParameters[category][parameter].setter;
-                        return <option key={value} value={`${category}:${parameter}:${value}`}>{parameter}</option>;
+                    <optgroup key={contractName} label={contractName}>
+                      {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
+                        const methodSetter = EcosystemParameters[contractName][methodName].setter;
+                        return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
                       })}
                     </optgroup>
                   );
                 })}
               </select>
 
-              <ProposalStepSlider min={epcData.min} max={epcData.max} step={epcData.step} state={epcValue} stepOperation={epcData.stepOperation} setState={setEpcValue} />
+              <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
             </div>
           )
         }

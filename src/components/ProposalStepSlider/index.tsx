@@ -1,74 +1,55 @@
 import React, { useEffect, useState } from "react";
 
 import styles from "./styles.module.css";
+import BigNumber from "bignumber.js";
 
 interface ProposalStepSliderProps {
-    min: string;
-    max: string;
-    step: string;
     state: string;
-    stepOperation: string;
+    paramsRange: string[];
     setState: (value: string) => void;
 }
 
-const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ min, max, step, state, stepOperation, setState }) => {
+const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ paramsRange, state, setState }) => {
     const [startingVal, setStartingVal] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         setStartingVal(state);
-    }, [min, max]);
+    }, [paramsRange]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {   
-        if(parseFloat(state) === 0) return;
-        const newValue = parseFloat(e.target.value);
+        const newValue = BigNumber(e.target.value);
         
         if (startingVal) {
-            let newValueAfterOperation;
-            if (newValue > parseFloat(startingVal)) {
-                if (stepOperation === "add") {
-                    newValueAfterOperation = parseFloat(startingVal) + parseFloat(step);
-                    setState(newValueAfterOperation.toString());
-                } else if (stepOperation === "multiply") {
-        
-                    newValueAfterOperation = parseFloat(startingVal) * parseFloat(step);
-                    setState(newValueAfterOperation.toString());
-                }
-            } else if (newValue < parseFloat(startingVal)) {
-                if (stepOperation === "add") {
-                    newValueAfterOperation = parseFloat(startingVal) - parseFloat(step);
-                    if (newValueAfterOperation > parseFloat(startingVal)) {
-                        newValueAfterOperation = startingVal;
-                    }
-                    setState(newValueAfterOperation.toString());
-                } else if (stepOperation === "multiply") {
-        
-                    newValueAfterOperation = parseFloat(startingVal) / parseFloat(step);
-                    if (newValueAfterOperation < parseFloat(startingVal)) {
-                        newValueAfterOperation = startingVal;
-                    }
-                    setState(newValueAfterOperation.toString());
-                }
+            const currIndex = paramsRange.indexOf(startingVal);
+            const leftVal = (currIndex > 0) ? paramsRange[currIndex - 1] : paramsRange[0];
+            const rightVal = (currIndex < paramsRange.length - 1) ? paramsRange[currIndex + 1] : paramsRange[paramsRange.length - 1];
+
+            if (newValue.isGreaterThan(leftVal) && newValue.isLessThan(rightVal)) {
+                setState(startingVal.toString());
             } else {
-                setState(e.target.value);
+                if (newValue.isLessThanOrEqualTo(leftVal)) {
+                    setState(leftVal);
+                } else {
+                    setState(rightVal);
+                }
             }
         }
     };
 
     return (
         <div className={styles.sliderContainer}>
-            <span>{state}</span>
+            <span>{BigNumber(state).dividedBy(10**18).toString()} DMD</span>
             <div>
-                <span>{min}</span>
+                <span>{BigNumber(paramsRange[0]).dividedBy(10**18).toString()} DMD</span>
                 <input
                     type="range"
-                    className={styles.rangeInput}
-                    min={min}
-                    max={max}
-                    step={step}
+                    min={paramsRange[0]}
+                    max={paramsRange[paramsRange.length - 1]}
                     value={state}
                     onChange={handleChange}
+                    className={styles.rangeInput}
                 />
-                <span>{max}</span>
+                <span>{BigNumber(paramsRange[paramsRange.length - 1]).dividedBy(10**18).toString()} DMD</span>
             </div>
         </div>
     );

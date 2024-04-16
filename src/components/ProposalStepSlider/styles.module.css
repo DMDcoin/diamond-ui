@@ -10,10 +10,6 @@
   justify-content: center;
 }
 
-.sliderContainer > div > span {
-  width: 10px;
-}
-
 .rangeInput {
   width: 100%;
   height: 40px;
