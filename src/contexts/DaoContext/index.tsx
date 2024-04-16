@@ -50,33 +50,28 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
 
   useEffect(() => {
-    initialize();
-    getTotalStakedAmount();
-    subscribeToEvents();
-  }, [web3Context.userWallet]);
+    if (web3Context.web3Initialized) {
+      initialize();
+      getTotalStakedAmount();
+      subscribeToEvents();
+    }
+  }, [web3Context.userWallet, web3Context.web3Initialized]);
 
   const initialize = async () => {
     if (daoInitialized) return;
+    console.log("[INFO] Initializing Dao Context");
     setDaoInitialized(true);
-
-    web3Context.contractsManager.daoContract = await web3Context.contractsManager.contracts.getDaoContract();
-    web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
-    web3Context.contractsManager.crContract = await web3Context.contractsManager.contracts.getCertifierHbbft();
-    web3Context.contractsManager.vsContract = web3Context.contractsManager.contracts.getValidatorSetHbbft();
-    web3Context.contractsManager.tpContract = web3Context.contractsManager.contracts.getContractPermission();
-    web3Context.contractsManager.brContract = await web3Context.contractsManager.contracts.getRewardHbbft();
-    web3Context.contractsManager.ctContract = await web3Context.contractsManager.contracts.getConnectivityTracker();
 
     web3Context.setContractsManager(web3Context.contractsManager);
     
     const pFee = await web3Context.contractsManager.daoContract?.methods.createProposalFee().call();
-    setProposalFee(pFee);
+    setProposalFee(pFee || '0');
 
     const phase = await web3Context.contractsManager.daoContract?.methods.daoPhase().call();
     setDaoPhase(phase);
 
     const phaseCount = await web3Context.contractsManager.daoContract?.methods.daoPhaseCount().call();
-    setDaoPhaseCount(phaseCount);
+    setDaoPhaseCount(phaseCount || '1');
   }
 
   const timestampToDate = (timestamp: number) => {

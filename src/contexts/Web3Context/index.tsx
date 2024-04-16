@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { ContextProviderProps } from "./types";
 import Web3 from "web3";
 
@@ -38,6 +38,8 @@ interface Web3ContextProps {
   web3: Web3,
   userWallet: UserWallet,
   contractsManager: ContractsState,
+  web3Initialized: boolean,
+
   connectWallet: () => Promise<{ provider: Web3; wallet: UserWallet } | undefined>,
   setUserWallet: (newUserWallet: UserWallet) => void;
   setContractsManager: (newContractsManager: ContractsState) => void;
@@ -45,11 +47,11 @@ interface Web3ContextProps {
   setIsLoading: (isLoading: boolean) => void;
 }
 
-
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
   const [web3, setWeb3] = useState<Web3>(new Web3("https://rpc.uniq.diamonds"));
   const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BN(0)));
   const initialContracts = new ContractManager(web3);
@@ -58,21 +60,60 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     vsContract: initialContracts.getValidatorSetHbbft(),
   });
 
-  const reinitializeContractsWithProvider = async (provider: Web3) => {
-    const newContracts = new ContractManager(provider);
-    const daoContract = await newContracts.getDaoContract();
-    setContractsManager({
-      contracts: newContracts,
-      vsContract: newContracts.getValidatorSetHbbft(),
-      daoContract: daoContract
-    });
+  useEffect(() => {
+    console.log("[INFO] Initializing Web3 Context");
+    initialize();
+  }, []);
+
+  const initialize = async () => {
+    if (!web3Initialized) {
+      await initialzeContracts(initialContracts);
+      setWeb3Initialized(true);
+    }
   }
+
+  const reinitializeContractsWithProvider = async (provider: Web3) => {
+    await initialzeContracts(new ContractManager(provider));
+  }
+
+  const initialzeContracts = async (contractManager: ContractManager) => {
+    const [
+      vsContract,
+      daoContract,
+      stContract,
+      crContract,
+      tpContract,
+      brContract,
+      ctContract
+    ] = await Promise.all([
+      contractManager.getValidatorSetHbbft(),
+      contractManager.getDaoContract(),
+      contractManager.getStakingHbbft(),
+      contractManager.getCertifierHbbft(),
+      contractManager.getContractPermission(),
+      contractManager.getRewardHbbft(),
+      contractManager.getConnectivityTracker()
+    ]);
+  
+    setContractsManager({
+      contracts: contractManager,
+      vsContract,
+      daoContract,
+      stContract,
+      crContract,
+      tpContract,
+      brContract,
+      ctContract
+    });
+  };
 
   const connectWallet = async () => {
     try {
       const chainId = 777012;
       const url = "https://rpc.uniq.diamonds";
-      const chainOptions: { rpc: Record<number, string> } = { rpc: { [chainId]: url } };
+      const chainOptions: { rpc: Record<number, string> } = {
+        rpc: { [chainId]: url },
+      };
 
       const providerOptions = {
         walletconnect: {
@@ -82,11 +123,12 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       };
   
       const web3Modal = new Web3Modal({
-        network: "mainnet", // optional
-        cacheProvider: false, // optional
-        providerOptions, // required
+        network: "mainnet",
+        cacheProvider: false,
+        providerOptions
       });
   
+      // clear cache so on each connect it asks for wallet type
       web3Modal.clearCachedProvider();
       const web3ModalInstance = await web3Modal.connect();
   
@@ -102,7 +144,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       const provider = new Web3(web3ModalInstance);
   
       // force user to change to DMD network
-      if (web3ModalInstance.chainId !== chainId) {
+      if (web3ModalInstance.request({method: 'eth_chainId'}) !== chainId) {
         try {
           await web3ModalInstance.request({
             method: "wallet_switchEthereumChain",
@@ -128,8 +170,9 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         }
       }
   
-      const myBalance = new BN(await web3.eth.getBalance(web3ModalInstance.selectedAddress));
-      const wallet = new UserWallet(web3.utils.toChecksumAddress(web3ModalInstance.selectedAddress), myBalance);
+      const walletAddress = (await web3ModalInstance.request({method: 'eth_accounts'}))[0];
+      const myBalance = new BN(await web3.eth.getBalance(walletAddress));
+      const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);
 
       setWeb3(provider);
       setUserWallet(wallet);
@@ -153,6 +196,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     // state
     web3,
     userWallet,
+    web3Initialized,
     contractsManager,
 
     // state functions

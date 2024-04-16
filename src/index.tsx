@@ -17,7 +17,9 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({
   return (
     <Web3ContextProvider>
       <DaoContextProvider>
-        <StakingContextProvider>{children}</StakingContextProvider>
+        <StakingContextProvider>
+          {children}
+        </StakingContextProvider>
       </DaoContextProvider>
     </Web3ContextProvider>
   );
