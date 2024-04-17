@@ -63,7 +63,7 @@
   font-weight: 800;
   gap: 2rem;
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -190,6 +190,30 @@
 }
 
 .votingPhaseButtons > div > button {
+  gap: 5px;
+  height: 30px;
+  width: 150px;
+  display: flex;
+  cursor: pointer;
+  font-weight: 700;
+  border-radius: 5px;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid black;
+  background-color: transparent;
+}
+
+.alreadyVotedBtns {
+  gap: 1rem;
+  display: flex;
+  min-width: 320px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.alreadyVotedBtns > button {
   gap: 5px;
   height: 30px;
   width: 150px;

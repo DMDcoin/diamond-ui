@@ -218,8 +218,8 @@ export class ContractManager {
     return contract;
   }
 
-  public async getDaoContract(): Promise<DiamondDao> {
-    let contractAddress = '0x9dcdde144C78D830f7e65fE6583F3045dd9a40a6';
+  public getDaoContract(): DiamondDao {
+    let contractAddress = '0x1A48B579839c86C9b96a2AF1CC6cb7e5A66C2758';
 
     const abi: any = JsonDiamonDao.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);

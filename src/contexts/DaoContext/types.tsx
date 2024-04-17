@@ -21,7 +21,14 @@ export interface TotalVotingStats {
 }
 
 export interface Vote {
-  timestamp: Number;
-  vote: Number;
+  timestamp: string;
+  vote: string;
   reason: string;
+}
+
+export interface DaoPhase {
+  daoEpoch: string;
+  end: string;
+  phase: string;
+  start: string;
 }

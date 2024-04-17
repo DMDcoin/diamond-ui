@@ -15,11 +15,15 @@ BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
 
-const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
+const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const { proposalId } = useParams();
   
   const [proposalState, setProposalState] = useState<any>([]);
-  const [myVote, setMyVote] = useState<Vote | undefined>(undefined);
+  const [myVote, setMyVote] = useState<Vote>({
+    timestamp: "",
+    vote: "",
+    reason: ""
+  });
   const [proposal, setProposal] = useState<any>({
     id: "",
     description: "",
@@ -36,17 +40,17 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
   const [voteReason, setVoteReason] = useState<string>("");
   const [dismissProposal, setDismissProposal] = useState<boolean>(false);
   const [dismissReason, setDismissReason] = useState<string>("");
-  const [votingStats, setVotingStats] = useState<TotalVotingStats | undefined>(undefined);
+  const [votingStats, setVotingStats] = useState<TotalVotingStats>();
 
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
 
   useEffect(() => {
-    if (proposalId) getProposalDetails();
+    if (proposalId) getProposalDetails(proposalId);
   }, [web3Context.userWallet, daoContext.daoPhase]);
 
-  const getProposalDetails = async () => {
+  const getProposalDetails = async (proposalId: string) => {
     return new Promise(async (resolve, reject) => {
       if (web3Context.userWallet.myAddr)  setMyVote(await daoContext.getMyVote(proposalId));
 
@@ -84,7 +88,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
   const handleDismissProposal = async () => {
     daoContext.dismissProposal(proposal.id, dismissReason).then(() => {
-      getProposalDetails();
+      getProposalDetails(proposal.id);
     }).catch((err) => {
       setDismissProposal(false);
     });
@@ -92,7 +96,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
   const handleCastVote = async (vote: number) => {
     daoContext.castVote(proposal.id, vote, voteReason).then(() => {
-      getProposalDetails();
+      getProposalDetails(proposal.id);
     }).catch((err) => {
       console.log(err);
     });
@@ -100,7 +104,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
 
   const handleProposalFinalization = async (proposalId: string) => {
     daoContext.finalizeProposal(proposalId).then((res) => {
-      if (res == "success") getProposalDetails();
+      if (res === "success") getProposalDetails(proposalId);
     })
   }
 
@@ -123,7 +127,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         </p>
 
         {/* discussion link */}
-        <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} target="_blank">Discussion Link...</a>
+        <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
 
         {/* open proposals */}
         {
@@ -215,7 +219,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
         {
             <div className={styles.votingPhaseContainer}>
               {
-                daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state) && (
+                (daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state)) && (
                   <>
                     <div className={styles.votingPhaseProgress}>
                       <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.positive) : 0} bgColor="green" />
@@ -239,30 +243,30 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
                     {
                       web3Context.userWallet?.myAddr && (
                         <div>
-                          <input type="text" placeholder="Vote Reason" value={voteReason} onChange={e => setVoteReason(e.target.value)}/>
+                          <input type="text" placeholder={myVote.reason ? myVote.reason : "Vote Reason"} value={voteReason} onChange={e => setVoteReason(e.target.value)}/>
                         </div>
                       )
                     }
                   
                     <div>
-                      {myVote?.vote === 0 && (
+                      {myVote.vote === '0' && (
                         <>
                           <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
                           <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
                         </>
                       )}
-                      {myVote?.vote === 1 && (
-                        <>
+                      {myVote.vote === '1' && (
+                        <div className={styles.alreadyVotedBtns}>
                           <p>You have already voted against the proposal, do you want to change your decision?</p>
                           <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                        </>
+                        </div>
                         )
                       }
-                      {myVote?.vote === 2 && (
-                        <>
+                      {myVote.vote === '2' && (
+                        <div className={styles.alreadyVotedBtns}>
                           <p>You have already voted for the proposal, do you want to change your decision?</p>
                           <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
-                        </>
+                        </div>
                         )
                       }
                     </div>
@@ -292,7 +296,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = ({}) => {
       </div>
 
       <div className={styles.daoDetailsFooter}>
-        {daoContext.daoPhase?.phase === "1" || !['0', '1'].includes(proposal.state) ? (<span>{proposal.votes} voted</span>) : (<span></span>)}
+        {(daoContext.daoPhase?.phase === "1" || !['0', '1'].includes(proposal.state)) ? (<span>{proposal.votes} voted</span>) : (<span></span>)}
         <span>{daoContext.phaseEndTimer} till end of {daoContext.daoPhase?.phase === "1" ? "Voting" : "Proposal"} Phase</span>
       </div>
     </div>

@@ -1,14 +1,13 @@
 import styles from "./styles.module.css";
-import ProposalsTable from "../../../components/ProposalsTable";
 import { useNavigate } from "react-router-dom";
-import { useDaoContext } from "../../../contexts/DaoContext";
-import { Proposal } from "../../../contexts/DaoContext/types";
-import { useWeb3Context } from "../../../contexts/Web3Context";
 import { startTransition, useEffect, useState } from "react";
+import { useDaoContext } from "../../../contexts/DaoContext";
+import { useWeb3Context } from "../../../contexts/Web3Context";
+import ProposalsTable from "../../../components/ProposalsTable";
 
 interface DaoProps {}
 
-const DaoHome: React.FC<DaoProps> = ({}) => {
+const DaoHome: React.FC<DaoProps> = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
@@ -17,12 +16,12 @@ const DaoHome: React.FC<DaoProps> = ({}) => {
 
   useEffect(() => {
     try {
-      if (!daoContext.activeProposals.length) {
+      if (!daoContext.activeProposals.length && web3Context.web3Initialized) {
         web3Context.setIsLoading(true);
         daoContext.getActiveProposals();
       }
     } catch(err) {}
-  }, []);
+  }, [web3Context.web3Initialized]);
 
   const handleDetailsClick = (proposalId: string) => {
     // Navigate to the dynamic route with the proposalId parameter

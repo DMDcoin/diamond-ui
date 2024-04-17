@@ -28,7 +28,7 @@ interface ContractsState {
   brContract?: BlockRewardHbbftCoins;
   kghContract?: KeyGenHistory;
   rngContract?: RandomHbbft;
-  daoContract?: DiamondDao;
+  daoContract: DiamondDao;
   crContract?: CertifierHbbft;
   tpContract?: TxPermissionHbbft;
   ctContract?: ConnectivityTrackerHbbft;
@@ -58,6 +58,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [contractsManager, setContractsManager] = useState<ContractsState>({
     contracts: initialContracts,
     vsContract: initialContracts.getValidatorSetHbbft(),
+    daoContract: initialContracts.getDaoContract()
   });
 
   useEffect(() => {
