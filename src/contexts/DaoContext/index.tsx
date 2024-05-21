@@ -207,7 +207,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     let proposalDetails = activePs.map((proposalId: string) => initializeProposal(proposalId));
     setActiveProposals(proposalDetails);
-    web3Context.setIsLoading(false);
+    web3Context.showLoader(false, "");
 
     const chunkSize = 10;
     const numChunks = Math.ceil(activePs.length / chunkSize);
@@ -431,7 +431,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getHistoricProposals = async () => {
     console.log("[INFO] Getting historic proposals");
     const allProposalIds = await getHistoricProposalsEvents();
-    if (allProposalIds.length === 0) web3Context.setIsLoading(false);
+    if (allProposalIds.length === 0) web3Context.showLoader(false, "");
 
     const chunkSize = 20;
     const numChunks = Math.ceil(allProposalIds.length / chunkSize);

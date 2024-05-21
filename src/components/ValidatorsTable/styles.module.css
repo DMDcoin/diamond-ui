@@ -1,0 +1,98 @@
+.tableContainer {
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  overflow: hidden;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.styledTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+.styledTable thead tr {
+  background-color: rgb(245, 247, 250);
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 15px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .styledTable th:nth-child(4),
+  .styledTable td:nth-child(4) {
+    display: none;
+    /* Hide column on medium screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .styledTable th:nth-child(3),
+  .styledTable td:nth-child(3),
+  .styledTable th:nth-child(4),
+  .styledTable td:nth-child(4) {
+    display: none;
+    /* Hide columns on small screens */
+  }
+}
+
+/* Add these styles to your styles.module.css */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.pagination li {
+  margin: 0 5px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #0145b2;
+  color: #0145b2;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.pagination li:hover {
+  background-color: #0145b2;
+  color: white;
+}
+
+.pagination .active {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+}
+
+.pagination .disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tableBodyRow:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
+}

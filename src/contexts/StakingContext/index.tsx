@@ -1,15 +1,14 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import { BN } from "bn.js";
+import BigNumber from "bignumber.js";
 import { useWeb3Context } from "../Web3Context";
-import { Context } from "./models/context";
 import { BlockType, NonPayableTx } from "./types/contracts";
 import { Delegator, Pool } from "./models/model";
 import { ContextProviderProps, StakingContextState } from "../Web3Context/types";
 
 
 interface StakingContextProps {
-  stakingDataAdapter: StakingContextState | null,
+  pools: Pool[];
   initializeStakingDataAdapter: () => {}
 }
 
@@ -21,30 +20,70 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const userWallet = web3Context.userWallet;
   const contractsManager = web3Context.contractsManager;
 
-  // const contracts = new ContractManager(web3);
-  const initialStakingContextState: StakingContextState = {
-    initialized: false,
-    context: new Context(),
-    handlingNewBlock: false,
-    // contracts: contracts,
-    // vsContract: contracts.getValidatorSetHbbft(),
-    showAllPools: false,
-    isShowHistoric: false,
-    isReadingData: false,
-    showHistoricBlock: 0,
-    defaultTxOpts: {
-      from: '',
-      gasPrice: '1000000000',
-      gasLimit: '8000000',
-      value: '0'
-    },
-  };
-  const [stakingDataAdapter, setStakingDataAdapter] = useState<StakingContextState>(initialStakingContextState);
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [handlingNewBlock, setHandlingNewBlock] = useState<boolean>(false);
+  const [showAllPools, setShowAllPools] = useState<boolean>(false);
+  const [isShowHistoric, setIsShowHistoric] = useState<boolean>(false);
+  const [isReadingData, setIsReadingData] = useState<boolean>(false);
+  const [showHistoricBlock, setShowHistoricBlock] = useState<number>(0);
+  const [defaultTxOpts, setDefaultTxOpts] = useState<{from: string; gasPrice: string; gasLimit: string; value: string;}>({
+    from: '',
+    gasPrice: '1000000000',
+    gasLimit: '8000000',
+    value: '0'
+  });
+
+  const [pools, setPools] = useState<Pool[]>([]);
+  const [stakingEpoch, setStakingEpoch] = useState<number>(0);
+  const [keyGenRound, setKeyGenRound] = useState<number>(0);
+  const [totalDaoStake, setTotalDaoStake] = useState<BigNumber>(new BigNumber(0));
+  const [currentBlockNumber, setCurrentBlockNumber] = useState<number>(0);
+  const [latestBlockNumber, setLatestBlockNumber] = useState<number>(0);
+  const [currentTimestamp, setCurrentTimestamp] = useState<any>(null);
+  const [coinSymbol, setCoinSymbol] = useState<string>('DMD');
+  const [epochDuration, setEpochDuration] = useState<number>(0);
+  const [stakeWithdrawDisallowPeriod, setStakeWithdrawDisallowPeriod] = useState<number>(0);
+  const [candidateMinStake, setCandidateMinStake] = useState<BigNumber>(new BigNumber(0));
+  const [delegatorMinStake, setDelegatorMinStake] = useState<BigNumber>(new BigNumber(0));
+  const [minimumGasFee, setMinimumGasFee] = useState<BigNumber>(new BigNumber(0));
+  const [epochStartBlock, setEpochStartBlock] = useState<number>(0);
+  const [epochStartTime, setEpochStartTime] = useState<number>(0);
+  const [stakingEpochEndTime, setStakingEpochEndTime] = useState<number>(0);
+  const [deltaPot, setDeltaPot] = useState<string>('');
+  const [daoPot, setDaoPot] = useState<string>('');
+  const [reinsertPot, setReinsertPot] = useState<string>('');
+  const [canStakeOrWithdrawNow, setCanStakeOrWithdrawNow] = useState<boolean>(false);
+  const [stakingAllowedTimeframe, setStakingAllowedTimeframe] = useState<number>(0);
+  const [isSyncingPools, setIsSyncingPools] = useState<boolean>(true);
+  const [currentValidators, setCurrentValidators] = useState<string[]>([]);
+  const [currentValidatorsWithoutPools, setCurrentValidatorsWithoutPools] = useState<string[]>([]);
+  const [numbersOfValidators, setNumbersOfValidators] = useState<number>(0);
+  const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
+
+  useEffect(() => {
+    updatePoolsVotingPower(totalDaoStake);
+  }, [totalDaoStake, pools]);
+
+  useEffect(() => {
+    retrieveValuesFromContract().then(() => {
+      syncPoolsState(true);
+    });
+  }, [currentBlockNumber]);
+
+  const updatePoolsVotingPower = async (totalDaoStake: BigNumber) => {
+    if (contractsManager.stContract) {
+      setPools(prevPools => {
+        prevPools.forEach(pool => {
+          pool.votingPower = pool.totalStake.dividedBy(totalDaoStake).multipliedBy(100).decimalPlaces(2);
+        });
+        return prevPools;
+      });
+    }
+  }
 
   const initializeStakingDataAdapter = async () => {
-    if (stakingDataAdapter.initialized) return;
+    if (initialized) return;
 
-    stakingDataAdapter.initialized = true
     contractsManager.stContract = await contractsManager.contracts.getStakingHbbft();
     contractsManager.brContract = await contractsManager.contracts.getRewardHbbft();
     contractsManager.kghContract = await contractsManager.contracts.getKeyGenHistory();
@@ -52,6 +91,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     await refresh();
     updateEventSubscription();
+    setInitialized(true);
   }
 
   /**
@@ -59,99 +99,84 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
    * if we are browsing historic data or not.
    */
   const updateEventSubscription = () => {
-    console.log('[INFO] Updating event subscription. Is historic?:', stakingDataAdapter.isShowHistoric);
+    console.log('[INFO] Updating event subscription. Is historic?:', isShowHistoric);
 
-    if (stakingDataAdapter.isShowHistoric) {
+    if (isShowHistoric) {
       // if we browse historic, we can safely unsusbscribe from events.
       unsubscribeToEvents();
     }
     else {
       // if we are tracking the latest block,
       // we only subscript to event if we have not done already.
-      if (!stakingDataAdapter.newBlockPolling) {
+      if (!newBlockPolling) {
         subscribeToEvents();
       }
     }
   }
 
   const unsubscribeToEvents = () => {
-    if (stakingDataAdapter.newBlockPolling) {
-      clearInterval(stakingDataAdapter.newBlockPolling);
-      stakingDataAdapter.newBlockPolling = undefined;
+    if (newBlockPolling) {
+      clearInterval(newBlockPolling);
+      setNewBlockPolling(undefined);
     }
   }
 
   const subscribeToEvents = async (): Promise<void> => {
     unsubscribeToEvents();
 
-    stakingDataAdapter.newBlockPolling = setInterval(async () =>  {
+    setNewBlockPolling(setInterval(async () =>  {
       // we make a double check, if we really
       // should not browse historic.
-      if (stakingDataAdapter.isShowHistoric) {
+      if (isShowHistoric) {
         return;
       }
 
       const currentBlock = await web3.eth.getBlockNumber();
-      if (currentBlock > stakingDataAdapter.context.currentBlockNumber && !stakingDataAdapter.handlingNewBlock) {
-        stakingDataAdapter.handlingNewBlock = true;
+      if (currentBlock > currentBlockNumber && !handlingNewBlock) {
         await handleNewBlock();
-        stakingDataAdapter.handlingNewBlock = false;
+        setHandlingNewBlock(false);
       }
-    }, 300000);
+    }, 300000));
   }
 
   const handleNewBlock = async () : Promise<void> => {
     const currWallet = userWallet;
-    const currContext = stakingDataAdapter.context;
 
     console.log('[INFO] Handling new block.');
     const blockHeader = await web3.eth.getBlock('latest');
-    console.log(`[INFO] Current Block Number:`, currContext.currentBlockNumber);
+    console.log(`[INFO] Current Block Number:`, currentBlockNumber);
 
-    currContext.currentBlockNumber = blockHeader.number;
-    currContext.currentTimestamp = new BN(blockHeader.timestamp);
+    setCurrentBlockNumber(blockHeader.number);
+    setCurrentTimestamp(blockHeader.timestamp);
 
-    if (currWallet) {
-      const myBalance = new BN(await web3.eth.getBalance(currWallet.myAddr));
+    if (currWallet.myAddr) {
+      const myBalance = new BigNumber(await web3.eth.getBalance(currWallet.myAddr));
       currWallet.myBalance = myBalance;
     }
 
     // epoch change
-    console.log(`[Info] Updating stakingEpochEndBlock at block ${currContext.currentBlockNumber}`);
-    const oldEpoch = currContext.stakingEpoch;
+    console.log(`[Info] Updating stakingEpochEndBlock at block ${currentBlockNumber}`);
+    const oldEpoch = stakingEpoch;
     await retrieveValuesFromContract();
 
-    console.log("[INFO] Epoch times | Old", oldEpoch, "Latest:", currContext.stakingEpoch, oldEpoch !== currContext.stakingEpoch);
+    console.log("[INFO] Epoch times | Old", oldEpoch, "Latest:", stakingEpoch, oldEpoch !== stakingEpoch);
 
-    const isNewEpoch = oldEpoch !== currContext.stakingEpoch;
+    const isNewEpoch = oldEpoch !== stakingEpoch;
 
-    setStakingDataAdapter((prevDataAdapter) => ({
-      ...prevDataAdapter, 
-      context: currContext
-    }));
     web3Context.setUserWallet(currWallet);
     await syncPoolsState(isNewEpoch);
   }
 
   const refresh = async () => {
     try {
-      const history_info = getBlockHistoryInfoAsString();
-      console.log('[INFO] Starting data refresh', history_info);
-      stakingDataAdapter.isReadingData = true;
+      setIsReadingData(true);
       await retrieveGlobalValues();
-      await retrieveValuesFromContract();
-      await syncPoolsState(true);
-      stakingDataAdapter.isReadingData = false;
-      stakingDataAdapter.lastError = undefined;
-      console.log('[INFO] Finished data refresh', history_info);
-    } catch(e: unknown) {
-      stakingDataAdapter.lastError = e;
-      stakingDataAdapter.isReadingData = false;
-    }
+    } catch(e: unknown) {}
+    setIsReadingData(false);
   }
 
   const getBlockHistoryInfoAsString = () => {
-    return stakingDataAdapter.isShowHistoric ? `historic block #${stakingDataAdapter.showHistoricBlock}` : 'latest';
+    return isShowHistoric ? `historic block #${showHistoricBlock}` : 'latest';
   }
 
   const tx = () : NonPayableTx | undefined => {
@@ -159,11 +184,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const block = () : BlockType => {
-    if ( stakingDataAdapter.isShowHistoric ) {
-      return stakingDataAdapter.showHistoricBlock;
+    if ( isShowHistoric ) {
+      return showHistoricBlock;
     }
 
-    return stakingDataAdapter.context.currentBlockNumber;
+    return currentBlockNumber;
   }
 
   const getMyStake = async (stakingAddress: string): Promise<string> => {
@@ -176,7 +201,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getBannedUntil = async (miningAddress: string): Promise<any> => {
-    return new BN((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), block())));
+    return new BigNumber((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), block())));
   }
 
   const getBanCount = async (miningAddress: string): Promise<number> => {
@@ -185,99 +210,84 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   const getAvailableSince = async (miningAddress: string): Promise<any> => {
     const rawResult = await contractsManager.vsContract.methods.validatorAvailableSince(miningAddress).call(tx(), block());
-    return new BN(rawResult);
+    return new BigNumber(rawResult);
   }
 
   const retrieveGlobalValues = async () => {
     console.log("[INFO] Retrieving Global Values")
     const currWeb3 = web3;
-    const currContext = stakingDataAdapter.context;
+
     if (currWeb3.eth.defaultBlock === undefined || currWeb3.eth.defaultBlock === 'latest') {
-      currContext.currentBlockNumber = await currWeb3.eth.getBlockNumber();
-      currContext.latestBlockNumber  = currContext.currentBlockNumber;
+      const cBlockN = await currWeb3.eth.getBlockNumber();
+      setCurrentBlockNumber(cBlockN);
+      setLatestBlockNumber(cBlockN);
     } else if ( typeof currWeb3.eth.defaultBlock === 'number' ) {
-        currContext.currentBlockNumber = currWeb3.eth.defaultBlock;
-        currContext.latestBlockNumber  = await currWeb3.eth.getBlockNumber();
+        setLatestBlockNumber(await currWeb3.eth.getBlockNumber());
+        setCurrentBlockNumber(currWeb3.eth.defaultBlock);
         currWeb3.defaultBlock = currWeb3.eth.defaultBlock;
     } else {
       console.warn('Unexpected defaultBlock: ', currWeb3.eth.defaultBlock);
     }
 
     if (contractsManager.stContract) {
-      currContext.candidateMinStake = new BN(await contractsManager.stContract.methods.candidateMinStake().call(tx(), block()));
-      currContext.delegatorMinStake = new BN(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), block()));
+      setCandidateMinStake(new BigNumber(await contractsManager.stContract.methods.candidateMinStake().call(tx(), block())));
+      setDelegatorMinStake(new BigNumber(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), block())));
     }
-    
-    currContext.minimumGasFee = new BN(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), block()));
+    setMinimumGasFee(new BigNumber(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), block())));
 
     // those values are asumed to be not changeable.
-    currContext.epochDuration = parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), block()));
-    currContext.stakeWithdrawDisallowPeriod = parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), block()));
-
-    setStakingDataAdapter((prevDataAdapter) => ({
-      ...prevDataAdapter, 
-      context: currContext,
-      web3: currWeb3
-    }));
+    setEpochDuration(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), block())));
+    setStakeWithdrawDisallowPeriod(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), block())));
   }
 
   const retrieveValuesFromContract = async () => {
     console.log("[INFO] Retrieving Values From Contract");
-    const currContext = stakingDataAdapter.context;
-    const oldStakingEpoch = stakingDataAdapter.context.stakingEpoch;
+    const oldStakingEpoch = stakingEpoch;
 
     const promises: Promise<any>[] = [];
     
     if (contractsManager.stContract) {
-      currContext.stakingEpoch = parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), block()));
+      setStakingEpoch(parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), block())));
+      setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
     }
 
     promises.push(
       contractsManager.contracts.getCurrentKeyGenRound(block()).then((result) => {
-        currContext.keyGenRound = result;
+        setKeyGenRound(result);
       })
     );
     
-    if (currContext.stakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
+    if (stakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
       promises.push(
         contractsManager.stContract.methods.stakingEpochStartBlock().call(tx(), block()).then((result) => {
-          currContext.epochStartBlock = parseInt(result);
+          setEpochStartBlock(parseInt(result));
         }),
         contractsManager.stContract.methods.stakingEpochStartTime().call(tx(), block()).then((result) => {
-          currContext.epochStartTime = parseInt(result);
+          setEpochStartTime(parseInt(result));
         }),
         contractsManager.brContract.methods.deltaPot().call(tx(), block()).then((result) => {
-          currContext.deltaPot = web3.utils.fromWei(result, 'ether');
+          setDeltaPot(web3.utils.fromWei(result, 'ether'));
         }),
         contractsManager.brContract.methods.reinsertPot().call(tx(), block()).then((result) => {
-          currContext.reinsertPot = web3.utils.fromWei(result, 'ether');
+          setReinsertPot(web3.utils.fromWei(result, 'ether'));
         }),
         contractsManager.stContract.methods.stakingFixedEpochEndTime().call(tx(), block()).then((result) => {
-          currContext.stakingEpochEndTime = parseInt(result);
+          setStakingEpochEndTime(parseInt(result));
         }),
         contractsManager.stContract.methods.areStakeAndWithdrawAllowed().call(tx(), block()).then((result) => {
-          currContext.canStakeOrWithdrawNow = result;
+          setCanStakeOrWithdrawNow(result);
         })
       );
   
       promises.push(
         web3.eth.getBalance('0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
-          currContext.daoPot = web3.utils.fromWei(daoPotValue, 'ether');
+          setDaoPot(web3.utils.fromWei(daoPotValue, 'ether'));
         })
       );
     }
-
-    await Promise.allSettled(promises).then(() => {
-      setStakingDataAdapter((prevDataAdapter) => ({
-        ...prevDataAdapter, 
-        context: currContext
-      }));
-    });
   }
   
   const syncPoolsState = async (isNewEpoch: boolean) => {
-    const currContext = stakingDataAdapter.context;
-
     const newCurrentValidators = await contractsManager.vsContract.methods.getValidators().call(tx(), block());
     const validatorWithoutPool: Array<string> = [...newCurrentValidators];
     
@@ -306,33 +316,48 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
     const allPools = activePoolAddrs.concat(inactivePoolAddrs);
 
-    if (currContext.currentValidators.toString() !== newCurrentValidators.toString()) {
-      console.log(`[INFO] Validator set changed in block ${currContext.currentBlockNumber} to:\n\n${newCurrentValidators}`);
-      currContext.currentValidators = newCurrentValidators;
+    if (currentValidators.toString() !== newCurrentValidators.toString()) {
+      console.log(`[INFO] Validator set changed in block ${currentBlockNumber} to:\n\n${newCurrentValidators}`);
+      setCurrentValidators(newCurrentValidators);
     }
 
     // check if there is a new pool that is not tracked yet within the context.
-    allPools.forEach((poolAddress) => {
-      const findResult = currContext.pools.find((x) => x.stakingAddress === poolAddress);
-      if (!findResult) {
-        const pool = new Pool(poolAddress);
-        currContext.pools = [...currContext.pools, pool];
-      }
-    });
+    setPools(prevPools => {
+      const newPools = [...prevPools];
+      allPools.forEach(poolAddress => {
+        const findResult = newPools.find(x => x.stakingAddress === poolAddress);
+        if (!findResult) {
+          const pool = new Pool(poolAddress);
+          newPools.push(pool);
+        }
+      });
 
+      updatePools(newPools, validatorWithoutPool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, isNewEpoch);
+      return newPools;
+    });
+  }
+  
+  const updatePools = async (
+    pools: Pool[],
+    validatorWithoutPool: Array<string>,
+    activePoolAddrs: Array<string>,
+    toBeElectedPoolAddrs: Array<string>,
+    pendingValidatorAddrs: Array<string>,
+    isNewEpoch: boolean
+  ) => {
     // update pools in batches of 10 for less rpc calls at once
     const batchSize = 10;
     let updatedPools: Pool[] = [];
-    let currPoolsCopy = currContext.pools;
 
-    for (let i = 0; i < currPoolsCopy.length; i += batchSize) {
-      const batch = currPoolsCopy.slice(i, i + batchSize);
+    for (let i = 0; i < pools.length; i += batchSize) {
+      const batch = pools.slice(i, i + batchSize);
       
       const batchPromises = batch.map((p) => {
         const ixValidatorWithoutPool = validatorWithoutPool.indexOf(p.miningAddress);
         if (ixValidatorWithoutPool !== -1) {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
+        p.votingPower = p.totalStake.dividedBy(totalDaoStake).multipliedBy(100);
         return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, isNewEpoch);
       });
 
@@ -343,11 +368,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           }
         });
 
-        currContext.pools = updatedPools;
-        setStakingDataAdapter((prevDataAdapter) => ({
-          ...prevDataAdapter,
-          context: currContext
-        }));
+        setPools([...updatedPools]);
       });
     }
   }
@@ -364,7 +385,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         pool.availableSince = result;
       }),
       getMyStake(stakingAddress).then((result) => {
-        pool.myStake = new BN(result);
+        pool.myStake = new BigNumber(result);
       }),
     ]);
 
@@ -374,22 +395,22 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.delegators = result.map((delegator: any) => new Delegator(delegator));
         }),
         contractsManager.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(tx(), block()).then((result) => {
-          pool.candidateStake = new BN(result);
+          pool.candidateStake = new BigNumber(result);
         }),
         contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), block()).then((result) => {
-          pool.totalStake = new BN(result);
+          pool.totalStake = new BigNumber(result);
         }),
-        userWallet ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), block()).then((result) => {
-          pool.orderedWithdrawAmount = new BN(result);
-        }) : new BN(0),
-        // stakingDataAdapter.getClaimableReward(stakingAddress).then((result) => {
+        userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), block()).then((result) => {
+          pool.orderedWithdrawAmount = new BigNumber(result);
+        }) : new BigNumber(0),
+        // getClaimableReward(stakingAddress).then((result) => {
         //   pool.claimableReward = result;
         // })
         getBanCount(pool.miningAddress).then((result) => {
           pool.banCount = result;
         }),
         getBannedUntil(pool.miningAddress).then((result) => {
-          pool.bannedUntil = new BN(result);
+          pool.bannedUntil = new BigNumber(result);
         }),
         contractsManager.contracts.getPendingValidatorState(pool.miningAddress, block()).then((result) => {
           pool.keyGenMode = result;
@@ -402,19 +423,19 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
     pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
-    pool.isCurrentValidator = stakingDataAdapter.context.currentValidators.indexOf(pool.miningAddress) >= 0;    
+    pool.isCurrentValidator = currentValidators.indexOf(pool.miningAddress) >= 0;    
 
     // remove pool if required
-    if (!stakingDataAdapter.showAllPools) {
-      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BN('0'))) {
-        for (let i = 0; i < stakingDataAdapter.context.pools.length; i++) {
-          if (stakingDataAdapter.context.pools[i].stakingAddress === pool.stakingAddress) {
-            stakingDataAdapter.context.pools.splice(i, 1);
+    if (!showAllPools) {
+      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !pool.myStake.gt(new BigNumber('0'))) {
+        for (let i = 0; i < pools.length; i++) {
+          if (pools[i].stakingAddress === pool.stakingAddress) {
+            pools.splice(i, 1);
             break;
           }
         }
       } else {
-        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BN('0'))) {
+        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && pool.myStake.gt(new BigNumber('0'))) {
           pool.score = 0;
         } else {
           pool.score = 1000;
@@ -424,7 +445,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     if (pool.isPendingValidator && contractsManager.kghContract) {
       pool.parts = await contractsManager.kghContract.methods.parts(pool.miningAddress).call(tx(), block());
-      const acksLengthBN = new BN(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), block()));
+      const acksLengthBN = new BigNumber(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), block()));
       pool.numberOfAcks = acksLengthBN.toNumber();
     } else {
       pool.parts = '';
@@ -434,9 +455,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
   
   const contextValue = {
-    // states
-    stakingDataAdapter,
-    
+    // state
+    pools,
+
     // methods
     initializeStakingDataAdapter
   };

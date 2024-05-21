@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@100;200;300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0px;
+  font-family: 'Exo', sans-serif;
 }
 
 .mainContainer {
@@ -21,5 +24,81 @@ body {
 @media only screen and (max-width: 600px) {
   .mainContainer {
     padding: 50px 20px;
+  }
+}
+
+.sectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.sectionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sectionSplit {
+  flex: 1;
+  padding: 20px;
+  max-width: 500px;
+}
+
+.sectionSplit-responsive {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Adjustments for large screens */
+@media (min-width: 992px) {
+  .sectionContainer {
+      padding: 60px 0;
+  }
+  
+  .sectionWrapper {
+      flex-wrap: nowrap;
+  }
+  
+  .sectionSplit {
+      padding: 40px;
+      max-width: 600px;
+  }
+}
+
+/* Adjustments for medium screens */
+@media (max-width: 991px) and (min-width: 768px) {
+  .sectionContainer {
+      padding: 50px 0;
+  }
+  
+  .sectionWrapper {
+      flex-wrap: wrap;
+  }
+  
+  .sectionSplit {
+      padding: 30px;
+      max-width: 500px;
+  }
+}
+
+/* Adjustments for small screens */
+@media (max-width: 767px) {
+  .sectionContainer {
+      padding: 40px 0;
+  }
+  
+  .sectionWrapper {
+      flex-direction: column;
+  }
+  
+  .sectionSplit {
+      padding: 20px;
+      max-width: 100%;
   }
 }

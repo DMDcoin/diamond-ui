@@ -2,11 +2,9 @@ import Web3 from "web3";
 
 
 import { ReactNode } from "react";
-import { Context } from "../StakingContext/models/context";
 
 export interface StakingContextState {
   initialized: boolean;
-  context: Context;
   handlingNewBlock: boolean;
   // contracts: ContractManager;
   // vsContract: ValidatorSetHbbft;

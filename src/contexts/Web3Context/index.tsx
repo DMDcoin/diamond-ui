@@ -1,14 +1,14 @@
-import { toast } from 'react-toastify';
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ContextProviderProps } from "./types";
 import Web3 from "web3";
-
-import { BN } from "bn.js";
 import Web3Modal from "web3modal";
-import { walletConnectProvider } from "@web3modal/wagmi";
-import { ContractManager } from "../StakingContext/models/contractManager";
-import { UserWallet } from "../StakingContext/models/wallet";
+import BigNumber from "bignumber.js";
+import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
+import { ContextProviderProps } from "./types";
+import { walletConnectProvider } from "@web3modal/wagmi";
+import { UserWallet } from "../StakingContext/models/wallet";
+import { ContractManager } from "../StakingContext/models/contractManager";
+import React, { createContext, useContext, useEffect, useState } from "react";
+
 import {
   BlockRewardHbbftCoins,
   CertifierHbbft,
@@ -44,16 +44,17 @@ interface Web3ContextProps {
   setUserWallet: (newUserWallet: UserWallet) => void;
   setContractsManager: (newContractsManager: ContractsState) => void;
   ensureWalletConnection: () => boolean;
-  setIsLoading: (isLoading: boolean) => void;
+  showLoader: (loading: boolean, loadingMsg: string) => void;
 }
 
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
   const [web3, setWeb3] = useState<Web3>(new Web3("https://rpc.uniq.diamonds"));
-  const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BN(0)));
+  const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BigNumber(0)));
   const initialContracts = new ContractManager(web3);
   const [contractsManager, setContractsManager] = useState<ContractsState>({
     contracts: initialContracts,
@@ -71,6 +72,11 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       await initialzeContracts(initialContracts);
       setWeb3Initialized(true);
     }
+  }
+
+  const showLoader = (loading: boolean, loadingMsg: string) => {
+    setIsLoading(loading);
+    setLoadingMessage(loadingMsg);
   }
 
   const reinitializeContractsWithProvider = async (provider: Web3) => {
@@ -172,7 +178,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
   
       const walletAddress = (await web3ModalInstance.request({method: 'eth_accounts'}))[0];
-      const myBalance = new BN(await web3.eth.getBalance(walletAddress));
+      const myBalance = new BigNumber(await web3.eth.getBalance(walletAddress));
       const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);
 
       setWeb3(provider);
@@ -207,12 +213,12 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     // other functions
     connectWallet,
     ensureWalletConnection,
-    setIsLoading
+    showLoader
   };
 
   return (
     <Web3Context.Provider value={contextValue}>
-      <Loader isLoading={isLoading}/>
+      <Loader isLoading={isLoading} loadingMessage={loadingMessage}/>
       {children}
     </Web3Context.Provider>
   );

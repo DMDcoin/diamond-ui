@@ -56,7 +56,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
       const storedProposals = daoContext.getCachedProposals();
       const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
-      web3Context.setIsLoading(true);
+      web3Context.showLoader(true, "");
       if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
 
       // fetch proposal details and store in localStorage
@@ -83,7 +83,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     } else {
       startTransition(() => { navigate("/404"); });
     }
-    web3Context.setIsLoading(false);
+    web3Context.showLoader(false, "");
   }
 
   const handleDismissProposal = async () => {

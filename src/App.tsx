@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import NavBar from "./layout/Navbar";
 import Loader from "./components/Loader";
+import Footer from "./layout/Footer";
 
 const DaoHome = lazy(() => import("./pages/Dao/DaoHome"));
 const Home = lazy(() => import("./pages/Home"));
@@ -26,12 +27,13 @@ const App: React.FC<AppProps> = () => {
           <Route path="dao/historic" element={<HistoricProposals />} />
           <Route path="dao/details/:proposalId" element={<ProposalDetails />} />
           
-          <Route path="pools" element={<Pools />} />
-          <Route path="pool-details/:poolAddress" element={<PoolDetails />} />
+          <Route path="staking/" element={<Pools />} />
+          <Route path="staking/pool-details/:poolAddress" element={<PoolDetails />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      <Footer />
     </BrowserRouter>
   );
 };

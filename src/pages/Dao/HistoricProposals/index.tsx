@@ -29,12 +29,12 @@ const HistoricProposals = () => {
 
   useEffect(() => {
     if (!fetching) {
-      web3Context.setIsLoading(true);
+      web3Context.showLoader(true, "");
       daoContext.getHistoricProposals();
       setFetching(true);
     } else {
       const totalProposals = daoContext.allDaoProposals.length;
-      totalProposals > 0 && web3Context.setIsLoading(false);
+      totalProposals > 0 && web3Context.showLoader(false, "");
       const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.state !== '').length;
       const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
       if (indexingPercentage === 100) {
