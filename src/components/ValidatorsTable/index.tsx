@@ -1,7 +1,8 @@
-import styles from "./styles.module.css";
-import React, { useState } from "react";
 import BigNumber from "bignumber.js";
+import React, { useEffect, useState } from "react";
+import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
+import { useWeb3Context } from "../../contexts/Web3Context";
 import { useStakingContext } from "../../contexts/StakingContext";
 
 interface ValidatorsTableProps {
@@ -10,6 +11,7 @@ interface ValidatorsTableProps {
 
 const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
   const navigate = useNavigate();
+  const { userWallet } = useWeb3Context();
   const { pools } = useStakingContext();
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -37,6 +39,14 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     return pageNumbers;
   };
 
+  const handleLockCoins = (e: React.MouseEvent<HTMLButtonElement>, stakingAddress: string) => {
+    e.stopPropagation();
+  }
+
+  const handleWithdraw = (e: React.MouseEvent<HTMLButtonElement>, stakingAddress: string) => {
+    e.stopPropagation();
+  }
+
   return (
     <div className="sectionContainer">
       <div className={styles.tableContainer}>
@@ -44,19 +54,19 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
           <thead>
             <tr>
               <th></th>
-              <th></th>
+              <th>Status</th>
               <th>Wallet</th>
               <th>Total Stake</th>
               <th>Voting Power</th>
               <th>Score</th>
-              <th></th>
+              <th>{userWallet.myAddr ? "My stake" : "" }</th>
               <th></th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {currentItems.map((pool, index) => (
-              <tr onClick={() => navigate(`/staking/pool-details/${pool.stakingAddress}`)} className={styles.tableBodyRow} key={index}>
+              <tr onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow} key={index}>
                 <td>
                   <img src="https://via.placeholder.com/50" alt="Image 1" />
                 </td>
@@ -65,9 +75,21 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                 <td>{BigNumber(Number(pool.totalStake)).dividedBy(10**18).toString()}</td>
                 <td>{pool.votingPower.toString()} %</td>
                 <td>1000</td>
-                <td></td> {/* My stake */}
-                <td></td> {/* Lock coins */}
-                <td></td> {/* Withdraw */}
+                {
+                  userWallet.myAddr ? <>
+                    <td>{userWallet.myAddr ? BigNumber(Number(pool.myStake)).dividedBy(10**18).toString() : "" }</td>
+                    {
+                      pool.isActive ? <td><button onClick={(e) => handleLockCoins(e, pool.stakingAddress)} className={styles.tableButton}>Lock coins</button></td> : <td></td>
+                    }
+                    {
+                      pool.myStake.isGreaterThan(0) ? <td><button onClick={(e) => handleWithdraw(e, pool.stakingAddress)} className={styles.tableButton}>Withdraw</button></td> : <td></td>
+                    }
+                  </> : <>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </>
+                }
               </tr>
             ))}
           </tbody>

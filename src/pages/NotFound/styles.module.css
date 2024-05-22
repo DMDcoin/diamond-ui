@@ -1,0 +1,29 @@
+.notFoundContainer {
+  gap: 1rem;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.notFoundContainer > * {
+    text-align: center;
+}
+
+.notFoundContainer > p {
+  color: #0145b2;
+  margin-bottom: 24px;
+  font-size: 20px;
+  line-height: 1.5em;
+  transform: translate(0);
+}
+
+.notFoundContainer > h1 {
+  color: #0145b2;
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.25em;
+  overflow: hidden;
+  transform: translate(0);
+}

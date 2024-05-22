@@ -12,7 +12,6 @@ body {
 .mainContainer {
   display: flex;
   align-items: center;
-  padding: 50px 100px;
   flex-direction: column;
   justify-content: center;
 }
@@ -27,12 +26,21 @@ body {
   }
 }
 
-.sectionContainer {
+.section {
+  width: 100%;
   display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+}   
+
+.sectionContainer {
+  width: 100%;
+  display: flex;
+  padding: 40px 0;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  padding: 40px 0;
 }
 
 .sectionWrapper {
@@ -57,48 +65,63 @@ body {
 
 /* Adjustments for large screens */
 @media (min-width: 992px) {
+  .section {
+    padding: 80px 50px;
+  }
+
   .sectionContainer {
-      padding: 60px 0;
+    max-width: 75vw;
+    padding: 60px 0;
   }
   
   .sectionWrapper {
-      flex-wrap: nowrap;
+    flex-wrap: nowrap;
   }
   
   .sectionSplit {
-      padding: 40px;
-      max-width: 600px;
+    padding: 40px;
+    max-width: 600px;
   }
 }
 
 /* Adjustments for medium screens */
 @media (max-width: 991px) and (min-width: 768px) {
+  .section {
+    padding: 80px 50px;
+  }
+
   .sectionContainer {
-      padding: 50px 0;
+    max-width: 90vw;
+    padding: 50px 0;
   }
   
   .sectionWrapper {
-      flex-wrap: wrap;
+    flex-wrap: wrap;
   }
   
   .sectionSplit {
-      padding: 30px;
-      max-width: 500px;
+    padding: 30px;
+    max-width: 500px;
   }
 }
 
 /* Adjustments for small screens */
 @media (max-width: 767px) {
+  .section {
+    padding: 60px 15px;
+  }
+
   .sectionContainer {
-      padding: 40px 0;
+    max-width: 90vw;
+    padding: 40px 0;
   }
   
   .sectionWrapper {
-      flex-direction: column;
+    flex-direction: column;
   }
   
   .sectionSplit {
-      padding: 20px;
-      max-width: 100%;
+    padding: 20px;
+    max-width: 100%;
   }
 }

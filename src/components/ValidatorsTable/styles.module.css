@@ -2,11 +2,12 @@
   margin: auto;
   display: flex;
   max-width: 100%;
+  min-height: 80vh;
   overflow: hidden;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
   background-color: #ffffff;
+  justify-content: space-between;
 }
 
 .styledTable {
@@ -59,15 +60,17 @@
 /* Add these styles to your styles.module.css */
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  list-style: none;
+  gap: 1rem;
   padding: 0;
+  display: flex;
   margin: 20px 0;
+  flex-wrap: wrap;
+  list-style: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination li {
-  margin: 0 5px;
   cursor: pointer;
   padding: 8px 16px;
   border: 1px solid #0145b2;
@@ -95,4 +98,30 @@
 .tableBodyRow:hover {
   cursor: pointer;
   background-color: #e6f2ff; /* Light blue */
+}
+
+.tableButton {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #0145b2;
+  color: #0145b2;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: rgb(245, 247, 250);
+}
+
+.tableButton:hover {
+  background-color: #0145b2;
+  color: white;
+}
+
+.tableButton .active {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+}
+
+.tableButton .disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

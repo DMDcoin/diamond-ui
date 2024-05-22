@@ -15,10 +15,12 @@ interface StakingContextProps {
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
 
 const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
-  const web3Context = useWeb3Context();
-  const web3 = web3Context.web3;
-  const userWallet = web3Context.userWallet;
-  const contractsManager = web3Context.contractsManager;
+  const {
+    contractsManager,
+    setUserWallet,
+    userWallet,
+    web3,
+  } = useWeb3Context();
 
   const [initialized, setInitialized] = useState<boolean>(false);
   const [handlingNewBlock, setHandlingNewBlock] = useState<boolean>(false);
@@ -61,10 +63,24 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
+    console.log("[INFO] User Wallet Changed")
+    setPools(prevPools => {
+      prevPools.forEach(pool => {
+      getMyStake(pool.stakingAddress).then((result) => {
+          pool.myStake = new BigNumber(result);
+        });
+      });
+      return prevPools;
+    })
+  }, [userWallet, pools]);
+
+  useEffect(() => {
+    console.log("[INFO] totalDaoStake Changed")
     updatePoolsVotingPower(totalDaoStake);
   }, [totalDaoStake, pools]);
 
   useEffect(() => {
+    console.log("[INFO] currentBlockNumber Changed")
     retrieveValuesFromContract().then(() => {
       syncPoolsState(true);
     });
@@ -163,7 +179,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     const isNewEpoch = oldEpoch !== stakingEpoch;
 
-    web3Context.setUserWallet(currWallet);
+    setUserWallet(currWallet);
     await syncPoolsState(isNewEpoch);
   }
 
@@ -192,7 +208,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getMyStake = async (stakingAddress: string): Promise<string> => {
-    if (!web3 || !userWallet || !contractsManager.stContract) {
+    if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) {
       return '0';
     }
     
