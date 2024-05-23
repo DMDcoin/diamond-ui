@@ -4,6 +4,7 @@ import { useWeb3Context } from "../Web3Context";
 import { ContextProviderProps } from "../Web3Context/types";
 import { DaoPhase, Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
+import { timestampToDate } from '../../utils/common';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
   daoPhase: any,
@@ -72,14 +73,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const phaseCount = await web3Context.contractsManager.daoContract.methods.daoPhaseCount().call();
     setDaoPhaseCount(phaseCount);
-  }
-
-  const timestampToDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
   }
 
   const getProposalTypeString = (proposalType: string) => {

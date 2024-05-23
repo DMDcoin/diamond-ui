@@ -20,3 +20,25 @@ export const getFunctionName = (abi: any[], selector: string): string => {
   });
   return matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function';
 };
+
+export const timestampToDate = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
+export const timestampToDateTime = (timestamp: number) => {
+  const date = new Date(timestamp * 1000);
+  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const day = date.getDate();
+  const year = date.getFullYear();
+  
+  // Get hours, minutes, and seconds and pad with leading zeros if needed
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  
+  return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
+}

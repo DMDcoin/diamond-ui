@@ -72,12 +72,12 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                 </td>
                 <td>{pool.isActive ? "Active" : "Banned"}</td>
                 <td>{pool.stakingAddress}</td>
-                <td>{BigNumber(Number(pool.totalStake)).dividedBy(10**18).toString()}</td>
+                <td>{pool.totalStake.dividedBy(10**18).toString()} DMD</td>
                 <td>{pool.votingPower.toString()} %</td>
-                <td>1000</td>
+                <td>{pool.score}</td>
                 {
                   userWallet.myAddr ? <>
-                    <td>{userWallet.myAddr ? BigNumber(Number(pool.myStake)).dividedBy(10**18).toString() : "" }</td>
+                    <td>{userWallet.myAddr ? pool.myStake.dividedBy(10**18).toString() : "" } DMD</td>
                     {
                       pool.isActive ? <td><button onClick={(e) => handleLockCoins(e, pool.stakingAddress)} className={styles.tableButton}>Lock coins</button></td> : <td></td>
                     }

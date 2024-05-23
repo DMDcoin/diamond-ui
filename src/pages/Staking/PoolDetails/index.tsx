@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
+import CreateValidatorModal from "../../../components/CreateValidatorModal";
 
 interface PoolDetailsProps {}
 
@@ -10,16 +11,21 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const { poolAddress } = useParams();
   const { pools } = useStakingContext();
   const [pool, setPool] = useState<Pool | null>(null);
+  const [openCreateValidatorModal, setOpenCreateValidatorModal] = useState(false);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
-    console.log(pool);
     setPool(pool as Pool);
-  }, [poolAddress]);
+  }, [poolAddress, pools]);
+
 
   return (
     <section className="section">
+
+      <CreateValidatorModal isOpen={openCreateValidatorModal} onClose={() => setOpenCreateValidatorModal(false)} />
+
       <div className="sectionContainer">
+
         {/* image address status */}
         <div className={styles.infoContainer}>
           <img src="https://via.placeholder.com/50" alt="Image 1" />
@@ -37,19 +43,19 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             <tbody>
               <tr>
                 <td>Total Stake</td>
-                <td>0</td>
+                <td>{pool ? pool.totalStake.dividedBy(10**18).toString() : 0} DMD</td>
               </tr>
               <tr>
                 <td>Candidate Stake</td>
-                <td>0</td>
+                <td>{pool ? pool.candidateStake.dividedBy(10**18).toString() : 0} DMD</td>
               </tr>
               <tr>
                 <td>Score</td>
-                <td>0</td>
+                <td>{pool ? pool.score : 0}</td>
               </tr>
               <tr>
                 <td>Voting Power</td>
-                <td>{pool?.votingPower.toString()} %</td>
+                <td>{pool ? pool.votingPower.toString() : 0} %</td>
               </tr>
             </tbody>
           </table>
@@ -57,26 +63,51 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
         {/* delegators table */}
         <div className={styles.delegatorStatsContainer}>
-          <h1>Delegators</h1>
+
+          <div>
+            <h1>Delegators</h1>
+            {
+              pool?.isActive && <button className={styles.tableButton}>Lock coin</button>
+            }
+            {
+              pool?.myStake.isGreaterThan(0) && (<button className={styles.tableButton}>Withdraw</button>)
+            }
+            
+          </div>          
 
           <table className={styles.styledTable}>
             <thead>
-              <tr>
-                <td></td>
-                <td></td>
-                <td>Wallet</td>
-                <td>Delegated Stake</td>
-              </tr>
+              {
+                pool && pool.delegators.length ? (
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Wallet</td>
+                    <td>Delegated Stake</td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td>No Delegations</td>
+                  </tr>
+                )
+              }
             </thead>
             <tbody>
-              <tr>
-                <td>
-                <img src="https://via.placeholder.com/50" alt="Image 1" />
-                </td>
-                <td>Active</td>
-                <td>0x0000000...</td>
-                <td>100 DMD</td>
-              </tr>
+              {
+                pool && pool.delegators.length ? pool.delegators.map(delegator => (
+                  <tr>
+                    <td>
+                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                    </td>
+                    <td>Active</td>
+                    <td>{delegator.address}</td>
+                    <td>{delegator.amount.dividedBy(10**18).toString()} DMD</td>
+                  </tr>
+                )) : (
+                  <tr>
+                  </tr>
+                )
+              }
             </tbody>
           </table>
         </div>

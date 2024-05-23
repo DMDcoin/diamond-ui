@@ -1,36 +1,59 @@
 import React from "react";
+import styles from "./styles.module.css";
+import { timestampToDateTime } from "../../utils/common";
+import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
-
-// import styles from "./styles.module.css";
+import { useStakingContext } from "../../contexts/StakingContext";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
+  const { userWallet, connectWallet } = useWeb3Context();
+
+  const { 
+    keyGenRound,
+    stakingEpoch,
+    epochStartTime,
+    epochStartBlock,
+    activeValidators,
+    validCandidates,
+    minimumGasFee,
+    reinsertPot,
+    deltaPot } = useStakingContext();
+
   return (
     <>
 
-      <section className="hero-section">
-          <div className="hero-container">
-              <div className="hero-wrapper">
-                  <div className="hero-split">
-                      <div className="div-block-2">
-                          <h1 data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e0e" className="heading">Become DMD Chain Participant</h1>
-                      </div>
-                      <div className="div-block">
-                          <p data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10" className="margin-bottom-24px">Lorem ipsum dolor
-                              sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
-                              euismod lorem. Etiam sodales ac felis id interdum.</p>
-                      </div>
-                      <div className="div-block-3"><a data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e12" href="#"
-                              className="button w-button">Get Started</a></div>
-                  </div>
-                  <div className="hero-split hero-split-responsive"><img
-                          src={getStartedImg}
-                          loading="lazy" width="500" data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e15" alt=""
-                          className="shadow-two" /></div>
-              </div>
-          </div>
-      </section>
+        {
+            userWallet.myAddr ? (
+                <section>
+                    Logged IN
+                </section>
+            ) : (
+                <section className="hero-section">
+                    <div className="hero-container">
+                        <div className="hero-wrapper">
+                            <div className="hero-split">
+                                <div className="div-block-2">
+                                    <h1 data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e0e" className="heading">Become DMD Chain Participant</h1>
+                                </div>
+                                <div className="div-block">
+                                    <p data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10" className="margin-bottom-24px">Lorem ipsum dolor
+                                        sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
+                                        euismod lorem. Etiam sodales ac felis id interdum.</p>
+                                </div>
+                                <div className="div-block-3"><button onClick={connectWallet}
+                                        className="button w-button">Get Started</button></div>
+                            </div>
+                            <div className="hero-split hero-split-responsive"><img
+                                    src={getStartedImg}
+                                    loading="lazy" width="500" data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e15" alt=""
+                                    className="shadow-two" /></div>
+                        </div>
+                    </div>
+                </section>
+            )
+        }
 
       <section className="features-section">
           <div className="w-layout-blockcontainer container w-container">
@@ -70,39 +93,39 @@ const Home: React.FC<HomeProps> = ({}) => {
                       <h3 className="heading-3">Network Statistics</h3>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-_92822878-c41a-30b0-3d9e-ff70e92725ec-55493c02" className="text-block-3">0</div>
+                      <div id="w-node-_92822878-c41a-30b0-3d9e-ff70e92725ec-55493c02" className="text-block-3">{stakingEpoch}</div>
                       <div id="w-node-e5752c0d-27c5-1c42-e24d-fa9c23646ba9-55493c02">Current Epoch</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-c798ac08-165e-43d0-28dc-cffd8819e10f-55493c02" className="text-block-4">0</div>
+                      <div id="w-node-c798ac08-165e-43d0-28dc-cffd8819e10f-55493c02" className="text-block-4">{keyGenRound}</div>
                       <div id="w-node-c798ac08-165e-43d0-28dc-cffd8819e111-55493c02">Key Gen. Round</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-_6a59d24c-fda0-91f0-85a0-41a56296eb04-55493c02" className="text-block-6">0</div>
+                      <div id="w-node-_6a59d24c-fda0-91f0-85a0-41a56296eb04-55493c02" className="text-block-6">{timestampToDateTime(epochStartTime)}</div>
                       <div id="w-node-_6a59d24c-fda0-91f0-85a0-41a56296eb06-55493c02">Epoch Start Time</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-_765acecc-35cc-2bea-6a4e-27cc27b481c1-55493c02" className="text-block-5">0</div>
+                      <div id="w-node-_765acecc-35cc-2bea-6a4e-27cc27b481c1-55493c02" className="text-block-5">{epochStartBlock}</div>
                       <div id="w-node-_765acecc-35cc-2bea-6a4e-27cc27b481c3-55493c02">Epoch Start Block</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-eb02ae79-453d-bd82-00c0-4af2761f6182-55493c02" className="text-block-10">0</div>
+                      <div id="w-node-eb02ae79-453d-bd82-00c0-4af2761f6182-55493c02" className="text-block-10">{activeValidators}</div>
                       <div id="w-node-eb02ae79-453d-bd82-00c0-4af2761f6184-55493c02">Active Validators</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-_60a915bd-b96b-bc56-2e0c-2c07dd3b362d-55493c02" className="text-block-11">0</div>
+                      <div id="w-node-_60a915bd-b96b-bc56-2e0c-2c07dd3b362d-55493c02" className="text-block-11">{validCandidates}</div>
                       <div id="w-node-_60a915bd-b96b-bc56-2e0c-2c07dd3b362f-55493c02">Valid Candidates</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-_1ea50c7a-12aa-dd36-b910-bd059d6bb450-55493c02" className="text-block-9">0</div>
+                      <div id="w-node-_1ea50c7a-12aa-dd36-b910-bd059d6bb450-55493c02" className="text-block-9">{minimumGasFee.dividedBy(10**9).toString()} Gwei</div>
                       <div id="w-node-_1ea50c7a-12aa-dd36-b910-bd059d6bb452-55493c02">Min. Gas Fee</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b4e-55493c02" className="text-block-8">0</div>
+                      <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b4e-55493c02" className="text-block-8">{Number(reinsertPot).toFixed(2)} DMD</div>
                       <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b50-55493c02">Reinsert Pot</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a6-55493c02" className="text-block-7">0</div>
+                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a6-55493c02" className="text-block-7">{Number(deltaPot).toFixed(2)} DMD</div>
                       <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a8-55493c02">Delta Pot</div>
                   </div>
               </div>

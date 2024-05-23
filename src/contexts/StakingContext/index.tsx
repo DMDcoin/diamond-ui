@@ -9,6 +9,16 @@ import { ContextProviderProps, StakingContextState } from "../Web3Context/types"
 
 interface StakingContextProps {
   pools: Pool[];
+  keyGenRound: number;
+  stakingEpoch: number;
+  epochStartTime: number;
+  epochStartBlock: number;
+  activeValidators: number;
+  validCandidates: number;
+  minimumGasFee: BigNumber;
+  reinsertPot: string;
+  deltaPot: string;
+  
   initializeStakingDataAdapter: () => {}
 }
 
@@ -16,6 +26,7 @@ const StakingContext = createContext<StakingContextProps | undefined>(undefined)
 
 const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const {
+    web3Initialized,
     contractsManager,
     setUserWallet,
     userWallet,
@@ -26,7 +37,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [handlingNewBlock, setHandlingNewBlock] = useState<boolean>(false);
   const [showAllPools, setShowAllPools] = useState<boolean>(false);
   const [isShowHistoric, setIsShowHistoric] = useState<boolean>(false);
-  const [isReadingData, setIsReadingData] = useState<boolean>(false);
   const [showHistoricBlock, setShowHistoricBlock] = useState<number>(0);
   const [defaultTxOpts, setDefaultTxOpts] = useState<{from: string; gasPrice: string; gasLimit: string; value: string;}>({
     from: '',
@@ -80,10 +90,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }, [totalDaoStake, pools]);
 
   useEffect(() => {
-    console.log("[INFO] currentBlockNumber Changed")
-    retrieveValuesFromContract().then(() => {
-      syncPoolsState(true);
-    });
+    if (web3Initialized) {
+      retrieveGlobalValues();
+    }
+  }, [web3Initialized]);
+
+  useEffect(() => {
+    console.log("[INFO] currentBlockNumber Changed");
+    if (web3Initialized) {
+      retrieveGlobalValues().then(() => {
+        syncPoolsState(true);
+      });
+    }
   }, [currentBlockNumber]);
 
   const updatePoolsVotingPower = async (totalDaoStake: BigNumber) => {
@@ -99,13 +117,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   const initializeStakingDataAdapter = async () => {
     if (initialized) return;
-
-    contractsManager.stContract = await contractsManager.contracts.getStakingHbbft();
-    contractsManager.brContract = await contractsManager.contracts.getRewardHbbft();
-    contractsManager.kghContract = await contractsManager.contracts.getKeyGenHistory();
-    contractsManager.rngContract = await contractsManager.contracts.getRandomHbbft();
-
-    await refresh();
     updateEventSubscription();
     setInitialized(true);
   }
@@ -173,7 +184,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     // epoch change
     console.log(`[Info] Updating stakingEpochEndBlock at block ${currentBlockNumber}`);
     const oldEpoch = stakingEpoch;
-    await retrieveValuesFromContract();
+    await retrieveGlobalValues();
 
     console.log("[INFO] Epoch times | Old", oldEpoch, "Latest:", stakingEpoch, oldEpoch !== stakingEpoch);
 
@@ -181,14 +192,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     setUserWallet(currWallet);
     await syncPoolsState(isNewEpoch);
-  }
-
-  const refresh = async () => {
-    try {
-      setIsReadingData(true);
-      await retrieveGlobalValues();
-    } catch(e: unknown) {}
-    setIsReadingData(false);
   }
 
   const getBlockHistoryInfoAsString = () => {
@@ -231,49 +234,43 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   const retrieveGlobalValues = async () => {
     console.log("[INFO] Retrieving Global Values")
-    const currWeb3 = web3;
+    const oldStakingEpoch = stakingEpoch;
 
-    if (currWeb3.eth.defaultBlock === undefined || currWeb3.eth.defaultBlock === 'latest') {
-      const cBlockN = await currWeb3.eth.getBlockNumber();
+    if (web3.eth.defaultBlock === undefined || web3.eth.defaultBlock === 'latest') {
+      const cBlockN = await web3.eth.getBlockNumber();
       setCurrentBlockNumber(cBlockN);
       setLatestBlockNumber(cBlockN);
-    } else if ( typeof currWeb3.eth.defaultBlock === 'number' ) {
-        setLatestBlockNumber(await currWeb3.eth.getBlockNumber());
-        setCurrentBlockNumber(currWeb3.eth.defaultBlock);
-        currWeb3.defaultBlock = currWeb3.eth.defaultBlock;
+    } else if ( typeof web3.eth.defaultBlock === 'number' ) {
+        setLatestBlockNumber(await web3.eth.getBlockNumber());
+        setCurrentBlockNumber(web3.eth.defaultBlock);
+        web3.defaultBlock = web3.eth.defaultBlock;
     } else {
-      console.warn('Unexpected defaultBlock: ', currWeb3.eth.defaultBlock);
+      console.warn('Unexpected defaultBlock: ', web3.eth.defaultBlock);
     }
+
+    let updatedStakingEpoch;
+    const promises: Promise<any>[] = [];
 
     if (contractsManager.stContract) {
       setCandidateMinStake(new BigNumber(await contractsManager.stContract.methods.candidateMinStake().call(tx(), block())));
       setDelegatorMinStake(new BigNumber(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), block())));
+      updatedStakingEpoch = parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), block()));
+      setStakingEpoch(updatedStakingEpoch);
+      setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
     }
     setMinimumGasFee(new BigNumber(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), block())));
 
     // those values are asumed to be not changeable.
     setEpochDuration(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), block())));
     setStakeWithdrawDisallowPeriod(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), block())));
-  }
-
-  const retrieveValuesFromContract = async () => {
-    console.log("[INFO] Retrieving Values From Contract");
-    const oldStakingEpoch = stakingEpoch;
-
-    const promises: Promise<any>[] = [];
-    
-    if (contractsManager.stContract) {
-      setStakingEpoch(parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), block())));
-      setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
-    }
 
     promises.push(
       contractsManager.contracts.getCurrentKeyGenRound(block()).then((result) => {
         setKeyGenRound(result);
-      })
+      }),
     );
-    
-    if (stakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
+
+    if (updatedStakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
       promises.push(
         contractsManager.stContract.methods.stakingEpochStartBlock().call(tx(), block()).then((result) => {
           setEpochStartBlock(parseInt(result));
@@ -292,11 +289,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }),
         contractsManager.stContract.methods.areStakeAndWithdrawAllowed().call(tx(), block()).then((result) => {
           setCanStakeOrWithdrawNow(result);
-        })
-      );
-  
-      promises.push(
-        web3.eth.getBalance('0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
+        }),  
+        web3.eth.getBalance(process.env.REACT_APP_DAO_CONTRACT_ADDRESS || '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
           setDaoPot(web3.utils.fromWei(daoPotValue, 'ether'));
         })
       );
@@ -306,6 +300,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const syncPoolsState = async (isNewEpoch: boolean) => {
     const newCurrentValidators = await contractsManager.vsContract.methods.getValidators().call(tx(), block());
     const validatorWithoutPool: Array<string> = [...newCurrentValidators];
+
+    if (currentValidators.toString() !== newCurrentValidators.toString()) {
+      console.log(`[INFO] Validator set changed in block ${currentBlockNumber} to:\n\n${newCurrentValidators}`);
+      setCurrentValidators(newCurrentValidators);
+    }
     
     let activePoolAddrs: Array<string> = [];
     let inactivePoolAddrs: Array<string> = [];
@@ -331,11 +330,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
     const allPools = activePoolAddrs.concat(inactivePoolAddrs);
-
-    if (currentValidators.toString() !== newCurrentValidators.toString()) {
-      console.log(`[INFO] Validator set changed in block ${currentBlockNumber} to:\n\n${newCurrentValidators}`);
-      setCurrentValidators(newCurrentValidators);
-    }
 
     // check if there is a new pool that is not tracked yet within the context.
     setPools(prevPools => {
@@ -408,10 +402,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (contractsManager.stContract) {
       await Promise.allSettled([
         contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), block()).then((result) => {
-          pool.delegators = result.map((delegator: any) => new Delegator(delegator));
-        }),
-        contractsManager.stContract.methods.stakeAmount(stakingAddress, stakingAddress).call(tx(), block()).then((result) => {
-          pool.candidateStake = new BigNumber(result);
+          getDelegatorsData(stakingAddress, result.map(address => new Delegator(address))).then((result) => {
+            pool.delegators = result.delegators;
+            pool.candidateStake = result.candidateStake;
+          });
         }),
         contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), block()).then((result) => {
           pool.totalStake = new BigNumber(result);
@@ -419,9 +413,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), block()).then((result) => {
           pool.orderedWithdrawAmount = new BigNumber(result);
         }) : new BigNumber(0),
-        // getClaimableReward(stakingAddress).then((result) => {
-        //   pool.claimableReward = result;
-        // })
         getBanCount(pool.miningAddress).then((result) => {
           pool.banCount = result;
         }),
@@ -439,7 +430,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
     pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
-    pool.isCurrentValidator = currentValidators.indexOf(pool.miningAddress) >= 0;    
+
+    setCurrentValidators(
+      prevState => {
+        pool.isCurrentValidator = prevState.indexOf(pool.miningAddress) >= 0;    
+        return prevState;
+      }
+    );
 
     // remove pool if required
     if (!showAllPools) {
@@ -473,10 +470,41 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const contextValue = {
     // state
     pools,
+    keyGenRound,
+    stakingEpoch,
+    epochStartTime,
+    epochStartBlock,
+    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
+    validCandidates: pools.filter(pool => pool.isAvailable).length,
+    minimumGasFee,
+    reinsertPot,
+    deltaPot,
 
     // methods
     initializeStakingDataAdapter
   };
+
+  const getDelegatorsData = async (poolAddress: string, delegators: Delegator[]) => {
+    let candidateStake = new BigNumber(0);
+
+    await Promise.allSettled(
+      delegators.map(async (delegator: Delegator) => {
+        try {
+          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(poolAddress, delegator.address).call(tx(), block());
+          if (delegatedAmount && poolAddress != delegator.address) {
+            delegator.amount = new BigNumber(delegatedAmount);
+            candidateStake = candidateStake.plus(delegator.amount);
+          }
+        } catch (error) {
+          console.error(`Failed to fetch data for delegator ${delegator.address}:`, error);
+        }
+      })
+    );
+
+    console.log(`[INFO] Fetched delegation data for ${poolAddress}: `, candidateStake.toString(), delegators.length);
+  
+    return {delegators, candidateStake};
+  }
 
   return (
     <StakingContext.Provider value={contextValue}>

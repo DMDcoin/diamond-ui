@@ -37,3 +37,10 @@
 /* .getStartedContainer > div > img {
     height: 400px;
 } */
+
+.loader {
+  background-color: #ededed;
+  height: 18px;
+  border-radius: 7px;
+  width: 100%;
+}

@@ -90,9 +90,11 @@ export class Pool {
 }
 
 export class Delegator {
-  public constructor(delegator: string) {
-    this.address = delegator;
+  public constructor(delegatorAddress: string) {
+    this.address = delegatorAddress;
+    this.amount = new BigNumber(0);
   }
 
-  address: string = '';
+  public address: string;
+  public amount: BigNumber;
 }

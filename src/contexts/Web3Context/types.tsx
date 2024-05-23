@@ -24,3 +24,8 @@ export interface StakingContextState {
 export interface ContextProviderProps {
   children: ReactNode;
 }
+
+export interface Delegator {
+  address: string;
+  amount: string;
+}

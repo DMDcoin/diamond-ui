@@ -1,6 +1,6 @@
 h1 {
   color: #0145b2;
-  font-size: 38px;
+  font-size: 32px;
   font-weight: 600;
   line-height: 1.25em;
   overflow: hidden;
@@ -9,36 +9,6 @@ h1 {
 p {
   color: #0145b2;
   font-size: 18px;
-}
-
-.styledTable {
-  width: 100%;
-  font-size: 18px;
-  min-width: 250px;
-  border-collapse: collapse;
-}
-
-.styledTable thead tr {
-  color: #0145b2;
-  text-align: left;
-  font-weight: bold;
-}
-
-.styledTable th,
-.styledTable td {
-  padding: 12px 0px;
-  color: #0145b2;
-}
-
-.styledTable tbody tr {
-  border-bottom: 1px solid rgba(245, 247, 250, 0);
-}
-
-.styledTable thead tr {
-  background-color: rgb(245, 247, 250);
-  color: #0145b2;
-  text-align: left;
-  height: 80px;
 }
 
 .infoContainer {
@@ -79,6 +49,17 @@ p {
   background-color: white;
 }
 
+.delegatorStatsContainer > div > h1 {
+  margin: 0;
+}
+
+.delegatorStatsContainer > div {
+  gap: 1rem;
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+
 .daoParticipationContainer {
   width: 100%;
   gap: 1.5rem;
@@ -87,4 +68,65 @@ p {
   align-self: flex-start;
   margin: 0px 0px 60px 0px;
   background-color: white;
+}
+
+.styledTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+.styledTable thead tr {
+  background-color: rgb(245, 247, 250);
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+  font-weight: 600;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 15px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.tableBodyRow:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
+}
+
+.tableButton {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #0145b2;
+  color: #0145b2;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: rgb(245, 247, 250);
+}
+
+.tableButton:hover {
+  background-color: #0145b2;
+  color: white;
+}
+
+.tableButton .active {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+}
+
+.tableButton .disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
