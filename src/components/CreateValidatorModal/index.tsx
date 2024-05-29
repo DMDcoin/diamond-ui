@@ -1,46 +1,116 @@
-import React, { useEffect } from "react";
 import styles from "./styles.module.css";
+import { useWeb3Context } from "../../contexts/Web3Context";
+import React, { useState, useEffect, useRef, FormEvent } from "react";
+import { toast } from "react-toastify";
+import { getAddressFromPublicKey } from "../../utils/common";
+import BigNumber from "bignumber.js";
+import { useStakingContext } from "../../contexts/StakingContext";
+import { useNavigate } from "react-router-dom";
 
-interface CreateValidatorModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface ModalProps {
+  buttonText: string;
 }
 
-const CreateValidatorModal: React.FC<CreateValidatorModalProps> = ({ isOpen, onClose }) => {
+const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [publicKey, setPublicKey] = useState("");
+  const [stakeAmount, setStakeAmount] = useState(10000);
+  const { web3, userWallet, contractsManager, ensureWalletConnection } = useWeb3Context();
+  const { createPool } = useStakingContext();
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        closeModal();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        closeModal();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onClose]);
+  }, [isOpen]);
 
-  console.log("isOpen", isOpen)
-
-  if (!isOpen) {
-    return null;
+  const handleCreatePool = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!ensureWalletConnection()) return;
+    try {
+      createPool(publicKey, new BigNumber(stakeAmount)).then((res) => {
+        console.log("Here", {res});
+        if (res) navigate(`/staking/details/${userWallet.myAddr}`);
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Error in creating pool");
+    }
+    
   }
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+    <>
+      <button className={styles.tableButton} onClick={openModal}>
+        {buttonText}
+      </button>
 
-        <button className={styles.modalClose} onClick={onClose}>&times;</button>
+      {isOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent} ref={modalRef}>
+            <button className={styles.modalClose} onClick={closeModal}>
+              &times;
+            </button>
+            <h2>Create a pool</h2>
 
-        <h1>Create Validator</h1>
-        
-        <form className={styles.form}>
-          <button className={styles.formSubmit} type="submit">
-            Create Validator
-          </button>
-        </form>
-      </div>
-    </div>
+            <form className={styles.form} onSubmit={handleCreatePool}>
+              <span>
+                Please stake atleast 10,000 DMD
+                coins (50,000 max) to become a validator candidate.
+              </span>
+
+              <input
+                type="text"
+                minLength={130}
+                maxLength={130}
+                name="publicKey"
+                className="publicKey"
+                onChange={e => setPublicKey(e.currentTarget.value)}
+                placeholder="Public Key"
+                required
+              />
+
+              <input
+                min={10000}
+                max={50000}
+                type="number"
+                value={stakeAmount}
+                className={styles.formInput}
+                placeholder="Enter the amount of DMD to stake"
+                onChange={(e) => setStakeAmount(Number(e.target.value))}
+              />
+
+              <button className={styles.formSubmit} type="submit">
+                Create
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

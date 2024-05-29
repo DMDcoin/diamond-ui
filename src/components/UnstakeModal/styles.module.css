@@ -39,10 +39,12 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  text-align: left;
 }
 
 .form > span {
   font-size: 14px;
+  align-self: flex-start;
 }
 
 label {

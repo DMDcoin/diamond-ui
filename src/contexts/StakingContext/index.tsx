@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { ErrorInfo, createContext, useContext, useEffect, useState } from "react";
 
 import BigNumber from "bignumber.js";
 import { useWeb3Context } from "../Web3Context";
 import { BlockType, NonPayableTx } from "./types/contracts";
 import { Delegator, Pool } from "./models/model";
 import { ContextProviderProps, StakingContextState } from "../Web3Context/types";
+import { toast } from "react-toastify";
+import { getAddressFromPublicKey } from "../../utils/common";
 
 
 interface StakingContextProps {
@@ -18,17 +20,24 @@ interface StakingContextProps {
   minimumGasFee: BigNumber;
   reinsertPot: string;
   deltaPot: string;
+  candidateMinStake: BigNumber;
+  delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {}
+  unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
 
 const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
+
   const {
     web3Initialized,
     contractsManager,
+    showLoader,
     setUserWallet,
+    getUpdatedBalance,
     userWallet,
     web3,
   } = useWeb3Context();
@@ -368,7 +377,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
         p.votingPower = p.totalStake.dividedBy(totalDaoStake).multipliedBy(100);
-        return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, isNewEpoch);
+        return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs);
       });
 
       await Promise.allSettled(batchPromises).then((batchResults) => {
@@ -383,7 +392,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, isNewEpoch: boolean) : Promise<Pool>  => {
+  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>) : Promise<Pool>  => {
     const { stakingAddress } = pool;
 
     pool.miningAddress = await contractsManager.vsContract.methods.miningByStakingAddress(stakingAddress).call(tx(), block());
@@ -466,23 +475,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
     return pool;
   }
-  
-  const contextValue = {
-    // state
-    pools,
-    keyGenRound,
-    stakingEpoch,
-    epochStartTime,
-    epochStartBlock,
-    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
-    validCandidates: pools.filter(pool => pool.isAvailable).length,
-    minimumGasFee,
-    reinsertPot,
-    deltaPot,
-
-    // methods
-    initializeStakingDataAdapter
-  };
 
   const getDelegatorsData = async (poolAddress: string, delegators: Delegator[]) => {
     let candidateStake = new BigNumber(0);
@@ -500,11 +492,150 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }
       })
     );
-
-    console.log(`[INFO] Fetched delegation data for ${poolAddress}: `, candidateStake.toString(), delegators.length);
-  
+      
     return {delegators, candidateStake};
   }
+
+  const areAddressesValidForCreatePool = async (stakingAddr: string, miningAddr: string): Promise<boolean> => {
+    return (
+      stakingAddr !== miningAddr
+      && await contractsManager.vsContract.methods.miningByStakingAddress(stakingAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await contractsManager.vsContract.methods.miningByStakingAddress(miningAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await contractsManager.vsContract.methods.stakingByMiningAddress(stakingAddr).call() === '0x0000000000000000000000000000000000000000'
+      && await contractsManager.vsContract.methods.stakingByMiningAddress(miningAddr).call() === '0x0000000000000000000000000000000000000000'
+    );
+  }
+
+  const addNewPool = async (stakingAddr: string) => {
+    const pool = new Pool(stakingAddr);
+
+    let activePoolAddrs: Array<string> = [];
+    let inactivePoolAddrs: Array<string> = [];
+    let toBeElectedPoolAddrs: Array<string> = [];
+    let pendingValidatorAddrs: Array<string> = [];
+
+    if (contractsManager.stContract) {
+      await Promise.allSettled([
+        contractsManager.stContract.methods.getPools().call(tx(), block()).then((result) => {
+          activePoolAddrs = result;
+        }),
+        contractsManager.stContract.methods.getPoolsInactive().call(tx(), block()).then((result) => {
+          inactivePoolAddrs = result;
+        }),
+        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), block()).then((result) => {
+          toBeElectedPoolAddrs = result;
+        }),
+        contractsManager.vsContract.methods.getPendingValidators().call(tx(), block()).then((result) => {
+          pendingValidatorAddrs = result;
+        }),
+      ])
+    }
+
+    await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs);
+  }
+
+  const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
+    try {
+      if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
+
+      let txOpts = { ...defaultTxOpts, from: userWallet.myAddr, value: web3.utils.toWei(stakeAmount.toString()) };
+
+      const accBalance = await getUpdatedBalance();
+      const ipAddress = '0x00000000000000000000000000000000';
+      const minningAddress = getAddressFromPublicKey(publicKey);
+      const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
+
+      if (!web3.utils.isAddress(minningAddress)) {
+        toast.warn("Enter valid minning address");
+      } else if (userWallet.myAddr === minningAddress) {
+        toast.warn("Pool and mining addresses cannot be the same");
+      } else if (!areAddressesValidForCreatePool(userWallet.myAddr, minningAddress)) {
+        toast.warn("Staking or mining key are or were already in use with a pool");
+      } else if (BigNumber(txOpts.value).isGreaterThan(accBalance)) {
+        toast.warn(`Insufficient balance (${accBalance.dividedBy(10**18).toFixed(2)} DMD) for stake amount ${stakeAmount} DMD`);
+      } else if (!canStakeOrWithdrawNow) {
+        toast.warn("Outside staking window");
+      } else if (BigNumber(txOpts.value).isLessThan(BigNumber(candidateMinStake.toString()).dividedBy(10**18))) {
+        toast.warn("Insufficient candidate (pool owner) stake");
+      } else {
+        showLoader(true, "Creating pool 💎");
+        await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
+        await addNewPool(userWallet.myAddr);
+        showLoader(false, "");
+        toast.success("Pool created successfully 💎");
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      toast.error(error.message || "Error in creating pool");
+      return false;
+    }
+  }
+
+  const unstake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    let txOpts = { ...defaultTxOpts, from: userWallet.myAddr, value: web3.utils.toWei(amount.toString()) };
+    const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
+
+    if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
+
+    // determine available withdraw method and allowed amount
+    const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
+    const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call();  
+    if (maxWithdrawAmount !== '0' || maxWithdrawOrderAmount !== '0') toast.warn('Max withdraw amount assumption violated');
+
+    if (!canStakeOrWithdrawNow) {
+      toast.warning('Outside staking/withdraw window');
+      return false;
+    } else {
+      try {
+        if (maxWithdrawAmount !== '0') {
+          if (new BigNumber(maxWithdrawAmount).isGreaterThanOrEqualTo(txOpts.value)) {
+            toast.warn('Requested withdraw amount exceeds max');
+            return false;
+          } 
+          const receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, txOpts.value.toString()).send(txOpts);
+          console.log(`tx ${receipt.transactionHash} for withdraw(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+          return true;
+        } else {
+          if (new BigNumber(maxWithdrawOrderAmount).isGreaterThanOrEqualTo(txOpts.value)) {
+            toast.warn('Requested withdraw order amount exceeds max');
+            return false;
+          }
+          const receipt = await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, txOpts.value.toString()).send(txOpts);
+          console.log(`tx ${receipt.transactionHash} for orderWithdraw(): block ${receipt.blockNumber}, ${receipt.gasUsed} gas`);
+          return true;
+        }
+      } catch(err: any) {
+        toast.error(err.message || "Error in withdrawing stake");
+        return false;
+      }
+    }
+  }
+
+  const stake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    return true;
+  }
+
+  const contextValue = {
+    // state
+    pools,
+    keyGenRound,
+    stakingEpoch,
+    epochStartTime,
+    epochStartBlock,
+    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
+    validCandidates: pools.filter(pool => pool.isAvailable).length,
+    minimumGasFee,
+    reinsertPot,
+    deltaPot,
+    candidateMinStake,
+    delegatorMinStake,
+
+    // methods
+    unstake,
+    createPool,
+    initializeStakingDataAdapter
+  };
 
   return (
     <StakingContext.Provider value={contextValue}>

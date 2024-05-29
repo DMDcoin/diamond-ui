@@ -1,5 +1,8 @@
 const Web3 = require('web3');
 const web3 = new Web3();
+// const { publicToAddress } = require("ethereumjs-util");
+const { toBuffer, bufferToHex, ecrecover, publicToAddress, hashPersonalMessage, fromRpcSig } = require('ethereumjs-util');
+
 
 export const isValidAddress = (address: string): boolean => {
   return /^0x[0-9a-fA-F]{40}$/.test(address);
@@ -41,4 +44,43 @@ export const timestampToDateTime = (timestamp: number) => {
   const seconds = date.getSeconds().toString().padStart(2, '0');
   
   return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
+}
+
+export const getAddressFromPublicKey = (publicKey: string): string => {
+  let publicKeyCleaned = publicKey;
+
+  if (publicKey.startsWith("0x")) {
+    publicKeyCleaned = publicKey.substring(2);
+  }
+
+  const resultBuffer = publicToAddress(
+    Buffer.from(publicKeyCleaned, "hex"),
+    true
+  );
+
+  return `0x${resultBuffer.toString("hex")}`;
+}
+
+export const requestPublicKeyMetamsak = async (web3: any, address: string) => {
+  // Sign a message
+  const message = 'MetaMask public key retrieval';
+  const messageHex = bufferToHex(Buffer.from(message, 'utf8'));
+  const signature = await web3.eth.personal.sign(message, address);
+
+  // Hash the message
+  const messageHash = hashPersonalMessage(toBuffer(messageHex));
+
+  // Extract signature parameters
+  const { v, r, s } = fromRpcSig(signature);
+
+  // Recover the public key
+  const publicKey = ecrecover(messageHash, v, r, s);
+  const publicKeyHex = bufferToHex(publicKey);
+  const derivedAddress = bufferToHex(publicToAddress(publicKey));
+
+  console.log(`Address: ${address}`);
+  console.log(`Derived Address: ${derivedAddress}`);
+  console.log(`Public Key: ${publicKeyHex}`);
+
+  return publicKeyHex;
 }

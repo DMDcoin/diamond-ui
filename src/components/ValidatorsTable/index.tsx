@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import { useStakingContext } from "../../contexts/StakingContext";
+import UnstakeModal from "../UnstakeModal";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -79,11 +80,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                   userWallet.myAddr ? <>
                     <td>{userWallet.myAddr ? pool.myStake.dividedBy(10**18).toString() : "" } DMD</td>
                     {
-                      pool.isActive ? <td><button onClick={(e) => handleLockCoins(e, pool.stakingAddress)} className={styles.tableButton}>Lock coins</button></td> : <td></td>
+                      pool.isActive ? <td><button onClick={(e) => handleLockCoins(e, pool.stakingAddress)} className={styles.tableButton}>Stake</button></td> : <td></td>
                     }
-                    {
-                      pool.myStake.isGreaterThan(0) ? <td><button onClick={(e) => handleWithdraw(e, pool.stakingAddress)} className={styles.tableButton}>Withdraw</button></td> : <td></td>
-                    }
+                    <td>
+                      {pool.myStake.isGreaterThan(0) && (
+                        <UnstakeModal buttonText="Unstake" pool={pool} />
+                      )}
+                    </td>
                   </> : <>
                     <td></td>
                     <td></td>

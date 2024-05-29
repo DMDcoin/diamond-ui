@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import CreateValidatorModal from "../../../components/CreateValidatorModal";
+import UnstakeModal from "../../../components/UnstakeModal";
 
 interface PoolDetailsProps {}
 
@@ -11,19 +12,14 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const { poolAddress } = useParams();
   const { pools } = useStakingContext();
   const [pool, setPool] = useState<Pool | null>(null);
-  const [openCreateValidatorModal, setOpenCreateValidatorModal] = useState(false);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
     setPool(pool as Pool);
   }, [poolAddress, pools]);
 
-
   return (
     <section className="section">
-
-      <CreateValidatorModal isOpen={openCreateValidatorModal} onClose={() => setOpenCreateValidatorModal(false)} />
-
       <div className="sectionContainer">
 
         {/* image address status */}
@@ -67,12 +63,11 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegators</h1>
             {
-              pool?.isActive && <button className={styles.tableButton}>Lock coin</button>
+              pool?.isActive && <button className={styles.tableButton}>Stake</button>
             }
             {
-              pool?.myStake.isGreaterThan(0) && (<button className={styles.tableButton}>Withdraw</button>)
+              pool?.myStake.isGreaterThan(0) && (<UnstakeModal buttonText="Unstake" pool={pool} />)
             }
-            
           </div>          
 
           <table className={styles.styledTable}>

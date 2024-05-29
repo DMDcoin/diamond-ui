@@ -4,6 +4,7 @@ import { timestampToDateTime } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 import { useStakingContext } from "../../contexts/StakingContext";
+import CreateValidatorModal from "../../components/CreateValidatorModal";
 
 interface HomeProps {}
 
@@ -26,8 +27,49 @@ const Home: React.FC<HomeProps> = ({}) => {
 
         {
             userWallet.myAddr ? (
-                <section>
-                    Logged IN
+                <section className="hero-section">
+                    <div className="hero-container">
+                        <div className={styles.heroWrapper + " hero-wrapper"}>
+                            <div className={styles.heroSplit + " hero-split" }>
+                                <div className={styles.infoContainer}>
+                                    <img src="https://via.placeholder.com/70" alt="Image 1" />
+                                    <div>
+                                        <p>User</p>
+                                        <p>{userWallet.myAddr}</p>
+                                    </div>
+                                </div>
+                                <div className={styles.statsContainer}>
+                                    <table className={styles.styledTable}>
+                                        <thead>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>My Stake</td>
+                                            <td>1000 DMD</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Candidate stake</td>
+                                            <td>100 DMD</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Score</td>
+                                            <td>1000</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div className="hero-split">
+                                <div className={styles.loggedInBtns}>
+                                    <CreateValidatorModal buttonText="Create a pool"/>
+                                    <button className={styles.tableButton}>Unstake</button>
+                                    <button className={styles.tableButton}>See the list</button>
+                                    <button className={styles.tableButton}>See history</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             ) : (
                 <section className="hero-section">

@@ -44,3 +44,134 @@
   border-radius: 7px;
   width: 100%;
 }
+
+.infoContainer {
+  gap: 1.5rem;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.infoContainer > div > p {
+  color: #0E44B2;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.infoContainer > div > p:first-of-type {
+  font-size: 20px;
+  color: #0E44B2;
+  font-weight: bold;
+}
+
+.styledTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+.styledTable tr td:nth-child(2) {
+  text-align: end;
+}
+
+.styledTable thead tr {
+  background-color: rgb(245, 247, 250);
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+  font-weight: 600;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 0px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.tableBodyRow:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
+}
+
+.tableButton {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #0145b2;
+  color: #0145b2;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: rgb(245, 247, 250);
+}
+
+.tableButton:hover {
+  background-color: #0145b2;
+  color: white;
+}
+
+.tableButton .active {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+}
+
+.tableButton .disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.statsContainer {
+  width: 100%;
+}
+
+.loggedInBtns {
+  gap: 1rem;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.loggedInBtns button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroSplit {
+  gap: 1rem;
+}
+
+.heroWrapper {
+  gap: 5rem;
+  background-color: white;
+  justify-content: flex-start;
+}
+
+@media screen and (max-width: 991px) {
+  .heroWrapper {
+    gap: 5rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .heroWrapper {
+    gap: 5rem;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .heroWrapper {
+    gap: 0rem;
+  }
+}

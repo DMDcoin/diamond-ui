@@ -20,6 +20,7 @@ import {
   TxPermissionHbbft,
   ValidatorSetHbbft,
 } from "../contracts";
+import { requestPublicKeyMetamsak } from "../../utils/common";
 
 interface ContractsState {
   contracts: ContractManager;
@@ -45,6 +46,7 @@ interface Web3ContextProps {
   setContractsManager: (newContractsManager: ContractsState) => void;
   ensureWalletConnection: () => boolean;
   showLoader: (loading: boolean, loadingMsg: string) => void;
+  getUpdatedBalance: () => Promise<BigNumber>;
 }
 
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
@@ -199,6 +201,14 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return true;
   }
 
+  const getUpdatedBalance = async (): Promise<BigNumber> => {
+    if (!userWallet || !web3) return BigNumber(0);
+
+    const myBalance = new BigNumber(await web3.eth.getBalance(userWallet.myAddr));
+    setUserWallet({ ...userWallet, myBalance });
+    return myBalance;
+  }
+
   const contextValue = {
     // state
     web3,
@@ -213,7 +223,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     // other functions
     connectWallet,
     ensureWalletConnection,
-    showLoader
+    showLoader,
+    getUpdatedBalance
   };
 
   return (
