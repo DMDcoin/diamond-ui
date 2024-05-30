@@ -1,11 +1,10 @@
-import styles from "./styles.module.css";
-import { useWeb3Context } from "../../contexts/Web3Context";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
-import { toast } from "react-toastify";
-import { getAddressFromPublicKey } from "../../utils/common";
 import BigNumber from "bignumber.js";
-import { useStakingContext } from "../../contexts/StakingContext";
+import { toast } from "react-toastify";
+import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
+import { useWeb3Context } from "../../contexts/Web3Context";
+import { useStakingContext } from "../../contexts/StakingContext";
+import React, { useState, useEffect, useRef, FormEvent } from "react";
 
 interface ModalProps {
   buttonText: string;
@@ -59,7 +58,6 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
       console.log(err);
       toast.error("Error in creating pool");
     }
-    
   }
 
   return (

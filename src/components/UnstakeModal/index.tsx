@@ -15,7 +15,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
-  const { unstake } = useStakingContext();
+  const { unstake, setPools } = useStakingContext();
   const { ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
@@ -49,9 +49,22 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    // unstake(pool, new BigNumber(unstakeAmount)).then(() => {
-    //   // TODO: Refresh the pool data
-    // });
+    unstake(pool, new BigNumber(unstakeAmount)).then(() => {
+      const unstakeAmountWei = new BigNumber(unstakeAmount).multipliedBy(new BigNumber(10).pow(18));
+      closeModal();
+      setPools(prevState => {
+        return prevState.map(p => {
+          if (p.stakingAddress === pool.stakingAddress) {
+            return {
+              ...p,
+              totalStake: p.totalStake.minus(new BigNumber(unstakeAmountWei)),
+              myStake: p.myStake.minus(new BigNumber(unstakeAmountWei)),
+            };
+          }
+          return p;
+        }) as Pool[];
+      });
+    });
   }
 
   return (
@@ -61,7 +74,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
       </button>
 
       {isOpen && (
-        <div className={styles.modalOverlay}>
+        <div onClick={(e) => e.stopPropagation()} className={styles.modalOverlay}>
           <div onClick={(e) => e.stopPropagation()} className={styles.modalContent} ref={modalRef}>
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
