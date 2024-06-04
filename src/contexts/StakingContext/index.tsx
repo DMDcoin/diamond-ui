@@ -24,7 +24,7 @@ interface StakingContextProps {
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {}
-  addOrUpdatePool: (stakingAddr: string) => void;
+  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
@@ -84,7 +84,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    console.log("[INFO] User Wallet Changed")
+    console.log("[INFO] Updating stake amounts");
+
     setPools(prevPools => {
       prevPools.forEach(pool => {
       getMyStake(pool.stakingAddress).then((result) => {
@@ -92,28 +93,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         });
       });
       return prevPools;
-    })
-  }, [userWallet, pools]);
+    });
 
-  useEffect(() => {
-    console.log("[INFO] totalDaoStake Changed")
     updatePoolsVotingPower(totalDaoStake);
-  }, [totalDaoStake, pools]);
+  }, [totalDaoStake, userWallet, pools]);
 
   useEffect(() => {
     if (web3Initialized) {
-      retrieveGlobalValues();
+      retrieveGlobalValues().then((bn: number) => {
+        syncPoolsState(bn, true);
+      })
     }
   }, [web3Initialized]);
-
-  useEffect(() => {
-    console.log("[INFO] currentBlockNumber Changed");
-    if (web3Initialized) {
-      retrieveGlobalValues().then(() => {
-        syncPoolsState(true);
-      });
-    }
-  }, [currentBlockNumber]);
 
   const updatePoolsVotingPower = async (totalDaoStake: BigNumber) => {
     if (contractsManager.stContract) {
@@ -193,7 +184,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
 
     // epoch change
-    console.log(`[Info] Updating stakingEpochEndBlock at block ${currentBlockNumber}`);
+    console.log(`[Info] Updating stakingEpochEndBlock at block ${blockHeader.number}`);
     const oldEpoch = stakingEpoch;
     await retrieveGlobalValues();
 
@@ -202,7 +193,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const isNewEpoch = oldEpoch !== stakingEpoch;
 
     setUserWallet(currWallet);
-    await syncPoolsState(isNewEpoch);
+    await syncPoolsState(blockHeader.number, isNewEpoch);
   }
 
   const getBlockHistoryInfoAsString = () => {
@@ -247,14 +238,15 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     console.log("[INFO] Retrieving Global Values")
     const oldStakingEpoch = stakingEpoch;
 
+    const latestBlockNumber = await web3.eth.getBlockNumber();
+
     if (web3.eth.defaultBlock === undefined || web3.eth.defaultBlock === 'latest') {
-      const cBlockN = await web3.eth.getBlockNumber();
-      setCurrentBlockNumber(cBlockN);
-      setLatestBlockNumber(cBlockN);
+      setCurrentBlockNumber(latestBlockNumber);
+      setLatestBlockNumber(latestBlockNumber);
     } else if ( typeof web3.eth.defaultBlock === 'number' ) {
-        setLatestBlockNumber(await web3.eth.getBlockNumber());
-        setCurrentBlockNumber(web3.eth.defaultBlock);
-        web3.defaultBlock = web3.eth.defaultBlock;
+      setLatestBlockNumber(latestBlockNumber);
+      setCurrentBlockNumber(web3.eth.defaultBlock);
+      web3.defaultBlock = web3.eth.defaultBlock;
     } else {
       console.warn('Unexpected defaultBlock: ', web3.eth.defaultBlock);
     }
@@ -263,42 +255,42 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const promises: Promise<any>[] = [];
 
     if (contractsManager.stContract) {
-      setCandidateMinStake(new BigNumber(await contractsManager.stContract.methods.candidateMinStake().call(tx(), block())));
-      setDelegatorMinStake(new BigNumber(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), block())));
-      updatedStakingEpoch = parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), block()));
+      setCandidateMinStake(new BigNumber(await contractsManager.stContract.methods.candidateMinStake().call(tx(), latestBlockNumber)));
+      setDelegatorMinStake(new BigNumber(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), latestBlockNumber)));
+      updatedStakingEpoch = parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), latestBlockNumber));
       setStakingEpoch(updatedStakingEpoch);
       setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
     }
-    setMinimumGasFee(new BigNumber(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), block())));
+    setMinimumGasFee(new BigNumber(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), latestBlockNumber)));
 
     // those values are asumed to be not changeable.
-    setEpochDuration(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), block())));
-    setStakeWithdrawDisallowPeriod(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), block())));
+    setEpochDuration(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), latestBlockNumber)));
+    setStakeWithdrawDisallowPeriod(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), latestBlockNumber)));
 
     promises.push(
-      contractsManager.contracts.getCurrentKeyGenRound(block()).then((result) => {
+      contractsManager.contracts.getCurrentKeyGenRound(latestBlockNumber).then((result) => {
         setKeyGenRound(result);
       }),
     );
 
     if (updatedStakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
       promises.push(
-        contractsManager.stContract.methods.stakingEpochStartBlock().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.stakingEpochStartBlock().call(tx(), latestBlockNumber).then((result) => {
           setEpochStartBlock(parseInt(result));
         }),
-        contractsManager.stContract.methods.stakingEpochStartTime().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.stakingEpochStartTime().call(tx(), latestBlockNumber).then((result) => {
           setEpochStartTime(parseInt(result));
         }),
-        contractsManager.brContract.methods.deltaPot().call(tx(), block()).then((result) => {
+        contractsManager.brContract.methods.deltaPot().call(tx(), latestBlockNumber).then((result) => {
           setDeltaPot(web3.utils.fromWei(result, 'ether'));
         }),
-        contractsManager.brContract.methods.reinsertPot().call(tx(), block()).then((result) => {
+        contractsManager.brContract.methods.reinsertPot().call(tx(), latestBlockNumber).then((result) => {
           setReinsertPot(web3.utils.fromWei(result, 'ether'));
         }),
-        contractsManager.stContract.methods.stakingFixedEpochEndTime().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.stakingFixedEpochEndTime().call(tx(), latestBlockNumber).then((result) => {
           setStakingEpochEndTime(parseInt(result));
         }),
-        contractsManager.stContract.methods.areStakeAndWithdrawAllowed().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.areStakeAndWithdrawAllowed().call(tx(), latestBlockNumber).then((result) => {
           setCanStakeOrWithdrawNow(result);
         }),  
         web3.eth.getBalance(process.env.REACT_APP_DAO_CONTRACT_ADDRESS || '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
@@ -306,14 +298,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         })
       );
     }
+
+    return latestBlockNumber;
   }
   
-  const syncPoolsState = async (isNewEpoch: boolean) => {
-    const newCurrentValidators = await contractsManager.vsContract.methods.getValidators().call(tx(), block());
+  const syncPoolsState = async (blockNumber: number, isNewEpoch: boolean) => {
+    const newCurrentValidators = await contractsManager.vsContract.methods.getValidators().call(tx(), blockNumber);
     const validatorWithoutPool: Array<string> = [...newCurrentValidators];
 
     if (currentValidators.toString() !== newCurrentValidators.toString()) {
-      console.log(`[INFO] Validator set changed in block ${currentBlockNumber} to:\n\n${newCurrentValidators}`);
+      console.log(`[INFO] Validator set changed in block ${blockNumber} to:\n\n${newCurrentValidators}`);
       setCurrentValidators(newCurrentValidators);
     }
     
@@ -324,16 +318,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     if (contractsManager.stContract) {
       await Promise.allSettled([
-        contractsManager.stContract.methods.getPools().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.getPools().call(tx(), blockNumber).then((result) => {
           activePoolAddrs = result;
         }),
-        contractsManager.stContract.methods.getPoolsInactive().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.getPoolsInactive().call(tx(), blockNumber).then((result) => {
           inactivePoolAddrs = result;
         }),
-        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), blockNumber).then((result) => {
           toBeElectedPoolAddrs = result;
         }),
-        contractsManager.vsContract.methods.getPendingValidators().call(tx(), block()).then((result) => {
+        contractsManager.vsContract.methods.getPendingValidators().call(tx(), blockNumber).then((result) => {
           pendingValidatorAddrs = result;
         }),
       ])
@@ -353,7 +347,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }
       });
 
-      updatePools(newPools, validatorWithoutPool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, isNewEpoch);
+      updatePools(newPools, validatorWithoutPool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
       return newPools;
     });
   }
@@ -364,7 +358,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     activePoolAddrs: Array<string>,
     toBeElectedPoolAddrs: Array<string>,
     pendingValidatorAddrs: Array<string>,
-    isNewEpoch: boolean
+    blockNumber: number
   ) => {
     // update pools in batches of 10 for less rpc calls at once
     const batchSize = 10;
@@ -379,7 +373,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
         p.votingPower = p.totalStake.dividedBy(totalDaoStake).multipliedBy(100);
-        return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs);
+        return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
       });
 
       await Promise.allSettled(batchPromises).then((batchResults) => {
@@ -394,12 +388,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>) : Promise<Pool>  => {
+  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
 
-    pool.miningAddress = await contractsManager.vsContract.methods.miningByStakingAddress(stakingAddress).call(tx(), block());
+    pool.miningAddress = await contractsManager.vsContract.methods.miningByStakingAddress(stakingAddress).call(tx(), blockNumber);
     await Promise.allSettled([
-      contractsManager.vsContract.methods.getPublicKey(pool.miningAddress).call(tx(), block()).then((result) => {
+      contractsManager.vsContract.methods.getPublicKey(pool.miningAddress).call(tx(), blockNumber).then((result) => {
         pool.miningPublicKey = result;
       }),
       getAvailableSince(pool.miningAddress).then((result) => {
@@ -412,16 +406,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     if (contractsManager.stContract) {
       await Promise.allSettled([
-        contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), blockNumber).then((result) => {
           getDelegatorsData(stakingAddress, result.map(address => new Delegator(address))).then((result) => {
             pool.delegators = result.delegators;
             pool.candidateStake = result.candidateStake;
           });
         }),
-        contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), blockNumber).then((result) => {
           pool.totalStake = new BigNumber(result);
         }),
-        userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), block()).then((result) => {
+        userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber).then((result) => {
           pool.orderedWithdrawAmount = new BigNumber(result);
         }) : new BigNumber(0),
         getBanCount(pool.miningAddress).then((result) => {
@@ -430,7 +424,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         getBannedUntil(pool.miningAddress).then((result) => {
           pool.bannedUntil = new BigNumber(result);
         }),
-        contractsManager.contracts.getPendingValidatorState(pool.miningAddress, block()).then((result) => {
+        contractsManager.contracts.getPendingValidatorState(pool.miningAddress, blockNumber).then((result) => {
           pool.keyGenMode = result;
         }),
       ])
@@ -468,8 +462,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
 
     if (pool.isPendingValidator && contractsManager.kghContract) {
-      pool.parts = await contractsManager.kghContract.methods.parts(pool.miningAddress).call(tx(), block());
-      const acksLengthBN = new BigNumber(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), block()));
+      pool.parts = await contractsManager.kghContract.methods.parts(pool.miningAddress).call(tx(), blockNumber);
+      const acksLengthBN = new BigNumber(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), blockNumber));
       pool.numberOfAcks = acksLengthBN.toNumber();
     } else {
       pool.parts = '';
@@ -508,7 +502,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     );
   }
 
-  const addOrUpdatePool = async (stakingAddr: string) => {
+  const addOrUpdatePool = async (stakingAddr: string, blockNumber: number) => {
     let exists = true;
     let pool = pools.find(p => p.stakingAddress === stakingAddr);
     if (!pool) {
@@ -522,19 +516,19 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     if (contractsManager.stContract) {
       await Promise.allSettled([
-        contractsManager.stContract.methods.getPools().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.getPools().call(tx(), blockNumber).then((result) => {
           activePoolAddrs = result;
         }),
-        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), block()).then((result) => {
+        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), blockNumber).then((result) => {
           toBeElectedPoolAddrs = result;
         }),
-        contractsManager.vsContract.methods.getPendingValidators().call(tx(), block()).then((result) => {
+        contractsManager.vsContract.methods.getPendingValidators().call(tx(), blockNumber).then((result) => {
           pendingValidatorAddrs = result;
         }),
       ])
     }
 
-    const updatedPoolData = await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs);
+    const updatedPoolData = await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
 
     if (exists) {
       setPools(prevPools => {
@@ -579,8 +573,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         toast.warn("Insufficient candidate (pool owner) stake");
       } else {
         showLoader(true, "Creating pool 💎");
-        await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
-        await addOrUpdatePool(userWallet.myAddr);
+        const receipt = await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
+        await addOrUpdatePool(userWallet.myAddr, receipt.blockNumber);
         showLoader(false, "");
         toast.success("Pool created successfully 💎");
         return true;
@@ -600,11 +594,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
 
     // determine available withdraw method and allowed amount
+    const newStakeAmount = pool.myStake.minus(amountInWei);
     const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
     const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call();  
-    console.assert(maxWithdrawAmount === '0' || maxWithdrawOrderAmount === '0', 'max withdraw amount assumption violated');
-
-    console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}, txOpts);
 
     if (!canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw window');
@@ -623,16 +615,20 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
             toast.warn('Requested withdraw order amount exceeds max');
             return false;
+          } else if (!newStakeAmount.isEqualTo('0') || !newStakeAmount.isGreaterThanOrEqualTo(candidateMinStake)) {
+            toast.warn('New stake amount must be greater than the min stake.');
+            return false;
+          } else {
+            showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
+            await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+            toast.success(`Ordered withdraw of ${amount} DMD successfully`);
           }
-          showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
-          await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-          toast.success(`Ordered withdraw of ${amount} DMD successfully`);
         }
         showLoader(false, "");
         return true;
       } catch(err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || "Error in withdrawing stake");
+        toast.error(err.shortMsg || err.message || "Error in withdrawing stake");
         return false;
       }
     }

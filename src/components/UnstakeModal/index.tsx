@@ -16,7 +16,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const { unstake, setPools } = useStakingContext();
-  const { ensureWalletConnection } = useWeb3Context();
+  const { web3, ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -48,22 +48,26 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const handleWithdrawStake = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
+    const amountInWei = web3.utils.toWei(unstakeAmount.toString());
 
-    unstake(pool, new BigNumber(unstakeAmount)).then(() => {
-      const unstakeAmountWei = new BigNumber(unstakeAmount).multipliedBy(new BigNumber(10).pow(18));
+    unstake(pool, new BigNumber(unstakeAmount)).then((success: boolean) => {
+      if (success) {
+        setPools((pools) => {
+          const updatedPools = pools.map((p) => {
+            if (p.stakingAddress === pool.stakingAddress) {
+              return {
+                ...p,
+                myStake: p.myStake.minus(amountInWei),
+                totalStake: p.totalStake.minus(amountInWei),
+              };
+            }
+            return p;
+          });
+          return updatedPools as Pool[];
+        });
+      }
+
       closeModal();
-      setPools(prevState => {
-        return prevState.map(p => {
-          if (p.stakingAddress === pool.stakingAddress) {
-            return {
-              ...p,
-              totalStake: p.totalStake.minus(new BigNumber(unstakeAmountWei)),
-              myStake: p.myStake.minus(new BigNumber(unstakeAmountWei)),
-            };
-          }
-          return p;
-        }) as Pool[];
-      });
     });
   }
 
