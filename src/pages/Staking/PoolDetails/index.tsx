@@ -1,16 +1,19 @@
 import styles from "./styles.module.css";
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
+import StakeModal from "../../../components/Modals/StakeModal";
+import { useWeb3Context } from "../../../contexts/Web3Context";
+import UnstakeModal from "../../../components/Modals/UnstakeModal";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import CreateValidatorModal from "../../../components/CreateValidatorModal";
-import UnstakeModal from "../../../components/UnstakeModal";
+
 
 interface PoolDetailsProps {}
 
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const { poolAddress } = useParams();
   const { pools } = useStakingContext();
+  const { userWallet } = useWeb3Context();
   const [pool, setPool] = useState<Pool | null>(null);
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               </tr>
               <tr>
                 <td>Candidate Stake</td>
-                <td>{pool ? pool.candidateStake.dividedBy(10**18).toString() : 0} DMD</td>
+                <td>{pool ? pool.candidateStake.dividedBy(10**18).toFixed(2) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Score</td>
@@ -63,10 +66,10 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegators</h1>
             {
-              pool?.isActive && <button className={styles.tableButton}>Stake</button>
+              pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
-              pool?.myStake.isGreaterThan(0) && (<UnstakeModal buttonText="Unstake" pool={pool} />)
+              pool?.myStake.isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
             }
           </div>          
 
@@ -75,7 +78,6 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               {
                 pool && pool.delegators.length ? (
                   <tr>
-                    <td></td>
                     <td></td>
                     <td>Wallet</td>
                     <td>Delegated Stake</td>
@@ -89,14 +91,13 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             </thead>
             <tbody>
               {
-                pool && pool.delegators.length ? pool.delegators.map(delegator => (
-                  <tr>
+                pool && pool.delegators.length ? pool.delegators.map((delegator, i) => (
+                  <tr key={i}>
                     <td>
                     <img src="https://via.placeholder.com/50" alt="Image 1" />
                     </td>
-                    <td>Active</td>
                     <td>{delegator.address}</td>
-                    <td>{delegator.amount.dividedBy(10**18).toString()} DMD</td>
+                    <td>{delegator.amount.dividedBy(10**18).toFixed(2)} DMD</td>
                   </tr>
                 )) : (
                   <tr>

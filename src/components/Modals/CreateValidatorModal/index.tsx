@@ -2,8 +2,8 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
-import { useWeb3Context } from "../../contexts/Web3Context";
-import { useStakingContext } from "../../contexts/StakingContext";
+import { useWeb3Context } from "../../../contexts/Web3Context";
+import { useStakingContext } from "../../../contexts/StakingContext";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 
 interface ModalProps {
@@ -12,12 +12,12 @@ interface ModalProps {
 
 const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
   const navigate = useNavigate();
+  const { createPool } = useStakingContext();
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [publicKey, setPublicKey] = useState("");
   const [stakeAmount, setStakeAmount] = useState(10000);
-  const { web3, userWallet, contractsManager, ensureWalletConnection } = useWeb3Context();
-  const { createPool } = useStakingContext();
+  const { userWallet, ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);

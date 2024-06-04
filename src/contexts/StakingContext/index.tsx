@@ -11,22 +11,23 @@ import { getAddressFromPublicKey } from "../../utils/common";
 
 interface StakingContextProps {
   pools: Pool[];
+  deltaPot: string;
+  reinsertPot: string;
   keyGenRound: number;
   stakingEpoch: number;
   epochStartTime: number;
+  validCandidates: number;
   epochStartBlock: number;
   activeValidators: number;
-  validCandidates: number;
   minimumGasFee: BigNumber;
-  reinsertPot: string;
-  deltaPot: string;
   candidateMinStake: BigNumber;
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {}
-  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
+  stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
 }
 
@@ -212,12 +213,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return currentBlockNumber;
   }
 
-  const getMyStake = async (stakingAddress: string): Promise<string> => {
+  const getMyStake = async (stakingAddress: string, blockNumber?: number): Promise<string> => {
     if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) {
       return '0';
     }
     
-    const stakeAmount = contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), block());
+    const stakeAmount = contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber || block());
     return stakeAmount;
   }
 
@@ -399,7 +400,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       getAvailableSince(pool.miningAddress).then((result) => {
         pool.availableSince = result;
       }),
-      getMyStake(stakingAddress).then((result) => {
+      getMyStake(stakingAddress, blockNumber).then((result) => {
         pool.myStake = new BigNumber(result);
       }),
     ]);
@@ -407,7 +408,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (contractsManager.stContract) {
       await Promise.allSettled([
         contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), blockNumber).then((result) => {
-          getDelegatorsData(stakingAddress, result.map(address => new Delegator(address))).then((result) => {
+          getDelegatorsData(stakingAddress, result.map(address => new Delegator(address)), blockNumber).then((result) => {
             pool.delegators = result.delegators;
             pool.candidateStake = result.candidateStake;
           });
@@ -472,23 +473,23 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return pool;
   }
 
-  const getDelegatorsData = async (poolAddress: string, delegators: Delegator[]) => {
+  const getDelegatorsData = async (poolAddress: string, delegators: Delegator[], blockNumber: number) => {
     let candidateStake = new BigNumber(0);
 
     await Promise.allSettled(
       delegators.map(async (delegator: Delegator) => {
         try {
-          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(poolAddress, delegator.address).call(tx(), block());
+          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(poolAddress, delegator.address).call(tx(), blockNumber);
           if (delegatedAmount && poolAddress != delegator.address) {
             delegator.amount = new BigNumber(delegatedAmount);
-            candidateStake = candidateStake.plus(delegator.amount);
+            candidateStake = candidateStake.plus(delegatedAmount);
           }
         } catch (error) {
           console.error(`Failed to fetch data for delegator ${delegator.address}:`, error);
         }
       })
     );
-      
+
     return {delegators, candidateStake};
   }
 
@@ -538,7 +539,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           }
           return p;
         });
-        return updatedPools;
+        return updatedPools as Pool[];
       });
     } else {
       setPools(prevPools => {
@@ -574,6 +575,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       } else {
         showLoader(true, "Creating pool 💎");
         const receipt = await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
+        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
         await addOrUpdatePool(userWallet.myAddr, receipt.blockNumber);
         showLoader(false, "");
         toast.success("Pool created successfully 💎");
@@ -603,14 +605,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       return false;
     } else {
       try {
+        let receipt;
         if (maxWithdrawAmount !== '0') {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
             toast.warn('Requested withdraw amount exceeds max');
             return false;
           }
           showLoader(true, `Unstaking ${amount} DMD 💎`);
-          await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-          toast.success(`Unstaked ${amount} DMD successfully`);
+          receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+          if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+          toast.success(`Unstaked ${amount} DMD 💎`);
         } else {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
             toast.warn('Requested withdraw order amount exceeds max');
@@ -620,11 +624,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
             return false;
           } else {
             showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
-            await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-            toast.success(`Ordered withdraw of ${amount} DMD successfully`);
+            receipt = await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+            if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+            toast.success(`Ordered withdraw of ${amount} DMD 💎`);
           }
         }
         showLoader(false, "");
+        addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
         return true;
       } catch(err: any) {
         showLoader(false, "");
@@ -634,8 +640,37 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const stake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
-    return true;
+  const stake = async (pool: Pool, stakeAmount: BigNumber): Promise<boolean> => {
+    const stakeAmountWei = web3.utils.toWei(stakeAmount.toString());
+    let txOpts = { ...defaultTxOpts, from: userWallet.myAddr, value: stakeAmountWei };
+
+    if (new BigNumber(stakeAmountWei).isGreaterThan(userWallet.myBalance)) {
+      toast.warn(`Insufficient balance ${userWallet.myBalance} for selected amount ${BigNumber(stakeAmount).dividedBy(10**18).toFixed(2)}`);
+      return false;
+    } else if (!canStakeOrWithdrawNow) {
+      toast.warn("Outside staking/withdraw time window");
+      return false
+    } else if (new BigNumber(pool.myStake).plus(new BigNumber(stakeAmountWei)).isLessThan(delegatorMinStake)) {
+      toast.warn(`Min. staking amount is ${delegatorMinStake}`);
+      return false;
+    } else if (pool.isBanned(BigNumber(new Date().getTime() / 1000))) {
+      toast.warn("Cannot stake on a pool which is currently banned");
+      return false;
+    } else {
+      try {
+        showLoader(true, `Staking ${stakeAmount} DMD 💎`);
+        const receipt = await contractsManager.stContract?.methods.stake(pool.stakingAddress).send(txOpts);
+        if (!showHistoricBlock && receipt) setCurrentBlockNumber(receipt.blockNumber);
+        toast.success(`Staked ${stakeAmount} DMD 💎`);
+        showLoader(false, "");
+        addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
+        return true;
+      } catch (err: any) {
+        showLoader(false, "");
+        toast.error(err.shortMsg || err.message || "Error in Staking");
+        return false;
+      }
+    }
   }
 
   const contextValue = {
@@ -654,6 +689,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     delegatorMinStake,
 
     // methods
+    stake,
     unstake,
     setPools,
     createPool,

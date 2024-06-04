@@ -1,10 +1,9 @@
 import BigNumber from "bignumber.js";
-import { toast } from "react-toastify";
 import styles from "./styles.module.css";
-import { useWeb3Context } from "../../contexts/Web3Context";
+import { useWeb3Context } from "../../../contexts/Web3Context";
+import { useStakingContext } from "../../../contexts/StakingContext";
+import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
-import { useStakingContext } from "../../contexts/StakingContext";
-import { Pool } from "../../contexts/StakingContext/models/model";
 
 interface ModalProps {
   buttonText: string;
@@ -91,7 +90,6 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               </span>
 
               <input
-                min={0}
                 max={pool.myStake.toNumber()}
                 type="number"
                 value={unstakeAmount}

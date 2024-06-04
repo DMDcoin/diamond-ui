@@ -53,7 +53,7 @@ export class Pool {
   }
 
   public isBanned(currentTimestamp: BigNumber): boolean {
-    return this.bannedUntil.gt(currentTimestamp);
+    return this.bannedUntil.isGreaterThan(currentTimestamp);
   }
 
   public get isWrittenParts(): boolean | undefined {

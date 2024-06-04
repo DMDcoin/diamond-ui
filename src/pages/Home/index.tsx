@@ -4,7 +4,7 @@ import { timestampToDateTime } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 import { useStakingContext } from "../../contexts/StakingContext";
-import CreateValidatorModal from "../../components/CreateValidatorModal";
+import CreateValidatorModal from "../../components/Modals/CreateValidatorModal";
 
 interface HomeProps {}
 
