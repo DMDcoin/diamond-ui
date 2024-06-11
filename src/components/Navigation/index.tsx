@@ -1,5 +1,5 @@
-import React, { startTransition, useEffect } from "react";
 import styles from "./styles.module.css";
+import React, { startTransition } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 
@@ -40,7 +40,7 @@ const Navigation: React.FC<NavigationProps> = ({ start }) => {
           canGoBack() ? 
           (
           <div onClick={goBack}>
-            <HiArrowCircleLeft size={30} color="rgb(25 39 53 / 1" /> Back
+            <HiArrowCircleLeft size={30} /> Back
           </div>
           ) : (
             <React.Fragment></React.Fragment>

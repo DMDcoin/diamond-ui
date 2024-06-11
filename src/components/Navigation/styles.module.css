@@ -1,6 +1,7 @@
 .navigationContainer {
     width: 100%;
     display: flex;
+    color: #0145b2;
     align-items: center;
     margin-bottom: 30px;
     justify-content: space-between;
@@ -12,4 +13,9 @@
     display: flex;
     cursor: pointer;
     align-items: center;
+}
+
+.navigationContainer > div:hover {
+    font-size: 18px;
+    font-weight: 600;
 }

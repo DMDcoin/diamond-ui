@@ -64,14 +64,24 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                 <td>
                   <img src="https://via.placeholder.com/50" alt="Image 1" />
                 </td>
-                <td>{pool.isActive ? "Active" : "Banned"}</td>
-                <td>{pool.stakingAddress}</td>
-                <td>{pool.totalStake.dividedBy(10**18).toString()} DMD</td>
-                <td>{pool.votingPower.toString()} %</td>
-                <td>{pool.score}</td>
+                <td>
+                  {typeof pool.isActive === 'boolean'
+                    ? (pool.isActive ? "Active" : "Banned")
+                    : (<div className={styles.loader}></div>)}
+                </td>
+                <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
+                <td>{
+                  pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toString() + " DMD" : (<div className={styles.loader}></div>)
+                }</td>
+                <td>
+                  {pool.votingPower && pool.votingPower.toString() !== 'NaN'
+                    ? `${pool.votingPower.toString()} %`
+                    : <div className={styles.loader}></div>}
+                </td>
+                <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
                 {
                   userWallet.myAddr ? <>
-                    <td>{userWallet.myAddr ? pool.myStake.dividedBy(10**18).toString() : "" } DMD</td>
+                    <td>{userWallet.myAddr && pool.myStake ? pool.myStake.dividedBy(10**18).toString() : (<div className={styles.loader}></div>) } DMD</td>
                     <td>
                       {
                         pool.isActive && (

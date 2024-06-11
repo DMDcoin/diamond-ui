@@ -20,7 +20,8 @@ const Home: React.FC<HomeProps> = ({}) => {
     validCandidates,
     minimumGasFee,
     reinsertPot,
-    deltaPot } = useStakingContext();
+    deltaPot,
+    myTotalStake } = useStakingContext();
 
   return (
     <>
@@ -45,11 +46,11 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         <tbody>
                                         <tr>
                                             <td>My Stake</td>
-                                            <td>1000 DMD</td>
+                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
                                         </tr>
                                         <tr>
                                             <td>Candidate stake</td>
-                                            <td>100 DMD</td>
+                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
                                         </tr>
                                         <tr>
                                             <td>Score</td>

@@ -125,10 +125,10 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       };
 
       const providerOptions = {
-        walletconnect: {
-          package: walletConnectProvider,
-          options: chainOptions,
-        },
+        // walletconnect: {
+        //   package: walletConnectProvider,
+        //   options: chainOptions,
+        // },
       };
   
       const web3Modal = new Web3Modal({

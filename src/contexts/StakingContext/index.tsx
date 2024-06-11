@@ -1,12 +1,13 @@
 import React, { ErrorInfo, createContext, useContext, useEffect, useState } from "react";
 
 import BigNumber from "bignumber.js";
-import { useWeb3Context } from "../Web3Context";
-import { BlockType, NonPayableTx } from "./types/contracts";
-import { Delegator, Pool } from "./models/model";
-import { ContextProviderProps, StakingContextState } from "../Web3Context/types";
 import { toast } from "react-toastify";
+import { useWeb3Context } from "../Web3Context";
+import { Delegator, Pool } from "./models/model";
+import { BlockType, NonPayableTx } from "./types/contracts";
+import { ContextProviderProps } from "../Web3Context/types";
 import { getAddressFromPublicKey } from "../../utils/common";
+import { PoolCache } from "./types/cache";
 
 
 interface StakingContextProps {
@@ -18,6 +19,7 @@ interface StakingContextProps {
   epochStartTime: number;
   validCandidates: number;
   epochStartBlock: number;
+  myTotalStake: BigNumber;
   activeValidators: number;
   minimumGasFee: BigNumber;
   candidateMinStake: BigNumber;
@@ -26,9 +28,11 @@ interface StakingContextProps {
   initializeStakingDataAdapter: () => {}
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  getOrderedUnstakeAmount: (pool: Pool) => Promise<BigNumber>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
+  claimOrderedUnstake: (pool: Pool, claimAmount: BigNumber) => Promise<boolean>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -57,9 +61,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     value: '0'
   });
 
-  const [pools, setPools] = useState<Pool[]>([]);
+  const [pools, setPools] = useState<Pool[]>(Array.from({ length: 10 }, () => ({} as Pool)));
   const [stakingEpoch, setStakingEpoch] = useState<number>(0);
   const [keyGenRound, setKeyGenRound] = useState<number>(0);
+  const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
   const [totalDaoStake, setTotalDaoStake] = useState<BigNumber>(new BigNumber(0));
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>(0);
   const [latestBlockNumber, setLatestBlockNumber] = useState<number>(0);
@@ -88,11 +93,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     console.log("[INFO] Updating stake amounts");
 
     setPools(prevPools => {
+      let totalStake = BigNumber(0);
+
       prevPools.forEach(pool => {
-      getMyStake(pool.stakingAddress).then((result) => {
+        pool.stakingAddress && getMyStake(pool.stakingAddress).then((result) => {
+          totalStake = totalStake.plus(result);
+          setMyTotalStake(totalStake);
           pool.myStake = new BigNumber(result);
         });
       });
+      
       return prevPools;
     });
 
@@ -111,13 +121,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (contractsManager.stContract) {
       setPools(prevPools => {
         prevPools.forEach(pool => {
-          pool.votingPower = pool.totalStake.dividedBy(totalDaoStake).multipliedBy(100).decimalPlaces(2);
+          pool.votingPower = BigNumber(pool.totalStake).dividedBy(totalDaoStake).multipliedBy(100).decimalPlaces(2);
         });
         return prevPools;
       });
     }
   }
-
+ 
   const initializeStakingDataAdapter = async () => {
     if (initialized) return;
     updateEventSubscription();
@@ -339,7 +349,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     // check if there is a new pool that is not tracked yet within the context.
     setPools(prevPools => {
-      const newPools = [...prevPools];
+      let newPools = [...prevPools];
       allPools.forEach(poolAddress => {
         const findResult = newPools.find(x => x.stakingAddress === poolAddress);
         if (!findResult) {
@@ -347,6 +357,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           newPools.push(pool);
         }
       });
+
+      // filter empty pools
+      newPools = newPools.filter(pool => pool.stakingAddress);
 
       updatePools(newPools, validatorWithoutPool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
       return newPools;
@@ -363,7 +376,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   ) => {
     // update pools in batches of 10 for less rpc calls at once
     const batchSize = 10;
-    let updatedPools: Pool[] = [];
+    let updatedPools: Pool[] = [...pools];
 
     for (let i = 0; i < pools.length; i += batchSize) {
       const batch = pools.slice(i, i + batchSize);
@@ -374,19 +387,31 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
         p.votingPower = p.totalStake.dividedBy(totalDaoStake).multipliedBy(100);
-        return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+
+        const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) =>  p.stakingAddress == cachedPool.stakingAddress );
+
+        return cachedPool || updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
       });
 
       await Promise.allSettled(batchPromises).then((batchResults) => {
         batchResults.forEach((result) => {
           if (result.status === 'fulfilled') {
-            updatedPools.push(result.value);
+            const pIndex = updatedPools.findIndex(p => p.stakingAddress === result.value.stakingAddress);
+            if (pIndex !== -1) {
+              updatedPools[pIndex] = result.value;
+            } else {  
+              updatedPools.push(result.value);
+            }
           }
         });
 
         setPools([...updatedPools]);
       });
     }
+    
+    
+    setCachedPools(blockNumber, updatedPools);
+    console.log(JSON.parse(localStorage.getItem('poolsData') || '{}'));
   }
 
   const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
@@ -471,6 +496,42 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       pool.numberOfAcks = 0;
     }
     return pool;
+  }
+
+  const setCachedPools = (blockNumber: number, pools: Pool[]) => {
+    let poolsCache: PoolCache = {};
+
+    const cachedPoolsString = localStorage.getItem('poolsData');
+    if (cachedPoolsString) {
+      poolsCache = JSON.parse(cachedPoolsString);
+    }
+
+    const cachedPools = poolsCache[blockNumber] || [];
+    const updatedCachedPools = [...cachedPools];
+
+    pools.forEach(pool => {
+      const cachedPoolIndex = updatedCachedPools.findIndex(p => p.stakingAddress === pool.stakingAddress);
+
+      if (cachedPoolIndex === -1) {
+        updatedCachedPools.push(pool);
+      } else {
+        updatedCachedPools[cachedPoolIndex] = pool;
+      }
+    });
+
+    localStorage.setItem('poolsData', JSON.stringify({ ...poolsCache, [blockNumber]: updatedCachedPools }));
+    setPools(updatedCachedPools);
+  }
+
+  const getCachedPools = (blockNumber: number): Pool[] => {
+    let cachedPools: PoolCache = {};
+
+    const cachedPoolsString = localStorage.getItem('poolsData');
+    if (cachedPoolsString) {
+      cachedPools = JSON.parse(cachedPoolsString);
+    }
+
+    return cachedPools[blockNumber] || [];
   }
 
   const getDelegatorsData = async (poolAddress: string, delegators: Delegator[], blockNumber: number) => {
@@ -583,6 +644,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
       return false;
     } catch (error: any) {
+      showLoader(false, "");
       toast.error(error.message || "Error in creating pool");
       return false;
     }
@@ -673,6 +735,41 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
+  const getOrderedUnstakeAmount = async (pool: Pool): Promise<BigNumber> => {
+    if (!contractsManager.stContract || !userWallet.myAddr) return new BigNumber(0);
+
+    const claimableAmount = await contractsManager.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, userWallet.myAddr).call();
+    const unlockEpoch = BigNumber(await contractsManager.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, userWallet.myAddr).call()).plus(1);
+
+    console.log(unlockEpoch.toString(), {stakingEpoch}, {claimableAmount})
+
+    return unlockEpoch.isLessThanOrEqualTo(stakingEpoch) ? new BigNumber(claimableAmount) : new BigNumber(0);
+  }
+
+  const claimOrderedUnstake = async (pool: Pool, claimAmount: BigNumber): Promise<boolean> => {
+    let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
+
+    if (!contractsManager.stContract || !userWallet.myAddr) return false;
+
+    if (!canStakeOrWithdrawNow) {
+      toast.warn("Outside staking/withdraw time window");
+      return false;
+    } else {
+      try {
+        showLoader(true, `Claiming ${claimAmount.dividedBy(10**18)} DMD 💎`);
+        const receipt = await contractsManager.stContract.methods.claimOrderedWithdraw(pool.stakingAddress).send(txOpts);
+        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+        toast.success(`Claimed ${claimAmount.dividedBy(10**18)} DMD 💎`);
+        showLoader(false, "");
+        return true;
+      } catch (err: any) {
+        showLoader(false, "");
+        toast.error(err.shortMsg || err.message || "Error in claiming ordered withdraw");
+        return false;
+      }
+    }
+  }
+
   const contextValue = {
     // state
     pools,
@@ -687,6 +784,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     deltaPot,
     candidateMinStake,
     delegatorMinStake,
+    myTotalStake,
 
     // methods
     stake,
@@ -694,6 +792,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     setPools,
     createPool,
     addOrUpdatePool,
+    claimOrderedUnstake,
+    getOrderedUnstakeAmount,
     initializeStakingDataAdapter
   };
 

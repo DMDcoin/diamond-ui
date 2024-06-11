@@ -4,12 +4,8 @@ import BigNumber from 'bignumber.js';
 import { KeyGenMode } from './contractManager';
 
 export class ClaimableStake {
-
   public amount: BigNumber = new BigNumber(0);
   public unlockEpoch: number = 0;
-
-  public constructor(public pool: Pool) {
-  }
 
   public canClaimNow(stakingEpoch: number): boolean {
     return this.amount.gt(new BigNumber(0)) && this.unlockEpoch <= stakingEpoch;
@@ -34,7 +30,7 @@ export class Pool {
   public totalStake: BigNumber = new BigNumber(0);
   public myStake: BigNumber = new BigNumber(0);
   public orderedWithdrawAmount: BigNumber = new BigNumber(0);
-  public claimableStake: ClaimableStake = new ClaimableStake(this);
+  public claimableStake: ClaimableStake = new ClaimableStake();
   public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
   public validatorStakeShare: number = 0; // percent
