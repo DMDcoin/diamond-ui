@@ -56,8 +56,8 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             if (p.stakingAddress === pool.stakingAddress) {
               return {
                 ...p,
-                myStake: p.myStake.minus(amountInWei),
-                totalStake: p.totalStake.minus(amountInWei),
+                myStake: BigNumber(p.myStake).minus(amountInWei),
+                totalStake: BigNumber(p.totalStake).minus(amountInWei),
               };
             }
             return p;

@@ -81,7 +81,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                 <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
                 {
                   userWallet.myAddr ? <>
-                    <td>{userWallet.myAddr && pool.myStake ? pool.myStake.dividedBy(10**18).toString() : (<div className={styles.loader}></div>) } DMD</td>
+                    <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toString() : (<div className={styles.loader}></div>) } DMD</td>
                     <td>
                       {
                         pool.isActive && (
@@ -90,7 +90,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                       }
                     </td>
                     <td>
-                      {pool.myStake.isGreaterThan(0) && (
+                      {BigNumber(pool.myStake).isGreaterThan(0) && (
                         <UnstakeModal buttonText="Unstake" pool={pool} />
                       )}
                     </td>
