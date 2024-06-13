@@ -23,6 +23,7 @@ interface StakingContextProps {
   myTotalStake: BigNumber;
   activeValidators: number;
   minimumGasFee: BigNumber;
+  stakingInitialized: boolean;
   candidateMinStake: BigNumber;
   delegatorMinStake: BigNumber;
   
@@ -49,12 +50,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     userWallet,
     web3,
   } = useWeb3Context();
-
-  const [initialized, setInitialized] = useState<boolean>(false);
-  const [handlingNewBlock, setHandlingNewBlock] = useState<boolean>(false);
+  
   const [showAllPools, setShowAllPools] = useState<boolean>(false);
   const [isShowHistoric, setIsShowHistoric] = useState<boolean>(false);
   const [showHistoricBlock, setShowHistoricBlock] = useState<number>(0);
+  const [handlingNewBlock, setHandlingNewBlock] = useState<boolean>(false);
+  const [stakingInitialized, setStakingInitialized] = useState<boolean>(false);
   const [defaultTxOpts, setDefaultTxOpts] = useState<{from: string; gasPrice: string; gasLimit: string; value: string;}>({
     from: '',
     gasPrice: '1000000000',
@@ -112,9 +113,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   useEffect(() => {
     if (web3Initialized) {
+      showLoader(true, "");
       retrieveGlobalValues().then((bn: number) => {
         syncPoolsState(bn, true);
         initializeStakingDataAdapter();
+        showLoader(false, "");
       })
     }
   }, [web3Initialized]);
@@ -131,9 +134,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
  
   const initializeStakingDataAdapter = async () => {
-    if (initialized) return;
+    if (stakingInitialized) return;
     updateEventSubscription();
-    setInitialized(true);
+    setStakingInitialized(true);
   }
 
   const getLatestStakingBlockNumber = async () => {
@@ -260,8 +263,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return parseInt(await contractsManager.vsContract.methods.banCounter(miningAddress).call(tx(), block()));
   }
 
-  const getAvailableSince = async (miningAddress: string): Promise<any> => {
-    const rawResult = await contractsManager.vsContract.methods.validatorAvailableSince(miningAddress).call(tx(), block());
+  const getAvailableSince = async (miningAddress: string, blockNumber: number): Promise<any> => {
+    const rawResult = await contractsManager.vsContract.methods.validatorAvailableSince(miningAddress).call(tx(), blockNumber);
     return new BigNumber(rawResult);
   }
 
@@ -338,7 +341,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const validatorWithoutPool: Array<string> = [...newCurrentValidators];
 
     if (currentValidators.toString() !== newCurrentValidators.toString()) {
-      console.log(`[INFO] Validator set changed in block ${blockNumber} to:\n\n${newCurrentValidators}`);
       setCurrentValidators(newCurrentValidators);
     }
     
@@ -429,9 +431,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       });
     }
     
-    
     setCachedPools(blockNumber, updatedPools);
-    console.log(JSON.parse(localStorage.getItem('poolsData') || '{}'));
+    console.log("[INFO] Cached Data:", JSON.parse(localStorage.getItem('poolsData') || '{}'));
   }
 
   const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
@@ -442,7 +443,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       contractsManager.vsContract.methods.getPublicKey(pool.miningAddress).call(tx(), blockNumber).then((result) => {
         pool.miningPublicKey = result;
       }),
-      getAvailableSince(pool.miningAddress).then((result) => {
+      getAvailableSince(pool.miningAddress, blockNumber).then((result) => {
         pool.availableSince = result;
       }),
       getMyStake(stakingAddress, blockNumber).then((result) => {
@@ -793,18 +794,19 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const contextValue = {
     // state
     pools,
+    deltaPot,
     keyGenRound,
+    reinsertPot,
     stakingEpoch,
+    myTotalStake,
+    minimumGasFee,
     epochStartTime,
     epochStartBlock,
-    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
-    validCandidates: pools.filter(pool => pool.isAvailable).length,
-    minimumGasFee,
-    reinsertPot,
-    deltaPot,
     candidateMinStake,
     delegatorMinStake,
-    myTotalStake,
+    stakingInitialized,
+    validCandidates: pools.filter(pool => pool.isAvailable).length,
+    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
 
     // methods
     stake,

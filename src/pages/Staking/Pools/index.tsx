@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useStakingContext } from "../../../contexts/StakingContext";
 import ValidatorsTable from "../../../components/ValidatorsTable";
 
 interface PoolsProps {}
