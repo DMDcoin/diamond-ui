@@ -33,13 +33,13 @@ const NavBar: React.FC<NavBarProps> = () => {
                     <a href="https://uniq.directory/" target="_blank" className="nav-link w-dropdown-link">NFT Marketplace</a>
                     <a href="https://uniq.diamonds/" target="_blank" className="nav-link w-dropdown-link">uNiq Diamonds</a>
                     <a href="https://gladiators.diamonds/" target="_blank" className="nav-link w-dropdown-link">uNiq Gladiators</a>
-                    </nav>
+                  </nav>
               </div>
                 
               {web3Context.userWallet && web3Context.userWallet.myAddr ? (
                 <button className="button w-button">{web3Context.userWallet.myAddr}</button>
               ) : (
-                <button className="button w-button" onClick={web3Context.connectWallet}>Sign In</button>
+                <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
               )}
 
             </nav>

@@ -586,10 +586,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const addOrUpdatePool = async (stakingAddr: string, blockNumber: number) => {
-    let exists = true;
     let pool = pools.find(p => p.stakingAddress === stakingAddr);
+
     if (!pool) {
-      exists = false;
       pool = new Pool(stakingAddr);
     }
 
@@ -613,22 +612,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     const updatedPoolData = await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
 
-    if (exists) {
-      setPools(prevPools => {
-        const updatedPools = prevPools.map(p => {
-          if (p.stakingAddress === stakingAddr) {
-            return updatedPoolData;
-          }
-          return p;
-        });
-        return updatedPools as Pool[];
+    setPools(prevPools => {
+      let exists = false;
+      let updatedPools = prevPools.map(p => {
+        if (p.stakingAddress === stakingAddr) {
+          exists = true;
+          return updatedPoolData;
+        }
+        return p;
       });
-    } else {
-      setPools(prevPools => {
-        prevPools.push(updatedPoolData);
-        return prevPools;
-      });
-    }
+      if (!exists) updatedPools.push(updatedPoolData);
+      return updatedPools as Pool[];
+    });
   }
 
   const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {

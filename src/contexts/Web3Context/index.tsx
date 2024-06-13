@@ -6,6 +6,7 @@ import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
 import { walletConnectProvider } from "@web3modal/wagmi";
 import { UserWallet } from "../StakingContext/models/wallet";
+import { requestPublicKeyMetamask } from "../../utils/common";
 import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -20,7 +21,6 @@ import {
   TxPermissionHbbft,
   ValidatorSetHbbft,
 } from "../contracts";
-import { requestPublicKeyMetamsak } from "../../utils/common";
 
 interface ContractsState {
   contracts: ContractManager;
@@ -180,6 +180,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
   
       const walletAddress = (await web3ModalInstance.request({method: 'eth_accounts'}))[0];
+      // await requestPublicKeyMetamask(provider, walletAddress).then((res) => console.log("publicKey", res));
       const myBalance = new BigNumber(await web3.eth.getBalance(walletAddress));
       const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);
 

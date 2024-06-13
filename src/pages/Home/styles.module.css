@@ -1,3 +1,7 @@
+.heroContainer {
+  margin-top: 2rem;
+}
+
 .homeContainer {
   display: flex;
   align-items: center;
@@ -72,7 +76,16 @@
   font-size: 18px;
 }
 
-.styledTable tr td:nth-child(2) {
+.styledTable > tbody > tr:nth-child(1) > td:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+}
+
+.styledTable > tbody > tr:nth-child(1) > td:nth-child(1) > span {
+  font-size: 12px;
+}
+
+.styledTable tr td:nth-child(3) {
   text-align: end;
 }
 

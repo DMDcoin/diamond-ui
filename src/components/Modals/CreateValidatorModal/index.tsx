@@ -51,7 +51,6 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
     if (!ensureWalletConnection()) return;
     try {
       createPool(publicKey, new BigNumber(stakeAmount)).then((res) => {
-        console.log("Here", {res});
         if (res) navigate(`/staking/details/${userWallet.myAddr}`);
       });
     } catch (err) {

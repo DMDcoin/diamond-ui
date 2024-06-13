@@ -61,7 +61,7 @@ export const getAddressFromPublicKey = (publicKey: string): string => {
   return `0x${resultBuffer.toString("hex")}`;
 }
 
-export const requestPublicKeyMetamsak = async (web3: any, address: string) => {
+export const requestPublicKeyMetamask = async (web3: any, address: string) => {
   // Sign a message
   const message = 'MetaMask public key retrieval';
   const messageHex = bufferToHex(Buffer.from(message, 'utf8'));

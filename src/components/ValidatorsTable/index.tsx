@@ -42,7 +42,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
   };
 
   return (
-    <div className="sectionContainer">
+    <div className={styles.sectionContainer + " sectionContainer"}>
+      <h1>Validator Candidates</h1>
+
       <div className={styles.tableContainer}>
         <table className={styles.styledTable}>
           <thead>

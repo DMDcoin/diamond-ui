@@ -1,17 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { timestampToDateTime } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 import { useStakingContext } from "../../contexts/StakingContext";
 import CreateValidatorModal from "../../components/Modals/CreateValidatorModal";
+import { Pool } from "../../contexts/StakingContext/models/model";
+import UnstakeModal from "../../components/Modals/UnstakeModal";
+import BigNumber from "bignumber.js";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
+  const [myPool, setMyPool] = useState<Pool | null>(null);
   const { userWallet, connectWallet } = useWeb3Context();
 
-  const { 
+  const {
+    pools,
     keyGenRound,
     stakingEpoch,
     epochStartTime,
@@ -22,6 +27,10 @@ const Home: React.FC<HomeProps> = ({}) => {
     reinsertPot,
     deltaPot,
     myTotalStake } = useStakingContext();
+
+    useEffect(() => {
+        setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr) as Pool);
+    }, [pools, userWallet.myAddr]);
 
   return (
     <>
@@ -45,7 +54,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         </thead>
                                         <tbody>
                                         <tr>
-                                            <td>My Stake</td>
+                                            <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
                                             <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
                                         </tr>
                                         <tr>
@@ -63,13 +72,54 @@ const Home: React.FC<HomeProps> = ({}) => {
 
                             <div className="hero-split">
                                 <div className={styles.loggedInBtns}>
-                                    <CreateValidatorModal buttonText="Create a pool"/>
-                                    <button className={styles.tableButton}>Unstake</button>
-                                    <button className={styles.tableButton}>See the list</button>
-                                    <button className={styles.tableButton}>See history</button>
+                                    {
+                                        !myPool ? (
+                                            <CreateValidatorModal buttonText="Create a pool"/>
+                                        ) : (
+                                            <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                        )
+                                    }
+                                    {/* <button className={styles.tableButton}>See the list</button> */}
+                                    {/* <button className={styles.tableButton}>See history</button> */}
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className={styles.heroContainer + " hero-container"}>
+                        <table className={styles.styledTable}>
+                            <thead>
+                            {
+                                myPool && myPool.delegators.length ? (
+                                <tr>
+                                    <td></td>
+                                    <td>Wallet</td>
+                                    <td>Delegated Stake</td>
+                                </tr>
+                                ) : (
+                                <tr>
+                                    <td>No Delegations</td>
+                                </tr>
+                                )
+                            }
+                            </thead>
+                            <tbody>
+                            {
+                                myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
+                                <tr key={i}>
+                                    <td>
+                                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                                    </td>
+                                    <td>{delegator.address}</td>
+                                    <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
+                                </tr>
+                                )) : (
+                                <tr>
+                                </tr>
+                                )
+                            }
+                            </tbody>
+                        </table>
                     </div>
                 </section>
             ) : (

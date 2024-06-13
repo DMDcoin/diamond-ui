@@ -1,3 +1,13 @@
+.sectionContainer {
+  padding: 0px;
+}
+
+.sectionContainer > h1 {
+  color: #0145b2;
+  text-align: center;
+  padding-bottom: 30px;
+}
+
 .tableContainer {
   width: 100%;
   margin: auto;
