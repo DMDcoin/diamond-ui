@@ -723,7 +723,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr, value: stakeAmountWei };
 
     if (new BigNumber(stakeAmountWei).isGreaterThan(userWallet.myBalance)) {
-      toast.warn(`Insufficient balance ${userWallet.myBalance} for selected amount ${BigNumber(stakeAmount).dividedBy(10**18).toFixed(2)}`);
+      toast.warn(`Insufficient balance ${BigNumber(userWallet.myBalance).dividedBy(10**18)} for selected amount ${BigNumber(stakeAmount).dividedBy(10**18).toFixed(2)}`);
       return false;
     } else if (!canStakeOrWithdrawNow) {
       toast.warn("Outside staking/withdraw time window");
@@ -731,7 +731,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else if (new BigNumber(pool.myStake).plus(new BigNumber(stakeAmountWei)).isLessThan(delegatorMinStake)) {
       toast.warn(`Min. staking amount is ${delegatorMinStake}`);
       return false;
-    } else if (pool.isBanned(BigNumber(new Date().getTime() / 1000))) {
+    } else if (BigNumber(pool.bannedUntil).isGreaterThan(BigNumber(new Date().getTime() / 1000))) {
       toast.warn("Cannot stake on a pool which is currently banned");
       return false;
     } else {

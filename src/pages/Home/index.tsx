@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { timestampToDateTime } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
@@ -8,10 +8,13 @@ import CreateValidatorModal from "../../components/Modals/CreateValidatorModal";
 import { Pool } from "../../contexts/StakingContext/models/model";
 import UnstakeModal from "../../components/Modals/UnstakeModal";
 import BigNumber from "bignumber.js";
+import { useNavigate } from "react-router-dom";
+import StakeModal from "../../components/Modals/StakeModal";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
+  const navigate = useNavigate();
   const [myPool, setMyPool] = useState<Pool | null>(null);
   const { userWallet, connectWallet } = useWeb3Context();
 
@@ -74,9 +77,15 @@ const Home: React.FC<HomeProps> = ({}) => {
                                 <div className={styles.loggedInBtns}>
                                     {
                                         !myPool ? (
-                                            <CreateValidatorModal buttonText="Create a pool"/>
+                                            <div className={styles.noPoolButtons}>
+                                                <CreateValidatorModal buttonText="Create a pool"/>
+                                                <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                                            </div>
                                         ) : (
-                                            <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                            <>
+                                                <StakeModal buttonText="Stake" pool={myPool} />
+                                                <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                            </>
                                         )
                                     }
                                     {/* <button className={styles.tableButton}>See the list</button> */}
