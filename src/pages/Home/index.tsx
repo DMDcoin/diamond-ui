@@ -105,10 +105,10 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     <td>Wallet</td>
                                     <td>Delegated Stake</td>
                                 </tr>
-                                ) : (
-                                <tr>
-                                    <td>No Delegations</td>
-                                </tr>
+                                ) : myPool && (
+                                    <tr>
+                                        <td>No Delegations</td>
+                                    </tr>
                                 )
                             }
                             </thead>
@@ -122,9 +122,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     <td>{delegator.address}</td>
                                     <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
                                 </tr>
-                                )) : (
-                                <tr>
-                                </tr>
+                                )) : myPool && (
+                                    <tr>
+                                    </tr>
                                 )
                             }
                             </tbody>

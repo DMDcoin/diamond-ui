@@ -13,12 +13,17 @@ interface ModalProps {
 const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [unstakeAmount, setUnstakeAmount] = useState(0);
   const { unstake, setPools } = useStakingContext();
-  const { web3, ensureWalletConnection } = useWeb3Context();
+  const [unstakeAmount, setUnstakeAmount] = useState(0);
+  const [ownPool, setOwnPool] = useState<boolean>(false);
+  const { userWallet, web3, ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
+
+  useEffect(() => {
+    setOwnPool(pool.stakingAddress === userWallet.myAddr);
+  }, [userWallet.myAddr, pool.stakingAddress]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -82,7 +87,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
             </button>
-            <h2>Unstake DMD</h2>
+            <h3>{ ownPool ? "Unstake DMD" : `Unstake from ${pool.stakingAddress}` }</h3>
 
             <form className={styles.form} onSubmit={handleWithdrawStake}>
               <span>
@@ -97,6 +102,18 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 placeholder="Enter the amount to unstake"
                 onChange={(e) => setUnstakeAmount(Number(e.target.value))}
               />
+
+              {
+                pool.isCurrentValidator && ownPool ? (
+                  <p className={styles.unstakeWarning}>
+                    Please note that you are part of current Epoch's validators. Unstaked coins will need to be claimed by clicking on the "Claim" button after the current Epoch ends.
+                  </p>
+                ) : pool.isCurrentValidator && (
+                  <p className={styles.unstakeWarning}>
+                    Please note that this node is part of current Epoch's validators. Unstaked coins will need to be claimed by clicking on the "Claim" button after the current Epoch ends.
+                  </p>
+                )
+              }
 
               <button className={styles.formSubmit} type="submit">
                 Unstake

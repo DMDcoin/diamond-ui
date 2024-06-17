@@ -1,11 +1,12 @@
 import BigNumber from "bignumber.js";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./styles.module.css";
+import StakeModal from "../Modals/StakeModal";
 import { useNavigate } from "react-router-dom";
+import UnstakeModal from "../Modals/UnstakeModal";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import { useStakingContext } from "../../contexts/StakingContext";
-import UnstakeModal from "../Modals/UnstakeModal";
-import StakeModal from "../Modals/StakeModal";
+
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -92,9 +93,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                       }
                     </td>
                     <td>
-                      {BigNumber(pool.myStake).isGreaterThan(0) && (
-                        <UnstakeModal buttonText="Unstake" pool={pool} />
-                      )}
+                      { BigNumber(pool.claimableStake.amount).isGreaterThan(0) ? (
+                        <button className={styles.tableButton}>Claim Stake</button>
+                      ) :
+                        BigNumber(pool.myStake).isGreaterThan(0) && (
+                          <UnstakeModal buttonText="Unstake" pool={pool} />
+                        )
+                      }
                     </td>
                   </> : <>
                     <td></td>
