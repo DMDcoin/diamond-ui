@@ -1,3 +1,15 @@
+.sectionContainer {
+  padding-top: 0px;
+}
+
+h2, span {
+  color: #0145b2;
+}
+
+.sectionContainer > * {
+  width: 100%;
+}
+
 .daoHeading {
   align-self: start;
   margin: 0px;
@@ -7,13 +19,14 @@
   height: 30px;
   padding: 5px;
   border-radius: 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid #0145b2;
   background-color: transparent;
 }
 
 .daoInfoContainer {
   width: 100%;
   display: flex;
+  color: #0145b2;
   align-items: center;
   justify-content: space-between;
 }
@@ -35,7 +48,7 @@
   text-align: center;
   border-radius: 50px;
   flex-direction: column;
-  border: 1px solid #ddd;
+  border: 1px solid #0145b2;
   justify-content: space-between;  
 }
 
@@ -61,7 +74,7 @@
   cursor: pointer;
   align-self: center;
   border-radius: 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid #0145b2;;
   background-color: transparent;
 }
 

@@ -179,6 +179,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     values: Array<string> = []
   ): Proposal => {
     return {
+      title: '',
       proposer: proposer,
       state: '',
       targets: targets,

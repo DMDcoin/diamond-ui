@@ -1,20 +1,22 @@
+import BigNumber from "bignumber.js";
 import styles from "./styles.module.css";
-import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import Navigation from "../../../components/Navigation";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDaoContext } from "../../../contexts/DaoContext";
 import StakeModal from "../../../components/Modals/StakeModal";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import UnstakeModal from "../../../components/Modals/UnstakeModal";
+import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import BigNumber from "bignumber.js";
-import Navigation from "../../../components/Navigation";
-
 
 interface PoolDetailsProps {}
 
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
+  const navigate = useNavigate();
   const { poolAddress } = useParams();
   const { userWallet } = useWeb3Context();
+  const { allDaoProposals, getStateString } = useDaoContext();
   const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
@@ -22,6 +24,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
     setPool(pool as Pool);
+    
   }, [poolAddress, pools, userWallet.myAddr]);
 
   return (
@@ -122,22 +125,34 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
           <table className={styles.styledTable}>
             <thead>
-              <tr>
-                <td>Date</td>
-                <td>Proposal title</td>
-                <td>Proposal type</td>
-                <td>Voting result</td>
-                <td></td>
-              </tr>
+              {
+                allDaoProposals.filter((proposal) => proposal.proposer === poolAddress).length ? (
+                  <tr>
+                    <td>Date</td>
+                    <td>Proposal title</td>
+                    <td>Proposal type</td>
+                    <td>Voting result</td>
+                    <td></td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td>No DAO Participations</td>
+                  </tr>
+                )
+              }
             </thead>
             <tbody>
-              <tr>
-                <td>01/01/2021</td>
-                <td>Make a...</td>
-                <td>Open proposl</td>
-                <td>Accepted</td>
-                <td><button className={styles.tableButton}>Details</button></td>
-              </tr>
+              {
+                allDaoProposals.filter((proposal) => proposal.proposer === poolAddress).map((proposal, i) => (
+                  <tr key={i}>
+                    <td>{proposal.timestamp}</td>
+                    <td>{proposal.title}</td>
+                    <td>{proposal.proposalType}</td>
+                    <td>{getStateString(proposal.state)}</td>
+                    <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className={styles.tableButton}>Details</button></td>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>

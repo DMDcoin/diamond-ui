@@ -1,3 +1,11 @@
+h1, span {
+  color: #0145b2;
+}
+
+.sectionContainer {
+  padding-top: 0px;
+}
+
 .historicProposalsInfoContainer {
   width: 100%;
   display: flex;
@@ -34,15 +42,16 @@
 }
 
 .historicProposalsSearch {
+  width: 85%;
   height: 30px;
   padding: 5px;
-  width: 85%;
+  color: #0145b2;
   border-radius: 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid #0145b2;
   background-color: transparent;
 }
 
 .filterActive {
-  border: 1px solid black;
+  border: 1px solid #0145b2;
   background-color: #f2f2f2;
 }

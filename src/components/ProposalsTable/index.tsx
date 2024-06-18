@@ -110,17 +110,17 @@ const ProposalsTable = (props: TableProps) => {
                 <tr className={styles.tr} key={key}>
                   <td className={styles.td}>
                     {
-                    proposal.timestamp || (<div className={styles.loader}></div>)
+                      proposal.timestamp || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td className={styles.td}>
                     {
-                    proposal.proposer || (<div className={styles.loader}></div>)
+                      proposal.proposer || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td className={styles.td}>
                     {
-                    proposal.title || (<div className={styles.loader}></div>)
+                      proposal.title || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td className={styles.td}>

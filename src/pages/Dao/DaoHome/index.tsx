@@ -31,95 +31,97 @@ const DaoHome: React.FC<DaoProps> = () => {
   };
 
   return (
-    <div className="mainContainer">
-      <div className={styles.daoInfoContainer}>
-        <div>
-          <h1 className={styles.daoHeading}>Governance</h1>
+    <section className="section">
+      <div className={styles.sectionContainer + " sectionContainer"}>
+        <div className={styles.daoInfoContainer}>
+          <div>
+            <h1 className={styles.daoHeading}>Governance</h1>
 
-          <p>
-            Stake:{" "}
-            {daoContext.myTotalStake
-              ? daoContext.myTotalStake.dividedBy(10 ** 18).toString()
-              : 0}{" "}
-            DMD
-          </p>
-          <p>
-            of total DAO weight{" "}
-            <span style={{ fontWeight: "bold" }}>
-              {daoContext.totalStakedAmount &&
-              daoContext.myTotalStake &&
-              Number(daoContext.totalStakedAmount) !== 0 &&
-              Number(daoContext.myTotalStake) !== 0
-                ? Number(
-                    daoContext.myTotalStake.dividedBy(
-                      daoContext.totalStakedAmount
-                    )
-                  ).toFixed(2)
-                : 0}
-              %
-            </span>
-          </p>
+            <p>
+              Stake:{" "}
+              {daoContext.myTotalStake
+                ? daoContext.myTotalStake.dividedBy(10 ** 18).toString()
+                : 0}{" "}
+              DMD
+            </p>
+            <p>
+              of total DAO weight{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {daoContext.totalStakedAmount &&
+                daoContext.myTotalStake &&
+                Number(daoContext.totalStakedAmount) !== 0 &&
+                Number(daoContext.myTotalStake) !== 0
+                  ? Number(
+                      daoContext.myTotalStake.dividedBy(
+                        daoContext.totalStakedAmount
+                      )
+                    ).toFixed(2)
+                  : 0}
+                %
+              </span>
+            </p>
 
-          <input
-            type="text"
-            placeholder="Search"
-            className={styles.daoSearch}
-            onChange={(e) => setFilterQuery(e.target.value)}
-          />
+            <input
+              type="text"
+              placeholder="Search"
+              className={styles.daoSearch}
+              onChange={(e) => setFilterQuery(e.target.value)}
+            />
+          </div>
+
+          <div>
+            {daoContext.daoPhase?.phase === "1" && <div></div>}
+            <h4>
+              {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
+            </h4>
+            <p>{daoContext.phaseEndTimer} till the end</p>
+            {daoContext.daoPhase?.phase === "0" && (
+              <button
+                onClick={() => {
+                  startTransition(() => {
+                    navigate("/dao/create");
+                  });
+                }}
+              >
+                Create Proposal
+              </button>
+            )}
+          </div>
         </div>
 
-        <div>
-          {daoContext.daoPhase?.phase === "1" && <div></div>}
-          <h4>
-            {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
-          </h4>
-          <p>{daoContext.phaseEndTimer} till the end</p>
-          {daoContext.daoPhase?.phase === "0" && (
-            <button
-              onClick={() => {
-                startTransition(() => {
-                  navigate("/dao/create");
-                });
-              }}
-            >
-              Create Proposal
-            </button>
-          )}
+        <div className={styles.myDaoProposals}>
+          <h2>My Proposals</h2>
+          <div>
+            <ProposalsTable
+              data={daoContext.activeProposals}
+              userWallet={web3Context.userWallet}
+              handleDetailsClick={handleDetailsClick}
+              getStateString={daoContext.getStateString}
+              filterQuery={filterQuery}
+            />
+          </div>
         </div>
+
+        <div className={styles.allDaoProposals}>
+          <h2>All Proposals</h2>
+          <div>
+            <ProposalsTable
+              data={daoContext.activeProposals}
+              handleDetailsClick={handleDetailsClick}
+              getStateString={daoContext.getStateString}
+              filterQuery={filterQuery}
+            />
+          </div>
+        </div>
+
+        <span
+          onClick={() => startTransition(() => navigate("/dao/historic"))}
+          className={styles.historicProposalsLink}
+        >
+          Historic Proposals
+        </span>
       </div>
-
-      <div className={styles.myDaoProposals}>
-        <h2>My Proposals</h2>
-        <div>
-          <ProposalsTable
-            data={daoContext.activeProposals}
-            userWallet={web3Context.userWallet}
-            handleDetailsClick={handleDetailsClick}
-            getStateString={daoContext.getStateString}
-            filterQuery={filterQuery}
-          />
-        </div>
-      </div>
-
-      <div className={styles.allDaoProposals}>
-        <h2>All Proposals</h2>
-        <div>
-          <ProposalsTable
-            data={daoContext.activeProposals}
-            handleDetailsClick={handleDetailsClick}
-            getStateString={daoContext.getStateString}
-            filterQuery={filterQuery}
-          />
-        </div>
-      </div>
-
-      <span
-        onClick={() => startTransition(() => navigate("/dao/historic"))}
-        className={styles.historicProposalsLink}
-      >
-        Historic Proposals
-      </span>
-    </div>
+    </section>
   );
 };
 

@@ -1,3 +1,11 @@
+.sectionContainer {
+  padding-top: 0px;
+}
+
+h1, h2, h3, h4, p, div, span {
+  color: #0145b2;
+}
+
 .daoDetailsHeading {
   width: 100%;
   display: flex;
@@ -41,7 +49,7 @@
   font-weight: 700;
   align-self: center;
   border-radius: 5px;
-  border: 0.5px solid black;
+  border: 0.5px solid #0145b2;
   background-color: transparent;
 }
 
@@ -295,12 +303,12 @@
   align-self: center;
   border-radius: 5px;
   margin-bottom: 20px;
-  border: 0.5px solid black;
+  border: 0.5px solid #0145b2;
   background-color: transparent;
 }
 
 .proposalDiscussionLink {
-  color: black;
+  color: #0145b2;
   font-weight: bold;
 }
 

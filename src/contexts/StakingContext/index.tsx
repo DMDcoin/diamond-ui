@@ -8,6 +8,7 @@ import { Delegator, Pool } from "./models/model";
 import { BlockType, NonPayableTx } from "./types/contracts";
 import { ContextProviderProps } from "../Web3Context/types";
 import { getAddressFromPublicKey } from "../../utils/common";
+import { useDaoContext } from "../DaoContext";
 
 
 interface StakingContextProps {
