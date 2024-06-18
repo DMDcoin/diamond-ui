@@ -15,38 +15,21 @@ interface PoolDetailsProps {}
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const { poolAddress } = useParams();
   const { userWallet } = useWeb3Context();
-  const { pools, getOrderedUnstakeAmount, claimOrderedUnstake } = useStakingContext();
+  const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
-  const [claimableUnstakeAmount, setClaimableUnstakeAmount] = useState(BigNumber(0));
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
     setPool(pool as Pool);
-    console.log(pool?.isAvailable, "Available.");
-
-    if (pool) {
-      getOrderedUnstakeAmount(pool).then((amount: BigNumber) => {
-        setClaimableUnstakeAmount(amount);
-      });
-    }
   }, [poolAddress, pools, userWallet.myAddr]);
-
-  const handleClaimUnstake = () => {
-    claimOrderedUnstake(pool as Pool, claimableUnstakeAmount).then(() => {
-      setClaimableUnstakeAmount(BigNumber(0));
-    });
-  }
 
   return (
     <section className="section">
 
-      
-
       <div className={styles.detailsSectionContainer + " sectionContainer"}>
 
       <Navigation start="/staking" />
-
 
         {/* image address status */}
         <div className={styles.infoContainer}>
@@ -92,12 +75,9 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
-              pool && BigNumber(pool.myStake).isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
-            }
-            {
-              BigNumber(claimableUnstakeAmount).isGreaterThan(0) && userWallet.myAddr && (
-                <button className={styles.tableButton} onClick={handleClaimUnstake}>Claim Unstake</button>
-              )
+              pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
+                <button className={styles.tableButton} onClick={() => claimOrderedUnstake(pool as Pool)}>Claim</button>
+              ) : pool && BigNumber(pool.myStake).isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
             }
           </div>          
 

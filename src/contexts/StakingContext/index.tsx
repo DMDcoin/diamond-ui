@@ -2,13 +2,12 @@ import React, { ErrorInfo, createContext, useContext, useEffect, useState } from
 
 import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
+import { PoolCache } from "./types/cache";
 import { useWeb3Context } from "../Web3Context";
 import { Delegator, Pool } from "./models/model";
 import { BlockType, NonPayableTx } from "./types/contracts";
 import { ContextProviderProps } from "../Web3Context/types";
 import { getAddressFromPublicKey } from "../../utils/common";
-import { PoolCache } from "./types/cache";
-import { UserWallet } from "./models/wallet";
 
 
 interface StakingContextProps {
@@ -28,13 +27,12 @@ interface StakingContextProps {
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {}
+  claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
-  getOrderedUnstakeAmount: (pool: Pool) => Promise<BigNumber>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
-  claimOrderedUnstake: (pool: Pool, claimAmount: BigNumber) => Promise<boolean>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -98,10 +96,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       let totalStake = BigNumber(0);
 
       prevPools.forEach(pool => {
-        pool.stakingAddress && getMyStake(pool.stakingAddress).then((result) => {
-          totalStake = totalStake.plus(result);
+        pool.stakingAddress && getMyStakeAndOrderedWithdraw(pool.stakingAddress).then((result) => {
+          totalStake = totalStake.plus(result.myStake);
           setMyTotalStake(totalStake);
-          pool.myStake = new BigNumber(result);
+          pool.myStake = result.myStake;
+          pool.orderedWithdrawAmount = result.claimableAmount;
+          pool.orderedWithdrawUnlockEpoch = result.unlockEpoch;
         });
       });
       
@@ -246,13 +246,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return currentBlockNumber;
   }
 
-  const getMyStake = async (stakingAddress: string, blockNumber?: number): Promise<string> => {
-    if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) {
-      return '0';
+  const getMyStakeAndOrderedWithdraw = async (stakingAddress: string, blockNumber?: number): Promise<{myStake: BigNumber, claimableAmount: BigNumber, unlockEpoch: BigNumber}> => {
+    if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) return { myStake: new BigNumber('0'), unlockEpoch: new BigNumber(0), claimableAmount: new BigNumber(0) };
+    
+    let unlockEpoch = new BigNumber(0);
+    const stakeAmount = await contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber || block());
+    const claimableAmount = new BigNumber(await contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call());
+
+    if (claimableAmount.isGreaterThan(0)) {
+      unlockEpoch = BigNumber(await contractsManager.stContract.methods.orderWithdrawEpoch(stakingAddress, userWallet.myAddr).call()).plus(1);
     }
     
-    const stakeAmount = contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber || block());
-    return stakeAmount;
+    return { myStake: new BigNumber(stakeAmount), unlockEpoch, claimableAmount: claimableAmount };
   }
 
   const getBannedUntil = async (miningAddress: string): Promise<any> => {
@@ -445,10 +450,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }),
       getAvailableSince(pool.miningAddress, blockNumber).then((result) => {
         pool.availableSince = result;
-      }),
-      getMyStake(stakingAddress, blockNumber).then((result) => {
-        pool.myStake = new BigNumber(result);
-      }),
+      })
     ]);
 
     if (contractsManager.stContract) {
@@ -462,9 +464,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), blockNumber).then((result) => {
           pool.totalStake = new BigNumber(result);
         }),
-        userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber).then((result) => {
-          pool.orderedWithdrawAmount = new BigNumber(result);
-        }) : new BigNumber(0),
         getBanCount(pool.miningAddress).then((result) => {
           pool.banCount = result;
         }),
@@ -751,18 +750,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const getOrderedUnstakeAmount = async (pool: Pool): Promise<BigNumber> => {
-    if (!contractsManager.stContract || !userWallet.myAddr) return new BigNumber(0);
-
-    const claimableAmount = await contractsManager.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, userWallet.myAddr).call();
-    const unlockEpoch = BigNumber(await contractsManager.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, userWallet.myAddr).call()).plus(1);
-
-    console.log(unlockEpoch.toString(), {stakingEpoch}, {claimableAmount})
-
-    return unlockEpoch.isLessThanOrEqualTo(stakingEpoch) ? new BigNumber(claimableAmount) : new BigNumber(0);
-  }
-
-  const claimOrderedUnstake = async (pool: Pool, claimAmount: BigNumber): Promise<boolean> => {
+  const claimOrderedUnstake = async (pool: Pool): Promise<boolean> => {
+    const claimAmount = pool.orderedWithdrawAmount;
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
 
     if (!contractsManager.stContract || !userWallet.myAddr) return false;
@@ -777,6 +766,17 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
         toast.success(`Claimed ${claimAmount.dividedBy(10**18)} DMD 💎`);
         showLoader(false, "");
+
+        setPools(prevPools => {
+          prevPools.forEach(p => {
+            if (p.stakingAddress === pool.stakingAddress) {
+              p.orderedWithdrawAmount = new BigNumber(0);
+              p.orderedWithdrawUnlockEpoch = new BigNumber(0);
+            }
+          });
+          return prevPools;
+        })
+
         return true;
       } catch (err: any) {
         showLoader(false, "");
@@ -810,7 +810,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     createPool,
     addOrUpdatePool,
     claimOrderedUnstake,
-    getOrderedUnstakeAmount,
     initializeStakingDataAdapter
   };
 

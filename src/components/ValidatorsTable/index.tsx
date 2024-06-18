@@ -15,7 +15,8 @@ interface ValidatorsTableProps {
 const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
   const navigate = useNavigate();
   const { userWallet } = useWeb3Context();
-  const { pools } = useStakingContext();
+  const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
+
   const [currentPage, setCurrentPage] = useState(0);
 
   const pageCount = Math.ceil(pools.length / itemsPerPage);
@@ -93,11 +94,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                       }
                     </td>
                     <td>
-                      { BigNumber(pool.claimableStake.amount).isGreaterThan(0) ? (
-                        <button className={styles.tableButton}>Claim Stake</button>
-                      ) :
-                        BigNumber(pool.myStake).isGreaterThan(0) && (
-                          <UnstakeModal buttonText="Unstake" pool={pool} />
+                      { 
+                        BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) ? (
+                          <button className={styles.tableButton} onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
+                        ) : (
+                          BigNumber(pool.myStake).isGreaterThan(0) && (
+                            <UnstakeModal buttonText="Unstake" pool={pool} />
+                          )
                         )
                       }
                     </td>
