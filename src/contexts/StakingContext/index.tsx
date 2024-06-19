@@ -23,6 +23,7 @@ interface StakingContextProps {
   myTotalStake: BigNumber;
   activeValidators: number;
   minimumGasFee: BigNumber;
+  totalDaoStake: BigNumber;
   stakingInitialized: boolean;
   candidateMinStake: BigNumber;
   delegatorMinStake: BigNumber;
@@ -145,7 +146,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const currentBlock = await web3.eth.getBlockNumber();
 
     const eventsBatchSize = 100000;
-    
+
     for (let i = 0; i < currentBlock; i += eventsBatchSize) {
       const start = i;
       const end = Math.min(i + eventsBatchSize - 1, currentBlock);
@@ -157,13 +158,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
             fromBlock: start,
             toBlock: end
           }).then(async (events) => {
-              allEvents.push(events);
+            events.map(e => allEvents.push(e));
           });
       }
     }
 
-    const latestEvent = allEvents[allEvents.length - 1];
-    return latestEvent.blockNumber;
+    const latestEvent = allEvents.reduce((maxEvent: any, event: any) => event.blockNumber > maxEvent.blockNumber ? event : maxEvent, allEvents[0]);
+    return latestEvent.blockNumber ?? currentBlock;
   }
 
   /**
@@ -742,7 +743,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       toast.warn("Outside staking/withdraw time window");
       return false
     } else if (new BigNumber(pool.myStake).plus(new BigNumber(stakeAmountWei)).isLessThan(delegatorMinStake)) {
-      toast.warn(`Min. staking amount is ${delegatorMinStake}`);
+      toast.warn(`Min. staking amount is ${delegatorMinStake.dividedBy(10**18)}`);
       return false;
     } else if (BigNumber(pool.bannedUntil).isGreaterThan(BigNumber(new Date().getTime() / 1000))) {
       toast.warn("Cannot stake on a pool which is currently banned");
@@ -808,6 +809,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     reinsertPot,
     stakingEpoch,
     myTotalStake,
+    totalDaoStake,
     minimumGasFee,
     epochStartTime,
     epochStartBlock,

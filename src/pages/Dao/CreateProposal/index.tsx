@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
-import { getFunctionName, getFunctionSelector, isValidAddress } from "../../../utils/common";
+import { isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -196,135 +196,137 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   }
 
   return (
-    <div className="mainContainer">
-      <Navigation start="/dao" />
+    <section className="section">
+      <div className={styles.sectionContainer + " sectionContainer"}>
+        <Navigation start="/dao" />
 
-      <span className={styles.createDaoHeading}>Create a Proposal</span>
+        <span className={styles.createDaoHeading}>Create a Proposal</span>
 
-      <div className={styles.proposalTypeContainer}>
-        <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
-        <select className={styles.proposalType} name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
-          <option value="open">Open Proposal</option>
-          <option value="contract-upgrade">Contract upgrade</option>
-          <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
-        </select>
-      </div>
+        <div className={styles.proposalTypeContainer}>
+          <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
+          <select className={styles.proposalType} name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
+            <option value="open">Open Proposal</option>
+            <option value="contract-upgrade">Contract upgrade</option>
+            <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
+          </select>
+        </div>
 
-      <form className={styles.propsalForm} onSubmit={createProposal}>
-        <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
-        <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
-        <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>
+        <form className={styles.propsalForm} onSubmit={createProposal}>
+          <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
+          <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
+          <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>
 
-        {proposalType === "open" && (
-          openProposalFields.map((field, index) => (
-            <div key={index}>
-                <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveOpenProposalField(index)}}>
-                Transaction {index + 1}
-                  {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
-                </span>
-              
-              <input
-                type="text"
-                value={field.target}
-                onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
-                placeholder="Payout Address"
-                className={styles.formInput}
-                required
-              />
-              <input
-                type="text"
-                value={field.amount}
-                onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
-                placeholder="Payout Amount"
-                className={styles.formInput}
-                required
-              />
-            </div>
-          ))
-        )}
-
-        {proposalType === "open" && (
-          <span className={styles.addRemoveTransaction} onClick={handleAddOpenProposalField}>
-            Add Transaction
-            <HiMiniPlusCircle size={20} color="green" />
-          </span>
-        )}
-
-        {
-          proposalType === "contract-upgrade" && (
-            contractUpgradeFields.map((field, index) => (
+          {proposalType === "open" && (
+            openProposalFields.map((field, index) => (
               <div key={index}>
-                <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveContractCallProposalField(index)}}>
+                  <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveOpenProposalField(index)}}>
                   Transaction {index + 1}
-                  {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
-                </span>
-
+                    {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
+                  </span>
+                
                 <input
                   type="text"
-                  value={field.contractAddress}
-                  onChange={(e) => handleContractCallProposalFieldInputChange(index, "contractAddress", e.target.value)}
-                  placeholder="Contract Address"
+                  value={field.target}
+                  onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
+                  placeholder="Payout Address"
                   className={styles.formInput}
                   required
                 />
                 <input
                   type="text"
-                  value={field.contractCalldata}
-                  onChange={(e) => handleContractCallProposalFieldInputChange(index, "contractCalldata", e.target.value)}
-                  placeholder="Contract Calldata"
+                  value={field.amount}
+                  onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
+                  placeholder="Payout Amount"
                   className={styles.formInput}
                   required
                 />
               </div>
+            ))
+          )}
+
+          {proposalType === "open" && (
+            <span className={styles.addRemoveTransaction} onClick={handleAddOpenProposalField}>
+              Add Transaction
+              <HiMiniPlusCircle size={20} color="green" />
+            </span>
+          )}
+
+          {
+            proposalType === "contract-upgrade" && (
+              contractUpgradeFields.map((field, index) => (
+                <div key={index}>
+                  <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveContractCallProposalField(index)}}>
+                    Transaction {index + 1}
+                    {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
+                  </span>
+
+                  <input
+                    type="text"
+                    value={field.contractAddress}
+                    onChange={(e) => handleContractCallProposalFieldInputChange(index, "contractAddress", e.target.value)}
+                    placeholder="Contract Address"
+                    className={styles.formInput}
+                    required
+                  />
+                  <input
+                    type="text"
+                    value={field.contractCalldata}
+                    onChange={(e) => handleContractCallProposalFieldInputChange(index, "contractCalldata", e.target.value)}
+                    placeholder="Contract Calldata"
+                    className={styles.formInput}
+                    required
+                  />
+                </div>
+              )
+            ))
+          }
+
+          {proposalType === "contract-upgrade" && (
+            <span className={styles.addRemoveTransaction} onClick={handleAddContractCallProposalField}>
+              Add Transaction
+              <HiMiniPlusCircle size={20} color="green" />
+            </span>
+          )}
+
+          {
+            proposalType === "ecosystem-parameter-change" && (
+              <div>
+                <input type="text" className={styles.formInput} placeholder="Discussion Link" />
+                <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
+                  const [contractName, methodName, methodSetter] = e.target.value.split(":");
+                  const epcContractVal = await getEpcContractValue(contractName, methodName);
+                  setEpcValue(epcContractVal);
+                  setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
+                  setEpcContractName(contractName);
+                  loadEpcData(contractName, methodName);
+                }}>
+                  {Object.keys(EcosystemParameters).map((contractName) => {
+                    return (
+                      <optgroup key={contractName} label={contractName}>
+                        {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
+                          const methodSetter = EcosystemParameters[contractName][methodName].setter;
+                          return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
+                        })}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+
+                <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
+              </div>
             )
-          ))
-        }
+          }
 
-        {proposalType === "contract-upgrade" && (
-          <span className={styles.addRemoveTransaction} onClick={handleAddContractCallProposalField}>
-            Add Transaction
-            <HiMiniPlusCircle size={20} color="green" />
-          </span>
-        )}
+          <p>
+            Please note that you pay a proposal fee when you submit a new voting
+            creation. You can dismiss it during 14 days from the creation date
+            until the voting starts.
+          </p>
 
-        {
-          proposalType === "ecosystem-parameter-change" && (
-            <div>
-              <input type="text" className={styles.formInput} placeholder="Discussion Link" />
-              <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
-                const [contractName, methodName, methodSetter] = e.target.value.split(":");
-                const epcContractVal = await getEpcContractValue(contractName, methodName);
-                setEpcValue(epcContractVal);
-                setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
-                setEpcContractName(contractName);
-                loadEpcData(contractName, methodName);
-              }}>
-                {Object.keys(EcosystemParameters).map((contractName) => {
-                  return (
-                    <optgroup key={contractName} label={contractName}>
-                      {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
-                        const methodSetter = EcosystemParameters[contractName][methodName].setter;
-                        return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
-                      })}
-                    </optgroup>
-                  );
-                })}
-              </select>
-
-              <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
-            </div>
-          )
-        }
-
-        <p>
-          Please note that you pay a proposal fee when you submit a new voting
-          creation. You can dismiss it during 14 days from the creation date
-          until the voting starts.
-        </p>
-
-        <button>Create</button>
-      </form>
-    </div>
+          <button>Create</button>
+        </form>
+      </div>
+    </section>
   );
 };
 

@@ -13,7 +13,6 @@ interface DaoContextProps {
   activeProposals: Proposal[];
   phaseEndTimer: string;
   allDaoProposals: Proposal[];
-  myTotalStake: BigNumber;
   totalStakedAmount: BigNumber;
 
   initialize: () => Promise<void>;
@@ -46,7 +45,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
-  const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
   const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
@@ -528,7 +526,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
 
     setTotalStakedAmount(totalStakedAmount);
-    setMyTotalStake(myStakedAmount);
   }
 
   const getMyVote = async (proposalId: string): Promise<Vote> => {
@@ -552,7 +549,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     daoInitialized,
     activeProposals,
     allDaoProposals,
-    myTotalStake,
     totalStakedAmount,
 
     // functions

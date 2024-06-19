@@ -39,7 +39,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
-          <p>{pool?.isAvailable ? "Active" : "Banned"}</p>
+          <p>{pool?.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Inactive")}</p>
         </div>
 
         {/* stats table */}
@@ -74,7 +74,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.delegatorStatsContainer}>
 
           <div>
-            <h1>Delegators</h1>
+            <h1>Delegates</h1>
             {
               pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }

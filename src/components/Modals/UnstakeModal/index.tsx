@@ -4,6 +4,7 @@ import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
+import { toast } from "react-toastify";
 
 interface ModalProps {
   buttonText: string;
@@ -52,6 +53,8 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const handleWithdrawStake = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
+
+    if (unstakeAmount <= 0) return toast.warn("Cannot unstake 0 DMD 💎");
     const amountInWei = web3.utils.toWei(unstakeAmount.toString());
 
     unstake(pool, new BigNumber(unstakeAmount)).then((success: boolean) => {
@@ -95,6 +98,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               </span>
 
               <input
+                min={1}
                 max={pool.myStake.toNumber()}
                 type="number"
                 value={unstakeAmount}
@@ -110,7 +114,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                   </p>
                 ) : pool.isCurrentValidator && (
                   <p className={styles.unstakeWarning}>
-                    Please note that this node is part of current Epoch's validators. Unstaked coins will need to be claimed by clicking on the "Claim" button after the current Epoch ends.
+                    Please note, that this node is a part of current Epoch validators set. We will prepare the coins, but you need to claim them by clicking 'Claim' as soon as the Epoch ends
                   </p>
                 )
               }

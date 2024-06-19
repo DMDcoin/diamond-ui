@@ -39,7 +39,7 @@ const NavBar: React.FC<NavBarProps> = () => {
               {web3Context.userWallet && web3Context.userWallet.myAddr ? (
                 <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
               ) : (
-                <button onClick={web3Context.connectWallet} className="button w-button">Sign in</button>
+                <button onClick={web3Context.connectWallet} className="button w-button w-nav-link-button">Sign in</button>
               )}
 
             </nav>

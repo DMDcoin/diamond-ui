@@ -4,6 +4,7 @@ import { startTransition, useEffect, useState } from "react";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import ProposalsTable from "../../../components/ProposalsTable";
+import { useStakingContext } from "../../../contexts/StakingContext";
 
 interface DaoProps {}
 
@@ -11,6 +12,7 @@ const DaoHome: React.FC<DaoProps> = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
+  const stakingContext = useStakingContext();
   
   const [filterQuery, setFilterQuery] = useState<string>('');
 
@@ -39,21 +41,21 @@ const DaoHome: React.FC<DaoProps> = () => {
 
             <p>
               Stake:{" "}
-              {daoContext.myTotalStake
-                ? daoContext.myTotalStake.dividedBy(10 ** 18).toString()
+              {stakingContext.myTotalStake
+                ? stakingContext.myTotalStake.dividedBy(10 ** 18).toString()
                 : 0}{" "}
               DMD
             </p>
             <p>
               of total DAO weight{" "}
               <span style={{ fontWeight: "bold" }}>
-                {daoContext.totalStakedAmount &&
-                daoContext.myTotalStake &&
-                Number(daoContext.totalStakedAmount) !== 0 &&
-                Number(daoContext.myTotalStake) !== 0
+                {stakingContext.totalDaoStake &&
+                stakingContext.myTotalStake &&
+                Number(stakingContext.totalDaoStake) !== 0 &&
+                Number(stakingContext.myTotalStake) !== 0
                   ? Number(
-                      daoContext.myTotalStake.dividedBy(
-                        daoContext.totalStakedAmount
+                      stakingContext.myTotalStake.dividedBy(
+                        stakingContext.totalDaoStake
                       )
                     ).toFixed(2)
                   : 0}

@@ -193,9 +193,9 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   
       const walletAddress = (await web3ModalInstance.request({ method: 'eth_accounts' }))[0];
 
-      try {
-        await requestPublicKeyMetamask(provider, walletAddress).then((res) => copy(res))
-      } catch {}
+      // try {
+      //   await requestPublicKeyMetamask(provider, walletAddress).then((res) => copy(res))
+      // } catch {}
 
       const myBalance = new BigNumber(await web3.eth.getBalance(walletAddress));
       const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);

@@ -70,8 +70,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                   <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                 </td>
                 <td>
-                  {typeof pool.isActive === 'boolean'
-                    ? (pool.isActive ? "Active" : "Banned")
+                  {typeof pool.isCurrentValidator === 'boolean'
+                    ? (pool.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Inactive"))
                     : (<div className={styles.loader}></div>)}
                 </td>
                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>

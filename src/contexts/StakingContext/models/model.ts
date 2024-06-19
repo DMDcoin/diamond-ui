@@ -38,7 +38,10 @@ export class Pool {
     this.stakingAddress = stakingAddress;
   }
 
-  public isBanned(currentTimestamp: BigNumber): boolean {
+  public isBanned(currentTimestamp?: BigNumber): boolean {
+    if (!currentTimestamp) {
+      currentTimestamp = new BigNumber(Math.floor(Date.now() / 1000));
+    }
     return this.bannedUntil.isGreaterThan(currentTimestamp);
   }
 

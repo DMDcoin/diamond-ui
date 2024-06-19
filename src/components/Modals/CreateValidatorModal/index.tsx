@@ -75,7 +75,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
 
             <form className={styles.form} onSubmit={handleCreatePool}>
               <span>
-                Please stake atleast 10,000 DMD
+                Please stake Atleast 10,000 DMD
                 coins (50,000 max) to become a validator candidate.
               </span>
 
