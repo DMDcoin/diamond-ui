@@ -5,6 +5,7 @@ import StakeModal from "../Modals/StakeModal";
 import { useNavigate } from "react-router-dom";
 import UnstakeModal from "../Modals/UnstakeModal";
 import { useWeb3Context } from "../../contexts/Web3Context";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useStakingContext } from "../../contexts/StakingContext";
 
 
@@ -66,7 +67,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
             {currentItems.map((pool, index) => (
               <tr onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow} key={index}>
                 <td>
-                  <img src="https://via.placeholder.com/50" alt="Image 1" />
+                  <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                 </td>
                 <td>
                   {typeof pool.isActive === 'boolean'

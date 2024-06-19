@@ -10,6 +10,7 @@ import UnstakeModal from "../../components/Modals/UnstakeModal";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import StakeModal from "../../components/Modals/StakeModal";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 interface HomeProps {}
 
@@ -45,7 +46,10 @@ const Home: React.FC<HomeProps> = ({}) => {
                         <div className={styles.heroWrapper + " hero-wrapper"}>
                             <div className={styles.heroSplit + " hero-split" }>
                                 <div className={styles.infoContainer}>
-                                    <img src="https://via.placeholder.com/70" alt="Image 1" />
+                                    {
+                                        userWallet.myAddr ? <Jazzicon diameter={60} seed={jsNumberForAddress(userWallet.myAddr)} />
+                                        : <Jazzicon diameter={60} seed={Math.round(Math.random() * 10000000)} />
+                                    }
                                     <div>
                                         <p>User</p>
                                         <p>{userWallet.myAddr}</p>

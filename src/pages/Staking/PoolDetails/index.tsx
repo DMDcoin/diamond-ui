@@ -3,6 +3,7 @@ import styles from "./styles.module.css";
 import Navigation from "../../../components/Navigation";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDaoContext } from "../../../contexts/DaoContext";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import StakeModal from "../../../components/Modals/StakeModal";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import UnstakeModal from "../../../components/Modals/UnstakeModal";
@@ -36,7 +37,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
         {/* image address status */}
         <div className={styles.infoContainer}>
-          <img src="https://via.placeholder.com/50" alt="Image 1" />
+          <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
           <p>{pool?.isAvailable ? "Active" : "Banned"}</p>
         </div>
@@ -105,7 +106,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                 pool && pool.delegators.length ? pool.delegators.map((delegator, i) => (
                   <tr key={i}>
                     <td>
-                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                    <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                     </td>
                     <td>{delegator.address}</td>
                     <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>

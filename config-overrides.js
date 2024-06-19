@@ -4,7 +4,11 @@ module.exports = function override(config, env) {
     //do stuff with the webpack config...
 
     config.resolve.fallback = {
-        stream: require.resolve('stream-browserify')
+        url: require.resolve("url/"),
+        http: require.resolve("stream-http"),
+        zlib: require.resolve("browserify-zlib"),
+        https: require.resolve("https-browserify"),
+        stream: require.resolve('stream-browserify'),
     };
 
     config.plugins.push(

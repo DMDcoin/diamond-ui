@@ -141,16 +141,29 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getLatestStakingBlockNumber = async () => {
-    if (contractsManager.stContract) {
-      const events = await contractsManager.stContract.getPastEvents(
-        'allEvents',
-        {
-          fromBlock: 0,
-          toBlock: 'latest'
-        });
-      const latestEvent = events[events.length - 1];
-      return latestEvent.blockNumber;
+    let allEvents: any = [];
+    const currentBlock = await web3.eth.getBlockNumber();
+
+    const eventsBatchSize = 100000;
+    
+    for (let i = 0; i < currentBlock; i += eventsBatchSize) {
+      const start = i;
+      const end = Math.min(i + eventsBatchSize - 1, currentBlock);
+
+      if (contractsManager.stContract) {
+        await contractsManager.stContract.getPastEvents(
+          'allEvents',
+          {
+            fromBlock: start,
+            toBlock: end
+          }).then(async (events) => {
+              allEvents.push(events);
+          });
+      }
     }
+
+    const latestEvent = allEvents[allEvents.length - 1];
+    return latestEvent.blockNumber;
   }
 
   /**
