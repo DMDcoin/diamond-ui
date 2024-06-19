@@ -52,24 +52,27 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </div>
                                 </div>
                                 <div className={styles.statsContainer}>
-                                    <table className={styles.styledTable}>
-                                        <thead>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Candidate stake</td>
-                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Score</td>
-                                            <td>1000</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                    {myPool && (
+                                        <table className={styles.styledTable}>
+                                            <thead>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Candidate stake</td>
+                                                <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Score</td>
+                                                <td>1000</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    )}
+                                    
                                 </div>
                             </div>
 

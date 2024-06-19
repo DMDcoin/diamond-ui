@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import BigNumber from "bignumber.js";
+import copy from "copy-to-clipboard";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
@@ -180,7 +181,9 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
   
       const walletAddress = (await web3ModalInstance.request({method: 'eth_accounts'}))[0];
-      // await requestPublicKeyMetamask(provider, walletAddress).then((res) => console.log("publicKey", res));
+
+      try {await requestPublicKeyMetamask(provider, walletAddress).then((res) => copy(res))} catch {}
+      
       const myBalance = new BigNumber(await web3.eth.getBalance(walletAddress));
       const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);
 
