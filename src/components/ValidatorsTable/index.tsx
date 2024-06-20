@@ -21,24 +21,52 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     const [filter, setFilter] = useState<'default' | 'active' | 'banned' | 'unavailable'>('default');
     const [searchTerm, setSearchTerm] = useState<string>('');
 
-    // Create a copy of pools to apply filters and search
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: string } | null>(null);
+
+    // Handle filter change
+    const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilter(event.target.value as 'default' | 'active' | 'banned' | 'unavailable');
+        setCurrentPage(0); // Reset to first page when changing filter
+    };
+
+    // Handle search term change
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+        setCurrentPage(0); // Reset to first page when starting a new search
+    };
+
+    // Apply filters and search
     let poolsCopy = [...pools];
 
-    // Apply filter
     if (filter === 'active') {
-      poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
+        poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
     } else if (filter === 'unavailable') {
-      poolsCopy = poolsCopy.filter(pool => !pool.isAvailable);
+        poolsCopy = poolsCopy.filter(pool => !pool.isActive);
     } else if (filter === 'banned') {
-      poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
+        poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
     }
 
-    // Apply search
     if (searchTerm.trim() !== '') {
-      poolsCopy = poolsCopy.filter(pool => 
-        pool.stakingAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (pool.miningAddress && pool.miningAddress.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+        poolsCopy = poolsCopy.filter(pool =>
+            pool.stakingAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (pool.miningAddress && pool.miningAddress.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    }
+
+    // Apply sorting if sortConfig is set
+    if (sortConfig !== null) {
+        poolsCopy.sort((a: any, b: any) => {
+            const keyA = sortConfig.key === 'myStake' ? parseFloat(a[sortConfig.key] || '0') : a[sortConfig.key];
+            const keyB = sortConfig.key === 'myStake' ? parseFloat(b[sortConfig.key] || '0') : b[sortConfig.key];
+    
+            if (keyA < keyB) {
+                return sortConfig.direction === 'ascending' ? -1 : 1;
+            }
+            if (keyA > keyB) {
+                return sortConfig.direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
     }
 
     const pageCount = Math.ceil(poolsCopy.length / itemsPerPage);
@@ -49,14 +77,19 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
         setCurrentPage(pageIndex);
     };
 
-    const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilter(event.target.value as 'default' | 'active' | 'banned' | 'unavailable');
-        setCurrentPage(0); // Reset to first page when changing filter
+    const requestSort = (key: string) => {
+        let direction = 'ascending';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
     };
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value);
-        setCurrentPage(0); // Reset to first page when starting a new search
+    const getClassNamesFor = (column: string) => {
+        if (!sortConfig) {
+            return;
+        }
+        return sortConfig.key === column ? sortConfig.direction : undefined;
     };
 
     const renderPageNumbers = () => {
@@ -96,17 +129,28 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                 </select>
             </div>
 
+            {/* Table */}
             <div className={styles.tableContainer}>
                 <table className={styles.styledTable}>
                     <thead>
                         <tr>
                             <th></th>
-                            <th>Status</th>
-                            <th>Wallet</th>
-                            <th>Total Stake</th>
-                            <th>Voting Power</th>
-                            <th>Score</th>
-                            <th>{userWallet.myAddr ? "My stake" : ""}</th>
+                            <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
+                                Status
+                            </th>
+                            <th className={getClassNamesFor('stakingAddress')} onClick={() => requestSort('stakingAddress')}>
+                                Wallet
+                            </th>
+                            <th className={getClassNamesFor('totalStake')} onClick={() => requestSort('totalStake')}>
+                                Total Stake
+                            </th>
+                            <th className={getClassNamesFor('votingPower')} onClick={() => requestSort('votingPower')}>
+                                Voting Power
+                            </th>
+                            <th className={getClassNamesFor('score')} onClick={() => requestSort('score')}>
+                                Score
+                            </th>
+                            <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>{userWallet.myAddr ? "My stake" : ""}</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -164,6 +208,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                     </tbody>
                 </table>
             </div>
+
+            {/* Pagination */}
             <ul className={styles.pagination}>
                 <li
                     onClick={() => handlePageClick(currentPage - 1)}
