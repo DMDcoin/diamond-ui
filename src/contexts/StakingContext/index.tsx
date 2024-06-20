@@ -275,12 +275,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return { myStake: new BigNumber(stakeAmount), unlockEpoch, claimableAmount: claimableAmount };
   }
 
-  const getBannedUntil = async (miningAddress: string): Promise<any> => {
-    return new BigNumber((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), block())));
+  const getBannedUntil = async (miningAddress: string, blockNumber: number): Promise<any> => {
+    return new BigNumber((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), blockNumber)));
   }
 
-  const getBanCount = async (miningAddress: string): Promise<number> => {
-    return parseInt(await contractsManager.vsContract.methods.banCounter(miningAddress).call(tx(), block()));
+  const getBanCount = async (miningAddress: string, blockNumber: number): Promise<number> => {
+    return parseInt(await contractsManager.vsContract.methods.banCounter(miningAddress).call(tx(), blockNumber));
   }
 
   const getAvailableSince = async (miningAddress: string, blockNumber: number): Promise<any> => {
@@ -479,10 +479,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), blockNumber).then((result) => {
           pool.totalStake = new BigNumber(result);
         }),
-        getBanCount(pool.miningAddress).then((result) => {
+        getBanCount(pool.miningAddress, blockNumber).then((result) => {
           pool.banCount = result;
         }),
-        getBannedUntil(pool.miningAddress).then((result) => {
+        getBannedUntil(pool.miningAddress, blockNumber).then((result: BigNumber) => {
           pool.bannedUntil = new BigNumber(result);
         }),
         contractsManager.contracts.getPendingValidatorState(pool.miningAddress, blockNumber).then((result) => {

@@ -14,8 +14,7 @@
   display: flex;
   max-width: 100%;
   min-height: 80vh;
-  overflow: hidden;
-  align-items: center;
+  overflow-x: auto;
   flex-direction: column;
   background-color: #ffffff;
   justify-content: space-between;
@@ -50,11 +49,10 @@
 }
 
 /* Responsive styles */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .styledTable th:nth-child(4),
   .styledTable td:nth-child(4) {
     display: none;
-    /* Hide column on medium screens */
   }
 }
 
@@ -64,9 +62,8 @@
   .styledTable th:nth-child(4),
   .styledTable td:nth-child(4) {
     display: none;
-    /* Hide columns on small screens */
   }
-}
+} */
 
 /* Add these styles to your styles.module.css */
 
@@ -162,4 +159,36 @@ td .loader {
   to {
     background-position-x: -30%;
   }
+}
+
+.poolActive {
+  color: green;
+}
+
+.poolBanned {
+  color: red;
+}
+
+.filterContainer {
+  gap: 1rem;
+  display: flex;
+  align-self: start;
+  text-align: center;
+  margin-bottom: 20px;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.filterContainer label {
+  margin-right: 10px;
+}
+
+.filterContainer select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
 }

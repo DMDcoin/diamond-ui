@@ -135,3 +135,11 @@ p {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.poolActive {
+  color: green;
+}
+
+.poolBanned {
+  color: red;
+}
