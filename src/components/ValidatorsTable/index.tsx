@@ -41,7 +41,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
     } else if (filter === 'unavailable') {
-        poolsCopy = poolsCopy.filter(pool => !pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => !pool.isCurrentValidator);
     } else if (filter === 'banned') {
         poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
     }

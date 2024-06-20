@@ -115,11 +115,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   useEffect(() => {
     if (web3Initialized) {
-      showLoader(true, "");
       retrieveGlobalValues().then((bn: number) => {
         syncPoolsState(bn, true);
         initializeStakingDataAdapter();
-        showLoader(false, "");
       })
     }
   }, [web3Initialized]);
