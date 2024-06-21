@@ -47,7 +47,7 @@ const DaoHome: React.FC<DaoProps> = () => {
               DMD
             </p>
             <p>
-              of total DAO weight{" "}
+              % of total DAO weight{" "}
               <span style={{ fontWeight: "bold" }}>
                 {stakingContext.totalDaoStake &&
                 stakingContext.myTotalStake &&

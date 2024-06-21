@@ -1,9 +1,6 @@
 import React from "react";
-import { faXTwitter, faFacebookF, faSlack, faTelegram, faDiscord, faReddit, faBitcoin } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import linked_small  from "../../assets/images/linkedin_small.svg";
-import twitter_small  from "../../assets/images/twitter_small.svg";
-import facebook_small  from "../../assets/images/facebook_small.svg";
+import { faXTwitter, faFacebookF, faSlack, faTelegram, faDiscord, faReddit, faBitcoin } from '@fortawesome/free-brands-svg-icons';
 
 interface FooterProps {}
 

@@ -1,12 +1,15 @@
-import BigNumber from "bignumber.js";
 import React, { useState } from "react";
-import styles from "./styles.module.css";
-import StakeModal from "../Modals/StakeModal";
+import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSort } from '@fortawesome/free-solid-svg-icons';
+import StakeModal from "../Modals/StakeModal";
 import UnstakeModal from "../Modals/UnstakeModal";
 import { useWeb3Context } from "../../contexts/Web3Context";
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useStakingContext } from "../../contexts/StakingContext";
+import styles from "./styles.module.css";
+import Tooltip from "../Tooltip";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -18,14 +21,14 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
     const [currentPage, setCurrentPage] = useState(0);
-    const [filter, setFilter] = useState<'default' | 'active' | 'banned' | 'unavailable'>('default');
+    const [filter, setFilter] = useState<'default' | 'valid' | 'active' | 'invalid' | 'stakedOn'>('default');
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: string } | null>(null);
 
     // Handle filter change
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilter(event.target.value as 'default' | 'active' | 'banned' | 'unavailable');
+        setFilter(event.target.value as 'default' | 'valid' | 'active' | 'invalid' | 'stakedOn');
         setCurrentPage(0); // Reset to first page when changing filter
     };
 
@@ -38,12 +41,14 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     // Apply filters and search
     let poolsCopy = [...pools];
 
-    if (filter === 'active') {
+    if (filter === 'valid') {
+        poolsCopy = poolsCopy.filter(pool => pool.isAvailable);
+    } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
-    } else if (filter === 'unavailable') {
-        poolsCopy = poolsCopy.filter(pool => !pool.isCurrentValidator);
-    } else if (filter === 'banned') {
+    } else if (filter === 'invalid') {
         poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
+    } else if (filter === 'stakedOn') {
+        poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
     }
 
     if (searchTerm.trim() !== '') {
@@ -58,7 +63,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
         poolsCopy.sort((a: any, b: any) => {
             const keyA = sortConfig.key === 'myStake' ? parseFloat(a[sortConfig.key] || '0') : a[sortConfig.key];
             const keyB = sortConfig.key === 'myStake' ? parseFloat(b[sortConfig.key] || '0') : b[sortConfig.key];
-    
+
             if (keyA < keyB) {
                 return sortConfig.direction === 'ascending' ? -1 : 1;
             }
@@ -123,9 +128,10 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
 
                 <select id="filter" value={filter} onChange={handleFilterChange}>
                     <option value="default">All</option>
-                    <option value="active">Active</option>
-                    <option value="banned">Banned</option>
-                    <option value="unavailable">Unavailable</option>
+                    <option value="valid">Valid Candidates</option>
+                    <option value="active">Active Candidates</option>
+                    <option value="invalid">Invalid Candidates</option>
+                    <option value="stakedOn">Candidates I've staked on</option>
                 </select>
             </div>
 
@@ -137,20 +143,28 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             <th></th>
                             <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
                                 Status
+                                {/* <Tooltip text="Use Navbar to navigate the website quickly and easily." /> */}
+                                <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
-                            <th className={getClassNamesFor('stakingAddress')} onClick={() => requestSort('stakingAddress')}>
+                            <th className={getClassNamesFor('stakingAddress')}>
                                 Wallet
                             </th>
                             <th className={getClassNamesFor('totalStake')} onClick={() => requestSort('totalStake')}>
-                                Total Stake
+                                Total Stake <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('votingPower')} onClick={() => requestSort('votingPower')}>
-                                Voting Power
+                                Voting Power <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('score')} onClick={() => requestSort('score')}>
-                                Score
+                                Score <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
-                            <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>{userWallet.myAddr ? "My stake" : ""}</th>
+                            <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>
+                                {userWallet.myAddr ? (
+                                    <>
+                                        My stake <FontAwesomeIcon icon={faSort} size="xs" />
+                                    </>
+                                ) : ""}
+                            </th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -163,7 +177,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 </td>
                                 <td className={pool?.isCurrentValidator ? styles.poolActive : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
                                     {typeof pool.isCurrentValidator === 'boolean'
-                                        ? (pool.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Unavailable"))
+                                        ? (pool.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Valid"))
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>

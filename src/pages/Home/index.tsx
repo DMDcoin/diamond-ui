@@ -56,27 +56,28 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </div>
                                 </div>
                                 <div className={styles.statsContainer}>
-                                    {myPool && (
                                         <table className={styles.styledTable}>
                                             <thead>
                                             </thead>
                                             <tbody>
-                                            <tr>
-                                                <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Candidate stake</td>
-                                                <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Score</td>
-                                                <td>1000</td>
-                                            </tr>
+                                                {myPool && (
+                                                    <tr>
+                                                        <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                                    </tr>
+                                                    )}
+                                                    <tr>
+                                                        <td>Candidate stake</td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                                    </tr>
+                                                {myPool && (
+                                                    <tr>
+                                                        <td>Score</td>
+                                                        <td>1000</td>
+                                                    </tr>
+                                                )}
                                             </tbody>
                                         </table>
-                                    )}
-                                    
                                 </div>
                             </div>
 
@@ -164,36 +165,38 @@ const Home: React.FC<HomeProps> = ({}) => {
             )
         }
 
-      <section className="features-section">
-          <div className="w-layout-blockcontainer container w-container">
-              <div className="w-layout-grid grid">
-                  <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
-                      data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">It&#x27;s Easy</div>
-                  </div>
-                  <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
-                      data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">It&#x27;s Secure</div>
-                  </div>
-                  <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
-                      data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">All In One Place</div>
-                  </div>
-              </div>
-          </div>
-      </section>
+        {!userWallet.myAddr && (
+            <section className="features-section">
+                <div className="w-layout-blockcontainer container w-container">
+                    <div className="w-layout-grid grid">
+                        <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                            data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
+                            className="grid-block"><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">It&#x27;s Easy</div>
+                        </div>
+                        <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
+                            data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
+                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
+                            className="grid-block"><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">It&#x27;s Secure</div>
+                        </div>
+                        <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
+                            data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
+                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
+                            className="grid-block"><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">All In One Place</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        )}
 
       <section className="statistics-table">
           <div className="container-5">
