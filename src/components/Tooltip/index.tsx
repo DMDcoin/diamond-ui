@@ -12,7 +12,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text }) => {
         <div className={styles.tooltipContainer}>
             <FontAwesomeIcon icon={faInfoCircle} />
             <div className={styles.tooltipContent}>
-                <p>{text}</p>
+                {text}
             </div>
         </div>
     );

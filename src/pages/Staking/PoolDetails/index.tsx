@@ -58,7 +58,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               </tr>
               <tr>
                 <td>Candidate Stake</td>
-                <td>{pool ? BigNumber(pool.candidateStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.ownStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Score</td>

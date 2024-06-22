@@ -469,7 +469,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (contractsManager.stContract) {
       await Promise.allSettled([
         contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), blockNumber).then((result) => {
-          getDelegatorsData(stakingAddress, result.map(address => new Delegator(address)), blockNumber).then((result) => {
+          getDelegatorsData(pool, result.map(address => new Delegator(address)), blockNumber).then((result) => {
+            pool.ownStake = result.ownStake;
             pool.delegators = result.delegators;
             pool.candidateStake = result.candidateStake;
           });
@@ -567,14 +568,14 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return cachedPools[blockNumber] || [];
   }
 
-  const getDelegatorsData = async (poolAddress: string, delegators: Delegator[], blockNumber: number) => {
+  const getDelegatorsData = async (pool: Pool, delegators: Delegator[], blockNumber: number) => {
     let candidateStake = new BigNumber(0);
 
     await Promise.allSettled(
       delegators.map(async (delegator: Delegator) => {
         try {
-          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(poolAddress, delegator.address).call(tx(), blockNumber);
-          if (delegatedAmount && poolAddress != delegator.address) {
+          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(pool.stakingAddress, delegator.address).call(tx(), blockNumber);
+          if (delegatedAmount && pool.stakingAddress != delegator.address) {
             delegator.amount = new BigNumber(delegatedAmount);
             candidateStake = candidateStake.plus(delegatedAmount);
           }
@@ -584,7 +585,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       })
     );
 
-    return {delegators, candidateStake};
+    const ownStake = new BigNumber(pool.totalStake).minus(candidateStake);
+
+    return {delegators, candidateStake, ownStake};
   }
 
   const areAddressesValidForCreatePool = async (stakingAddr: string, miningAddr: string): Promise<boolean> => {

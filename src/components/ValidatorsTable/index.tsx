@@ -143,20 +143,28 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             <th></th>
                             <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
                                 Status
-                                {/* <Tooltip text="Use Navbar to navigate the website quickly and easily." /> */}
+                                <Tooltip text="Active candidate is part of the active set, Valid - not part of the active set, but can be elected,
+                                Unavailable - a candidate, who is invalid." />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>
                                 Wallet
                             </th>
                             <th className={getClassNamesFor('totalStake')} onClick={() => requestSort('totalStake')}>
-                                Total Stake <FontAwesomeIcon icon={faSort} size="xs" />
+                                Total Stake
+                                <Tooltip text="Total delegated DMD (self-staked DMD + delegates' stake)" />
+                                <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('votingPower')} onClick={() => requestSort('votingPower')}>
-                                Voting Power <FontAwesomeIcon icon={faSort} size="xs" />
+                                Voting Power
+                                <Tooltip text="Amount of coins staked by the validator candidate to the whole amount of coins in staking mode" />
+                                <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('score')} onClick={() => requestSort('score')}>
-                                Score <FontAwesomeIcon icon={faSort} size="xs" />
+                                Score
+                                <Tooltip text="Combined score value, based on the results of generating the shared key,
+                                the stability of the validator connection and misbehaviour reports from other validators" />
+                                <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>
                                 {userWallet.myAddr ? (

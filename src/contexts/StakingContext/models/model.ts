@@ -33,6 +33,7 @@ export class Pool {
   public votingPower: BigNumber = new BigNumber(0);
   public orderedWithdrawAmount: BigNumber = new BigNumber(0);
   public orderedWithdrawUnlockEpoch: BigNumber = new BigNumber(0);
+  public ownStake: BigNumber = new BigNumber(0);
 
   constructor(stakingAddress: string) {
     this.stakingAddress = stakingAddress;
