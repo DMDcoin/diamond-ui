@@ -11,6 +11,9 @@ import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import StakeModal from "../../components/Modals/StakeModal";
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import p2bLogo from "../../assets/images/home/logo_p2pb2b.png";
+import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
+import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 
 interface HomeProps {}
 
@@ -30,7 +33,8 @@ const Home: React.FC<HomeProps> = ({}) => {
     minimumGasFee,
     reinsertPot,
     deltaPot,
-    myTotalStake } = useStakingContext();
+    myTotalStake,
+    myCandidateStake } = useStakingContext();
 
     useEffect(() => {
         setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr) as Pool);
@@ -68,7 +72,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                     )}
                                                     <tr>
                                                         <td>Staked on other candidate</td>
-                                                        <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                                        <td>{myCandidateStake.dividedBy(10**18).toString()} DMD</td>
                                                     </tr>
                                                 {myPool && (
                                                     <tr>
@@ -148,12 +152,18 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     <h1 data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e0e" className="heading">Become DMD Chain Participant</h1>
                                 </div>
                                 <div className="div-block">
-                                    <p data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10" className="margin-bottom-24px">Lorem ipsum dolor
-                                        sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
-                                        euismod lorem. Etiam sodales ac felis id interdum.</p>
+                                    <p
+                                        data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10"
+                                        className="margin-bottom-24px"
+                                    >
+                                        Welcome to the DMD Diamond Blockchain Staking Platform –
+                                        your gateway to earning passive income while contributing to
+                                        the security and functionality of the DMD network. Embark on
+                                        your staking adventure with us and unlock the full potential
+                                        of your digital assets.
+                                    </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet}
-                                        className="button w-button">Get Started</button></div>
+                                <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div>
                             </div>
                             <div className="hero-split hero-split-responsive"><img
                                     src={getStartedImg}
@@ -247,25 +257,12 @@ const Home: React.FC<HomeProps> = ({}) => {
       <section className="logos-title-large">
           <div className="container-8">
               <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
-              <div className="clients-wrapper"><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124ade1612aaf2_logo-02.svg"
-                      loading="lazy" alt="The Paak logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124ae38212aaf1_logo-03.svg"
-                      loading="lazy" alt="OE logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a411512aaf4_logo-04.svg"
-                      loading="lazy" alt="2020INC logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a3cd712aaf6_logo-05.svg"
-                      loading="lazy" alt="Ephicient logo" className="clients-image" /></div>
+              <div className={styles.clientsWrapper + " clients-wrapper"}>
+
+                <img src={p2bLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                <img src={bitmartLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                <img src={blockserveLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+              </div>
           </div>
       </section>
 
@@ -273,17 +270,19 @@ const Home: React.FC<HomeProps> = ({}) => {
           <div className="container-7">
               <div className="hero-wrapper-two">
                   <h1 className="heading-3">Become DMD Chain Participant</h1>
-                  <p className="margin-bottom-24px-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                      tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum
-                      dolor sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
-                      euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum dolor sit amet, consectetur
-                      adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac
-                      felis id interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tincidunt
-                      sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum dolor sit
-                      amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem.
-                      Etiam sodales ac felis id interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum.
-                  </p><a href="#" className="button w-button">Get Started</a>
+                  <p className="margin-bottom-24px-2">
+                        <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
+                  </p>
+                  <p className="margin-bottom-24px-2">
+                        <strong>Real-Time Analytics:</strong> Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.
+                  </p>
+                  <p className="margin-bottom-24px-2">
+                        <strong>Earn Rewards:</strong> By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.
+                  </p>
+                  <p className="margin-bottom-24px-2">
+                        <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
+                  </p>
+                  { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
               </div>
           </div>
       </section>

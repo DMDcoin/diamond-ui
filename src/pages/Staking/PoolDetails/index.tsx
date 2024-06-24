@@ -24,8 +24,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
-    setPool(pool as Pool);
-    
+    setPool(pool as Pool);    
   }, [poolAddress, pools, userWallet.myAddr]);
 
   return (
@@ -54,7 +53,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             <tbody>
               <tr>
                 <td>Total Stake</td>
-                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toString() : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Candidate Stake</td>

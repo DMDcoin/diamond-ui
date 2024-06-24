@@ -291,7 +291,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           {
             proposalType === "ecosystem-parameter-change" && (
               <div>
-                <input type="text" className={styles.formInput} placeholder="Discussion Link" />
                 <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
                   const [contractName, methodName, methodSetter] = e.target.value.split(":");
                   const epcContractVal = await getEpcContractValue(contractName, methodName);
@@ -318,9 +317,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           }
 
           <p>
-            Please note that you pay a proposal fee when you submit a new voting
-            creation. You can dismiss it during 14 days from the creation date
-            until the voting starts.
+            Please note that you pay a proposal price and a service fee when you
+            submit a new voting creation. You can dismiss the proposal during
+            the proposal phase, but you will lose your funds.
           </p>
 
           <button>Create</button>

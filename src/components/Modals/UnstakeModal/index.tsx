@@ -17,7 +17,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const { unstake, setPools } = useStakingContext();
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [ownPool, setOwnPool] = useState<boolean>(false);
-  const { userWallet, web3, ensureWalletConnection } = useWeb3Context();
+  const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -115,6 +115,29 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 ) : pool.isCurrentValidator && (
                   <p className={styles.unstakeWarning}>
                     Please note, that this node is a part of current Epoch validators set. We will prepare the coins, but you need to claim them by clicking 'Claim' as soon as the Epoch ends
+                  </p>
+                )
+              }
+
+              {
+                ownPool && BigNumber(unstakeAmount).isGreaterThanOrEqualTo(10000) && pool.delegators.length > 0 && (
+                  <p className={styles.unstakeWarning}>
+                    You can't unstake from the pool as there are delegates, who
+                    staked on top. They need to unstake their coins to do the
+                    action. Please note, if you remove that pool from the
+                    candidate list, a new pool can never be setup with the same
+                    address that was used in the previous pool.
+                  </p>
+                )
+              }
+
+              {
+                ownPool && BigNumber(unstakeAmount).isGreaterThanOrEqualTo(10000) && (
+                  <p className={styles.unstakeWarning}>
+                  Only the entire stake from the pool is available for
+                  withdrawal. Please note, if you remove that pool from
+                  candidate list, a new pool can never be setup with the same
+                  address that was used in the previous pool.
                   </p>
                 )
               }

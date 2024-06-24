@@ -24,6 +24,7 @@ interface StakingContextProps {
   activeValidators: number;
   minimumGasFee: BigNumber;
   totalDaoStake: BigNumber;
+  myCandidateStake: BigNumber;
   stakingInitialized: boolean;
   candidateMinStake: BigNumber;
   delegatorMinStake: BigNumber;
@@ -67,6 +68,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [stakingEpoch, setStakingEpoch] = useState<number>(0);
   const [keyGenRound, setKeyGenRound] = useState<number>(0);
   const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
+  const [myCandidateStake, setMyCandidateStake] = useState<BigNumber>(new BigNumber(0));
   const [totalDaoStake, setTotalDaoStake] = useState<BigNumber>(new BigNumber(0));
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>(0);
   const [latestBlockNumber, setLatestBlockNumber] = useState<number>(0);
@@ -96,6 +98,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     setPools(prevPools => {
       let totalStake = BigNumber(0);
+      let candidateStake = BigNumber(0);
 
       prevPools.forEach(pool => {
         pool.stakingAddress && getMyStakeAndOrderedWithdraw(pool.stakingAddress).then((result) => {
@@ -104,6 +107,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.myStake = result.myStake;
           pool.orderedWithdrawAmount = result.claimableAmount;
           pool.orderedWithdrawUnlockEpoch = result.unlockEpoch;
+
+          if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(result.myStake);
+          setMyCandidateStake(candidateStake);
         });
       });
       
@@ -115,6 +121,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   useEffect(() => {
     if (web3Initialized) {
+      // localStorage.clear();
       retrieveGlobalValues().then((bn: number) => {
         syncPoolsState(bn, true);
         initializeStakingDataAdapter();
@@ -430,7 +437,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
         const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) =>  p.stakingAddress == cachedPool.stakingAddress );
 
-        return cachedPool || updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+        if (cachedPool) {
+          // refetching isActive and isCurrentValidator as are cached and not updated
+          if (validatorWithoutPool.filter((v) => v === cachedPool.miningAddress).length > 0) {
+            cachedPool.isCurrentValidator = true;
+          } else {
+            cachedPool.isCurrentValidator = false;
+          }
+          cachedPool.isActive = activePoolAddrs.indexOf(cachedPool.stakingAddress) >= 0;
+          return cachedPool;
+        } else {
+          return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+        }
       });
 
       await Promise.allSettled(batchPromises).then((batchResults) => {
@@ -814,6 +832,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     minimumGasFee,
     epochStartTime,
     epochStartBlock,
+    myCandidateStake,
     candidateMinStake,
     delegatorMinStake,
     stakingInitialized,

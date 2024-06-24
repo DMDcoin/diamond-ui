@@ -360,7 +360,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           return prevPhase;
         });
         setPhaseTimer(phase);
-      }, 2000);
+      }, 5000);
       setEvents(interval);
     }
   }
