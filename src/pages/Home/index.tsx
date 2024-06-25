@@ -272,12 +272,12 @@ const Home: React.FC<HomeProps> = ({}) => {
                                 <tbody>
                                     {
                                     pools
-                                        .sort((a, b) => b.totalStake.minus(a.totalStake).toNumber())  // Sort pools by totalStake in descending order
+                                        .sort((a, b) => BigNumber(b.totalStake).minus(a.totalStake).toNumber())  // Sort pools by totalStake in descending order
                                         .slice(0, 5)  // Get the top 5 pools
                                         .map((pool, i) => (
                                         <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
                                             <td>{pool.stakingAddress}</td>
-                                            <td>{pool.totalStake.dividedBy(10**18).toString()} DMD</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>
                                             <td>1000</td>
                                         </tr>

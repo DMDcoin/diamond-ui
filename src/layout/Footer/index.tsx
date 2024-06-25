@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./styles.module.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXTwitter, faFacebookF, faSlack, faTelegram, faDiscord, faReddit, faBitcoin } from '@fortawesome/free-brands-svg-icons';
 
@@ -18,7 +19,8 @@ const Footer: React.FC<FooterProps> = ({}) => {
                   <a target="_blank" href="https://bitcointalk.org/index.php?topic=580725.msg6345777#msg6345777" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faBitcoin} color="#0145b2" size="lg" /></a>
                   <a target="_blank" href="https://www.reddit.com/r/dmd/" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faReddit} color="#0145b2" size="lg" /></a>
                 </div>
-                <div className="title-small">privacy Policy</div>
+                <a target="_blank" href="https://bit.diamonds/privacy-policy/" className={styles.titleSmall + " title-small"}>privacy Policy</a>
+                <a target="_blank" href="https://github.com/DMDcoin/dmdv4-testnet/" className={styles.titleSmall + " title-small"}>FAQ</a>
             </div>
             <div className="footer-copyright-center">Copyright © 2024 DMD Diamond</div>
         </div>
