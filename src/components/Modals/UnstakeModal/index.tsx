@@ -120,7 +120,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               }
 
               {
-                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThanOrEqualTo(10000) && pool.delegators.length > 0 && (
+                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThan(10000) && pool.delegators.length > 0 && (
                   <p className={styles.unstakeWarning}>
                     You can't unstake from the pool as there are delegates, who
                     staked on top. They need to unstake their coins to do the
@@ -132,7 +132,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               }
 
               {
-                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThanOrEqualTo(10000) && (
+                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThan(10000) && (
                   <p className={styles.unstakeWarning}>
                     Only the entire stake from the pool is available for
                     withdrawal. Please note, if you remove that pool from
