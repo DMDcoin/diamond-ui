@@ -60,7 +60,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </div>
                                 </div>
                                 <div className={styles.statsContainer}>
-                                        <table className={styles.styledTable}>
+                                        <table className={styles.styledTableFirst}>
                                             <thead>
                                             </thead>
                                             <tbody>
@@ -108,7 +108,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        <table className={styles.styledTable}>
+                        <table className={styles.styledTableFirst}>
                             <thead>
                             {
                                 myPool && myPool.delegators.length ? (
@@ -181,7 +181,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                     <div className="w-layout-grid grid">
                         <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
                             data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
-                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
                             className="grid-block"><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
@@ -189,7 +188,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                         </div>
                         <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
                             data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
-                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
                             className="grid-block"><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
@@ -197,7 +195,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                         </div>
                         <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
                             data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
-                            // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
                             className="grid-block"><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
@@ -254,54 +251,87 @@ const Home: React.FC<HomeProps> = ({}) => {
           </div>
       </section>
 
-      <section className="logos-title-large">
-          <div className="container-8">
-              <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
-              <div className={styles.clientsWrapper + " clients-wrapper"}>
+      {
+        userWallet.myAddr && (
+            <section className="hero-section">
+                <div className="hero-container">
+                    <div className={styles.topValidatorsContainer}>
+                        <div className="comparison-row-main">
+                            <h3 className="heading-3">Top 5 validator candidates</h3>
+                        </div>
+                        <div className={styles.tableContainer}>
+                            <table className={styles.styledTable}>
+                                <thead>
+                                    <tr>
+                                        <th>Wallet</th>
+                                        <th>Total Stake</th>
+                                        <th>Voting Power</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                    pools
+                                        .sort((a, b) => b.totalStake.minus(a.totalStake).toNumber())  // Sort pools by totalStake in descending order
+                                        .slice(0, 5)  // Get the top 5 pools
+                                        .map((pool, i) => (
+                                        <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                            <td>{pool.stakingAddress}</td>
+                                            <td>{pool.totalStake.dividedBy(10**18).toString()} DMD</td>
+                                            <td>{pool.votingPower.toString()}%</td>
+                                            <td>1000</td>
+                                        </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                    </div>
+                </div>
+            </section>
+        )
+      }
 
-                <img src={p2bLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
-                <img src={bitmartLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
-                <img src={blockserveLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
-              </div>
-          </div>
-      </section>
+      {
+        !userWallet.myAddr && (
+            <>
+                <section className="logos-title-large">
+                    <div className="container-8">
+                        <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
+                        <div className={styles.clientsWrapper + " clients-wrapper"}>
 
-      <section className="cta-banner">
-          <div className="container-7">
-              <div className="hero-wrapper-two">
-                  <h1 className="heading-3">Become DMD Chain Participant</h1>
-                  <p className="margin-bottom-24px-2">
-                        <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
-                  </p>
-                  <p className="margin-bottom-24px-2">
-                        <strong>Real-Time Analytics:</strong> Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.
-                  </p>
-                  <p className="margin-bottom-24px-2">
-                        <strong>Earn Rewards:</strong> By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.
-                  </p>
-                  <p className="margin-bottom-24px-2">
-                        <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
-                  </p>
-                  { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
-              </div>
-          </div>
-      </section>
+                            <img src={p2bLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                            <img src={bitmartLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                            <img src={blockserveLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                        </div>
+                    </div>
+                </section>
 
-      <section className="faq-table">
-          <div className="container-9">
-              <div className="comparison-row-main">
-                  <h2 className="heading-3">FAQ</h2>
-              </div>
-              <div className="comparison-table-2 comparison-table">
-                  <div className="comparison-row"><a id="w-node-_52dc161a-babb-9cb4-346b-70d6512420f0-55493c02" href="#"
-                          className="faq-link">What is DMD?</a></div>
-                  <div className="comparison-row"><a id="w-node-_885318db-0163-90d7-58eb-6c85d39ae9b3-55493c02" href="#"
-                          className="faq-link">What is a Node?</a></div>
-                  <div className="comparison-row"><a id="w-node-d45b2b99-b8a3-01f2-7562-55be1b54c7fa-55493c02" href="#"
-                          className="faq-link">How to stake and become a validator?</a></div>
-              </div>
-          </div>
-      </section>
+                <section className="cta-banner">
+                    <div className="container-7">
+                        <div className="hero-wrapper-two">
+                            <h1 className="heading-3">Become DMD Chain Participant</h1>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Real-Time Analytics:</strong> Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Earn Rewards:</strong> By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
+                            </p>
+                            { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
+                        </div>
+                    </div>
+                </section>
+            </>
+        )
+      }
 
     </>
   );
