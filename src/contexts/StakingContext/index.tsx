@@ -94,29 +94,34 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    console.log("[INFO] Updating stake amounts");
+    const updatedPools = pools.filter(pool => pool.miningAddress);
+    console.log(updatedPools.length, pools.length, "Pools updated");
 
-    setPools(prevPools => {
-      let totalStake = BigNumber(0);
-      let candidateStake = BigNumber(0);
+    if (updatedPools.length == pools.length) {
+      console.log("[INFO] Updating stake amounts");
 
-      prevPools.forEach(pool => {
-        pool.stakingAddress && getMyStakeAndOrderedWithdraw(pool.stakingAddress).then((result) => {
-          totalStake = totalStake.plus(result.myStake);
-          setMyTotalStake(totalStake);
-          pool.myStake = result.myStake;
-          pool.orderedWithdrawAmount = result.claimableAmount;
-          pool.orderedWithdrawUnlockEpoch = result.unlockEpoch;
+      setPools(prevPools => {
+        let totalStake = BigNumber(0);
+        let candidateStake = BigNumber(0);
 
-          if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(result.myStake);
-          setMyCandidateStake(candidateStake);
+        prevPools.forEach(pool => {
+          pool.stakingAddress && getMyStakeAndOrderedWithdraw(pool.stakingAddress).then((result) => {
+            totalStake = totalStake.plus(result.myStake);
+            setMyTotalStake(totalStake);
+            pool.myStake = result.myStake;
+            pool.orderedWithdrawAmount = result.claimableAmount;
+            pool.orderedWithdrawUnlockEpoch = result.unlockEpoch;
+
+            if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(result.myStake);
+            setMyCandidateStake(candidateStake);
+          });
         });
+        
+        return prevPools;
       });
-      
-      return prevPools;
-    });
 
-    updatePoolsVotingPower(totalDaoStake);
+      updatePoolsVotingPower(totalDaoStake);
+    }
   }, [totalDaoStake, userWallet, pools]);
 
   useEffect(() => {
@@ -294,6 +299,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const retrieveGlobalValues = async () => {
+    // const globals = await contractsManager.aggregator?.methods.getGlobals().call();
+    // console.log({globals});
+
     console.log("[INFO] Retrieving Global Values")
     const oldStakingEpoch = stakingEpoch;
 
@@ -709,7 +717,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     // determine available withdraw method and allowed amount
     const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
     const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
-    const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call();  
+    const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call(); 
+    console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}) 
 
     if (!canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw window');

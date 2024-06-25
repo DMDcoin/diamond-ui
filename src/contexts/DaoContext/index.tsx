@@ -279,13 +279,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
 
         const toastid = toast.loading("Creating proposal");
+        web3Context.showLoader(true, "Creating proposal");
         try {
-          console.log(
-            targets,
-            values,
-            callDatas,
-            description
-          )
           await web3Context.contractsManager.daoContract.methods.propose(
             targets,
             values,
@@ -294,13 +289,15 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             description,
             discussionUrl
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
+          web3Context.showLoader(false, "");
           toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
           const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
             targets, values, callDatas, description
           ).call();
           resolve(proposalId);
         } catch(err) {
-          console.log(err)
+          console.log(err);
+          web3Context.showLoader(false, "");
           toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 1 });
           reject(err);
         }

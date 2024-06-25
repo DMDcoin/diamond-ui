@@ -107,17 +107,23 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
     try {
       if (proposalType === 'open') {
-        targets = openProposalFields.map((field, i) => {
-          if (!isValidAddress(field.target)) throw new Error(`Invalid Transaction ${i+1} payout address`);
-          else return field.target;
-        });
-        values = openProposalFields.map((field, i) => {        
-          if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
-          else return field.amount;
-        });
-        calldatas = openProposalFields.map((field) => {
-          return '0x'
-        });
+        if (targets.length == 0) {
+          targets = ['0x0000000000000000000000000000000000000000'];
+          values = ["0"];
+          calldatas = ["0x"];
+        } else {
+          targets = openProposalFields.map((field, i) => {
+            if (!isValidAddress(field.target)) throw new Error(`Invalid Transaction ${i+1} payout address`);
+            else return field.target;
+          });
+          values = openProposalFields.map((field, i) => {        
+            if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
+            else return field.amount;
+          });
+          calldatas = openProposalFields.map((field) => {
+            return '0x'
+          });
+        }
       } else if (proposalType === 'contract-upgrade') {
           targets = contractUpgradeFields.map((field, i) => {
             if (!isValidAddress(field.contractAddress)) throw new Error(`Invalid Transaction ${i+1} Contract Address`);
@@ -228,17 +234,15 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                   type="text"
                   value={field.target}
                   onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
-                  placeholder="Payout Address"
+                  placeholder="Payout Address (optional)"
                   className={styles.formInput}
-                  required
                 />
                 <input
                   type="text"
                   value={field.amount}
                   onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
-                  placeholder="Payout Amount"
+                  placeholder="Payout Amount (optional)"
                   className={styles.formInput}
-                  required
                 />
               </div>
             ))

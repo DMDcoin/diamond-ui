@@ -24,10 +24,11 @@ import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilit
 import { RandomHbbft } from '../../contracts/RandomHbbft';
 import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
 
-import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao } from '../../contracts';
+import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao, HbbftAggregator } from '../../contracts';
 import JsonDiamonDao  from '../../contract-abis/DiamondDao.json';
 import JsonCertifierHbbft from '../../contract-abis/CertifierHbbft.json';
 import JsonConnectivityTrackerHbbft from '../../contract-abis/ConnectivityTrackerHbbft.json';
+import JsonHbbtAggregator from '../../contract-abis/HbbftAggregator.json';
 
 import BigNumber from 'bignumber.js';
 import { BlockType } from '../types/contracts';
@@ -238,6 +239,14 @@ export class ContractManager {
     let contractAddress = '0x65219102B1AFBC624C56CDbf02186B8341703456';
 
     const abi: any = JsonConnectivityTrackerHbbft.abi;
+    const contract: any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+
+  public async getHbbftAggregator(): Promise<HbbftAggregator> {
+    let contractAddress = '0x626181C59B9af76fFcaFE921B17fE6282753ABDd';
+
+    const abi: any = JsonHbbtAggregator.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;
   }

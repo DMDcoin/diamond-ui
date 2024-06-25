@@ -14,6 +14,7 @@ export type { CertifierHbbft } from "./CertifierHbbft";
 export type { ConnectivityTrackerHbbft } from "./ConnectivityTrackerHbbft";
 export type { ConnectivityTrackerHbbftMock } from "./ConnectivityTrackerHbbftMock";
 export type { DiamondDao } from "./DiamondDao";
+export type { HbbftAggregator } from "./HbbftAggregator";
 export type { IBlockRewardHbbft } from "./IBlockRewardHbbft";
 export type { IBlockRewardHbbftCoins } from "./IBlockRewardHbbftCoins";
 export type { ICertifier } from "./ICertifier";
