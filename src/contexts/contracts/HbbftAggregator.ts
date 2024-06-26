@@ -55,7 +55,9 @@ export interface HbbftAggregator extends BaseContract {
 
     getPoolsData(
       _sAs: string[]
-    ): NonPayableTransactionObject<[string, string, string][]>;
+    ): NonPayableTransactionObject<
+      [string, string, string, string, string, string[], string][]
+    >;
 
     getUserOrderedWithdraws(
       _user: string,

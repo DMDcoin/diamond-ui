@@ -193,7 +193,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                     pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toString() + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
-                                    {pool.votingPower && pool.votingPower.toString() !== 'NaN'
+                                    {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
                                         ? `${pool.votingPower.toString()} %`
                                         : <div className={styles.loader}></div>}
                                 </td>
