@@ -157,29 +157,47 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getLatestStakingBlockNumber = async () => {
-    let allEvents: any = [];
-    const currentBlock = await web3.eth.getBlockNumber();
-
+    let allEvents: any[] = [];
     const eventsBatchSize = 100000;
-
-    for (let i = 0; i < currentBlock; i += eventsBatchSize) {
+    const currentBlock = await web3.eth.getBlockNumber();
+  
+    // Retrieve the last block number from localStorage
+    const storedBlockNumber = parseInt(localStorage.getItem('stakingLatestBlockN') || '0', 10);
+    const startBlock = isNaN(storedBlockNumber) ? 0 : storedBlockNumber;
+  
+    const promises: Promise<void>[] = [];
+  
+    for (let i = startBlock; i < currentBlock; i += eventsBatchSize) {
       const start = i;
       const end = Math.min(i + eventsBatchSize - 1, currentBlock);
-
+  
       if (contractsManager.stContract) {
-        await contractsManager.stContract.getPastEvents(
+        const promise = contractsManager.stContract.getPastEvents(
           'allEvents',
           {
             fromBlock: start,
             toBlock: end
-          }).then(async (events) => {
-            events.map(e => allEvents.push(e));
+          }).then((events) => {
+            events.forEach(e => allEvents.push(e));
+          }).catch((error) => {
+            console.error(`Error fetching events from block ${start} to ${end}:`, error);
           });
+  
+        promises.push(promise);
       }
     }
-
-    const latestEvent = allEvents.reduce((maxEvent: any, event: any) => event.blockNumber > maxEvent.blockNumber ? event : maxEvent, allEvents[0]);
-    return latestEvent.blockNumber ?? currentBlock;
+  
+    await Promise.allSettled(promises);
+  
+    const latestEvent = allEvents.reduce((maxEvent: any, event: any) => 
+      event.blockNumber > maxEvent.blockNumber ? event : maxEvent, allEvents[0]);
+  
+    const latestBlockNumber = latestEvent?.blockNumber ?? currentBlock;
+  
+    // Store the latest block number in localStorage
+    localStorage.setItem('stakingLatestBlockN', latestBlockNumber.toString());
+  
+    return latestBlockNumber;
   }
 
   /**
