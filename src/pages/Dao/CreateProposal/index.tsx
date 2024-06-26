@@ -305,29 +305,38 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
           {
             proposalType === "ecosystem-parameter-change" && (
-              <div>
-                <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
-                  const [contractName, methodName, methodSetter] = e.target.value.split(":");
-                  const epcContractVal = await getEpcContractValue(contractName, methodName);
-                  setEpcValue(epcContractVal);
-                  setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
-                  setEpcContractName(contractName);
-                  loadEpcData(contractName, methodName);
-                }}>
-                  {Object.keys(EcosystemParameters).map((contractName) => {
-                    return (
-                      <optgroup key={contractName} label={contractName}>
-                        {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
-                          const methodSetter = EcosystemParameters[contractName][methodName].setter;
-                          return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
-                        })}
-                      </optgroup>
-                    );
-                  })}
-                </select>
+              <>
+              <p>
+                Please note that every parameter from the list can be changed
+                once a month, so if there are multiple proposals for a single
+                parameter change, the one with the highest exceeding voting
+                power wins.
+              </p>
 
-                <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
-              </div>
+                <div>
+                  <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
+                    const [contractName, methodName, methodSetter] = e.target.value.split(":");
+                    const epcContractVal = await getEpcContractValue(contractName, methodName);
+                    setEpcValue(epcContractVal);
+                    setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
+                    setEpcContractName(contractName);
+                    loadEpcData(contractName, methodName);
+                  }}>
+                    {Object.keys(EcosystemParameters).map((contractName) => {
+                      return (
+                        <optgroup key={contractName} label={contractName}>
+                          {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
+                            const methodSetter = EcosystemParameters[contractName][methodName].setter;
+                            return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
+                          })}
+                        </optgroup>
+                      );
+                    })}
+                  </select>
+
+                  <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
+                </div>
+              </>
             )
           }
 

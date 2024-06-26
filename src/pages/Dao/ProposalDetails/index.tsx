@@ -2,12 +2,14 @@ import React, { startTransition, useEffect, useState } from "react";
 
 import styles from "./styles.module.css";
 
+import { toast } from "react-toastify";
 import Navigation from "../../../components/Navigation";
 import ProgressBar from "../../../components/ProgressBar";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { FaRegThumbsUp, FaRegThumbsDown } from "react-icons/fa";
+import { useStakingContext } from "../../../contexts/StakingContext";
 import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
@@ -38,13 +40,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     votes: 0
   });
   const [voteReason, setVoteReason] = useState<string>("");
-  const [dismissProposal, setDismissProposal] = useState<boolean>(false);
   const [dismissReason, setDismissReason] = useState<string>("");
+  const [dismissProposal, setDismissProposal] = useState<boolean>(false);
   const [votingStats, setVotingStats] = useState<TotalVotingStats>();
 
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
+  const { pools } = useStakingContext();
 
   useEffect(() => {
     if (proposalId) getProposalDetails(proposalId);
@@ -95,6 +98,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const handleCastVote = async (vote: number) => {
+    if (
+      pools.filter(
+        (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
+      ).length <= 0
+    ) {
+      toast.warning(`Only validator candidates can vote`);
+      return;
+    }
+
     daoContext.castVote(proposal.id, vote, voteReason).then(() => {
       getProposalDetails(proposal.id);
     }).catch((err) => {
