@@ -124,9 +124,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       orderedWithdraws = await contractsManager.aggregator?.methods.getUserOrderedWithdraws(myAddr, poolsStakingAddresses).call();
     }
 
-    let daoStake = new BigNumber(0);
+    let daoStake = totalDaoStake;
     if (totalDaoStake.isZero() && contractsManager.stContract) {
-       daoStake = new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address));
+      daoStake = new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address));
     }
 
     setPools((prevPools: any) => {
