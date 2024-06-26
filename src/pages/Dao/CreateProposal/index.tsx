@@ -8,6 +8,7 @@ import { isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
+import { useStakingContext } from "../../../contexts/StakingContext";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import ProposalStepSlider from "../../../components/ProposalStepSlider";
 import { EcosystemParameters } from "../../../utils/ecosystemParameters";
@@ -19,6 +20,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
+  const stakingContext = useStakingContext();
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -100,6 +102,15 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   
   const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (
+      stakingContext.pools.filter(
+        (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
+      ).length <= 0
+    ) {
+      toast.warning(`Only validator candidates can create a proposal`);
+      return;
+    }
 
     let targets: string[] = [];
     let values: string[] = [];

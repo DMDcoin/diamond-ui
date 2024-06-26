@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
+import { CURR_VERSION_INFO } from "../../constants";
 import { walletConnectProvider } from "@web3modal/wagmi";
 import { CustomWeb3HttpProvider } from "./Web3Provider";
 import { UserWallet } from "../StakingContext/models/wallet";
@@ -77,6 +78,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   useEffect(() => {
     console.log("[INFO] Initializing Web3 Context");
     initialize();
+    handleCacheReset();
   }, []);
 
   const initialize = async () => {
@@ -85,6 +87,20 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       setWeb3Initialized(true);
     }
   }
+
+  const handleCacheReset = () => {
+    const CURRENT_APP_VERSION = CURR_VERSION_INFO.version;
+    const SHOULD_RESET_CACHE = CURR_VERSION_INFO.reset;
+    const storedAppVersion = localStorage.getItem('appVersion');
+  
+    if (storedAppVersion !== CURRENT_APP_VERSION) {
+      if (SHOULD_RESET_CACHE) {
+        localStorage.clear();
+        console.log('[INFO] Cache cleared due to app version update');
+      }
+      localStorage.setItem('appVersion', CURRENT_APP_VERSION);
+    }
+  };
 
   const showLoader = (loading: boolean, loadingMsg: string) => {
     setIsLoading(loading);
