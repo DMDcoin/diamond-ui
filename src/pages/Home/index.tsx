@@ -66,7 +66,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             <tbody>
                                                 {myPool && (
                                                     <tr>
-                                                        <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                        <td>My node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
                                                         <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
                                                     </tr>
                                                     )}

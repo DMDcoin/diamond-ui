@@ -96,7 +96,7 @@ const ProposalsTable = (props: TableProps) => {
   return (
     <div className={styles.tableContainer}>
       <div>
-        <table>
+        <table className={styles.proposalsTable}>
           <thead>
             <tr>
               {defaultCoulmns.map((column: string, key: number) => (

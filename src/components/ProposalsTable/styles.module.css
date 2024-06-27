@@ -16,19 +16,19 @@
   overflow-x: scroll;
 }
 
-table {
+.proposalsTable {
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
   border: 1px solid #ddd;
 }
 
-th, td {
+.proposalsTable th, .proposalsTable td {
   text-align: left;
   padding: 8px;
 }
 
-tr:nth-child(even) {
+.proposalsTable tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
@@ -49,7 +49,7 @@ tr:nth-child(even) {
   background-color: transparent;
 }
 
-table button {
+.proposalsTable button {
   height: 35px;
   font-size: 14px;
   cursor: pointer;
@@ -59,7 +59,7 @@ table button {
   background-color: transparent;
 }
 
-table button:hover {
+.proposalsTable button:hover {
   background-color: #f2f2f2;
 }
 
@@ -70,15 +70,14 @@ table button:hover {
   width: 100%;
 }
 
-td .loader {
+.proposalsTable td .loader {
   background-color: #ededed;
   background: linear-gradient(
       100deg,
       rgba(255, 255, 255, 0) 40%,
       rgba(255, 255, 255, 0.5) 50%,
       rgba(255, 255, 255, 0) 60%
-    )
-    #ededed;
+    ) #ededed;
   background-size: 200% 100%;
   background-position-x: 180%;
   animation: 1s loading ease-in-out infinite;

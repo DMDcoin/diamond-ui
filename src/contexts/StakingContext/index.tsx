@@ -411,7 +411,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       return newPools;
     });
   }
-  
+
   const updatePools = async (
     pools: Pool[],
     validatorWithoutPool: Array<string>,
@@ -420,21 +420,22 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pendingValidatorAddrs: Array<string>,
     blockNumber: number
   ) => {
-    // update pools in batches of 10 for less rpc calls at once
     const batchSize = 10;
     let updatedPools: Pool[] = [...pools];
-
+    let poolsToUpdate: Pool[] = [];
+    let poolIndicesToUpdate: number[] = [];
+    
     for (let i = 0; i < pools.length; i += batchSize) {
       const batch = pools.slice(i, i + batchSize);
       
-      const batchPromises = batch.map((p) => {
+      const batchPromises = batch.map((p, index) => {
         const ixValidatorWithoutPool = validatorWithoutPool.indexOf(p.miningAddress);
         if (ixValidatorWithoutPool !== -1) {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
-
-        const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) =>  p.stakingAddress == cachedPool.stakingAddress );
-
+  
+        const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) => p.stakingAddress === cachedPool.stakingAddress);
+  
         if (cachedPool) {
           // refetching isActive and isCurrentValidator as are cached and not updated
           if (validatorWithoutPool.filter((v) => v === cachedPool.miningAddress).length > 0) {
@@ -443,53 +444,54 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
             cachedPool.isCurrentValidator = false;
           }
           cachedPool.isActive = activePoolAddrs.indexOf(cachedPool.stakingAddress) >= 0;
-          return cachedPool;
+          // Update the pool in updatedPools array directly
+          updatedPools[i + index] = cachedPool;
         } else {
-          return updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+          poolsToUpdate.push(p);
+          poolIndicesToUpdate.push(i + index); // Keep track of the index to update later
         }
       });
-
-      await Promise.allSettled(batchPromises).then((batchResults) => {
-        batchResults.forEach((result) => {
-          if (result.status === 'fulfilled') {
-            const pIndex = updatedPools.findIndex(p => p.stakingAddress === result.value.stakingAddress);
-            if (pIndex !== -1) {
-              updatedPools[pIndex] = result.value;
-            } else {  
-              updatedPools.push(result.value);
-            }
-          }
-        });
-
-        setPools([...updatedPools]);
-      });
+      
+      await Promise.allSettled(batchPromises);
     }
-    
+      
+    // Fetch the updated pool data in one call
+    if (poolsToUpdate.length > 0) {
+      const updatedPoolData = await contractsManager.aggregator?.methods.getPoolsData(poolsToUpdate.map(p => p.stakingAddress)).call();
+  
+      if (updatedPoolData) {
+        // Process each updated pool data
+        await Promise.all(updatedPoolData.map(async (updatedData: any, index: number) => {
+          let pool = await updatePool(poolsToUpdate[index], updatedData, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+          updatedPools[poolIndicesToUpdate[index]] = pool;
+        }));
+      } 
+    }
+  
+    // Set the updated pools
+    setPools([...updatedPools]);
     updateStakeAmounts(updatedPools);
     setCachedPools(blockNumber, updatedPools);
     console.log("[INFO] Cached Data:", JSON.parse(localStorage.getItem('poolsData') || '{}'));
   }
 
-  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
+  const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
 
-    const poolData = await contractsManager.aggregator?.methods.getPoolsData([stakingAddress]).call(tx(), blockNumber);
+    pool.miningAddress = updatedPoolData[0];
+    pool.banCount = parseInt(updatedPoolData[1]);
+    pool.bannedUntil = new BigNumber(updatedPoolData[2]);
+    pool.availableSince = new BigNumber(updatedPoolData[3]);
+    pool.miningPublicKey = updatedPoolData[4];
+    pool.delegators = updatedPoolData[5].map((address: string) => new Delegator(address));
+    pool.keyGenMode = new BigNumber(updatedPoolData[6]).toNumber();
+    pool.totalStake = new BigNumber(updatedPoolData[7]);
 
-    if (poolData) {
-      pool.miningAddress = poolData[0][0];
-      pool.banCount = parseInt(poolData[0][1]);
-      pool.bannedUntil = new BigNumber(poolData[0][2]);
-      pool.availableSince = new BigNumber(poolData[0][3]);
-      pool.miningPublicKey = poolData[0][4];
-      pool.delegators = poolData[0][5].map((address: string) => new Delegator(address));
-      pool.keyGenMode = new BigNumber(poolData[0][6]).toNumber();
-
-      getDelegatorsData(pool, poolData[0][5].map(address => new Delegator(address)), blockNumber).then((result) => {
-        pool.ownStake = result.ownStake;
-        pool.delegators = result.delegators;
-        pool.candidateStake = result.candidateStake;
-      });
-    }
+    await getDelegatorsData(pool, updatedPoolData[5].map((address: string) => new Delegator(address)), blockNumber).then((result) => {
+      pool.ownStake = result.ownStake;
+      pool.delegators = result.delegators;
+      pool.candidateStake = result.candidateStake;
+    });
     
     pool.isAvailable = !pool.availableSince.isZero();
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
@@ -504,32 +506,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
     );
 
-    // remove pool if required
-    if (!showAllPools) {
-      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !BigNumber(pool.myStake).isGreaterThan(0)) {
-        for (let i = 0; i < pools.length; i++) {
-          if (pools[i].stakingAddress === pool.stakingAddress) {
-            pools.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
-          pool.score = 0;
-        } else {
-          pool.score = 1000;
-        }
-      }
+    if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
+      pool.score = 0;
+    } else {
+      pool.score = 1000;
     }
 
-    if (pool.isPendingValidator && contractsManager.kghContract) {
-      pool.parts = await contractsManager.kghContract.methods.parts(pool.miningAddress).call(tx(), blockNumber);
-      const acksLengthBN = new BigNumber(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), blockNumber));
-      pool.numberOfAcks = acksLengthBN.toNumber();
-    } else {
-      pool.parts = '';
-      pool.numberOfAcks = 0;
-    }
     return pool;
   }
 
@@ -570,23 +552,24 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getDelegatorsData = async (pool: Pool, delegators: Delegator[], blockNumber: number) => {
+    let ownStake = new BigNumber(0);
     let candidateStake = new BigNumber(0);
 
-    await Promise.allSettled(
-      delegators.map(async (delegator: Delegator) => {
-        try {
-          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(pool.stakingAddress, delegator.address).call(tx(), blockNumber);
-          if (delegatedAmount && pool.stakingAddress != delegator.address) {
-            delegator.amount = new BigNumber(delegatedAmount);
-            candidateStake = candidateStake.plus(delegatedAmount);
-          }
-        } catch (error) {
-          console.error(`Failed to fetch data for delegator ${delegator.address}:`, error);
-        }
-      })
-    );
+    try {
+      const delegationData = await contractsManager.aggregator?.methods.getDelegationsData(delegators.map(d => d.address), pool.stakingAddress).call(tx(), blockNumber);
 
-    const ownStake = new BigNumber(pool.totalStake).minus(candidateStake);
+      if (delegationData) {
+        delegationData[0].map((delegation: any, index: number) => {
+          delegators[index].address = delegation[0];
+          delegators[index].amount = new BigNumber(delegation[1]);
+        });
+
+        ownStake = new BigNumber(delegationData[1]);
+        candidateStake = new BigNumber(delegationData[2]);
+      }
+    } catch (error) {
+      console.error("Couldn't fetch delegation data:", error);
+    }
 
     return {delegators, candidateStake, ownStake};
   }
@@ -612,34 +595,30 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let toBeElectedPoolAddrs: Array<string> = [];
     let pendingValidatorAddrs: Array<string> = [];
 
-    if (contractsManager.stContract) {
-      await Promise.allSettled([
-        contractsManager.stContract.methods.getPools().call(tx(), blockNumber).then((result) => {
-          activePoolAddrs = result;
-        }),
-        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), blockNumber).then((result) => {
-          toBeElectedPoolAddrs = result;
-        }),
-        contractsManager.vsContract.methods.getPendingValidators().call(tx(), blockNumber).then((result) => {
-          pendingValidatorAddrs = result;
-        }),
-      ])
+    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
+
+    if (poolsData) {
+      activePoolAddrs = poolsData[0];
+      toBeElectedPoolAddrs = poolsData[3];
+      pendingValidatorAddrs = poolsData[4];
     }
 
-    const updatedPoolData = await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+    const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call(tx(), blockNumber);
+    if (updatedData && updatedData.length > 0) {
+      const updatedPoolData = await updatePool(pool, updatedData[0], activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
 
-    setPools(prevPools => {
-      let exists = false;
-      let updatedPools = prevPools.map(p => {
-        if (p.stakingAddress === stakingAddr) {
-          exists = true;
-          return updatedPoolData;
+      setPools(prevPools => {
+        let updatedPools = [...prevPools];
+        const poolIndex = updatedPools.findIndex(p => p.stakingAddress === stakingAddr);
+        if (poolIndex !== -1) {
+          updatedPools[poolIndex] = updatedPoolData;
+        } else {
+          updatedPools.push(updatedPoolData);
         }
-        return p;
+        return updatedPools;
       });
-      if (!exists) updatedPools.push(updatedPoolData);
-      return updatedPools as Pool[];
-    });
+    }
+    updateStakeAmounts();
   }
 
   const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
@@ -703,7 +682,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         let receipt;
         if (maxWithdrawAmount !== '0') {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
-            toast.warn('Requested withdraw amount exceeds max');
+            toast.warn(`Requested withdraw amount exceeds max (${BigNumber(maxWithdrawAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
             return false;
           }
           showLoader(true, `Unstaking ${amount} DMD 💎`);

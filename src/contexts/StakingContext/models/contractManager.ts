@@ -244,7 +244,7 @@ export class ContractManager {
   }
 
   public async getHbbftAggregator(): Promise<HbbftAggregator> {
-    let contractAddress = '0x67FeAf9E8cA472Af01CE2bEbF3a77Ac4c3f4f161';
+    let contractAddress = '0x3Bdd7357e197AAe2A2Ca31289A2140a32F112344';
 
     const abi: any = JsonHbbtAggregator.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);

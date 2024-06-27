@@ -78,6 +78,52 @@
       "type": "function"
     },
     {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "delegators",
+          "type": "address[]"
+        },
+        {
+          "internalType": "address",
+          "name": "poolAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getDelegationsData",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "delegator",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "delegatedAmount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct HbbftAggregator.DelegateData[]",
+          "name": "_delegatesData",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_ownStake",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_candidateStake",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [],
       "name": "getGlobals",
       "outputs": [
@@ -203,6 +249,11 @@
               "internalType": "enum IValidatorSetHbbft.KeyGenMode",
               "name": "keygenMode",
               "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stakedAmountTotal",
+              "type": "uint256"
             }
           ],
           "internalType": "struct HbbftAggregator.PoolData[]",

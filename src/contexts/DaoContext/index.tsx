@@ -344,20 +344,37 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const subscribeToEvents = async () => {
     if (!events) {
-      const interval = setInterval(async() => {
-        const phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
-        setDaoPhase((prevPhase: any) => {
-          if (prevPhase && phase && prevPhase?.phase !== phase.phase) {
-            console.log("Phase changed");
-            getActiveProposals();
-            getHistoricProposals();
-            web3Context.contractsManager.daoContract.methods.daoPhaseCount().call().then((count) => setDaoPhaseCount(count));
-            return phase;
-          }
-          return prevPhase;
-        });
-        setPhaseTimer(phase);
+      const interval = setInterval(async () => {
+        try {
+          const phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
+          
+          setDaoPhase((prevPhase: any) => {
+            if (prevPhase && phase && prevPhase.phase !== phase.phase) {
+              console.log("Phase changed");
+              
+              try {
+                getActiveProposals();
+                getHistoricProposals();
+              } catch (proposalError) {
+                console.error("Error fetching proposals:", proposalError);
+              }
+              
+              // Fetch daoPhaseCount with error handling
+              web3Context.contractsManager.daoContract.methods.daoPhaseCount().call()
+                .then(count => setDaoPhaseCount(count))
+                .catch(countError => console.error("Error fetching daoPhaseCount:", countError));
+  
+              return phase;
+            }
+            return prevPhase;
+          });
+  
+          setPhaseTimer(phase);
+        } catch (error) {
+          console.error("Error fetching daoPhase:", error);
+        }
       }, 5000);
+  
       setEvents(interval);
     }
   }
