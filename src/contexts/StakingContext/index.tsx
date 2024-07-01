@@ -129,6 +129,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       daoStake = new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address));
     }
 
+    let candidateStake = new BigNumber(0);
+    let totalStakedByMe = new BigNumber(0);
+
     setPools((prevPools: any) => {
       const newPools = prevPools.map((pool: Pool) => ({ ...pool }));
       
@@ -136,9 +139,14 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         let pool = newPools.filter((p: Pool) => p.stakingAddress === stakingAddress)[0];
 
         let myStake = myStakeAmounts[index];
+        totalStakedByMe = totalStakedByMe.plus(myStake[1] ?? 0);
+        setMyTotalStake(totalStakedByMe);
         pool.myStake = new BigNumber(myStake[1] ?? 0);
         pool.totalStake = new BigNumber(myStake[2] ?? 0);
         pool.votingPower = BigNumber(myStake[2] ?? 0).dividedBy(daoStake).multipliedBy(100).decimalPlaces(2);
+
+        if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(myStake[1] ?? 0);
+        setMyCandidateStake(candidateStake);
 
         if (orderedWithdraws) {
           let orderedWithdrawAmount = orderedWithdraws[index];

@@ -65,11 +65,17 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             </thead>
                                             <tbody>
                                                 {myPool && (
-                                                    <tr>
-                                                        <td>My node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                        <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                                    </tr>
-                                                    )}
+                                                    <>
+                                                        <tr>
+                                                            <td>My stake</td>
+                                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                            <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toString()} DMD</td>
+                                                        </tr>
+                                                    </>
+                                                )}
                                                     <tr>
                                                         <td>Staked on other candidate</td>
                                                         <td>{myCandidateStake.dividedBy(10**18).toString()} DMD</td>
