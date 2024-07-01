@@ -31,51 +31,61 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type RemoveChangeAbleParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type SetChangeAbleParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
 
-export interface RandomHbbft extends BaseContract {
+export interface ValueGuards extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): RandomHbbft;
-  clone(): RandomHbbft;
+  ): ValueGuards;
+  clone(): ValueGuards;
   methods: {
-    currentSeed(): NonPayableTransactionObject<string>;
-
-    getSeedHistoric(
-      _blocknumber: number | string | BN
+    allowedParameterRange(
+      arg0: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    getSeedsHistoric(
-      _blocknumbers: (number | string | BN)[]
-    ): NonPayableTransactionObject<string[]>;
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
 
-    initialize(
-      _contractOwner: string,
-      _validatorSet: string
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
-    isFullHealth(): NonPayableTransactionObject<boolean>;
-
-    isFullHealthHistoric(
-      _blocknumber: number | string | BN
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
     ): NonPayableTransactionObject<boolean>;
-
-    isFullHealthsHistoric(
-      _blocknumbers: (number | string | BN)[]
-    ): NonPayableTransactionObject<boolean[]>;
 
     owner(): NonPayableTransactionObject<string>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string
+    ): NonPayableTransactionObject<void>;
+
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    setCurrentSeed(
-      _currentSeed: number | string | BN
+    setAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
-
-    validatorSetContract(): NonPayableTransactionObject<string>;
   };
   events: {
     Initialized(cb?: Callback<Initialized>): EventEmitter;
@@ -88,6 +98,20 @@ export interface RandomHbbft extends BaseContract {
     OwnershipTransferred(
       options?: EventOptions,
       cb?: Callback<OwnershipTransferred>
+    ): EventEmitter;
+
+    RemoveChangeAbleParameter(
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+    RemoveChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+
+    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
+    SetChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameter>
     ): EventEmitter;
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
@@ -105,5 +129,25 @@ export interface RandomHbbft extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
+  ): void;
+
+  once(
+    event: "RemoveChangeAbleParameter",
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+  once(
+    event: "RemoveChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(
+    event: "SetChangeAbleParameter",
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+  once(
+    event: "SetChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameter>
   ): void;
 }

@@ -612,21 +612,22 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
 
     const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call(tx(), blockNumber);
+
     if (updatedData && updatedData.length > 0) {
       const updatedPoolData = await updatePool(pool, updatedData[0], activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
 
       setPools(prevPools => {
-        let updatedPools = [...prevPools];
+        let updatedPools = [...prevPools]
         const poolIndex = updatedPools.findIndex(p => p.stakingAddress === stakingAddr);
         if (poolIndex !== -1) {
           updatedPools[poolIndex] = updatedPoolData;
         } else {
           updatedPools.push(updatedPoolData);
         }
+        updateStakeAmounts(updatedPools);
         return updatedPools;
       });
     }
-    updateStakeAmounts();
   }
 
   const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
@@ -662,9 +663,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       }
       return false;
-    } catch (error: any) {
+    } catch (err: any) {
       showLoader(false, "");
-      toast.error(error.message || "Error in creating pool");
+      if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
+        toast.error(err.message);
+      } else {
+        toast.error("Error in creating pool");
+      }
       return false;
     }
   }
@@ -680,7 +685,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
     const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
     const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call(); 
-    console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}) 
+    // console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}) 
 
     if (!canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw window');

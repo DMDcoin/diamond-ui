@@ -14,7 +14,7 @@ import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import {
-  BlockRewardHbbftCoins,
+  BlockRewardHbbft,
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
@@ -30,7 +30,7 @@ interface ContractsState {
   contracts: ContractManager;
   vsContract: ValidatorSetHbbft;
   stContract?: StakingHbbft;
-  brContract?: BlockRewardHbbftCoins;
+  brContract?: BlockRewardHbbft;
   kghContract?: KeyGenHistory;
   rngContract?: RandomHbbft;
   daoContract: DiamondDao;
@@ -62,8 +62,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const rpcUrl = process.env.REACT_APP_RPC_URL || 'https://rpc.uniq.diamonds';
-  const [web3, setWeb3] = useState<Web3>(new Web3("https://rpc.uniq.diamonds"));
+  const rpcUrl = process.env.REACT_APP_RPC_URL || 'http://62.171.133.46:38000';
+  const [web3, setWeb3] = useState<Web3>(new Web3("http://62.171.133.46:38000"));
   // const customProvider = new CustomWeb3HttpProvider(rpcUrl, { timeout: 10000 }, (message: string) => toast.warn(message, { autoClose: 5000 }));
   // const [web3, setWeb3] = useState<Web3>(new Web3(customProvider));
 
@@ -151,7 +151,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const connectWallet = async () => {
     try {
-      const chainId = 777012;
+      const chainId = 777016;
       const url = rpcUrl;
       const chainOptions: { rpc: Record<number, string> } = {
         rpc: { [chainId]: url },

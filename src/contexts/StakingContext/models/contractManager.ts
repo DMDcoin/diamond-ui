@@ -9,8 +9,8 @@ import JsonStakingHbbft from '../../contract-abis/StakingHbbft.json';
 import { KeyGenHistory } from '../../contracts/KeyGenHistory';
 import JsonKeyGenHistory from '../../contract-abis/KeyGenHistory.json';
 
-import { BlockRewardHbbftCoins } from '../../contracts/BlockRewardHbbftCoins';
-import JsonBlockRewardHbbftCoins from '../../contract-abis/BlockRewardHbbftCoins.json';
+import { BlockRewardHbbft } from '../../contracts/BlockRewardHbbft';
+import JsonBlockRewardHbbft from '../../contract-abis/BlockRewardHbbft.json';
 
 import { Registry } from '../../contracts/Registry';
 import JsonRegistry from '../../contract-abis/Registry.json';
@@ -56,7 +56,7 @@ export class ContractManager {
   private cachedValidatorSetHbbft?: ValidatorSetHbbft;
   private cachedStakingHbbft?: StakingHbbft;
   private cachedKeyGenHistory?: KeyGenHistory;
-  private cachedRewardContract?: BlockRewardHbbftCoins;
+  private cachedRewardContract?: BlockRewardHbbft;
   private cachedPermission?: TxPermissionHbbft;
 
   public constructor(public web3: Web3) {
@@ -98,14 +98,14 @@ export class ContractManager {
     return result;
   }
 
-  public async getRewardHbbft() : Promise<BlockRewardHbbftCoins> {
+  public async getRewardHbbft() : Promise<BlockRewardHbbft> {
     if (this.cachedRewardContract) {
       return this.cachedRewardContract;
     }
 
     const contractAddress = await this.getValidatorSetHbbft().methods.blockRewardContract().call();
 
-    const abi : any = JsonBlockRewardHbbftCoins.abi;
+    const abi : any = JsonBlockRewardHbbft.abi;
     const result : any = new this.web3.eth.Contract(abi, contractAddress);
     this.cachedRewardContract = result;
     //const validatorSet : ValidatorSetHbbft = validatorSetContract;
@@ -220,7 +220,7 @@ export class ContractManager {
   }
 
   public getDaoContract(): DiamondDao {
-    let contractAddress = '0x1A48B579839c86C9b96a2AF1CC6cb7e5A66C2758';
+    let contractAddress = '0xc351F4B43637c8696c67957E36Cd786E7678B868';
 
     const abi: any = JsonDiamonDao.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
@@ -244,7 +244,7 @@ export class ContractManager {
   }
 
   public async getHbbftAggregator(): Promise<HbbftAggregator> {
-    let contractAddress = '0x3Bdd7357e197AAe2A2Ca31289A2140a32F112344';
+    let contractAddress = '0x577D8B7408a6F2CFD3DC91DF2f8994E92314873f';
 
     const abi: any = JsonHbbtAggregator.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);

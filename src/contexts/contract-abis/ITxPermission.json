@@ -2,7 +2,52 @@
   "_format": "hh-sol-artifact-1",
   "contractName": "ITxPermission",
   "sourceName": "contracts/interfaces/ITxPermission.sol",
-  "abi": [],
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_sender",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_gasPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "allowedTxTypes",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "typesMask",
+          "type": "uint32"
+        },
+        {
+          "internalType": "bool",
+          "name": "cache",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "linkReferences": {},

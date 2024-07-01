@@ -86,6 +86,10 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       blockHash: string | number[]
     ): NonPayableTransactionObject<void>;
 
+    countFaultyValidators(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
     currentEpoch(): NonPayableTransactionObject<string>;
 
     earlyEpochEndThreshold(): NonPayableTransactionObject<string>;
@@ -109,6 +113,12 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
 
     isEarlyEpochEnd(
       arg0: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
+    isReported(
+      arg0: number | string | BN,
+      validator: string,
+      reporter: string
     ): NonPayableTransactionObject<boolean>;
 
     minReportAgeBlocks(): NonPayableTransactionObject<string>;

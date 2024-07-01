@@ -21,14 +21,18 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface Proxy extends BaseContract {
+export interface EtherReceiverMock extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Proxy;
-  clone(): Proxy;
-  methods: {};
+  ): EtherReceiverMock;
+  clone(): EtherReceiverMock;
+  methods: {
+    allowReceive(): NonPayableTransactionObject<boolean>;
+
+    toggleReceive(allow: boolean): NonPayableTransactionObject<void>;
+  };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };

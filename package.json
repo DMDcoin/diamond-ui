@@ -48,7 +48,8 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
-    "update-contract-abis": "cp ../diamond-contracts-core/build/contracts/*.json ./src/contexts/contract-abis",
+    "update-dao-abis": "find ../diamond-contracts-dao/artifacts/contracts -type f -name '*.json' ! -name '*.dbg.json' -exec cp {} ./src/contexts/contract-abis \\;",
+    "update-core-abis": "find ../diamond-contracts-core/artifacts/contracts -type f -name '*.json' ! -name '*.dbg.json' -exec cp {} ./src/contexts/contract-abis \\;",
     "typechain": "node_modules/.bin/typechain --target web3-v1 --out-dir src/contexts/contracts/ 'src/contexts/contract-abis/**/*.json'"
   },
   "eslintConfig": {

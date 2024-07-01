@@ -31,16 +31,6 @@ export type ClaimedOrderedWithdrawal = ContractEventLog<{
   2: string;
   3: string;
 }>;
-export type ClaimedReward = ContractEventLog<{
-  fromPoolStakingAddress: string;
-  staker: string;
-  stakingEpoch: string;
-  nativeCoinsAmount: string;
-  0: string;
-  1: string;
-  2: string;
-  3: string;
-}>;
 export type GatherAbandonedStakes = ContractEventLog<{
   caller: string;
   stakingAddress: string;
@@ -103,6 +93,16 @@ export type RemoveChangeAbleParameter = ContractEventLog<{
   funcSelector: string;
   0: string;
 }>;
+export type RestakeReward = ContractEventLog<{
+  poolStakingAddress: string;
+  stakingEpoch: string;
+  validatorReward: string;
+  delegatorsReward: string;
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+}>;
 export type SetChangeAbleParameter = ContractEventLog<{
   setter: string;
   getter: string;
@@ -156,20 +156,13 @@ export interface StakingHbbft extends BaseContract {
       _poolStakingAddress: string
     ): NonPayableTransactionObject<void>;
 
-    claimReward(
-      _stakingEpochs: (number | string | BN)[],
-      _poolStakingAddress: string
-    ): NonPayableTransactionObject<void>;
-
     currentKeyGenExtraTimeWindow(): NonPayableTransactionObject<string>;
 
     delegatorMinStake(): NonPayableTransactionObject<string>;
 
-    delegatorStakeSnapshot(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
-    ): NonPayableTransactionObject<string>;
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
 
     getPoolInternetAddress(_poolAddress: string): NonPayableTransactionObject<{
       0: string;
@@ -177,6 +170,11 @@ export interface StakingHbbft extends BaseContract {
     }>;
 
     getPoolPublicKey(_poolAddress: string): NonPayableTransactionObject<string>;
+
+    getPoolValidatorStakeAmount(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<string>;
 
     getPools(): NonPayableTransactionObject<string[]>;
 
@@ -193,13 +191,13 @@ export interface StakingHbbft extends BaseContract {
 
     getPoolsToBeRemoved(): NonPayableTransactionObject<string[]>;
 
-    getRewardAmount(
-      _stakingEpochs: (number | string | BN)[],
-      _poolStakingAddress: string,
-      _staker: string
-    ): NonPayableTransactionObject<string>;
-
     incrementStakingEpoch(): NonPayableTransactionObject<void>;
+
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
 
     initialize(
       _contractOwner: string,
@@ -273,16 +271,6 @@ export interface StakingHbbft extends BaseContract {
 
     owner(): NonPayableTransactionObject<string>;
 
-    poolDelegatorInactiveIndex(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    poolDelegatorIndex(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
     poolDelegators(
       _poolStakingAddress: string
     ): NonPayableTransactionObject<string[]>;
@@ -290,10 +278,6 @@ export interface StakingHbbft extends BaseContract {
     poolDelegatorsInactive(
       _poolStakingAddress: string
     ): NonPayableTransactionObject<string[]>;
-
-    poolInactiveIndex(arg0: string): NonPayableTransactionObject<string>;
-
-    poolIndex(arg0: string): NonPayableTransactionObject<string>;
 
     poolInfo(arg0: string): NonPayableTransactionObject<{
       publicKey: string;
@@ -305,8 +289,6 @@ export interface StakingHbbft extends BaseContract {
     }>;
 
     poolToBeElectedIndex(arg0: string): NonPayableTransactionObject<string>;
-
-    poolToBeRemovedIndex(arg0: string): NonPayableTransactionObject<string>;
 
     recoverAbandonedStakes(): NonPayableTransactionObject<void>;
 
@@ -322,20 +304,15 @@ export interface StakingHbbft extends BaseContract {
 
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    rewardWasTaken(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
+    restake(
+      _poolStakingAddress: string,
+      _validatorMinRewardPercent: number | string | BN
+    ): PayableTransactionObject<void>;
 
     setAllowedChangeableParameter(
       setter: string,
       getter: string,
       params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
-    setCandidateMinStake(
-      _minStake: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setDelegatorMinStake(
@@ -366,6 +343,21 @@ export interface StakingHbbft extends BaseContract {
       _port: string | number[]
     ): NonPayableTransactionObject<void>;
 
+    snapshotPoolStakeAmounts(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<void>;
+
+    snapshotPoolTotalStakeAmount(
+      arg0: number | string | BN,
+      arg1: string
+    ): NonPayableTransactionObject<string>;
+
+    snapshotPoolValidatorStakeAmount(
+      arg0: number | string | BN,
+      arg1: string
+    ): NonPayableTransactionObject<string>;
+
     stake(_toPoolStakingAddress: string): PayableTransactionObject<void>;
 
     stakeAmount(
@@ -379,16 +371,6 @@ export interface StakingHbbft extends BaseContract {
     ): NonPayableTransactionObject<string>;
 
     stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
-
-    stakeFirstEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    stakeLastEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
 
     stakingEpoch(): NonPayableTransactionObject<string>;
 
@@ -422,12 +404,6 @@ export interface StakingHbbft extends BaseContract {
     ClaimedOrderedWithdrawal(
       options?: EventOptions,
       cb?: Callback<ClaimedOrderedWithdrawal>
-    ): EventEmitter;
-
-    ClaimedReward(cb?: Callback<ClaimedReward>): EventEmitter;
-    ClaimedReward(
-      options?: EventOptions,
-      cb?: Callback<ClaimedReward>
     ): EventEmitter;
 
     GatherAbandonedStakes(cb?: Callback<GatherAbandonedStakes>): EventEmitter;
@@ -477,6 +453,12 @@ export interface StakingHbbft extends BaseContract {
       cb?: Callback<RemoveChangeAbleParameter>
     ): EventEmitter;
 
+    RestakeReward(cb?: Callback<RestakeReward>): EventEmitter;
+    RestakeReward(
+      options?: EventOptions,
+      cb?: Callback<RestakeReward>
+    ): EventEmitter;
+
     SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
     SetChangeAbleParameter(
       options?: EventOptions,
@@ -506,13 +488,6 @@ export interface StakingHbbft extends BaseContract {
     event: "ClaimedOrderedWithdrawal",
     options: EventOptions,
     cb: Callback<ClaimedOrderedWithdrawal>
-  ): void;
-
-  once(event: "ClaimedReward", cb: Callback<ClaimedReward>): void;
-  once(
-    event: "ClaimedReward",
-    options: EventOptions,
-    cb: Callback<ClaimedReward>
   ): void;
 
   once(
@@ -578,6 +553,13 @@ export interface StakingHbbft extends BaseContract {
     event: "RemoveChangeAbleParameter",
     options: EventOptions,
     cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(event: "RestakeReward", cb: Callback<RestakeReward>): void;
+  once(
+    event: "RestakeReward",
+    options: EventOptions,
+    cb: Callback<RestakeReward>
   ): void;
 
   once(

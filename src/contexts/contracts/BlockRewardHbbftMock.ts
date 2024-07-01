@@ -35,6 +35,30 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type RemoveChangeAbleParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type SetChangeAbleParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
+export type SetConnectivityTracker = ContractEventLog<{
+  _connectivityTracker: string;
+  0: string;
+}>;
+export type SetDeltaPotPayoutFraction = ContractEventLog<{
+  _fraction: string;
+  0: string;
+}>;
+export type SetReinsertPotPayoutFraction = ContractEventLog<{
+  _fraction: string;
+  0: string;
+}>;
 
 export interface BlockRewardHbbftMock extends BaseContract {
   constructor(
@@ -52,15 +76,11 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     addToReinsertPot(): PayableTransactionObject<void>;
 
-    connectivityTracker(): NonPayableTransactionObject<string>;
-
-    delegatorShare(
-      _stakingEpoch: number | string | BN,
-      _delegatorStaked: number | string | BN,
-      _validatorStaked: number | string | BN,
-      _totalStaked: number | string | BN,
-      _poolReward: number | string | BN
+    allowedParameterRange(
+      arg0: string | number[]
     ): NonPayableTransactionObject<string>;
+
+    connectivityTracker(): NonPayableTransactionObject<string>;
 
     deltaPot(): NonPayableTransactionObject<string>;
 
@@ -79,23 +99,15 @@ export interface BlockRewardHbbftMock extends BaseContract {
       _miningAddress: string
     ): NonPayableTransactionObject<string[]>;
 
-    epochsToClaimRewardFrom(
-      _poolStakingAddress: string,
-      _staker: string
-    ): NonPayableTransactionObject<string[]>;
-
-    getDelegatorReward(
-      _delegatorStake: number | string | BN,
-      _stakingEpoch: number | string | BN,
-      _poolMiningAddress: string
-    ): NonPayableTransactionObject<string>;
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
 
     getGovernanceAddress(): NonPayableTransactionObject<string>;
 
-    getValidatorReward(
-      _stakingEpoch: number | string | BN,
-      _poolMiningAddress: string
-    ): NonPayableTransactionObject<string>;
+    getPotsShares(
+      numValidators: number | string | BN
+    ): NonPayableTransactionObject<[string, string, string, string]>;
 
     governancePotAddress(): NonPayableTransactionObject<string>;
 
@@ -103,11 +115,22 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     governancePotShareNominator(): NonPayableTransactionObject<string>;
 
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     initialize(
       _contractOwner: string,
       _validatorSet: string,
       _connectivityTracker: string
     ): NonPayableTransactionObject<void>;
+
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
 
     nativeRewardUndistributed(): NonPayableTransactionObject<string>;
 
@@ -119,34 +142,35 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     reinsertPotPayoutFraction(): NonPayableTransactionObject<string>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string
+    ): NonPayableTransactionObject<void>;
+
     renounceOwnership(): NonPayableTransactionObject<void>;
 
     reward(_isEpochEndBlock: boolean): NonPayableTransactionObject<string>;
 
     sendCoins(): PayableTransactionObject<void>;
 
+    setAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     setConnectivityTracker(
       _connectivityTracker: string
     ): NonPayableTransactionObject<void>;
 
-    setEpochPoolReward(
-      _stakingEpoch: number | string | BN,
-      _poolMiningAddress: string
-    ): PayableTransactionObject<void>;
-
     setGovernanceAddress(_address: string): NonPayableTransactionObject<void>;
+
+    setGovernancePotShareNominator(
+      _shareNominator: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     setReinsertPotPayoutFraction(
       _value: number | string | BN
     ): NonPayableTransactionObject<void>;
-
-    setSnapshotPoolValidatorStakeAmount(
-      _stakingEpoch: number | string | BN,
-      _poolMiningAddress: string,
-      _amount: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setSystemAddress(_address: string): NonPayableTransactionObject<void>;
 
     setValidatorMinRewardPercent(
       _stakingEpoch: number | string | BN,
@@ -157,45 +181,13 @@ export interface BlockRewardHbbftMock extends BaseContract {
       _value: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    snapshotPoolStakeAmounts(
-      _stakingContract: string,
-      _stakingEpoch: number | string | BN,
-      _miningAddress: string
-    ): NonPayableTransactionObject<void>;
-
-    snapshotPoolTotalStakeAmount(
-      arg0: number | string | BN,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    snapshotPoolValidatorStakeAmount(
-      arg0: number | string | BN,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
-
-    transferReward(
-      _nativeCoins: number | string | BN,
-      _to: string
-    ): NonPayableTransactionObject<void>;
 
     validatorMinRewardPercent(
       arg0: number | string | BN
     ): NonPayableTransactionObject<string>;
 
-    validatorRewardPercent(
-      _stakingAddress: string
-    ): NonPayableTransactionObject<string>;
-
     validatorSetContract(): NonPayableTransactionObject<string>;
-
-    validatorShare(
-      _stakingEpoch: number | string | BN,
-      _validatorStaked: number | string | BN,
-      _totalStaked: number | string | BN,
-      _poolReward: number | string | BN
-    ): NonPayableTransactionObject<string>;
   };
   events: {
     CoinsRewarded(cb?: Callback<CoinsRewarded>): EventEmitter;
@@ -214,6 +206,42 @@ export interface BlockRewardHbbftMock extends BaseContract {
     OwnershipTransferred(
       options?: EventOptions,
       cb?: Callback<OwnershipTransferred>
+    ): EventEmitter;
+
+    RemoveChangeAbleParameter(
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+    RemoveChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+
+    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
+    SetChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameter>
+    ): EventEmitter;
+
+    SetConnectivityTracker(cb?: Callback<SetConnectivityTracker>): EventEmitter;
+    SetConnectivityTracker(
+      options?: EventOptions,
+      cb?: Callback<SetConnectivityTracker>
+    ): EventEmitter;
+
+    SetDeltaPotPayoutFraction(
+      cb?: Callback<SetDeltaPotPayoutFraction>
+    ): EventEmitter;
+    SetDeltaPotPayoutFraction(
+      options?: EventOptions,
+      cb?: Callback<SetDeltaPotPayoutFraction>
+    ): EventEmitter;
+
+    SetReinsertPotPayoutFraction(
+      cb?: Callback<SetReinsertPotPayoutFraction>
+    ): EventEmitter;
+    SetReinsertPotPayoutFraction(
+      options?: EventOptions,
+      cb?: Callback<SetReinsertPotPayoutFraction>
     ): EventEmitter;
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
@@ -238,5 +266,55 @@ export interface BlockRewardHbbftMock extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
+  ): void;
+
+  once(
+    event: "RemoveChangeAbleParameter",
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+  once(
+    event: "RemoveChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(
+    event: "SetChangeAbleParameter",
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+  once(
+    event: "SetChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+
+  once(
+    event: "SetConnectivityTracker",
+    cb: Callback<SetConnectivityTracker>
+  ): void;
+  once(
+    event: "SetConnectivityTracker",
+    options: EventOptions,
+    cb: Callback<SetConnectivityTracker>
+  ): void;
+
+  once(
+    event: "SetDeltaPotPayoutFraction",
+    cb: Callback<SetDeltaPotPayoutFraction>
+  ): void;
+  once(
+    event: "SetDeltaPotPayoutFraction",
+    options: EventOptions,
+    cb: Callback<SetDeltaPotPayoutFraction>
+  ): void;
+
+  once(
+    event: "SetReinsertPotPayoutFraction",
+    cb: Callback<SetReinsertPotPayoutFraction>
+  ): void;
+  once(
+    event: "SetReinsertPotPayoutFraction",
+    options: EventOptions,
+    cb: Callback<SetReinsertPotPayoutFraction>
   ): void;
 }
