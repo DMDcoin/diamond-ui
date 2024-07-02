@@ -706,8 +706,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
             toast.warn('Requested withdraw order amount exceeds max');
             return false;
-          } else if (newStakeAmount.isLessThanOrEqualTo(delegatorMinStake)) {
-            toast.warn('New stake amount must be greater than the min stake');
+          } else if (newStakeAmount.isLessThan(delegatorMinStake)) {
+            toast.warn(`New stake amount must be greater than the min. stake ${delegatorMinStake.dividedBy(10**18)} DMD 💎`);
             return false;
           } else {
             showLoader(true, `Ordering unstake of ${amount} DMD 💎`);

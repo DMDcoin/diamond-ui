@@ -48,13 +48,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
-  // useEffect(() => {
-  //   if (web3Context.web3Initialized) {
-  //     initialize();
-  //     getTotalStakedAmount();
-  //     subscribeToEvents();
-  //   }
-  // }, [web3Context.userWallet, web3Context.web3Initialized]);
+  useEffect(() => {
+    if (web3Context.web3Initialized) {
+      initialize();
+      getTotalStakedAmount();
+      subscribeToEvents();
+    }
+  }, [web3Context.userWallet, web3Context.web3Initialized]);
 
   const initialize = async () => {
     if (daoInitialized) return;
