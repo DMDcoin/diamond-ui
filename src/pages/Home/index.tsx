@@ -14,6 +14,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import p2bLogo from "../../assets/images/home/logo_p2pb2b.png";
 import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
 import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
+import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 
 interface HomeProps {}
 
@@ -34,7 +35,8 @@ const Home: React.FC<HomeProps> = ({}) => {
     reinsertPot,
     deltaPot,
     myTotalStake,
-    myCandidateStake } = useStakingContext();
+    myCandidateStake,
+    claimOrderedUnstake } = useStakingContext();
 
     useEffect(() => {
         setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr) as Pool);
@@ -103,11 +105,16 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             <>
                                                 <StakeModal buttonText="Stake" pool={myPool} />
                                                 <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                                {
+                                                    myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
+                                                        <button className={styles.tableButton} onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
+                                                }
+                                                {
+                                                    myPool && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove node" pool={myPool} />
+                                                }
                                             </>
                                         )
                                     }
-                                    {/* <button className={styles.tableButton}>See the list</button> */}
-                                    {/* <button className={styles.tableButton}>See history</button> */}
                                 </div>
                             </div>
                         </div>

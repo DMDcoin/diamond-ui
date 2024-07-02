@@ -39,18 +39,16 @@ h3 {
 }
 
 .form {
-  gap: 2rem;
   display: flex;
   margin-top: 20px;
-  align-items: center;
+  text-align: center;
   flex-direction: column;
   justify-content: center;
-  text-align: left;
 }
 
 .form > span {
+  margin: 10px 0;
   font-size: 14px;
-  align-self: flex-start;
 }
 
 label {
@@ -79,12 +77,13 @@ input:focus {
 }
 
 .formSubmit {
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  align-self: center;
+  border-radius: 4px;
   padding: 10px 15px;
   background-color: #007bff;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 .formSubmit:hover {
@@ -119,6 +118,7 @@ input:focus {
 
 .unstakeWarning {
   color: red;
+  margin: 10px 0;
   font-size: 14px;
   text-align: center;
 }

@@ -36,6 +36,7 @@ interface StakingContextProps {
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
+  getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -99,7 +100,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.log("[INFO] Updating stake amounts");
       updateStakeAmounts();
     }
-  }, [totalDaoStake, userWallet]);
+  }, [totalDaoStake, userWallet.myAddr]);
 
   useEffect(() => {
     if (web3Initialized) {
@@ -110,6 +111,14 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       })
     }
   }, [web3Initialized]);
+
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
+      toast.error(err.message);
+    } else {
+      toast.error(alternateMsg);
+    }
+  }
 
   const updateStakeAmounts = async (poolsInp?: Pool[]) => {
     const poolsStakingAddresses = poolsInp ? poolsInp.map(p => p.stakingAddress) : pools.map(p => p.stakingAddress);
@@ -665,13 +674,25 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       return false;
     } catch (err: any) {
       showLoader(false, "");
-      if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
-        toast.error(err.message);
-      } else {
-        toast.error("Error in creating pool");
-      }
+      handleErrorMsg(err, "Error in creating pool");
       return false;
     }
+  }
+
+  const getWithdrawableAmounts = async (pool: Pool): Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}> => {
+    let maxWithdrawAmount = new BigNumber(0);
+    let maxWithdrawOrderAmount = new BigNumber(0);
+
+    if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return { maxWithdrawAmount, maxWithdrawOrderAmount };
+
+    try {
+      maxWithdrawAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call());
+      maxWithdrawOrderAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call());
+    } catch (error) {
+      console.error("Couldn't fetch withdrawable amounts:", error);
+    }
+
+    return { maxWithdrawAmount, maxWithdrawOrderAmount };
   }
 
   const unstake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
@@ -683,8 +704,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     // determine available withdraw method and allowed amount
     const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
-    const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
-    const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call(); 
+    const { maxWithdrawAmount, maxWithdrawOrderAmount } = await getWithdrawableAmounts(pool);
     // console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}) 
 
     if (!canStakeOrWithdrawNow) {
@@ -693,7 +713,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else {
       try {
         let receipt;
-        if (maxWithdrawAmount !== '0') {
+        if (!BigNumber(maxWithdrawAmount).isZero()) {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
             toast.warn(`Requested withdraw amount exceeds max (${BigNumber(maxWithdrawAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
             return false;
@@ -704,7 +724,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           toast.success(`Unstaked ${amount} DMD 💎`);
         } else {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
-            toast.warn('Requested withdraw order amount exceeds max');
+            toast.warn(`Requested withdraw order amount exceeds max (${BigNumber(maxWithdrawOrderAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
             return false;
           } else if (newStakeAmount.isLessThan(delegatorMinStake)) {
             toast.warn(`New stake amount must be greater than the min. stake ${delegatorMinStake.dividedBy(10**18)} DMD 💎`);
@@ -721,7 +741,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       } catch(err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in withdrawing stake");
+        handleErrorMsg(err, "Error in withdrawing stake");
         return false;
       }
     }
@@ -754,7 +774,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       } catch (err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in Staking");
+        handleErrorMsg(err, "Error in staking");
         return false;
       }
     }
@@ -790,7 +810,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       } catch (err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in claiming ordered withdraw");
+        handleErrorMsg(err, "Error in claiming ordered withdraw");
         return false;
       }
     }
@@ -822,6 +842,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     createPool,
     addOrUpdatePool,
     claimOrderedUnstake,
+    getWithdrawableAmounts,
     initializeStakingDataAdapter
   };
 
