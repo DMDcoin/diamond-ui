@@ -1,0 +1,15 @@
+.daoPhaseBanner {
+  display: flex;
+  padding: 20px;
+  color: #0145b2;
+  min-width: 350px;
+  text-align: center;
+  border-radius: 50px;
+  flex-direction: column;
+  border: 1px solid #0145b2;
+  justify-content: space-between;
+}
+
+.daoPhaseBanner > * {
+  margin: 0px;
+}

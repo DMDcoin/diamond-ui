@@ -5,6 +5,7 @@ import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import ProposalsTable from "../../../components/ProposalsTable";
 import { useStakingContext } from "../../../contexts/StakingContext";
+import DaoPhaseBanner from "../../../components/DaoPhaseBanner";
 
 interface DaoProps {}
 
@@ -71,24 +72,7 @@ const DaoHome: React.FC<DaoProps> = () => {
             />
           </div>
 
-          <div>
-            {daoContext.daoPhase?.phase === "1" && <div></div>}
-            <h4>
-              {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
-            </h4>
-            <p>{daoContext.phaseEndTimer} till the end</p>
-            {daoContext.daoPhase?.phase === "0" && (
-              <button
-                onClick={() => {
-                  startTransition(() => {
-                    navigate("/dao/create");
-                  });
-                }}
-              >
-                Create Proposal
-              </button>
-            )}
-          </div>
+          <DaoPhaseBanner />
         </div>
 
         <div className={styles.myDaoProposals}>

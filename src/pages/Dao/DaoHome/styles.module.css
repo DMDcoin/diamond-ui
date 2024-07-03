@@ -41,22 +41,7 @@ h2, span {
   justify-content: space-between;
 }
 
-.daoInfoContainer > div:nth-child(2) {
-  display: flex;
-  padding: 20px;
-  min-width: 350px;
-  text-align: center;
-  border-radius: 50px;
-  flex-direction: column;
-  border: 1px solid #0145b2;
-  justify-content: space-between;  
-}
-
 .daoInfoContainer > div:nth-child(1) > * {
-  margin: 0px;
-}
-
-.daoInfoContainer > div:nth-child(2) > * {
   margin: 0px;
 }
 

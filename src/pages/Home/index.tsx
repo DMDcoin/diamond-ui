@@ -15,6 +15,7 @@ import p2bLogo from "../../assets/images/home/logo_p2pb2b.png";
 import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
 import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
+import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 
 interface HomeProps {}
 
@@ -47,7 +48,7 @@ const Home: React.FC<HomeProps> = ({}) => {
 
         {
             userWallet.myAddr ? (
-                <section className="hero-section">
+                <section className={styles.heroSection + " hero-section"}>
                     <div className="hero-container">
                         <div className={styles.heroWrapper + " hero-wrapper"}>
                             <div className={styles.heroSplit + " hero-split" }>
@@ -154,6 +155,13 @@ const Home: React.FC<HomeProps> = ({}) => {
                             }
                             </tbody>
                         </table>
+                    </div>
+
+                    <div className={styles.heroContainer + " hero-container"}>
+                        <div className={styles.daoPhaseBannerContainer}>
+                            <DaoPhaseBanner />
+                            <button onClick={() => {startTransition(() => {navigate('dao')})}}>Go to DAO</button>
+                        </div>
                     </div>
                 </section>
             ) : (
