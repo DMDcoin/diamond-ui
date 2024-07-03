@@ -103,15 +103,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (
-      stakingContext.pools.filter(
-        (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
-      ).length <= 0
-    ) {
-      toast.warning(`Only validator candidates can create a proposal`);
-      return;
-    }
-
     let targets: string[] = [];
     let values: string[] = [];
     let calldatas: string[] = [];
