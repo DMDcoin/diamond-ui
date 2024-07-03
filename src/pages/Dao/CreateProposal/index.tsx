@@ -118,7 +118,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
     try {
       if (proposalType === 'open') {
-        if (targets.length == 0) {
+        if (openProposalFields.length == 0) {
           targets = ['0x0000000000000000000000000000000000000000'];
           values = ["0"];
           calldatas = ["0x"];
@@ -127,9 +127,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             if (!isValidAddress(field.target)) throw new Error(`Invalid Transaction ${i+1} payout address`);
             else return field.target;
           });
-          values = openProposalFields.map((field, i) => {        
-            if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
-            else return field.amount;
+          values = openProposalFields.map((field, i) => {
+            if (!field.amount || !(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
+            else return BigNumber(field.amount).multipliedBy(10**18).toString();
           });
           calldatas = openProposalFields.map((field) => {
             return '0x'

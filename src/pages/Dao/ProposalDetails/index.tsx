@@ -145,20 +145,22 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* open proposals */}
           {
-            proposal.type === "open" && (
+            proposal.proposalType === "Open" && (
               <div className={styles.payoutDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
-                    <div key={i}>
-                      <div>
-                        <span>Payout Adress</span>
-                        <span>{proposal.targets[i]}</span>
-                      </div>
-                      <div>
-                        <span>Payout Amount</span>
-                        <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
-                      </div>
-                    </div>   
+                    proposal.targets[i] != '0x0000000000000000000000000000000000000000' && (
+                      <div key={i}>
+                        <div>
+                          <span>Payout Adress</span>
+                          <span>{proposal.targets[i]}</span>
+                        </div>
+                        <div>
+                          <span>Payout Amount</span>
+                          <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
+                        </div>
+                      </div>   
+                    )
                   ))
                 }
               </div>
@@ -167,7 +169,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* ecosystem proposals */}
           {
-            proposal.type === "epc" && (
+            proposal.proposalType === "Ecosystem Paramaeter Change" && (
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
@@ -184,7 +186,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* contract upgrade */}
           {
-            proposal.type === "cup" && (
+            proposal.proposalType === "Contract upgrade" && (
               <div className={styles.cupDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
