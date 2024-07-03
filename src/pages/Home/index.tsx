@@ -99,7 +99,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         !myPool ? (
                                             <div className={styles.noPoolButtons}>
                                                 <CreateValidatorModal buttonText="Create a pool"/>
-                                                <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                                             </div>
                                         ) : (
                                             <>
@@ -115,6 +114,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             </>
                                         )
                                     }
+                                    <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                                 </div>
                             </div>
                         </div>
@@ -140,9 +140,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                             <tbody>
                             {
                                 myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
-                                <tr key={i}>
+                                <tr key={i} onClick={() => navigate(`/staking/details/${myPool.stakingAddress}`)} className={styles.tableBodyRow}>
                                     <td>
-                                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                                        <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                                     </td>
                                     <td>{delegator.address}</td>
                                     <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
@@ -276,6 +276,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                             <table className={styles.styledTable}>
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Wallet</th>
                                         <th>Total Stake</th>
                                         <th>Voting Power</th>
@@ -289,6 +290,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         .slice(0, 5)  // Get the top 5 pools
                                         .map((pool, i) => (
                                         <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                            <td>
+                                                <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
+                                            </td>
                                             <td>{pool.stakingAddress}</td>
                                             <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>

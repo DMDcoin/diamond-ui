@@ -160,7 +160,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         if (orderedWithdraws) {
           let orderedWithdrawAmount = orderedWithdraws[index];
           pool.orderedWithdrawAmount = new BigNumber(orderedWithdrawAmount[1] ?? 0);
-          pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2] ?? 0);
+          pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
       return newPools;
@@ -295,47 +295,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     await syncPoolsState(blockHeader.number, isNewEpoch);
   }
 
-  const getBlockHistoryInfoAsString = () => {
-    return isShowHistoric ? `historic block #${showHistoricBlock}` : 'latest';
-  }
-
   const tx = () : NonPayableTx | undefined => {
     return undefined;
-  }
-
-  const block = () : BlockType => {
-    if ( isShowHistoric ) {
-      return showHistoricBlock;
-    }
-
-    return currentBlockNumber;
-  }
-
-  const getMyStakeAndOrderedWithdraw = async (stakingAddress: string, blockNumber?: number): Promise<{myStake: BigNumber, claimableAmount: BigNumber, unlockEpoch: BigNumber}> => {
-    if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) return { myStake: new BigNumber('0'), unlockEpoch: new BigNumber(0), claimableAmount: new BigNumber(0) };
-    
-    let unlockEpoch = new BigNumber(0);
-    const stakeAmount = await contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber || block());
-    const claimableAmount = new BigNumber(await contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call());
-
-    if (claimableAmount.isGreaterThan(0)) {
-      unlockEpoch = BigNumber(await contractsManager.stContract.methods.orderWithdrawEpoch(stakingAddress, userWallet.myAddr).call()).plus(1);
-    }
-    
-    return { myStake: new BigNumber(stakeAmount), unlockEpoch, claimableAmount: claimableAmount };
-  }
-
-  const getBannedUntil = async (miningAddress: string, blockNumber: number): Promise<any> => {
-    return new BigNumber((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), blockNumber)));
-  }
-
-  const getBanCount = async (miningAddress: string, blockNumber: number): Promise<number> => {
-    return parseInt(await contractsManager.vsContract.methods.banCounter(miningAddress).call(tx(), blockNumber));
-  }
-
-  const getAvailableSince = async (miningAddress: string, blockNumber: number): Promise<any> => {
-    const rawResult = await contractsManager.vsContract.methods.validatorAvailableSince(miningAddress).call(tx(), blockNumber);
-    return new BigNumber(rawResult);
   }
 
   const retrieveGlobalValues = async () => {

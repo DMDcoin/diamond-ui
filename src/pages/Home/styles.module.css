@@ -26,7 +26,7 @@
 .getStartedContainer > div > button {
   height: 35px;
   width: 100px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-size: 14px;
   cursor: pointer;
   overflow: hidden;
@@ -34,7 +34,7 @@
   border-radius: 5px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  border: 2px solid #0E44B2;
+  border: 2px solid #0e44b2;
   background-color: transparent;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .infoContainer > div > p {
-  color: #0E44B2;
+  color: #0e44b2;
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
@@ -66,7 +66,7 @@
 
 .infoContainer > div > p:first-of-type {
   font-size: 20px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-weight: bold;
 }
 
@@ -74,25 +74,6 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 18px;
-}
-
-.styledTableFirst > tbody > tr {
-  gap: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) {
-  display: flex;
-  flex-direction: column;
-}
-
-.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) > span {
-  font-size: 12px;
-}
-
-.styledTableFirst tr td:nth-child(3) {
-  text-align: end;
 }
 
 .styledTableFirst thead tr {
@@ -105,7 +86,12 @@
 
 .styledTableFirst th,
 .styledTableFirst td {
-  padding: 12px 0px;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.styledTableFirst tbody {
+  background-color: white;
 }
 
 .styledTableFirst tbody tr {
@@ -284,6 +270,7 @@
 .styledTable tbody tr {
   border-bottom: 1px solid rgba(245, 247, 250, 0);
 }
+
 .styledTable img {
   border-radius: 50%;
   width: 50px;

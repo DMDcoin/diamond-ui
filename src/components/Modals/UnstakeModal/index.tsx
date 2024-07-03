@@ -94,13 +94,17 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   const getActionHeading = () => {
     if (ownPool && canBeOrderedAmount.isZero()) {
-        return "Unstake DMD";
+      return "Unstake DMD";
     } else if (!ownPool && canBeOrderedAmount.isZero()) {
-        return `Unstake from ${pool.stakingAddress}`;
+      return `Unstake from ${pool.stakingAddress}`;
+    } else if (ownPool && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
+      return "Unstake DMD";
+    } else if (canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
+      return `Unstake DMD from ${pool.stakingAddress}`;
     } else if (ownPool && !canBeOrderedAmount.isZero()) {
-        return "Order DMD";
+      return "Order DMD";
     } else {
-        return `Order DMD from ${pool.stakingAddress}`;
+      return `Order DMD from ${pool.stakingAddress}`;
     }
   };
 
@@ -165,7 +169,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               )}
 
               <button className={styles.formSubmit} type="submit">
-                {canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
+                {canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
               </button>
             </form>
           </div>
