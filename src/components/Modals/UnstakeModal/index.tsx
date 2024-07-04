@@ -16,10 +16,10 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [ownPool, setOwnPool] = useState<boolean>(false);
-  const { unstake, setPools, getWithdrawableAmounts } = useStakingContext();
   const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
   const [canBeOrderedAmount, setCanBeOrderedAmount] = useState<BigNumber>(new BigNumber(0));
   const [canBeUnstakedAmount, setCanBeUnstakedAmount] = useState<BigNumber>(new BigNumber(0));
+  const { unstake, setPools, getWithdrawableAmounts, candidateMinStake, delegatorMinStake } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -58,6 +58,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   const fetchWithdrawableAmounts = async () => {
     getWithdrawableAmounts(pool).then((amounts: any) => {
+      console.log(amounts.maxWithdrawAmount.toString(), amounts.maxWithdrawOrderAmount.toString())
       setCanBeUnstakedAmount(amounts.maxWithdrawAmount);
       setCanBeOrderedAmount(amounts.maxWithdrawOrderAmount);
     });
@@ -127,18 +128,26 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               {canBeUnstakedAmount.isZero() ? (
                 <span>
                   Amount to be ordered:{" "}
-                  {canBeOrderedAmount.dividedBy(10 ** 18).toFixed(2)} DMD
+                  {canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
                 </span>
               ) : (
                 <span>
                   Amount available to be unstaked:{" "}
-                  {canBeUnstakedAmount.dividedBy(10 ** 18).toFixed(2)} DMD
+                  {canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
                 </span>
               )}
 
               <input
-                min={1}
-                max={canBeUnstakedAmount.isZero() ? canBeOrderedAmount.dividedBy(10 ** 18).toString() : canBeUnstakedAmount.dividedBy(10 ** 18).toString()}
+                min={
+                  canBeUnstakedAmount.isZero()
+                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                    : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                }
+                max={
+                  canBeUnstakedAmount.isZero()
+                  ? Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                  : Math.max(0, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                }
                 type="number"
                 value={unstakeAmount}
                 className={styles.formInput}
@@ -147,7 +156,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {canBeOrderedAmount.dividedBy(10 ** 18).toFixed(2)} DMD</span>)
+                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
               }
 
               {pool.isCurrentValidator && canBeUnstakedAmount.isGreaterThan(0) &&
@@ -168,7 +177,11 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                   )
               )}
 
-              <button className={styles.formSubmit} type="submit">
+              <button className={styles.formSubmit} type="submit" disabled={
+                canBeUnstakedAmount.isZero()
+                ? Math.max(0, canBeOrderedAmount.minus(ownPool ? candidateMinStake : delegatorMinStake).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+                : Math.max(0, canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+              }>
                 {canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
               </button>
             </form>

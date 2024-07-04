@@ -185,12 +185,12 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 </td>
                                 <td className={pool?.isCurrentValidator ? styles.poolActive : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
                                     {typeof pool.isCurrentValidator === 'boolean'
-                                        ? (pool.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Valid"))
+                                        ? pool.isCurrentValidator ? "Active" : pool.isActive ? "Valid" : (Number(pool.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Invalid" : "Invalid")
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toString() + " DMD" : (<div className={styles.loader}></div>)
+                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(0) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
                                     {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
@@ -200,7 +200,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
                                 {
                                     userWallet.myAddr ? <>
-                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toString() : (<div className={styles.loader}></div>) } DMD</td>
+                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
                                                 pool.isActive && (

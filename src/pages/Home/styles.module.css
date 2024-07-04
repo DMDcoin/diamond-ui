@@ -1,3 +1,11 @@
+h1 {
+  color: #0145b2;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25em;
+  overflow: hidden;
+}
+
 .heroSection {
   padding-bottom: 0px;
 }
@@ -92,6 +100,7 @@
 .styledTableFirst td {
   padding: 12px 15px;
   text-align: left;
+  height: 64px;
 }
 
 .styledTableFirst tbody {
@@ -107,6 +116,15 @@
   width: 50px;
   height: 50px;
   object-fit: cover;
+}
+
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+}
+
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) > span {
+  font-size: 12px;
 }
 
 .tableBodyRow:hover {
@@ -146,9 +164,10 @@
 
 .loggedInBtns {
   gap: 1rem;
-  display: grid;
-  justify-content: center;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: left;
 }
 
 .loggedInBtns button {
@@ -159,6 +178,7 @@
 
 .heroSplit {
   gap: 1rem;
+  max-width: 100%;
 }
 
 .heroWrapper {
@@ -355,4 +375,12 @@
 .daoPhaseBannerContainer > button .disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.poolActive {
+  color: green;
+}
+
+.poolBanned {
+  color: red;
 }

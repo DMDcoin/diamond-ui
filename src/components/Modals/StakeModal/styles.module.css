@@ -33,17 +33,17 @@
 }
 
 .form {
-  gap: 2rem;
   display: flex;
   margin-top: 20px;
+  text-align: left;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  text-align: left;
 }
 
 .form > span {
   font-size: 14px;
+  margin-top: 10px;
   align-self: flex-start;
 }
 
@@ -79,6 +79,7 @@ input:focus {
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  margin-top: 10px;
 }
 
 .formSubmit:hover {
@@ -109,4 +110,10 @@ input:focus {
 .tableButton .disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.stakeWarning {
+  color: red;
+  font-size: 14px;
+  text-align: center;
 }

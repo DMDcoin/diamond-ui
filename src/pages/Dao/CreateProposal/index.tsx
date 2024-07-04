@@ -109,6 +109,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
     try {
       if (proposalType === 'open') {
+        console.log({openProposalFields})
         if (openProposalFields.length == 0) {
           targets = ['0x0000000000000000000000000000000000000000'];
           values = ["0"];

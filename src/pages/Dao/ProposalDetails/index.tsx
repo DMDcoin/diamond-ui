@@ -47,7 +47,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
-  const { pools } = useStakingContext();
+  const { pools, totalDaoStake } = useStakingContext();
 
   useEffect(() => {
     if (proposalId) getProposalDetails(proposalId);
@@ -141,7 +141,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           </p>
 
           {/* discussion link */}
-          <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+          {
+            proposal.discussionUrl.length > 0 && (
+              <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+            )
+          }
+          
 
           {/* open proposals */}
           {
@@ -245,7 +250,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div className={styles.votingPhaseStats}>
                         <span>Positive Answers: ({votingStats ? Number(votingStats.positive) : 0} % exceeding | 33% required)</span>
                         <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toString() : 0} DMD ({
-                          votingStats && daoContext.totalStakedAmount && votingStats.total.dividedBy(daoContext.totalStakedAmount).toFixed(2)
+                          votingStats && totalDaoStake && votingStats.total.dividedBy(totalDaoStake).toFixed(2)
                         }% | 33% required)</span>
                       </div>
                     </>

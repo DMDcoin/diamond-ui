@@ -61,40 +61,71 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         <p>User</p>
                                         <p>{userWallet.myAddr}</p>
                                     </div>
+                                    <p className={myPool?.isCurrentValidator ? styles.myPoolActive : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
+                                        {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
+                                    </p>
                                 </div>
                                 <div className={styles.statsContainer}>
-                                        <table className={styles.styledTableFirst}>
-                                            <thead>
-                                            </thead>
-                                            <tbody>
-                                                {myPool && (
-                                                    <>
-                                                        <tr>
-                                                            <td>My stake</td>
-                                                            <td>{myTotalStake.dividedBy(10**18).toFixed(0)} DMD</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                            <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(0)} DMD</td>
-                                                        </tr>
-                                                    </>
-                                                )}
+                                    <table className={styles.styledTableFirst}>
+                                        <thead>
+                                        </thead>
+                                        <tbody>
+                                            {myPool && (
+                                                <>
                                                     <tr>
-                                                        <td>Staked on other candidate</td>
-                                                        <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>My stake</td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(0)} DMD</td>
                                                     </tr>
-                                                {myPool && (
                                                     <tr>
-                                                        <td>Score</td>
-                                                        <td>1000</td>
+                                                        <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>
+                                                            <div className={styles.loggedInBtns}>
+                                                                {
+                                                                    !myPool ? (
+                                                                        <div className={styles.noPoolButtons}>
+                                                                            <CreateValidatorModal buttonText="Create a pool"/>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <>
+                                                                            <StakeModal buttonText="Stake" pool={myPool} />
+                                                                            <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                                                            {
+                                                                                myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
+                                                                                    <button className={styles.tableButton} onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
+                                                                            }
+                                                                            {
+                                                                                myPool && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove node" pool={myPool} />
+                                                                            }
+                                                                        </>
+                                                                    )
+                                                                }
+                                                            </div>
+                                                        </td>
                                                     </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                </>
+                                            )}
+                                                <tr>
+                                                    <td>Staked on other candidate</td>
+                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                    <td>
+                                                        <div className={styles.loggedInBtns}>
+                                                            <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {myPool && (
+                                                <tr>
+                                                    <td>Score</td>
+                                                    <td>1000</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
-                            <div className="hero-split">
+                            {/* <div className="hero-split">
                                 <div className={styles.loggedInBtns}>
                                     {
                                         !myPool ? (
@@ -117,7 +148,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     }
                                     <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -126,11 +157,14 @@ const Home: React.FC<HomeProps> = ({}) => {
                             <thead>
                             {
                                 myPool && myPool.delegators.length ? (
-                                <tr>
-                                    <td></td>
-                                    <td>Wallet</td>
-                                    <td>Delegated Stake</td>
-                                </tr>
+                                    <>
+                                        <h1>Delegates</h1>
+                                        <tr>
+                                            <td></td>
+                                            <td>Wallet</td>
+                                            <td>Delegated Stake</td>
+                                        </tr>
+                                    </>
                                 ) : myPool && (
                                     <tr>
                                         <td>No Delegations</td>
@@ -141,7 +175,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                             <tbody>
                             {
                                 myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
-                                <tr key={i} onClick={() => navigate(`/staking/details/${myPool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                <tr key={i} className={styles.tableBodyRow}>
                                     <td>
                                         <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                                     </td>

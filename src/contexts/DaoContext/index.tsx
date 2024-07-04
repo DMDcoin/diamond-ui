@@ -13,7 +13,6 @@ interface DaoContextProps {
   activeProposals: Proposal[];
   phaseEndTimer: string;
   allDaoProposals: Proposal[];
-  totalStakedAmount: BigNumber;
 
   initialize: () => Promise<void>;
   getActiveProposals: () => Promise<void>;
@@ -45,13 +44,11 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
-  const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
     if (web3Context.web3Initialized) {
       initialize();
-      getTotalStakedAmount();
       subscribeToEvents();
     }
   }, [web3Context.userWallet, web3Context.web3Initialized]);
@@ -500,48 +497,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  const getTotalStakedAmount = async () => {
-    console.log("[INFO] Getting Total Staked Amounts");
-    let myStakedAmount = new BigNumber(0);
-    let totalStakedAmount = new BigNumber(0);
-
-    if (!web3Context.contractsManager.stContract) {
-      web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
-    }
-    const allPools = await web3Context.contractsManager.stContract?.methods.getPools().call();
-    if (!allPools) return myStakedAmount;
-
-    if (web3Context.userWallet.myAddr) {
-      const myStakePromises = allPools.map(pool => {
-        return web3Context.contractsManager.stContract?.methods.stakeAmount(pool, web3Context.userWallet.myAddr).call();
-      });
-      const myStakeAmounts = await Promise.allSettled(myStakePromises);
-      myStakeAmounts.forEach((result) => {
-          if (result.status === 'fulfilled') {
-            const myStake = result.value;
-            if (myStake) myStakedAmount = myStakedAmount.plus(myStake);
-          } else {
-            console.error("Failed to fetch stake amount:", result.reason);
-          }
-      });
-    }
-    
-    const totalStakedPromises = allPools.map(pool => {
-      return web3Context.contractsManager.stContract?.methods.stakeAmountTotal(pool).call();
-    })
-    const totalStakeAmounts = await Promise.allSettled(totalStakedPromises);
-    totalStakeAmounts.forEach((result) => {
-        if (result.status === 'fulfilled') {
-          const totalStake = result.value;
-          if (totalStake) totalStakedAmount = totalStakedAmount.plus(totalStake);
-        } else {
-          console.error("Failed to fetch total stake amount:", result.reason);
-        }
-    });
-
-    setTotalStakedAmount(totalStakedAmount);
-  }
-
   const getMyVote = async (proposalId: string): Promise<Vote> => {
     return await web3Context.contractsManager.daoContract.methods
       .votes(proposalId, web3Context.userWallet.myAddr)
@@ -563,7 +518,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     daoInitialized,
     activeProposals,
     allDaoProposals,
-    totalStakedAmount,
 
     // functions
     initialize,
