@@ -86,11 +86,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
                                                                 {
-                                                                    !myPool ? (
-                                                                        <div className={styles.noPoolButtons}>
-                                                                            <CreateValidatorModal buttonText="Create a pool"/>
-                                                                        </div>
-                                                                    ) : (
+                                                                    myPool && (
                                                                         <>
                                                                             <StakeModal buttonText="Stake" pool={myPool} />
                                                                             <UnstakeModal buttonText="Unstake" pool={myPool} />
@@ -114,6 +110,13 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                     <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
                                                     <td>
                                                         <div className={styles.loggedInBtns}>
+                                                            {
+                                                                !myPool && (
+                                                                    <div className={styles.noPoolButtons}>
+                                                                        <CreateValidatorModal buttonText="Create a pool"/>
+                                                                    </div>
+                                                                )
+                                                            }
                                                             <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                                                         </div>
                                                     </td>
@@ -128,31 +131,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </table>
                                 </div>
                             </div>
-
-                            {/* <div className="hero-split">
-                                <div className={styles.loggedInBtns}>
-                                    {
-                                        !myPool ? (
-                                            <div className={styles.noPoolButtons}>
-                                                <CreateValidatorModal buttonText="Create a pool"/>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <StakeModal buttonText="Stake" pool={myPool} />
-                                                <UnstakeModal buttonText="Unstake" pool={myPool} />
-                                                {
-                                                    myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
-                                                        <button className={styles.tableButton} onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
-                                                }
-                                                {
-                                                    myPool && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove node" pool={myPool} />
-                                                }
-                                            </>
-                                        )
-                                    }
-                                    <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
 
