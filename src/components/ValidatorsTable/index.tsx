@@ -42,11 +42,11 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isAvailable || pool.isCurrentValidator || pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => pool.isActive);
     } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
     } else if (filter === 'invalid') {
-        poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
+        poolsCopy = poolsCopy.filter(pool => !pool.isCurrentValidator && !pool.isActive);
     } else if (filter === 'stakedOn') {
         poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
     }

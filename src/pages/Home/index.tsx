@@ -40,7 +40,7 @@ const Home: React.FC<HomeProps> = ({}) => {
     claimOrderedUnstake } = useStakingContext();
 
     useEffect(() => {
-        setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr) as Pool);
+        setMyPool(pools.find(p => userWallet.myAddr && p.stakingAddress === userWallet.myAddr) as Pool);
     }, [pools, userWallet.myAddr]);
 
   return (
@@ -61,9 +61,13 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         <p>User</p>
                                         <p>{userWallet.myAddr}</p>
                                     </div>
-                                    <p className={myPool?.isCurrentValidator ? styles.myPoolActive : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
-                                        {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
-                                    </p>
+                                    {
+                                        myPool && (
+                                            <p className={myPool?.isCurrentValidator ? styles.myPoolActive : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
+                                                {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
+                                            </p>
+                                        )
+                                    }
                                 </div>
                                 <div className={styles.statsContainer}>
                                     <table className={styles.styledTableFirst}>
@@ -95,7 +99,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                                     <button className={styles.tableButton} onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
                                                                             }
                                                                             {
-                                                                                myPool && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove node" pool={myPool} />
+                                                                                myPool && !myPool.isCurrentValidator && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
                                                                             }
                                                                         </>
                                                                     )

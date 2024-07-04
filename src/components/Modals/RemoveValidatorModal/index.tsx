@@ -13,7 +13,7 @@ interface ModalProps {
 const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const { unstake, setPools } = useStakingContext();
+  const { removePool, setPools } = useStakingContext();
   const { web3, ensureWalletConnection } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
@@ -47,14 +47,7 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    unstake(pool, BigNumber(pool.myStake).dividedBy(10**18)).then((success: boolean) => {
-      if (success) {
-        setPools((pools) => {
-            const updatedPools = pools.filter((p) => p.stakingAddress !== pool.stakingAddress);
-            return updatedPools as Pool[];
-        });
-      }
-
+    removePool(pool, BigNumber(pool.myStake).dividedBy(10**18)).then((success: boolean) => {
       closeModal();
     });
   }

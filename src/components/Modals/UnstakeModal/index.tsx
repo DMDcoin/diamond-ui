@@ -58,7 +58,6 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   const fetchWithdrawableAmounts = async () => {
     getWithdrawableAmounts(pool).then((amounts: any) => {
-      console.log(amounts.maxWithdrawAmount.toString(), amounts.maxWithdrawOrderAmount.toString())
       setCanBeUnstakedAmount(amounts.maxWithdrawAmount);
       setCanBeOrderedAmount(amounts.maxWithdrawOrderAmount);
     });

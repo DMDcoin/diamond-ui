@@ -34,6 +34,7 @@ interface StakingContextProps {
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
@@ -640,6 +641,38 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
+  const removePool = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    const amountInWei = web3.utils.toWei(amount.toString());
+    let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
+    const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
+
+    if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
+
+    if (!canStakeOrWithdrawNow) {
+      toast.warning('Outside staking/withdraw window');
+      return false;
+    } else {
+      try {
+        let receipt;
+        showLoader(true, `Removing Pool 💎`);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+        setPools(prevPools => {
+          const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
+          updateStakeAmounts(updatedPools);
+          return updatedPools;
+        });
+        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+        toast.success(`Pool Removed 💎`);
+        showLoader(false, "");
+        return true;
+      } catch(err: any) {
+        showLoader(false, "");
+        handleErrorMsg(err, "Error in Removing Pool");
+        return false;
+      }
+    }
+  }
+
   const getWithdrawableAmounts = async (pool: Pool): Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}> => {
     let maxWithdrawAmount = new BigNumber(0);
     let maxWithdrawOrderAmount = new BigNumber(0);
@@ -801,6 +834,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     unstake,
     setPools,
     createPool,
+    removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
     getWithdrawableAmounts,
