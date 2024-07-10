@@ -21,11 +21,11 @@ interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
-  const [myPool, setMyPool] = useState<Pool | null>(null);
   const { userWallet, connectWallet } = useWeb3Context();
 
   const {
     pools,
+    myPool,
     keyGenRound,
     stakingEpoch,
     epochStartTime,
@@ -38,10 +38,6 @@ const Home: React.FC<HomeProps> = ({}) => {
     myTotalStake,
     myCandidateStake,
     claimOrderedUnstake } = useStakingContext();
-
-    useEffect(() => {
-        setMyPool(pools.find(p => userWallet.myAddr && p.stakingAddress === userWallet.myAddr) as Pool);
-    }, [pools, userWallet.myAddr]);
 
   return (
     <>
@@ -135,12 +131,12 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
+                        {myPool && myPool.delegators.length ? <h1>Delegates</h1> : "" }
                         <table className={styles.styledTableFirst}>
                             <thead>
                             {
                                 myPool && myPool.delegators.length ? (
                                     <>
-                                        <h1>Delegates</h1>
                                         <tr>
                                             <td></td>
                                             <td>Wallet</td>

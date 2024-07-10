@@ -21,6 +21,7 @@ interface StakingContextProps {
   validCandidates: number;
   epochStartBlock: number;
   myTotalStake: BigNumber;
+  myPool: Pool | undefined;
   activeValidators: number;
   minimumGasFee: BigNumber;
   totalDaoStake: BigNumber;
@@ -66,6 +67,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     value: '0'
   });
 
+  const [myPool, setMyPool] = useState<Pool | undefined>(undefined);
   const [pools, setPools] = useState<Pool[]>(Array.from({ length: 10 }, () => (new Pool(""))));
   const [stakingEpoch, setStakingEpoch] = useState<number>(0);
   const [keyGenRound, setKeyGenRound] = useState<number>(0);
@@ -97,6 +99,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
+    setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr));
     if (pools.filter(pool => pool.miningAddress).length == pools.length) {
       console.log("[INFO] Updating stake amounts");
       updateStakeAmounts();
@@ -699,7 +702,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     // determine available withdraw method and allowed amount
     const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
     const { maxWithdrawAmount, maxWithdrawOrderAmount } = await getWithdrawableAmounts(pool);
-    // console.log({maxWithdrawAmount}, {maxWithdrawOrderAmount}) 
 
     if (!canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw window');
@@ -813,6 +815,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const contextValue = {
     // state
     pools,
+    myPool,
     deltaPot,
     keyGenRound,
     reinsertPot,

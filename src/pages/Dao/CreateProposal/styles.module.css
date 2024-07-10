@@ -20,6 +20,7 @@
   width: 250px;
   height: 40px;
   display: flex;
+  cursor: pointer;
   margin-top: 20px;
   align-items: center;
   justify-content: center;

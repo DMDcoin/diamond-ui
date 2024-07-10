@@ -29,7 +29,7 @@ const HistoricProposals = () => {
 
   useEffect(() => {
     if (!fetching) {
-      web3Context.showLoader(true, "");
+      web3Context.showLoader(true, "Fetching historic proposals");
       daoContext.getHistoricProposals();
       setFetching(true);
     } else {
@@ -45,13 +45,8 @@ const HistoricProposals = () => {
     }
   }, [daoContext.allDaoProposals]);
 
-  const filterUnFinalized = () => {
-    setFilterFinalize(!filterFinalize);
-    if (filterFinalize) {
-      setFilterQuery('unfinalized');
-    } else {
-      setFilterQuery('');
-    }
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilterQuery(event.target.value);
   }
 
   return (
@@ -64,12 +59,13 @@ const HistoricProposals = () => {
           <div>
             <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
-            <div>
+            <div className={styles.filterContainer}>
               <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
 
-              <div className={filterFinalize ? '' : styles.filterActive} onClick={filterUnFinalized}>
-                <FaFilter color="0145b2" size={25}/>
-              </div>
+              <select className={styles.historicProposalsSelect} onChange={handleFilterChange}>
+                <option value="">All</option>
+                <option value="unfinalized">Unfinalized</option>
+              </select>
             </div>
 
             <div>{indexingStatus ? indexingStatus : ""}</div>

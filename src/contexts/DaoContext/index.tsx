@@ -49,7 +49,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   useEffect(() => {
     if (web3Context.web3Initialized) {
       initialize();
-      subscribeToEvents();
     }
   }, [web3Context.userWallet, web3Context.web3Initialized]);
 
@@ -68,6 +67,16 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const phaseCount = await web3Context.contractsManager.daoContract.methods.daoPhaseCount().call();
     setDaoPhaseCount(phaseCount);
+
+    subscribeToEvents();
+  }
+
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.toLowerCase().includes("invalid"))) {
+      toast.error(err.message);
+    } else {
+      toast.error(alternateMsg);
+    }
   }
 
   const getProposalTypeString = (proposalType: string) => {
@@ -275,7 +284,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
 
-        const toastid = toast.loading("Creating proposal");
         web3Context.showLoader(true, "Creating proposal");
         try {
           await web3Context.contractsManager.daoContract.methods.propose(
@@ -287,15 +295,15 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             discussionUrl
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
           web3Context.showLoader(false, "");
-          toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
+          toast.success("Proposal Created!");
           const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
             targets, values, callDatas, description
           ).call();
           resolve(proposalId);
-        } catch(err) {
+        } catch(err: any) {
           console.log(err);
           web3Context.showLoader(false, "");
-          toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 1 });
+          handleErrorMsg(err, "Proposal creation failed");
           reject(err);
         }
     });

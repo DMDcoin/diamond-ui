@@ -2,7 +2,7 @@
   padding-top: 0px;
 }
 
-h1, h2, h3, h4, p, div, span {
+h1, h2, h3, h4, p, span {
   color: #0145b2;
 }
 
@@ -10,6 +10,7 @@ h1, h2, h3, h4, p, div, span {
   width: 100%;
   display: flex;
   align-items: center;
+  color: #0145b2;
   justify-content: space-between;
 }
 
@@ -24,6 +25,7 @@ h1, h2, h3, h4, p, div, span {
 .proposalCreatedBy {
   width: 250px;
   display: flex;
+  color: #0145b2;
   align-items: center;
 }
 

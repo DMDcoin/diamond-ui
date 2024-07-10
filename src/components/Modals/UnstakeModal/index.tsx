@@ -29,7 +29,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   }, [userWallet.myAddr, pool.stakingAddress]);
 
   useEffect(() => {
-    fetchWithdrawableAmounts();
+    if (pool.stakingAddress) fetchWithdrawableAmounts();
   }, [pool]);
 
   useEffect(() => {

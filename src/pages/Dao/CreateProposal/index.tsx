@@ -109,8 +109,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
     try {
       if (proposalType === 'open') {
-        console.log({openProposalFields})
-        if (openProposalFields.length == 0) {
+        if (!openProposalFields.some(item => item.target !== "" || item.amount !== "")) {
           targets = ['0x0000000000000000000000000000000000000000'];
           values = ["0"];
           calldatas = ["0x"];
@@ -133,9 +132,16 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             else return field.contractAddress;
           });
           values = targets.map(() => "0");
+
+          // There is no way to verify without abi if the calldata is valid
+          // hence we just check if it is not empty
           calldatas = contractUpgradeFields.map((field, i) => {
-            return field.contractCalldata;
-          });          
+            let calldata = field.contractCalldata;
+            if (!calldata || calldata.trim().length === 0 || calldata === "0x" || calldata === "0" || calldata === "0x0") {
+              throw new Error(`Invalid Transaction ${i + 1} Contract Calldata`);
+            }
+            return calldata;
+          });         
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData;
         let contractAddress;
@@ -159,8 +165,12 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         values = ["0"];
         calldatas = [encodedCallData as string];
       }
+    } catch(err: any) {
+      return toast.error(err.message);
+    }
 
-      const proposalId = await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description);
+    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description)
+    .then((proposalId) => {
       daoContext.getActiveProposals().then(async () => {
         if (proposalId) {
           const proposalDetails = await daoContext.getProposalDetails(proposalId);
@@ -168,11 +178,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         }
       });
       startTransition(() => {navigate('/dao')});
-    } catch(err: any) {
-      if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
-        toast.error(err.message);
-      }
-    }
+    }).catch((err) => {});
   }
 
   const getEpcContractValue = async (contractName: string, methodName: string) => {

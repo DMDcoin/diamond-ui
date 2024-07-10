@@ -85,18 +85,12 @@ const ProposalsTable = (props: TableProps) => {
 
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleProposalFinalization = async (proposalId: string) => {
-    try {
-      daoContext.finalizeProposal(proposalId)
-    } catch (error) {}
   }
 
   return (
     <div className={styles.tableContainer}>
       <div>
-        <table className={styles.proposalsTable}>
+        <table className={styles.styledTable}>
           <thead>
             <tr>
               {defaultCoulmns.map((column: string, key: number) => (
@@ -107,23 +101,23 @@ const ProposalsTable = (props: TableProps) => {
           <tbody>
             {currentItems.map((proposal: any, key: number) => {
               return (
-                <tr className={styles.tr} key={key}>
-                  <td className={styles.td}>
+                <tr className={styles.tableBodyRow} key={key} onClick={() => handleDetailsClick(proposal.id)}>
+                  <td>
                     {
                       proposal.timestamp || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.proposer || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.title || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.proposalType || (<div className={styles.loader}></div>)
                     }
@@ -131,7 +125,7 @@ const ProposalsTable = (props: TableProps) => {
 
                   {
                     defaultCoulmns.length > 0 && (
-                      <td className={styles.td}>
+                      <td>
                         {
                           daoContext.getStateString(proposal.state) !== 'Unknown' ? daoContext.getStateString(proposal.state) : (<div className={styles.loader}></div>)
                         }
@@ -141,24 +135,12 @@ const ProposalsTable = (props: TableProps) => {
 
                   <td>
                     {proposal.state === "3" ? (
-                      <button
-                        onClick={(e) => handleProposalFinalization(proposal.id)}
-                      >
+                      <button className={styles.tableButton}>
                         Needs Finalization
                       </button>
                     ) : (
                       <></>
                     )}
-                  </td>
-
-                  <td className={styles.td}>
-                    {
-                      proposal.description ? (
-                        <button onClick={() => handleDetailsClick(proposal.id)}>
-                          Details
-                        </button>
-                      ) : (<div className={styles.loader}></div>)
-                    }
                   </td>
                 </tr>
               );
