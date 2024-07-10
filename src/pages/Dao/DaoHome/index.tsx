@@ -16,6 +16,7 @@ const DaoHome: React.FC<DaoProps> = () => {
   const stakingContext = useStakingContext();
   
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     try {
@@ -54,38 +55,34 @@ const DaoHome: React.FC<DaoProps> = () => {
                 %
               </span>
             </p>
-
-            <input
-              type="text"
-              placeholder="Search"
-              className={styles.daoSearch}
-              onChange={(e) => setFilterQuery(e.target.value)}
-            />
           </div>
 
           <DaoPhaseBanner />
         </div>
 
-        <div className={styles.myDaoProposals}>
-          <h2>My Proposals</h2>
-          <div>
-            <ProposalsTable
-              data={daoContext.activeProposals}
-              userWallet={web3Context.userWallet}
-              handleDetailsClick={handleDetailsClick}
-              getStateString={daoContext.getStateString}
-              filterQuery={filterQuery}
-            />
-          </div>
-        </div>
-
         <div className={styles.allDaoProposals}>
-          <h2>All Proposals</h2>
+          <h2>Active Proposals</h2>
+
+            <div className={styles.filterContainer}>
+              <input
+                type="text"
+                placeholder="Search "
+                className={styles.daoSearch}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
+                  <option value="">All</option>
+                  <option value="myProposals">My proposals</option>
+              </select>
+            </div>
+
           <div>
             <ProposalsTable
               data={daoContext.activeProposals}
               handleDetailsClick={handleDetailsClick}
               getStateString={daoContext.getStateString}
+              searchQuery={searchQuery}
               filterQuery={filterQuery}
             />
           </div>

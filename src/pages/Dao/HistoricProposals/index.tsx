@@ -16,6 +16,7 @@ const HistoricProposals = () => {
   
   const [fetching, setFetching] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterFinalize, setFilterFinalize] = useState<boolean>(true);
   const [indexingStatus, setIndexingStatus] = useState<string | null>(
     "Indexing: Fetching historic proposals count"
@@ -45,10 +46,6 @@ const HistoricProposals = () => {
     }
   }, [daoContext.allDaoProposals]);
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterQuery(event.target.value);
-  }
-
   return (
     <section className="section">
         <div className={styles.sectionContainer + " sectionContainer"}>
@@ -60,11 +57,12 @@ const HistoricProposals = () => {
             <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
             <div className={styles.filterContainer}>
-              <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+              <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setSearchQuery(e.target.value)}/>
 
-              <select className={styles.historicProposalsSelect} onChange={handleFilterChange}>
+              <select className={styles.historicProposalsSelect} onChange={e => setFilterQuery(e.target.value)}>
                 <option value="">All</option>
                 <option value="unfinalized">Unfinalized</option>
+                <option value="myProposals">My proposals</option>
               </select>
             </div>
 
@@ -78,6 +76,7 @@ const HistoricProposals = () => {
               data={daoContext.allDaoProposals}
               handleDetailsClick={handleDetailsClick}
               getStateString={daoContext.getStateString}
+              searchQuery={searchQuery}
               filterQuery={filterQuery}
               columns={["Result"]}
             />

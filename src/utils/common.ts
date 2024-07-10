@@ -84,3 +84,29 @@ export const requestPublicKeyMetamask = async (web3: any, address: string) => {
 
   return publicKeyHex;
 }
+
+/**
+ * Determines the number of decimal places in a given value.
+ * @param {string|number} value - The value to check.
+ * @returns {number} - The number of decimal places.
+ */
+export const getNumberOfDecimals = (value: string | number): number => {
+  // Convert to string if it's a number
+  if (typeof value === 'number') {
+    value = value.toString();
+  }
+
+  // Remove any leading zeros
+  value = value.replace(/^0+/, '');
+
+  const strLength = value.length;
+
+  // Interpret based on the number of trailing zeros
+  if (strLength >= 18) {
+    return 18;
+  } else if (strLength >= 9) {
+    return 9;
+  } else {
+    return 1;
+  }
+}

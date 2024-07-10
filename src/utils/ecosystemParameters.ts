@@ -17,7 +17,7 @@ export const EcosystemParameters: EcosystemParameters = {
   "Staking": {
     "Delegator Min. Stake": {
       getter: "delegatorMinStake()",
-      setter: "setDelegatorMinStake(uin256)",
+      setter: "setDelegatorMinStake(uint256)",
       params: [],
       value: undefined
     },
@@ -26,24 +26,24 @@ export const EcosystemParameters: EcosystemParameters = {
   "Tx Permission": {
     "Minimum Gas Price": {
       getter: "minimumGasPrice()",
-      setter: "setMinimumGasPrice(uin256)",
+      setter: "setMinimumGasPrice(uint256)",
       params: [],
       value: undefined
     },
     "Block Gas Limit": {
       getter: "blockGasLimit()",
-      setter: "setBlockGasLimit(uin256)",
+      setter: "setBlockGasLimit(uint256)",
       params: [],
       value: undefined
     },
   },
 
-  "Block Reward": {
-    "Governance Pot Share Nominator": {
-      getter: "governancePotShareNominator()",
-      setter: "setGovernancePotShareNominator(uin256)",
-      params: [],
-      value: undefined
-    },
-  }
+  // "Block Reward": {
+  //   "Governance Pot Share Nominator": {
+  //     getter: "governancePotShareNominator()",
+  //     setter: "setGovernancePotShareNominator(uint256)",
+  //     params: [],
+  //     value: undefined
+  //   },
+  // }
 };

@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
-import { isValidAddress } from "../../../utils/common";
+import { getFunctionSelector, isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -192,22 +192,11 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   }
 
   const loadEpcData = async (contractName: string, methodName: string) => {
-    // const contract = getContractByName(contractName);
-    // const functionSelector = getFunctionSelector(EcosystemParameters[contractName][methodName].setter);
-    // const parameterData = await (contract?.methods as any)['allowedParameterRange'](functionSelector).call();
-    // setEpcParamRange(parameterData.params);
-    setEpcParamRange([
-      "50000000000000000000",
-      "100000000000000000000",
-      "150000000000000000000",
-      "200000000000000000000",
-      "250000000000000000000",
-      "300000000000000000000",
-      "350000000000000000000",
-      "400000000000000000000",
-      "450000000000000000000",
-      "500000000000000000000",
-    ]);
+    try {
+      const contract = getContractByName(contractName);
+      const parameterData = await (contract?.methods as any)['getAllowedParamsRange'](EcosystemParameters[contractName][methodName].setter).call();
+      setEpcParamRange(parameterData.range.length ? parameterData.range : ['0', '0']);
+    } catch(err) {}
   }
 
   return (

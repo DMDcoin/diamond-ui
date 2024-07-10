@@ -47,6 +47,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
+    // localStorage.clear();
     if (web3Context.web3Initialized) {
       initialize();
     }

@@ -54,7 +54,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
       setMyVote(await daoContext.getMyVote(proposalId));
     }
 
-    web3Context.showLoader(true, "Fetching proposal details");
     const storedProposals = daoContext.getCachedProposals();
     const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
     if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
@@ -88,7 +87,10 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }, [daoContext, navigate, web3Context]);
 
   useEffect(() => {
-    if (proposalId) getProposalDetails(proposalId);
+    if (proposalId) {
+      web3Context.showLoader(true, "Fetching proposal details");
+      getProposalDetails(proposalId)
+    }
   }, [web3Context.userWallet.myAddr, daoContext.daoPhase]);
 
   const handleDismissProposal = async () => {

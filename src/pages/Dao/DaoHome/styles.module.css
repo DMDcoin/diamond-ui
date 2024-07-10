@@ -6,6 +6,11 @@ h2, span {
   color: #0145b2;
 }
 
+.allDaoProposals > h2 {
+  padding: 30px 0px 40px 0px;
+
+}
+
 .sectionContainer > * {
   width: 100%;
 }
@@ -45,6 +50,8 @@ h2, span {
 }
 
 .daoInfoContainer > div:nth-child(1) {
+  gap: 1rem;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -85,4 +92,29 @@ h2, span {
   .daoInfoContainer > div {
     width: 100%;
   }
+}
+
+.filterContainer {
+  gap: 0.5rem;
+  display: flex;
+  max-width: 400px;
+  align-self: start;
+  text-align: center;
+  margin-bottom: 5px;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.filterContainer label {
+  margin-right: 10px;
+}
+
+.filterContainer select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
 }
