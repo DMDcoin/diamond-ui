@@ -18,6 +18,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = () => {
         <p>{daoContext.phaseEndTimer} till the end</p>
         {daoContext.daoPhase?.phase === "0" && (
             <button
+            className="primaryBtn"
             onClick={() => {
                 startTransition(() => {
                 navigate("/dao/create");

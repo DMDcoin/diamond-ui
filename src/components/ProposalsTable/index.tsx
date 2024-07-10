@@ -128,11 +128,11 @@ const ProposalsTable = (props: TableProps) => {
 
                   <td>
                     {proposal.state === "3" ? (
-                      <button className={styles.tableButton}>
+                      <button className="primaryBtn">
                         Needs Finalization
                       </button>
                     ) : (
-                      <button className={styles.tableButtonHidden}></button>
+                      <button className="primaryBtnHidden"></button>
                     )}
                   </td>
                 </tr>

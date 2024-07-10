@@ -210,7 +210,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                         <td>
                                             { 
                                                 BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) ? (
-                                                    <button className={styles.tableButton} onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
+                                                    <button className="primaryBtn" onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
                                                 ) : (
                                                     BigNumber(pool.myStake).isGreaterThan(0) && (
                                                         <UnstakeModal buttonText="Unstake" pool={pool} />

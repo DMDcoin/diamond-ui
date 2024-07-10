@@ -88,7 +88,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                             <UnstakeModal buttonText="Unstake" pool={myPool} />
                                                                             {
                                                                                 myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
-                                                                                    <button className={styles.tableButton} onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
+                                                                                    <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
                                                                             }
                                                                             {
                                                                                 myPool && !myPool.isCurrentValidator && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
@@ -113,7 +113,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                     </div>
                                                                 )
                                                             }
-                                                            <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                                                            <a className="primaryBtn" onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -324,7 +324,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                             </table>
                         </div>
                         
-                        <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                        <a className="primaryBtn" onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
                     </div>
                 </div>
             </section>

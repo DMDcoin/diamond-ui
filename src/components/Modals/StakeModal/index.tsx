@@ -73,7 +73,7 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   return (
     <>
-      <button className={styles.tableButton} onClick={(e) => { e.stopPropagation(); openModal(); }}>
+      <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
         {buttonText}
       </button>
 

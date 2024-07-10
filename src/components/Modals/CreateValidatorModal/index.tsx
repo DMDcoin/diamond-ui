@@ -59,7 +59,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
 
   return (
     <>
-      <button className={styles.tableButton} onClick={openModal}>
+      <button className="primaryBtn" onClick={openModal}>
         {buttonText}
       </button>
 
