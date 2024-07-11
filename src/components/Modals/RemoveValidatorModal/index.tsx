@@ -47,14 +47,10 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    removePool(pool).then((success: boolean) => {
+    removePool(pool, BigNumber(pool.ownStake).dividedBy(10**18)).then((success: boolean) => {
       closeModal();
     });
   }
-
-  useEffect(() => {
-    console.log({pool})
-  }, [pool])
 
   return (
     <>

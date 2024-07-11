@@ -35,7 +35,7 @@ interface StakingContextProps {
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
-  removePool: (pool: Pool) => Promise<boolean>;
+  removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
@@ -99,7 +99,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr));
     if (pools.filter(pool => pool.miningAddress).length == pools.length) {
       console.log("[INFO] Updating stake amounts");
       updateStakeAmounts();
@@ -167,6 +166,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
+      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
       return newPools;
     });
   }
@@ -270,7 +270,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }
       )
       
-    }, 300000)); // 10 seconds
+    }, 300000)); // 5 minutes
   }
 
   const handleNewBlock = async (blockNumber: number) : Promise<void> => {
@@ -644,7 +644,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const removePool = async (pool: Pool): Promise<boolean> => {
+  const removePool = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    const amountInWei = web3.utils.toWei(amount.toString());
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
     const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
 
@@ -657,7 +658,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       try {
         let receipt;
         showLoader(true, `Removing Pool 💎`);
-        receipt = await contractsManager.stContract.methods.removeMyPool().send(txOpts);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
         setPools(prevPools => {
           const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
           updateStakeAmounts(updatedPools);
