@@ -43,11 +43,11 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     };
   }, [isOpen]);
 
-  const handleWithdrawStake = async (e: FormEvent) => {
+  const handleRemovePool = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    removePool(pool, BigNumber(pool.ownStake).dividedBy(10**18)).then((success: boolean) => {
+    removePool(pool).then((success: boolean) => {
       closeModal();
     });
   }
@@ -70,7 +70,7 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             </button>
             <h3>{`Remove node ${pool.stakingAddress}`}</h3>
 
-            <form className={styles.form} onSubmit={handleWithdrawStake}>
+            <form className={styles.form} onSubmit={handleRemovePool}>
 
               <input
                 type="number"
