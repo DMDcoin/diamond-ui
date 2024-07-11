@@ -21,13 +21,13 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface Sacrifice extends BaseContract {
+export interface TransferUtils extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Sacrifice;
-  clone(): Sacrifice;
+  ): TransferUtils;
+  clone(): TransferUtils;
   methods: {};
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

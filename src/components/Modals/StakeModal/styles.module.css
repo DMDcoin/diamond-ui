@@ -33,17 +33,17 @@
 }
 
 .form {
-  gap: 2rem;
   display: flex;
   margin-top: 20px;
+  text-align: left;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  text-align: left;
 }
 
 .form > span {
   font-size: 14px;
+  margin-top: 10px;
   align-self: flex-start;
 }
 
@@ -79,34 +79,15 @@ input:focus {
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  margin-top: 10px;
 }
 
 .formSubmit:hover {
   background-color: #0056b3;
 }
 
-.tableButton {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  background-color: rgb(245, 247, 250);
-}
-
-.tableButton:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.tableButton .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.tableButton .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.stakeWarning {
+  color: red;
+  font-size: 14px;
+  text-align: center;
 }

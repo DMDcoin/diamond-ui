@@ -42,11 +42,11 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isAvailable);
+        poolsCopy = poolsCopy.filter(pool => pool.isActive);
     } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
     } else if (filter === 'invalid') {
-        poolsCopy = poolsCopy.filter(pool => Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000));
+        poolsCopy = poolsCopy.filter(pool => !pool.isCurrentValidator && !pool.isActive);
     } else if (filter === 'stakedOn') {
         poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
     }
@@ -143,8 +143,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             <th></th>
                             <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
                                 Status
-                                <Tooltip text="Active candidate is part of the active set, Valid - not part of the active set, but can be elected,
-                                Unavailable - a candidate, who is invalid." />
+                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is banned or inactive for some period of time" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>
@@ -157,7 +156,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             </th>
                             <th className={getClassNamesFor('votingPower')} onClick={() => requestSort('votingPower')}>
                                 Voting Power
-                                <Tooltip text="Amount of coins staked by the validator candidate to the whole amount of coins in staking mode" />
+                                <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('score')} onClick={() => requestSort('score')}>
@@ -185,22 +184,22 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 </td>
                                 <td className={pool?.isCurrentValidator ? styles.poolActive : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
                                     {typeof pool.isCurrentValidator === 'boolean'
-                                        ? (pool.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Valid"))
+                                        ? pool.isCurrentValidator ? "Active" : pool.isActive ? "Valid" : (Number(pool.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Invalid" : "Invalid")
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toString() + " DMD" : (<div className={styles.loader}></div>)
+                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(0) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
-                                    {pool.votingPower && pool.votingPower.toString() !== 'NaN'
+                                    {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
                                         ? `${pool.votingPower.toString()} %`
                                         : <div className={styles.loader}></div>}
                                 </td>
                                 <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
                                 {
                                     userWallet.myAddr ? <>
-                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toString() : (<div className={styles.loader}></div>) } DMD</td>
+                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
                                                 pool.isActive && (
@@ -211,7 +210,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                         <td>
                                             { 
                                                 BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) ? (
-                                                    <button className={styles.tableButton} onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
+                                                    <button className="primaryBtn" onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
                                                 ) : (
                                                     BigNumber(pool.myStake).isGreaterThan(0) && (
                                                         <UnstakeModal buttonText="Unstake" pool={pool} />
