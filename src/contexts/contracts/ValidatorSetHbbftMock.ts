@@ -39,6 +39,18 @@ export type ReportedMalicious = ContractEventLog<{
   1: string;
   2: string;
 }>;
+export type SetBanDuration = ContractEventLog<{
+  _value: string;
+  0: string;
+}>;
+export type SetMaxValidators = ContractEventLog<{
+  _count: string;
+  0: string;
+}>;
+export type SetValidatorInactivityThreshold = ContractEventLog<{
+  _value: string;
+  0: string;
+}>;
 export type ValidatorAvailable = ContractEventLog<{
   validator: string;
   timestamp: string;
@@ -86,6 +98,8 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     ): NonPayableTransactionObject<boolean>;
 
     finalizeChange(): NonPayableTransactionObject<void>;
+
+    forceFinalizeNewValidators(): NonPayableTransactionObject<void>;
 
     getCurrentValidatorsCount(): NonPayableTransactionObject<string>;
 
@@ -239,8 +253,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
 
     setStakingContract(_address: string): NonPayableTransactionObject<void>;
 
-    setSystemAddress(_address: string): NonPayableTransactionObject<void>;
-
     setValidatorAvailableSince(
       _validator: string,
       _timestamp: number | string | BN
@@ -290,6 +302,26 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       cb?: Callback<ReportedMalicious>
     ): EventEmitter;
 
+    SetBanDuration(cb?: Callback<SetBanDuration>): EventEmitter;
+    SetBanDuration(
+      options?: EventOptions,
+      cb?: Callback<SetBanDuration>
+    ): EventEmitter;
+
+    SetMaxValidators(cb?: Callback<SetMaxValidators>): EventEmitter;
+    SetMaxValidators(
+      options?: EventOptions,
+      cb?: Callback<SetMaxValidators>
+    ): EventEmitter;
+
+    SetValidatorInactivityThreshold(
+      cb?: Callback<SetValidatorInactivityThreshold>
+    ): EventEmitter;
+    SetValidatorInactivityThreshold(
+      options?: EventOptions,
+      cb?: Callback<SetValidatorInactivityThreshold>
+    ): EventEmitter;
+
     ValidatorAvailable(cb?: Callback<ValidatorAvailable>): EventEmitter;
     ValidatorAvailable(
       options?: EventOptions,
@@ -324,6 +356,30 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     event: "ReportedMalicious",
     options: EventOptions,
     cb: Callback<ReportedMalicious>
+  ): void;
+
+  once(event: "SetBanDuration", cb: Callback<SetBanDuration>): void;
+  once(
+    event: "SetBanDuration",
+    options: EventOptions,
+    cb: Callback<SetBanDuration>
+  ): void;
+
+  once(event: "SetMaxValidators", cb: Callback<SetMaxValidators>): void;
+  once(
+    event: "SetMaxValidators",
+    options: EventOptions,
+    cb: Callback<SetMaxValidators>
+  ): void;
+
+  once(
+    event: "SetValidatorInactivityThreshold",
+    cb: Callback<SetValidatorInactivityThreshold>
+  ): void;
+  once(
+    event: "SetValidatorInactivityThreshold",
+    options: EventOptions,
+    cb: Callback<SetValidatorInactivityThreshold>
   ): void;
 
   once(event: "ValidatorAvailable", cb: Callback<ValidatorAvailable>): void;

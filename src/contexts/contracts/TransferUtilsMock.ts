@@ -21,32 +21,20 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export type NewOwner = ContractEventLog<{
-  old: string;
-  current: string;
-  0: string;
-  1: string;
-}>;
-
-export interface Owned extends BaseContract {
+export interface TransferUtilsMock extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Owned;
-  clone(): Owned;
+  ): TransferUtilsMock;
+  clone(): TransferUtilsMock;
   methods: {
-    owner(): NonPayableTransactionObject<string>;
-
-    setOwner(_new: string): NonPayableTransactionObject<void>;
+    transferNative(
+      recipient: string,
+      amount: number | string | BN
+    ): PayableTransactionObject<void>;
   };
   events: {
-    NewOwner(cb?: Callback<NewOwner>): EventEmitter;
-    NewOwner(options?: EventOptions, cb?: Callback<NewOwner>): EventEmitter;
-
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
-
-  once(event: "NewOwner", cb: Callback<NewOwner>): void;
-  once(event: "NewOwner", options: EventOptions, cb: Callback<NewOwner>): void;
 }

@@ -7,9 +7,7 @@ import { useWeb3Context } from '../../contexts/Web3Context';
 
 interface TableProps {
   data: any[];
-  userWallet?: {
-    myAddr: string;
-  };
+  searchQuery?: string;
   filterQuery?: string;
   handleDetailsClick: (id: string) => void;
   getStateString: (state: string) => string;
@@ -20,7 +18,7 @@ interface TableProps {
 const ProposalsTable = (props: TableProps) => {
   const {
     data,
-    userWallet,
+    searchQuery,
     filterQuery,
     handleDetailsClick,
     getStateString,
@@ -28,6 +26,7 @@ const ProposalsTable = (props: TableProps) => {
     columns = []
   } = props;
 
+  const web3Context = useWeb3Context();
   const daoContext = useDaoContext();
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,58 +44,40 @@ const ProposalsTable = (props: TableProps) => {
   ]
 
   useEffect(() => {
+    let filteredData: any[] = data;
     const lastItemIndex = currentPage * itemsPerPage;
     const firstItemIndex = lastItemIndex - itemsPerPage;
 
     if (filterQuery) {
-      let updatedData: any[] = [];
       if (filterQuery === 'unfinalized') {
-        updatedData = data.filter((proposal: Proposal) => proposal.state === "3");
-      } else {
-        updatedData = data.filter((proposal: Proposal) =>
-          proposal.proposer.toLowerCase().match(filterQuery.toLowerCase()) ||
-          proposal.description.toLowerCase().match(filterQuery.toLowerCase()) ||
-          getStateString(proposal.state).toLowerCase().match(filterQuery.toLowerCase()) ||
-          proposal.timestamp.toLowerCase().match(filterQuery.toLowerCase())
-        );
+        filteredData = filteredData.filter((proposal: Proposal) => proposal.state === "3");
+      } else if (filterQuery === 'myProposals') {
+        filteredData = filteredData.filter((proposal: Proposal) => proposal.proposer === web3Context.userWallet?.myAddr);
       }
-
-      if (userWallet) {
-        updatedData = updatedData.filter(
-          (proposal: Proposal) => proposal.proposer === userWallet.myAddr
-        );
-      }
-
-      setCurrentItems(updatedData.slice(firstItemIndex, lastItemIndex))
-      setTotalPages(Math.ceil(updatedData.length / itemsPerPage));
-      setFilteredData(updatedData);
-    } else {
-      let dataCopy = data;
-      if (userWallet) {
-        dataCopy = dataCopy.filter(
-          (proposal: Proposal) => proposal.proposer === userWallet.myAddr && userWallet.myAddr !== ""
-        );
-      }
-      setCurrentItems(dataCopy.slice(firstItemIndex, lastItemIndex))
-      setTotalPages(Math.ceil(dataCopy.length / itemsPerPage));
-      setFilteredData(dataCopy);
     }
-  }, [data, filterQuery, currentPage, userWallet]);
+
+    if (searchQuery) {
+      filteredData = filteredData.filter((proposal: Proposal) =>
+        proposal.proposer.toLowerCase().match(searchQuery.toLowerCase()) ||
+        proposal.description.toLowerCase().match(searchQuery.toLowerCase()) ||
+        getStateString(proposal.state).toLowerCase().match(searchQuery.toLowerCase()) ||
+        proposal.timestamp.toLowerCase().match(searchQuery.toLowerCase())
+      );
+    }
+
+    setCurrentItems(filteredData.slice(firstItemIndex, lastItemIndex))
+    setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
+    setFilteredData(filteredData);
+  }, [data, filterQuery, searchQuery, currentPage, web3Context.userWallet.myAddr]);
 
   const handleChangePage = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleProposalFinalization = async (proposalId: string) => {
-    try {
-      daoContext.finalizeProposal(proposalId)
-    } catch (error) {}
   }
 
   return (
     <div className={styles.tableContainer}>
       <div>
-        <table>
+        <table className={styles.styledTable}>
           <thead>
             <tr>
               {defaultCoulmns.map((column: string, key: number) => (
@@ -105,25 +86,31 @@ const ProposalsTable = (props: TableProps) => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((proposal: any, key: number) => {
+            {!currentItems.length ? 
+              <tr>
+                <td colSpan={defaultCoulmns.length} className={styles.noData}>
+                  No proposals found
+                </td>
+              </tr>
+            : currentItems.map((proposal: any, key: number) => {
               return (
-                <tr className={styles.tr} key={key}>
-                  <td className={styles.td}>
+                <tr className={styles.tableBodyRow} key={key} onClick={() => handleDetailsClick(proposal.id)}>
+                  <td>
                     {
                       proposal.timestamp || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.proposer || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.title || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td className={styles.td}>
+                  <td>
                     {
                       proposal.proposalType || (<div className={styles.loader}></div>)
                     }
@@ -131,7 +118,7 @@ const ProposalsTable = (props: TableProps) => {
 
                   {
                     defaultCoulmns.length > 0 && (
-                      <td className={styles.td}>
+                      <td>
                         {
                           daoContext.getStateString(proposal.state) !== 'Unknown' ? daoContext.getStateString(proposal.state) : (<div className={styles.loader}></div>)
                         }
@@ -141,24 +128,12 @@ const ProposalsTable = (props: TableProps) => {
 
                   <td>
                     {proposal.state === "3" ? (
-                      <button
-                        onClick={(e) => handleProposalFinalization(proposal.id)}
-                      >
+                      <button className="primaryBtn">
                         Needs Finalization
                       </button>
                     ) : (
-                      <></>
+                      <button className="primaryBtnHidden"></button>
                     )}
-                  </td>
-
-                  <td className={styles.td}>
-                    {
-                      proposal.description ? (
-                        <button onClick={() => handleDetailsClick(proposal.id)}>
-                          Details
-                        </button>
-                      ) : (<div className={styles.loader}></div>)
-                    }
                   </td>
                 </tr>
               );

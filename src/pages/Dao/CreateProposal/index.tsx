@@ -4,7 +4,7 @@ import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
-import { isValidAddress } from "../../../utils/common";
+import { getFunctionSelector, isValidAddress } from "../../../utils/common";
 import Navigation from "../../../components/Navigation";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -103,22 +103,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const createProposal = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (
-      stakingContext.pools.filter(
-        (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
-      ).length <= 0
-    ) {
-      toast.warning(`Only validator candidates can create a proposal`);
-      return;
-    }
-
     let targets: string[] = [];
     let values: string[] = [];
     let calldatas: string[] = [];
 
     try {
       if (proposalType === 'open') {
-        if (targets.length == 0) {
+        if (!openProposalFields.some(item => item.target !== "" || item.amount !== "")) {
           targets = ['0x0000000000000000000000000000000000000000'];
           values = ["0"];
           calldatas = ["0x"];
@@ -127,9 +118,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             if (!isValidAddress(field.target)) throw new Error(`Invalid Transaction ${i+1} payout address`);
             else return field.target;
           });
-          values = openProposalFields.map((field, i) => {        
-            if (!(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
-            else return field.amount;
+          values = openProposalFields.map((field, i) => {
+            if (!field.amount || !(Number(field.amount) >= 0)) throw new Error(`Invalid Transaction ${i+1} payout amount`);
+            else return BigNumber(field.amount).multipliedBy(10**18).toString();
           });
           calldatas = openProposalFields.map((field) => {
             return '0x'
@@ -141,9 +132,16 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             else return field.contractAddress;
           });
           values = targets.map(() => "0");
+
+          // There is no way to verify without abi if the calldata is valid
+          // hence we just check if it is not empty
           calldatas = contractUpgradeFields.map((field, i) => {
-            return field.contractCalldata;
-          });          
+            let calldata = field.contractCalldata;
+            if (!calldata || calldata.trim().length === 0 || calldata === "0x" || calldata === "0" || calldata === "0x0") {
+              throw new Error(`Invalid Transaction ${i + 1} Contract Calldata`);
+            }
+            return calldata;
+          });         
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData;
         let contractAddress;
@@ -167,8 +165,12 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         values = ["0"];
         calldatas = [encodedCallData as string];
       }
+    } catch(err: any) {
+      return toast.error(err.message);
+    }
 
-      const proposalId = await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description);
+    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description)
+    .then((proposalId) => {
       daoContext.getActiveProposals().then(async () => {
         if (proposalId) {
           const proposalDetails = await daoContext.getProposalDetails(proposalId);
@@ -176,11 +178,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         }
       });
       startTransition(() => {navigate('/dao')});
-    } catch(err: any) {
-      if (err.message && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
-        toast.error(err.message);
-      }
-    }
+    }).catch((err) => {});
   }
 
   const getEpcContractValue = async (contractName: string, methodName: string) => {
@@ -194,22 +192,11 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   }
 
   const loadEpcData = async (contractName: string, methodName: string) => {
-    // const contract = getContractByName(contractName);
-    // const functionSelector = getFunctionSelector(EcosystemParameters[contractName][methodName].setter);
-    // const parameterData = await (contract?.methods as any)['allowedParameterRange'](functionSelector).call();
-    // setEpcParamRange(parameterData.params);
-    setEpcParamRange([
-      "50000000000000000000",
-      "100000000000000000000",
-      "150000000000000000000",
-      "200000000000000000000",
-      "250000000000000000000",
-      "300000000000000000000",
-      "350000000000000000000",
-      "400000000000000000000",
-      "450000000000000000000",
-      "500000000000000000000",
-    ]);
+    try {
+      const contract = getContractByName(contractName);
+      const parameterData = await (contract?.methods as any)['getAllowedParamsRange'](EcosystemParameters[contractName][methodName].setter).call();
+      setEpcParamRange(parameterData.range.length ? parameterData.range : ['0', '0']);
+    } catch(err) {}
   }
 
   return (

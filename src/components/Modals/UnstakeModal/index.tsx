@@ -14,10 +14,12 @@ interface ModalProps {
 const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const { unstake, setPools } = useStakingContext();
   const [unstakeAmount, setUnstakeAmount] = useState(0);
   const [ownPool, setOwnPool] = useState<boolean>(false);
   const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
+  const [canBeOrderedAmount, setCanBeOrderedAmount] = useState<BigNumber>(new BigNumber(0));
+  const [canBeUnstakedAmount, setCanBeUnstakedAmount] = useState<BigNumber>(new BigNumber(0));
+  const { unstake, setPools, getWithdrawableAmounts, candidateMinStake, delegatorMinStake } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -25,6 +27,10 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   useEffect(() => {
     setOwnPool(pool.stakingAddress === userWallet.myAddr);
   }, [userWallet.myAddr, pool.stakingAddress]);
+
+  useEffect(() => {
+    if (pool.stakingAddress) fetchWithdrawableAmounts();
+  }, [pool]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -50,6 +56,13 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     };
   }, [isOpen]);
 
+  const fetchWithdrawableAmounts = async () => {
+    getWithdrawableAmounts(pool).then((amounts: any) => {
+      setCanBeUnstakedAmount(amounts.maxWithdrawAmount);
+      setCanBeOrderedAmount(amounts.maxWithdrawOrderAmount);
+    });
+  }
+
   const handleWithdrawStake = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
@@ -70,6 +83,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             }
             return p;
           });
+          fetchWithdrawableAmounts();
           return updatedPools as Pool[];
         });
       }
@@ -78,9 +92,25 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     });
   }
 
+  const getActionHeading = () => {
+    if (ownPool && canBeOrderedAmount.isZero()) {
+      return "Unstake DMD";
+    } else if (!ownPool && canBeOrderedAmount.isZero()) {
+      return `Unstake from ${pool.stakingAddress}`;
+    } else if (ownPool && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
+      return "Unstake DMD";
+    } else if (canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
+      return `Unstake DMD from ${pool.stakingAddress}`;
+    } else if (ownPool && !canBeOrderedAmount.isZero()) {
+      return "Order DMD";
+    } else {
+      return `Order DMD from ${pool.stakingAddress}`;
+    }
+  };
+
   return (
     <>
-      <button className={styles.tableButton} onClick={(e) => { e.stopPropagation(); openModal(); }}>
+      <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
         {buttonText}
       </button>
 
@@ -90,16 +120,33 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
             </button>
-            <h3>{ ownPool ? "Unstake DMD" : `Unstake from ${pool.stakingAddress}` }</h3>
+            <h3>{getActionHeading()}</h3>
 
             <form className={styles.form} onSubmit={handleWithdrawStake}>
-              <span>
-                Please enter the amount you want to unstake
-              </span>
+
+              {canBeUnstakedAmount.isZero() ? (
+                <span>
+                  Amount to be ordered:{" "}
+                  {canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
+                </span>
+              ) : (
+                <span>
+                  Amount available to be unstaked:{" "}
+                  {canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
+                </span>
+              )}
 
               <input
-                min={1}
-                max={pool.myStake.toNumber()}
+                min={
+                  canBeUnstakedAmount.isZero()
+                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                    : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                }
+                max={
+                  canBeUnstakedAmount.isZero()
+                  ? Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                  : Math.max(0, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                }
                 type="number"
                 value={unstakeAmount}
                 className={styles.formInput}
@@ -108,46 +155,33 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                pool.isCurrentValidator && ownPool ? (
-                  <p className={styles.unstakeWarning}>
-                    Please note that you are part of current Epoch's validators. Unstaked coins will need to be claimed by clicking on the "Claim" button after the current Epoch ends.
-                  </p>
-                ) : pool.isCurrentValidator && (
-                  <p className={styles.unstakeWarning}>
-                    Please note, that this node is a part of current Epoch validators set. We will prepare the coins, but you need to claim them by clicking 'Claim' as soon as the Epoch ends
-                  </p>
-                )
+                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
               }
 
-              {
-                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThan(10000) && pool.delegators.length > 0 && (
+              {pool.isCurrentValidator && canBeUnstakedAmount.isGreaterThan(0) &&
+                canBeOrderedAmount.isGreaterThan(0) ? (
                   <p className={styles.unstakeWarning}>
-                    You can't unstake from the pool as there are delegates, who
-                    staked on top. They need to unstake their coins to do the
-                    action. Please note, if you remove that pool from the
-                    candidate list, a new pool can never be setup with the same
-                    address that was used in the previous pool.
+                    Please note, that this node is a part of current Epoch
+                    validators set. You can unstake the available amount, and
+                    after that it is possible to order the coins to be claimed as
+                    soon as Epoch ends.
                   </p>
-                )
-              }
+                ) : (
+                  pool.isCurrentValidator && canBeOrderedAmount.isGreaterThan(0) && (
+                    <p className={styles.unstakeWarning}>
+                      Please note, that this node is a part of current Epoch
+                      validators set. We will prepare the coins, but you need to
+                      claim them by clicking 'Claim' as soon as the Epoch ends
+                    </p>
+                  )
+              )}
 
-              {
-                ownPool && BigNumber(pool.myStake).minus(unstakeAmount).isLessThan(10000) && (
-                  <p className={styles.unstakeWarning}>
-                    Only the entire stake from the pool is available for
-                    withdrawal. Please note, if you remove that pool from
-                    candidate list, a new pool can never be setup with the same
-                    address that was used in the previous pool.
-                  </p>
-                )
-              }
-
-              <button
-                className={styles.formSubmit}
-                type="submit"
-                disabled={ownPool && (BigNumber(pool.myStake).minus(unstakeAmount).isLessThan(10000) || !BigNumber(pool.myStake).minus(unstakeAmount).isEqualTo(0))}
-              >
-                Unstake
+              <button className={styles.formSubmit} type="submit" disabled={
+                canBeUnstakedAmount.isZero()
+                ? Math.max(0, canBeOrderedAmount.minus(ownPool ? candidateMinStake : delegatorMinStake).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+                : Math.max(0, canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+              }>
+                {canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
               </button>
             </form>
           </div>

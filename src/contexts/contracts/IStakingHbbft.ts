@@ -33,6 +33,11 @@ export interface IStakingHbbft extends BaseContract {
 
     getPoolPublicKey(_poolAddress: string): NonPayableTransactionObject<string>;
 
+    getPoolValidatorStakeAmount(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<string>;
+
     getPoolsLikelihood(): NonPayableTransactionObject<{
       0: string[];
       1: string;
@@ -67,11 +72,10 @@ export interface IStakingHbbft extends BaseContract {
 
     removePools(): NonPayableTransactionObject<void>;
 
-    rewardWasTaken(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
+    restake(
+      _poolStakingAddress: string,
+      validatorReward: number | string | BN
+    ): PayableTransactionObject<void>;
 
     setStakingEpochStartTime(
       arg0: number | string | BN
@@ -83,22 +87,17 @@ export interface IStakingHbbft extends BaseContract {
       arg2: string | number[]
     ): NonPayableTransactionObject<void>;
 
+    snapshotPoolStakeAmounts(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<void>;
+
     stakeAmount(
       arg0: string,
       arg1: string
     ): NonPayableTransactionObject<string>;
 
     stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
-
-    stakeFirstEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    stakeLastEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
 
     stakingEpoch(): NonPayableTransactionObject<string>;
 

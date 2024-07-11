@@ -1,3 +1,15 @@
+h1 {
+  color: #0145b2;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25em;
+  overflow: hidden;
+}
+
+.heroSection {
+  padding-bottom: 0px;
+}
+
 .heroContainer {
   margin-top: 2rem;
 }
@@ -26,7 +38,7 @@
 .getStartedContainer > div > button {
   height: 35px;
   width: 100px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-size: 14px;
   cursor: pointer;
   overflow: hidden;
@@ -34,7 +46,7 @@
   border-radius: 5px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  border: 2px solid #0E44B2;
+  border: 2px solid #0e44b2;
   background-color: transparent;
 }
 
@@ -57,7 +69,7 @@
 }
 
 .infoContainer > div > p {
-  color: #0E44B2;
+  color: #0e44b2;
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
@@ -66,7 +78,7 @@
 
 .infoContainer > div > p:first-of-type {
   font-size: 20px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-weight: bold;
 }
 
@@ -74,25 +86,6 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 18px;
-}
-
-.styledTableFirst > tbody > tr {
-  gap: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.styledTableFirst > tbody > tr:nth-child(1) > td:nth-child(1) {
-  display: flex;
-  flex-direction: column;
-}
-
-.styledTableFirst > tbody > tr:nth-child(1) > td:nth-child(1) > span {
-  font-size: 12px;
-}
-
-.styledTableFirst tr td:nth-child(3) {
-  text-align: end;
 }
 
 .styledTableFirst thead tr {
@@ -105,7 +98,13 @@
 
 .styledTableFirst th,
 .styledTableFirst td {
-  padding: 12px 0px;
+  padding: 12px 15px;
+  text-align: left;
+  height: 64px;
+}
+
+.styledTableFirst tbody {
+  background-color: white;
 }
 
 .styledTableFirst tbody tr {
@@ -119,35 +118,18 @@
   object-fit: cover;
 }
 
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+}
+
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) > span {
+  font-size: 12px;
+}
+
 .tableBodyRow:hover {
   cursor: pointer;
   background-color: #e6f2ff; /* Light blue */
-}
-
-.tableButton {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  background-color: rgb(245, 247, 250);
-}
-
-.tableButton:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.tableButton .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.tableButton .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .statsContainer {
@@ -156,9 +138,10 @@
 
 .loggedInBtns {
   gap: 1rem;
-  display: grid;
-  justify-content: center;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: left;
 }
 
 .loggedInBtns button {
@@ -169,6 +152,7 @@
 
 .heroSplit {
   gap: 1rem;
+  max-width: 100%;
 }
 
 .heroWrapper {
@@ -200,33 +184,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.tableButton {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  text-align: center;
-  background-color: rgb(245, 247, 250);
-}
-
-.tableButton:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.tableButton .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.tableButton .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .clientsWrapper {
@@ -284,16 +241,12 @@
 .styledTable tbody tr {
   border-bottom: 1px solid rgba(245, 247, 250, 0);
 }
+
 .styledTable img {
   border-radius: 50%;
   width: 50px;
   height: 50px;
   object-fit: cover;
-}
-
-.tableBodyRow:hover {
-  cursor: pointer;
-  background-color: #e6f2ff; /* Light blue */
 }
 
 .topValidatorsContainer {
@@ -315,4 +268,61 @@
   flex-direction: column;
   background-color: #ffffff;
   justify-content: space-between;
+}
+
+.daoPhaseBannerContainer {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+}
+
+.daoPhaseBannerContainer > div {
+  gap: 0.5rem;
+  max-width: 180px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+.daoPhaseBannerContainer > div > button {
+  display: none;
+}
+
+.daoPhaseBannerContainer > button {
+  cursor: pointer;
+  padding: 8px 16px;
+  border: 1px solid #0145b2;
+  color: #0145b2;
+  text-decoration: none;
+  border-radius: 4px;
+  background-color: rgb(245, 247, 250);
+}
+
+.daoPhaseBannerContainer > button:hover {
+  background-color: #0145b2;
+  color: white;
+}
+
+.daoPhaseBannerContainer > button .active {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+}
+
+.daoPhaseBannerContainer > button .disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.poolActive {
+  color: green;
+}
+
+.poolBanned {
+  color: red;
 }

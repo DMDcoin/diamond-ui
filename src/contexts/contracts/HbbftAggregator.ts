@@ -35,6 +35,18 @@ export interface HbbftAggregator extends BaseContract {
       [string[], string[], string[], string[], string[]]
     >;
 
+    getDelegationsData(
+      delegators: string[],
+      poolAddress: string
+    ): NonPayableTransactionObject<{
+      _delegatesData: [string, string][];
+      _ownStake: string;
+      _candidateStake: string;
+      0: [string, string][];
+      1: string;
+      2: string;
+    }>;
+
     getGlobals(): NonPayableTransactionObject<
       [
         string,
@@ -55,7 +67,9 @@ export interface HbbftAggregator extends BaseContract {
 
     getPoolsData(
       _sAs: string[]
-    ): NonPayableTransactionObject<[string, string, string][]>;
+    ): NonPayableTransactionObject<
+      [string, string, string, string, string, string[], string, string][]
+    >;
 
     getUserOrderedWithdraws(
       _user: string,

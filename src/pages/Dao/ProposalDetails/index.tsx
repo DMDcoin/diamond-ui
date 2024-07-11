@@ -1,4 +1,4 @@
-import React, { startTransition, useEffect, useState } from "react";
+import React, { startTransition, useCallback, useEffect, useState } from "react";
 
 import styles from "./styles.module.css";
 
@@ -13,13 +13,13 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
+import Tooltip from "../../../components/Tooltip";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
 
 const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const { proposalId } = useParams();
-  
   const [proposalState, setProposalState] = useState<any>([]);
   const [myVote, setMyVote] = useState<Vote>({
     timestamp: "",
@@ -47,47 +47,51 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
-  const { pools } = useStakingContext();
+  const { pools, myPool, totalDaoStake } = useStakingContext();
 
-  useEffect(() => {
-    if (proposalId) getProposalDetails(proposalId);
-  }, [web3Context.userWallet, daoContext.daoPhase]);
+  const getProposalDetails = useCallback(async (proposalId: string) => {
+    if (web3Context.userWallet.myAddr) {
+      setMyVote(await daoContext.getMyVote(proposalId));
+    }
 
-  const getProposalDetails = async (proposalId: string) => {
-    return new Promise(async (resolve, reject) => {
-      if (web3Context.userWallet.myAddr)  setMyVote(await daoContext.getMyVote(proposalId));
+    const storedProposals = daoContext.getCachedProposals();
+    const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
+    if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
 
-      const storedProposals = daoContext.getCachedProposals();
-      const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
-      web3Context.showLoader(true, "");
-      if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
+    // fetch proposal details and store in localStorage
+    if (proposalId) {
+      // adding 1 second delay as sometimes the RPC doesn't return
+      // the updated proposal details immediately after phase change
+      setTimeout(() => {
+        daoContext.getProposalDetails(proposalId).then((res) => {
+          setProposalDetails(res);
+        });
+      }, 1000);
+    }
+  }, [daoContext, web3Context]);
 
-      // fetch proposal details and store in localStorage
-      if (proposalId) {
-        // adding 1 second delay as sometimes the RPC doesn't return
-        // the updated proposal details immediately after phase change
-        setTimeout(() => {
-          daoContext.getProposalDetails(proposalId).then((res) => {
-            setProposalDetails(res);
-          });
-        }, 1000);
-      }
-    });
-  }
-
-  const setProposalDetails = (proposal: any) => {
+  const setProposalDetails = useCallback((proposal: any) => {
     if (proposal) {
       setProposal(proposal);
       daoContext.setProposalsState([proposal]);
       daoContext.getProposalVotingStats(proposal.id).then((res) => {
         setVotingStats(res);
-      })
-      setProposalState(daoContext.getStateString(proposal.state))
+      });
+      setProposalState(daoContext.getStateString(proposal.state));
     } else {
-      startTransition(() => { navigate("/404"); });
+      startTransition(() => {
+        navigate("/404");
+      });
     }
     web3Context.showLoader(false, "");
-  }
+  }, [daoContext, navigate, web3Context]);
+
+  useEffect(() => {
+    if (proposalId) {
+      web3Context.showLoader(true, "Fetching proposal details");
+      getProposalDetails(proposalId)
+    }
+  }, [web3Context.userWallet.myAddr, daoContext.daoPhase]);
 
   const handleDismissProposal = async () => {
     daoContext.dismissProposal(proposal.id, dismissReason).then(() => {
@@ -95,14 +99,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     }).catch((err) => {
       setDismissProposal(false);
     });
-  }
+  };
 
   const handleCastVote = async (vote: number) => {
-    if (
-      pools.filter(
-        (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
-      ).length <= 0
-    ) {
+    if (pools.filter(
+      (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
+    ).length <= 0) {
       toast.warning(`Only validator candidates can vote`);
       return;
     }
@@ -112,13 +114,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     }).catch((err) => {
       console.log(err);
     });
-  }
+  };
 
   const handleProposalFinalization = async (proposalId: string) => {
     daoContext.finalizeProposal(proposalId).then((res) => {
       if (res === "success") getProposalDetails(proposalId);
-    })
-  }
+    });
+  };
 
   return (
     <section className="section">
@@ -141,24 +143,31 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           </p>
 
           {/* discussion link */}
-          <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+          {
+            proposal?.discussionUrl?.length > 0 && (
+              <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+            )
+          }
+          
 
           {/* open proposals */}
           {
-            proposal.type === "open" && (
+            proposal.proposalType === "Open" && (
               <div className={styles.payoutDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
-                    <div key={i}>
-                      <div>
-                        <span>Payout Adress</span>
-                        <span>{proposal.targets[i]}</span>
-                      </div>
-                      <div>
-                        <span>Payout Amount</span>
-                        <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
-                      </div>
-                    </div>   
+                    proposal.targets[i] != '0x0000000000000000000000000000000000000000' && (
+                      <div key={i}>
+                        <div>
+                          <span>Payout Adress</span>
+                          <span>{proposal.targets[i]}</span>
+                        </div>
+                        <div>
+                          <span>Payout Amount</span>
+                          <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
+                        </div>
+                      </div>   
+                    )
                   ))
                 }
               </div>
@@ -167,7 +176,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* ecosystem proposals */}
           {
-            proposal.type === "epc" && (
+            proposal.proposalType === "Ecosystem Paramaeter Change" && (
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
@@ -184,7 +193,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* contract upgrade */}
           {
-            proposal.type === "cup" && (
+            proposal.proposalType === "Contract upgrade" && (
               <div className={styles.cupDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
@@ -241,17 +250,23 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       </div>
 
                       <div className={styles.votingPhaseStats}>
-                        <span>Positive Answers: ({votingStats ? Number(votingStats.positive) : 0} % exceeding | 33% required)</span>
-                        <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toString() : 0} DMD ({
-                          votingStats && daoContext.totalStakedAmount && votingStats.total.dividedBy(daoContext.totalStakedAmount).toFixed(2)
-                        }% | 33% required)</span>
+                        <div>
+                          <span>Positive Answers: ({votingStats ? Number(votingStats.positive).toFixed(2) : 0} % exceeding | 33% required)</span>
+                          <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
+                        </div>
+                        <div>
+                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed() : 0} DMD ({
+                            votingStats && totalDaoStake && votingStats.total.dividedBy(totalDaoStake).toFixed(2)
+                          }% | 33% required)</span>
+                          <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
+                        </div>
                       </div>
                     </>
                   )
                 }
 
                 {
-                  proposal.state === '2' && (
+                  myPool && proposal.state === '2' && (
                     <div className={styles.votingPhaseButtons}>
 
                       {

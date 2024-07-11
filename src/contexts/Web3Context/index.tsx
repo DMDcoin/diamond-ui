@@ -14,7 +14,7 @@ import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import {
-  BlockRewardHbbftCoins,
+  BlockRewardHbbft,
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
@@ -30,7 +30,7 @@ interface ContractsState {
   contracts: ContractManager;
   vsContract: ValidatorSetHbbft;
   stContract?: StakingHbbft;
-  brContract?: BlockRewardHbbftCoins;
+  brContract?: BlockRewardHbbft;
   kghContract?: KeyGenHistory;
   rngContract?: RandomHbbft;
   daoContract: DiamondDao;
@@ -62,10 +62,11 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const rpcUrl = process.env.REACT_APP_RPC_URL || 'https://rpc.uniq.diamonds';
-  const [web3, setWeb3] = useState<Web3>(new Web3("https://rpc.uniq.diamonds"));
-  // const customProvider = new CustomWeb3HttpProvider(rpcUrl, { timeout: 10000 }, (message: string) => toast.warn(message, { autoClose: 5000 }));
-  // const [web3, setWeb3] = useState<Web3>(new Web3(customProvider));
+  const chainId = 777016;
+  const rpcUrl = process.env.REACT_APP_RPC_URL || 'http://62.171.133.46:38000';
+  const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
+  const [web3ModalInstance, setWeb3ModalInstance] = useState<any>(null);
+  const [accountChangeListener, setAccountChangeListener] = useState<any>(null);
 
   const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BigNumber(0)));
   const initialContracts = new ContractManager(web3);
@@ -80,6 +81,26 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     initialize();
     handleCacheReset();
   }, []);
+
+  useEffect(() => {
+    // handle account change
+    if (!accountChangeListener && web3ModalInstance) {
+      const listener = (accounts: Array<string>) => {
+        if (accounts && accounts.length === 0) {
+          window.location.reload();
+        } else {
+          connectWallet();
+        }
+      };
+      
+      web3ModalInstance.on("accountsChanged", listener);
+      setAccountChangeListener(listener);
+  
+      return () => {
+        web3ModalInstance.off("accountsChanged", listener);
+      };
+    }
+  }, [web3ModalInstance]);
 
   const initialize = async () => {
     if (!web3Initialized) {
@@ -151,11 +172,9 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const connectWallet = async () => {
     try {
-      const chainId = 777012;
-      const url = rpcUrl;
-      const chainOptions: { rpc: Record<number, string> } = {
-        rpc: { [chainId]: url },
-      };
+      // const chainOptions: { rpc: Record<number, string> } = {
+      //   rpc: { [chainId]: rpcUrl },
+      // };
 
       const providerOptions = {
         // walletconnect: {
@@ -173,16 +192,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       // clear cache so on each connect it asks for wallet type
       web3Modal.clearCachedProvider();
       const web3ModalInstance = await web3Modal.connect();
-  
-      // handle account change
-      web3ModalInstance.on("accountsChanged", function (accounts: Array<string>) {
-        if (accounts.length === 0) {
-          window.location.reload();
-        } else {
-          connectWallet();
-        }
-      });
-  
+      setWeb3ModalInstance(web3ModalInstance);
+
       const provider = new Web3(web3ModalInstance);
   
       // force user to change to DMD network
@@ -201,7 +212,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
                   chainName: "DMD",
                   chainId: new Web3().utils.toHex(chainId),
                   nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
-                  rpcUrls: [url],
+                  rpcUrls: [rpcUrl],
                 },
               ],
             });

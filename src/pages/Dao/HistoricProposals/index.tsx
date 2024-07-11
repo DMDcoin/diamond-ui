@@ -16,6 +16,7 @@ const HistoricProposals = () => {
   
   const [fetching, setFetching] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterFinalize, setFilterFinalize] = useState<boolean>(true);
   const [indexingStatus, setIndexingStatus] = useState<string | null>(
     "Indexing: Fetching historic proposals count"
@@ -29,7 +30,7 @@ const HistoricProposals = () => {
 
   useEffect(() => {
     if (!fetching) {
-      web3Context.showLoader(true, "");
+      web3Context.showLoader(true, "Fetching historic proposals");
       daoContext.getHistoricProposals();
       setFetching(true);
     } else {
@@ -45,15 +46,6 @@ const HistoricProposals = () => {
     }
   }, [daoContext.allDaoProposals]);
 
-  const filterUnFinalized = () => {
-    setFilterFinalize(!filterFinalize);
-    if (filterFinalize) {
-      setFilterQuery('unfinalized');
-    } else {
-      setFilterQuery('');
-    }
-  }
-
   return (
     <section className="section">
         <div className={styles.sectionContainer + " sectionContainer"}>
@@ -64,12 +56,14 @@ const HistoricProposals = () => {
           <div>
             <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
-            <div>
-              <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+            <div className={styles.filterContainer}>
+              <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setSearchQuery(e.target.value)}/>
 
-              <div className={filterFinalize ? '' : styles.filterActive} onClick={filterUnFinalized}>
-                <FaFilter color="0145b2" size={25}/>
-              </div>
+              <select className={styles.historicProposalsSelect} onChange={e => setFilterQuery(e.target.value)}>
+                <option value="">All</option>
+                <option value="unfinalized">Unfinalized</option>
+                <option value="myProposals">My proposals</option>
+              </select>
             </div>
 
             <div>{indexingStatus ? indexingStatus : ""}</div>
@@ -82,6 +76,7 @@ const HistoricProposals = () => {
               data={daoContext.allDaoProposals}
               handleDetailsClick={handleDetailsClick}
               getStateString={daoContext.getStateString}
+              searchQuery={searchQuery}
               filterQuery={filterQuery}
               columns={["Result"]}
             />

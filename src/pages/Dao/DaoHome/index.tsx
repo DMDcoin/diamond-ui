@@ -5,6 +5,7 @@ import { useDaoContext } from "../../../contexts/DaoContext";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import ProposalsTable from "../../../components/ProposalsTable";
 import { useStakingContext } from "../../../contexts/StakingContext";
+import DaoPhaseBanner from "../../../components/DaoPhaseBanner";
 
 interface DaoProps {}
 
@@ -15,6 +16,7 @@ const DaoHome: React.FC<DaoProps> = () => {
   const stakingContext = useStakingContext();
   
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     try {
@@ -42,75 +44,45 @@ const DaoHome: React.FC<DaoProps> = () => {
             <p>
               Stake:{" "}
               {stakingContext.myTotalStake
-                ? stakingContext.myTotalStake.dividedBy(10 ** 18).toString()
+                ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
                 : 0}{" "}
               DMD
             </p>
             <p>
-              % of total DAO weight{" "}
+              Voting power{" "}
               <span style={{ fontWeight: "bold" }}>
-                {stakingContext.totalDaoStake &&
-                stakingContext.myTotalStake &&
-                Number(stakingContext.totalDaoStake) !== 0 &&
-                Number(stakingContext.myTotalStake) !== 0
-                  ? Number(
-                      stakingContext.myTotalStake.dividedBy(
-                        stakingContext.totalDaoStake
-                      )
-                    ).toFixed(2)
-                  : 0}
+                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
                 %
               </span>
             </p>
-
-            <input
-              type="text"
-              placeholder="Search"
-              className={styles.daoSearch}
-              onChange={(e) => setFilterQuery(e.target.value)}
-            />
           </div>
 
-          <div>
-            {daoContext.daoPhase?.phase === "1" && <div></div>}
-            <h4>
-              {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
-            </h4>
-            <p>{daoContext.phaseEndTimer} till the end</p>
-            {daoContext.daoPhase?.phase === "0" && (
-              <button
-                onClick={() => {
-                  startTransition(() => {
-                    navigate("/dao/create");
-                  });
-                }}
-              >
-                Create Proposal
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.myDaoProposals}>
-          <h2>My Proposals</h2>
-          <div>
-            <ProposalsTable
-              data={daoContext.activeProposals}
-              userWallet={web3Context.userWallet}
-              handleDetailsClick={handleDetailsClick}
-              getStateString={daoContext.getStateString}
-              filterQuery={filterQuery}
-            />
-          </div>
+          <DaoPhaseBanner />
         </div>
 
         <div className={styles.allDaoProposals}>
-          <h2>All Proposals</h2>
+          <h2>Active Proposals</h2>
+
+            <div className={styles.filterContainer}>
+              <input
+                type="text"
+                placeholder="Search "
+                className={styles.daoSearch}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
+                  <option value="">All</option>
+                  <option value="myProposals">My proposals</option>
+              </select>
+            </div>
+
           <div>
             <ProposalsTable
               data={daoContext.activeProposals}
               handleDetailsClick={handleDetailsClick}
               getStateString={daoContext.getStateString}
+              searchQuery={searchQuery}
               filterQuery={filterQuery}
             />
           </div>

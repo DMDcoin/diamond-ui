@@ -39,7 +39,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
           <p className={pool?.isCurrentValidator ? styles.poolActive : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
-            {pool?.isCurrentValidator ? "Active" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Valid")}
+            {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
           </p>
         </div>
 
@@ -81,7 +81,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             }
             {
               pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
-                <button className={styles.tableButton} onClick={() => claimOrderedUnstake(pool as Pool)}>Claim</button>
+                <button className="primaryBtn" onClick={() => claimOrderedUnstake(pool as Pool)}>Claim</button>
               ) : pool && BigNumber(pool.myStake).isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
             }
           </div>          
@@ -151,7 +151,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
                     <td>{getStateString(proposal.state)}</td>
-                    <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className={styles.tableButton}>Details</button></td>
+                    <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
                   </tr>
                 ))
               }
