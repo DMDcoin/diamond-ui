@@ -38,7 +38,7 @@ const ProposalsTable = (props: TableProps) => {
     'Account',
     'Title',
     'Type',
-    ...columns,
+    ...(columns.length > 0 ? columns : ['Status']),
     '',
     ''
   ]
