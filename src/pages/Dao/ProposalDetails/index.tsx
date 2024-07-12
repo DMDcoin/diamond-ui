@@ -54,9 +54,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
       setMyVote(await daoContext.getMyVote(proposalId));
     }
 
-    const storedProposals = daoContext.getCachedProposals();
-    const filProposals = storedProposals.filter((proposal: any) => proposal.id === proposalId);
-    if (!filProposals.length) await daoContext.getHistoricProposalsEvents();
+    const storedProposals = daoContext.getCachedProposals().filter((proposal: any) => proposal.id === proposalId);
+    if (!storedProposals.length) await daoContext.getHistoricProposalsEvents();
 
     // fetch proposal details and store in localStorage
     if (proposalId) {
@@ -64,6 +63,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
       // the updated proposal details immediately after phase change
       setTimeout(() => {
         daoContext.getProposalDetails(proposalId).then((res) => {
+          daoContext.setProposalsState([res]);
+          daoContext.setActiveProposals(
+            daoContext.activeProposals.map((p) => {
+              if (p.id === res.id) {
+                return res;
+              }
+              return p;
+          }));
           setProposalDetails(res);
         });
       }, 1000);
@@ -111,9 +118,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
     daoContext.castVote(proposal.id, vote, voteReason).then(() => {
       getProposalDetails(proposal.id);
-    }).catch((err) => {
-      console.log(err);
-    });
+    }).catch((err) => {});
   };
 
   const handleProposalFinalization = async (proposalId: string) => {
@@ -318,7 +323,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {
             ['1', '4', '5', '6'].includes(proposal.state) && (
               <div className={styles.finalizedProposalContainer}>
-                <span>The proposal was {proposalState} by the community</span>
+                <span>This proposal was {proposalState} by the community</span>
               </div>
             )
           }

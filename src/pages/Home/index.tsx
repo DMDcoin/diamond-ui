@@ -190,7 +190,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         className="margin-bottom-24px"
                                     >
                                         Welcome to the DMD Diamond Blockchain Staking Platform –
-                                        your gateway to earning passive income while contributing to
+                                        your gateway to earning rewards while contributing to
                                         the security and functionality of the DMD network. Embark on
                                         your staking adventure with us and unlock the full potential
                                         of your digital assets.
