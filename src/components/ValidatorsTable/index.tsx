@@ -42,7 +42,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => pool.isActive && !pool.isCurrentValidator);
     } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
     } else if (filter === 'invalid') {
@@ -177,7 +177,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((pool, index) => (
+                        {currentItems.length <= 0 ? (
+                            <tr>
+                                <td colSpan={9} className={styles.noData}>
+                                    No validators found
+                                </td>
+                            </tr>
+                        ) : currentItems.map((pool, index) => (
                             <tr onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow} key={index}>
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
@@ -225,7 +231,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                     </>
                                 }
                             </tr>
-                        ))}
+                        ))
+                        }
                     </tbody>
                 </table>
             </div>
