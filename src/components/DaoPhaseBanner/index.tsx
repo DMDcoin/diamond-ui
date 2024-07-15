@@ -12,7 +12,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = () => {
 
   const [unfinalizedProposalsCount, setUnfinalizedProposalsCount] = useState<number>(0);
 
-  // get this from the contract
+  // TODO: get this from the contract
   useEffect(() => {
     const unfinalizedProposals = daoContext.allDaoProposals.filter((proposal) => proposal.state === "3");
     setUnfinalizedProposalsCount(unfinalizedProposals.length);
