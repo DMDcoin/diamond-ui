@@ -230,12 +230,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <input type="text" placeholder="Dismissal Reason (Optional)" value={dismissReason} onChange={e => setDismissReason(e.target.value)}/>
                       <span>Are you sure you want to dismiss this proposal?</span>
                       <div>
-                        <button onClick={handleDismissProposal}>Yes</button>
-                        <button onClick={() => setDismissProposal(false)}>No</button>
+                        <button className="primaryBtn" onClick={handleDismissProposal}>Yes</button>
+                        <button className="primaryBtn" onClick={() => setDismissProposal(false)}>No</button>
                       </div>
                     </div>
                   ) : (
-                    <button onClick={() => setDismissProposal(true)}>Dismiss Proposal</button>
+                    <button className="primaryBtn" onClick={() => setDismissProposal(true)}>Dismiss Proposal</button>
                   )
                 }
                 

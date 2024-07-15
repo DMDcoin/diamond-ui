@@ -144,15 +144,15 @@ const ProposalsTable = (props: TableProps) => {
       
       {filteredData.length > itemsPerPage && (
           <div className={styles.tablePagination}>
-              <button disabled={currentPage === 1} onClick={() => handleChangePage(currentPage - 1)}>
+              <button className='primaryBtn' disabled={currentPage === 1} onClick={() => handleChangePage(currentPage - 1)}>
                   Previous
               </button>
               {Array.from({ length: totalPages }, (_, index) => (
-                  <button key={index} onClick={() => handleChangePage(index + 1)} disabled={currentPage === index + 1}>
+                  <button className='primaryBtn' key={index} onClick={() => handleChangePage(index + 1)} disabled={currentPage === index + 1}>
                       {index + 1}
                   </button>
               ))}
-              <button disabled={currentPage === totalPages} onClick={() => handleChangePage(currentPage + 1)}>
+              <button className='primaryBtn' disabled={currentPage === totalPages} onClick={() => handleChangePage(currentPage + 1)}>
                   Next
               </button>
           </div>
