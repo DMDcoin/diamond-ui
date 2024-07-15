@@ -25,12 +25,13 @@ const DaoPhaseBanner: React.FC<DaoProps> = () => {
             {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
         </h4>
         <p>{daoContext.phaseEndTimer} till the end</p>
-        {daoContext.daoPhase?.phase === "0" && unfinalizedProposalsCount === 0 ? (
+        <button className="primaryBtn" onClick={() => {startTransition(() => {navigate("/dao/create")})}}>Create Proposal</button>
+        {/* {daoContext.daoPhase?.phase === "0" && unfinalizedProposalsCount === 0 ? (
             <button className="primaryBtn" onClick={() => {startTransition(() => {navigate("/dao/create")})}}>Create Proposal</button>
         ) : (
           <FinalizeProposalsWarn buttonText="Create Proposal" />
         )
-      }
+      } */}
     </div>
   );
 };

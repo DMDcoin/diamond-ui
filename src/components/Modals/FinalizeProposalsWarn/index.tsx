@@ -68,7 +68,7 @@ const FinalizeProposalsWarn: React.FC<ModalProps> = ({ buttonText }) => {
               <section>
                 <p>
                   New proposals can not be created till all the proposals from
-                  previous phases are not finalized. Anyonce can finalize them
+                  previous phases are not finalized. Anyone can finalize them
                   with minimal fee cost. Please go to Historic proposals list and
                   finalize those, which have the status 'needs finalization'
                 </p>
