@@ -18,9 +18,7 @@ const HistoricProposals = () => {
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterFinalize, setFilterFinalize] = useState<boolean>(true);
-  const [indexingStatus, setIndexingStatus] = useState<string | null>(
-    "Indexing: Fetching historic proposals count"
-  );
+  const [indexingStatus, setIndexingStatus] = useState<string | null>();
 
   const handleDetailsClick = (proposalId: string) => {
     startTransition(() => {
@@ -71,22 +69,14 @@ const HistoricProposals = () => {
         </div>
 
         {
-          daoContext.allDaoProposals.length !== 0 ? (
-            <ProposalsTable
-              data={daoContext.allDaoProposals}
-              handleDetailsClick={handleDetailsClick}
-              getStateString={daoContext.getStateString}
-              searchQuery={searchQuery}
-              filterQuery={filterQuery}
-              columns={["Result"]}
-            />
-          ) : (
-            <div className={styles.historicProposalsInfoContainer}>
-              <div>
-                <div>No historic proposals found</div>
-              </div>
-            </div>
-          )
+          <ProposalsTable
+            data={daoContext.allDaoProposals}
+            handleDetailsClick={handleDetailsClick}
+            getStateString={daoContext.getStateString}
+            searchQuery={searchQuery}
+            filterQuery={filterQuery}
+            columns={["Result"]}
+          />
         }
 
       </div>

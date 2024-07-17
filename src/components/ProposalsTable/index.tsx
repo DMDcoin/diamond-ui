@@ -135,6 +135,8 @@ const ProposalsTable = (props: TableProps) => {
                       <button className="primaryBtnHidden"></button>
                     )}
                   </td>
+
+                  <td></td>
                 </tr>
               );
             })}

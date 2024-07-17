@@ -3,20 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { useDaoContext } from "../../contexts/DaoContext";
 import { startTransition, useEffect, useState } from "react";
 import FinalizeProposalsWarn from "../Modals/FinalizeProposalsWarn";
+import { useWeb3Context } from "../../contexts/Web3Context";
 
 interface DaoProps {}
 
 const DaoPhaseBanner: React.FC<DaoProps> = () => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
+  const web3Context = useWeb3Context();
 
-  const [unfinalizedProposalsCount, setUnfinalizedProposalsCount] = useState<number>(0);
+  const [unfinalizedProposalsExist, setUnfinalizedProposalsExist] = useState<boolean>(true);
 
   // TODO: get this from the contract
   useEffect(() => {
-    const unfinalizedProposals = daoContext.allDaoProposals.filter((proposal) => proposal.state === "3");
-    setUnfinalizedProposalsCount(unfinalizedProposals.length);
-  }, [daoContext.allDaoProposals]);
+    web3Context.contractsManager.daoContract.methods.unfinalizedProposalsExist().call().then((res: boolean) => {
+      setUnfinalizedProposalsExist(res);
+    });
+  }, [daoContext.allDaoProposals, daoContext.daoPhaseCount]);
 
   return (
     <div className={styles.daoPhaseBanner}>
@@ -25,13 +28,12 @@ const DaoPhaseBanner: React.FC<DaoProps> = () => {
             {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
         </h4>
         <p>{daoContext.phaseEndTimer} till the end</p>
-        <button className="primaryBtn" onClick={() => {startTransition(() => {navigate("/dao/create")})}}>Create Proposal</button>
-        {/* {daoContext.daoPhase?.phase === "0" && unfinalizedProposalsCount === 0 ? (
-            <button className="primaryBtn" onClick={() => {startTransition(() => {navigate("/dao/create")})}}>Create Proposal</button>
-        ) : (
+        {daoContext.daoPhase?.phase === "0" && unfinalizedProposalsExist ? (
           <FinalizeProposalsWarn buttonText="Create Proposal" />
+        ) : (
+          <button className="primaryBtn" onClick={() => {startTransition(() => {navigate("/dao/create")})}}>Create Proposal</button>
         )
-      } */}
+      }
     </div>
   );
 };

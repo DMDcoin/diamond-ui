@@ -144,7 +144,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getProposalDetails = async (proposalId: string) => {
     // Retrieve allDaoProposals from localStorage
     let updatedData: Proposal | undefined = getCachedProposals().find((proposal) => proposal.id === proposalId);
-    
     let proposalDetails;
     let proposalTimestamp;
 
@@ -153,7 +152,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     if (!updatedData) updatedData = initializeProposal(proposalId);
 
     try {
-      if (updatedData && (!updatedData.proposer || !['1', '4', '5', '6'].includes(updatedData.state))) {
+      if (updatedData && (!updatedData.proposer || !['1', '5', '6'].includes(updatedData.state))) {
         proposalDetails = await web3Context.contractsManager.daoContract.methods.getProposal(proposalId).call();
         updatedData = {
           ...updatedData,

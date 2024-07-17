@@ -212,6 +212,8 @@ export interface DiamondDao extends BaseContract {
 
     isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
 
+    lastDaoPhaseCount(): NonPayableTransactionObject<string>;
+
     proposalExists(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<boolean>;
@@ -290,6 +292,10 @@ export interface DiamondDao extends BaseContract {
     }>;
 
     switchPhase(): NonPayableTransactionObject<void>;
+
+    unfinalizedProposals(): NonPayableTransactionObject<string>;
+
+    unfinalizedProposalsExist(): NonPayableTransactionObject<boolean>;
 
     validatorSet(): NonPayableTransactionObject<string>;
 

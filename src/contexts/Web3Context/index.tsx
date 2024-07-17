@@ -63,7 +63,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   // Initialize Web3 with CustomHttpProvider
   const chainId = 777016;
-  const rpcUrl = 'http://62.171.133.46:38000';
+  const rpcUrl = 'https://alpha3.uniq.domains/rpc';
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
   const [web3ModalInstance, setWeb3ModalInstance] = useState<any>(null);
   const [accountChangeListener, setAccountChangeListener] = useState<any>(null);
