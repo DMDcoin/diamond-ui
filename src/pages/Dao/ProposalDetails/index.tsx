@@ -257,13 +257,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div className={styles.votingPhaseStats}>
                         <div>
                           <span>Positive Answers: ({votingStats ? Number(votingStats.positive).toFixed(2) : 0} % exceeding | 33% required)</span>
-                          <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
+                          <Tooltip text="Exceeding difference between yes and no answers | required difference" />
                         </div>
                         <div>
                           <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed() : 0} DMD ({
                             votingStats && totalDaoStake && votingStats.total.dividedBy(totalDaoStake).toFixed(2)
                           }% | 33% required)</span>
-                          <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
+                          <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>
                       </div>
                     </>

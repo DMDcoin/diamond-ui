@@ -80,5 +80,5 @@
     "react-app-rewired": "^2.2.1",
     "typescript": "^5.4.5"
   },
-  "proxy": "http://62.171.133.46:38000"
+  "proxy": "https://alpha3.uniq.domains/rpc"
 }

@@ -146,7 +146,7 @@ export interface StakingHbbft extends BaseContract {
 
     allowedParameterRange(
       arg0: string | number[]
-    ): NonPayableTransactionObject<{ getter: string; range: string[] }>;
+    ): NonPayableTransactionObject<string>;
 
     areStakeAndWithdrawAllowed(): NonPayableTransactionObject<boolean>;
 
