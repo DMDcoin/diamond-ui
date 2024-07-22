@@ -144,21 +144,21 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           });         
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData;
-        let contractAddress;
+        const [, , methodSetter] = epcMethodSetter.split(":");
 
         if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcContractName)
-        && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${epcMethodSetter} value`);
+        && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${methodSetter} value`);
 
         const contract = getContractByName(epcContractName);
-        contractAddress = contract?.options.address;
+        const contractAddress = contract?.options.address;
 
         if (["Certifier", "Tx Permission"].includes(epcContractName)) {
-          if (epcMethodSetter === 'addAllowedSender' || epcMethodSetter === 'removeAllowedSender') {
-            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${epcMethodSetter} address`);
+          if (methodSetter === 'addAllowedSender' || methodSetter === 'removeAllowedSender') {
+            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${methodSetter} address`);
           }
-          encodedCallData = (contract?.methods as any)[epcMethodSetter](epcValue).encodeABI();
+          encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
         } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcContractName)) {
-          encodedCallData = (contract?.methods as any)[epcMethodSetter](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
+          encodedCallData = (contract?.methods as any)[methodSetter](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
         }
 
         targets = [contractAddress as string];
