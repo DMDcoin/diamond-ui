@@ -83,6 +83,8 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
   const getContractByName = (name: string) => {
     switch (name) {
+      case "DAO":
+        return web3Context.contractsManager.daoContract;
       case "Staking":
         return web3Context.contractsManager.stContract;
       case "Certifier":
@@ -184,9 +186,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const getEpcContractValue = async (contractName: string, methodName: string) => {
     const contract = getContractByName(contractName);
 
-    if (contract) {
-      return await (contract?.methods as any)[EcosystemParameters[contractName][methodName].getter]().call();
-    } else {
+    try {
+      if (contract) {
+        return await (contract?.methods as any)[EcosystemParameters[contractName][methodName].getter]().call();
+      } else {
+        return '0';
+      }
+    } catch(err) {
       return '0';
     }
   }

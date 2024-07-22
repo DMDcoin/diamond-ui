@@ -38,12 +38,21 @@ export const EcosystemParameters: EcosystemParameters = {
     },
   },
 
-  // "Block Reward": {
-  //   "Governance Pot Share Nominator": {
-  //     getter: "governancePotShareNominator()",
-  //     setter: "setGovernancePotShareNominator(uint256)",
-  //     params: [],
-  //     value: undefined
-  //   },
-  // }
+  "Block Reward": {
+    "Governance Pot Share Nominator": {
+      getter: "governancePotShareNominator()",
+      setter: "setGovernancePotShareNominator(uint256)",
+      params: [],
+      value: undefined
+    },
+  },
+
+  "DAO": {
+    "Create proposal fee": {
+      getter: "createProposalFee()",
+      setter: "setCreateProposalFee(uint256)",
+      params: [],
+      value: undefined
+    }
+  }
 };
