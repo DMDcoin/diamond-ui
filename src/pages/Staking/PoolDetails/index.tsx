@@ -17,15 +17,37 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const navigate = useNavigate();
   const { poolAddress } = useParams();
   const { userWallet } = useWeb3Context();
-  const { allDaoProposals, getStateString } = useDaoContext();
+  const { activeProposals, getMyVote, getStateString } = useDaoContext();
   const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
+  const [filteredProposals, setFilteredProposals] = useState<any[]>([]);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
-    setPool(pool as Pool);    
+    setPool(pool as Pool);
+    filterProposals()
   }, [poolAddress, pools, userWallet.myAddr]);
+
+  async function filterProposals() {
+    const filteredProposals = await Promise.all(
+      activeProposals.map(async (proposal) => {
+        if (proposal.proposer === poolAddress && proposal.state == '0') {
+          return proposal;
+        } else if (proposal.state == '2') {
+          const myVote = await getMyVote(proposal.id);
+          if (myVote && myVote.vote != '0') {
+            return proposal;
+          }
+        }
+        return null;
+      })
+    );
+  
+    // Remove null values
+    const proposals = filteredProposals.filter((proposal) => proposal !== null);
+    setFilteredProposals(proposals || []);
+  }
 
   return (
     <section className="section">
@@ -128,7 +150,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <table className={styles.styledTable}>
             <thead>
               {
-                allDaoProposals.filter((proposal) => proposal.proposer === poolAddress).length ? (
+                filteredProposals.length ? (
                   <tr>
                     <td>Date</td>
                     <td>Proposal title</td>
@@ -145,7 +167,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             </thead>
             <tbody>
               {
-                allDaoProposals.filter((proposal) => proposal.proposer === poolAddress).map((proposal, i) => (
+                filteredProposals.map((proposal, i) => (
                   <tr key={i}>
                     <td>{proposal.timestamp}</td>
                     <td>{proposal.title}</td>
