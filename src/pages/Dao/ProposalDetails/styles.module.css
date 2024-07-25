@@ -237,9 +237,9 @@ h1, h2, h3, h4, p, span {
 
 .ecpDetailsContainer {
   gap: 1rem;
+  width: 100%;
   margin: 10px;
   display: flex;
-  min-width: 50%;
   font-weight: 700;
   flex-direction: column;
 }

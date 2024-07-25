@@ -160,11 +160,11 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           }
           encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
         } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcContractName)) {
-          encodedCallData = (contract?.methods as any)[methodSetter](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
+          encodedCallData = (contract?.methods as any)[epcMethodSetter](new BigNumber(epcValue).multipliedBy(10**18)).encodeABI();
         }
 
         targets = [contractAddress as string];
-        values = ["0"];
+        values = [epcValue];
         calldatas = [encodedCallData as string];
       }
     } catch(err: any) {

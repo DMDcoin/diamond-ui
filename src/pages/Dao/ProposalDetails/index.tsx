@@ -256,7 +256,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                          <span>Positive Answers: ({votingStats ? Number(votingStats.positive).toFixed(2) : 0} % exceeding | 33% required)</span>
+                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | 33% required)</span>
                           <Tooltip text="Exceeding difference between yes and no answers | required difference" />
                         </div>
                         <div>
