@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./styles.module.css";
 import BigNumber from "bignumber.js";
-import { getNumberOfDecimals } from "../../utils/common";
+import { getDecimalsBasedOnUnitLength } from "../../utils/common";
 
 interface ProposalStepSliderProps {
     state: string;
@@ -39,9 +39,9 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ paramsRange, st
 
     return (
         <div className={styles.sliderContainer}>
-            <span>{BigNumber(state).dividedBy(10**getNumberOfDecimals(state)).toString()} DMD</span>
+            <span>{BigNumber(state).dividedBy(10**getDecimalsBasedOnUnitLength(state)).toString()} DMD</span>
             <div>
-                <span>{BigNumber(paramsRange[0]).dividedBy(10**getNumberOfDecimals(state)).toString()} DMD</span>
+                <span>{BigNumber(paramsRange[0]).dividedBy(10**getDecimalsBasedOnUnitLength(state)).toString()} DMD</span>
                 <input
                     type="range"
                     min={paramsRange[0]}
@@ -50,7 +50,7 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ paramsRange, st
                     onChange={handleChange}
                     className={styles.rangeInput}
                 />
-                <span>{BigNumber(paramsRange[paramsRange.length - 1]).dividedBy(10**getNumberOfDecimals(state)).toString()} DMD</span>
+                <span>{BigNumber(paramsRange[paramsRange.length - 1]).dividedBy(10**getDecimalsBasedOnUnitLength(state)).toString()} DMD</span>
             </div>
         </div>
     );
