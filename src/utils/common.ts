@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 const Web3 = require('web3');
 const web3 = new Web3();
 // const { publicToAddress } = require("ethereumjs-util");
@@ -86,11 +88,12 @@ export const requestPublicKeyMetamask = async (web3: any, address: string) => {
 }
 
 /**
- * Determines the number of decimal places in a given value.
+ * Determines the number of decimal places to interpret the value as.
+ * Assumes different units based on the length of the value.
  * @param {string|number} value - The value to check.
  * @returns {number} - The number of decimal places.
  */
-export const getNumberOfDecimals = (value: string | number): number => {
+export const getDecimalsBasedOnUnitLength = (value: string | number): number => {
   // Convert to string if it's a number
   if (typeof value === 'number') {
     value = value.toString();
@@ -108,5 +111,59 @@ export const getNumberOfDecimals = (value: string | number): number => {
     return 9;
   } else {
     return 1;
+  }
+}
+
+/**
+ * Determines the unit name based on the length of the value.
+ * Assumes different units like Wei, Gwei, and DMD.
+ * @param {string|number} value - The value to check.
+ * @returns {string} - The unit name (Wei, Gwei, or DMD).
+ */
+export const getCryptoUnitName = (value: string | number): string => {
+  // Convert to string if it's a number
+  if (typeof value === 'number') {
+    value = value.toString();
+  }
+
+  // Remove any leading zeros
+  value = value.replace(/^0+/, '');
+
+  const strLength = value.length;
+
+  // Interpret based on the number of trailing zeros
+  if (strLength >= 18) {
+    return "DMD";
+  } else if (strLength >= 9) {
+    return "Gwei";
+  } else {
+    return "Wei";
+  }
+}
+
+/**
+ * Converts a value to its corresponding unit and returns a string representation.
+ * Assumes different units based on the length of the value and formats it accordingly.
+ * @param {string|number} value - The value to convert.
+ * @returns {string} - The value formatted with its unit (Wei, Gwei, or DMD).
+ */
+export const formatCryptoUnitValue = (value: string | number): string => {
+  // Convert to string if it's a number
+  if (typeof value === 'number') {
+    value = value.toString();
+  }
+
+  // Remove any leading zeros
+  value = value.replace(/^0+/, '');
+
+  const strLength = value.length;
+
+  // Interpret based on the number of trailing zeros
+  if (strLength >= 18) {
+    return `${BigNumber(value).dividedBy(10**18)} DMD`;
+  } else if (strLength >= 9) {
+    return `${BigNumber(value).dividedBy(10**9)} Gwei`;
+  } else {
+    return `${BigNumber(value).dividedBy(10**1)} Wei`;
   }
 }

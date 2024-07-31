@@ -131,6 +131,11 @@ const ProposalsTable = (props: TableProps) => {
                       <button className="primaryBtn">
                         Needs Finalization
                       </button>
+                    ) : proposal.state === "4" ?
+                    (
+                      <button className="primaryBtn">
+                        Needs Execution
+                      </button>
                     ) : (
                       <button className="primaryBtnHidden"></button>
                     )}

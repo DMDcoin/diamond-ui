@@ -14,6 +14,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 import Tooltip from "../../../components/Tooltip";
+import { formatCryptoUnitValue } from "../../../utils/common";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -127,6 +128,22 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     });
   };
 
+  const handleProposalExecution = async (proposalId: string) => {
+    daoContext.executeProposal(proposalId).then((res) => {
+      if (res === "success") getProposalDetails(proposalId);
+    });
+  }
+
+  const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
+    if ((proposalType === "0" || proposalType === "2") && positive.minus(negative).isGreaterThan(33)) {
+      return true;
+    }
+    if (proposalType === "1" && positive.minus(negative).isGreaterThan(50)) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <section className="section">
       <div className={styles.sectionContainer + " sectionContainer"}>
@@ -138,14 +155,18 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           <button>{proposalState}</button>
         </div>
         <div className={styles.daoDetailsContainer}>
-          <h1>{proposal.title}</h1>
-          <div className={styles.proposalCreatedBy}>
-            <span>Created By: </span>
-            <div>{proposal.proposer}</div>
+          <div>
+            <h2 className={styles.h2Heading}>{proposal.title}</h2>
+            <div className={styles.proposalCreatedBy}>
+              <span>Created By: </span>
+              <div>{proposal.proposer}</div>
+            </div>
           </div>
-          <p>
+          
+
+          <div className={styles.descriptionContainer}>
             {proposal.description}
-          </p>
+          </div>
 
           {/* discussion link */}
           {
@@ -157,21 +178,24 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* open proposals */}
           {
-            proposal.proposalType === "Open" && (
+            proposal.proposalType === "Open" &&
+            proposal.targets?.length > 0 && // Ensure targets array is not empty
+            proposal.targets.some((target: string) => target !== "0x0000000000000000000000000000000000000000") &&
+            (
               <div className={styles.payoutDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
-                    proposal.targets[i] != '0x0000000000000000000000000000000000000000' && (
+                    target !== '0x0000000000000000000000000000000000000000' && (
                       <div key={i}>
                         <div>
-                          <span>Payout Adress</span>
+                          <span>Payout Address</span>
                           <span>{proposal.targets[i]}</span>
                         </div>
                         <div>
                           <span>Payout Amount</span>
                           <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
                         </div>
-                      </div>   
+                      </div>
                     )
                   ))
                 }
@@ -190,7 +214,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                 <div>
                   <span>Proposed value</span>
-                  <span>{(new BigNumber(proposal.values[0]).dividedBy(10**18)).toString()} DMD</span>
+                  <span>{formatCryptoUnitValue(proposal.values[0])}</span>
                 </div>
               </div>
             )
@@ -273,15 +297,31 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                 {
                   myPool && proposal.state === '2' && (
                     <div className={styles.votingPhaseButtons}>
+                      {
+                        myVote.vote !== '0' && (
+                          <div>
+                            {myVote.vote === '1' && (
+                              <div className={styles.alreadyVotedBtns}>
+                                <p>You have already voted against the proposal, do you want to change your decision?</p>
+                              </div>
+                            )}
+                            {myVote.vote === '2' && (
+                              <div className={styles.alreadyVotedBtns}>
+                                <p>You have already voted for the proposal, do you want to change your decision?</p>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      }
 
                       {
                         web3Context.userWallet?.myAddr && (
                           <div>
-                            <input type="text" placeholder={myVote.reason ? myVote.reason : "Vote Reason"} value={voteReason} onChange={e => setVoteReason(e.target.value)}/>
+                            <input type="text" placeholder={myVote.reason ? myVote.reason : "Vote Reason"} value={voteReason} onChange={e => setVoteReason(e.target.value)} />
                           </div>
                         )
                       }
-                    
+
                       <div>
                         {myVote.vote === '0' && (
                           <>
@@ -291,18 +331,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         )}
                         {myVote.vote === '1' && (
                           <div className={styles.alreadyVotedBtns}>
-                            <p>You have already voted against the proposal, do you want to change your decision?</p>
                             <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
                           </div>
-                          )
-                        }
+                        )}
                         {myVote.vote === '2' && (
                           <div className={styles.alreadyVotedBtns}>
-                            <p>You have already voted for the proposal, do you want to change your decision?</p>
                             <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
                           </div>
-                          )
-                        }
+                        )}
                       </div>
                     </div>
                   )
@@ -310,11 +346,40 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
               </div>
           }
 
+          {/* voting finished */}
+          {
+            proposal.state == "3" && proposal.proposalType && votingStats && votingStats.positive && votingStats.negative && (
+              <span className={styles.finalizedProposalContainer}>
+                {proposalAccepted(proposal.proposalType, BigNumber(votingStats.positive), BigNumber(votingStats.negative)) ? 
+                  "Proposal was approved by the community" : 
+                  "Proposal was not approved by the community"
+                }
+
+              {
+                proposal.state == "3" && myVote.vote !== '0' && (
+                  <div>
+                    {myVote.vote === '1' && (
+                      <div className={styles.alreadyVotedBtns}>
+                        <p>You have voted against the proposal</p>
+                      </div>
+                    )}
+                    {myVote.vote === '2' && (
+                      <div className={styles.alreadyVotedBtns}>
+                        <p>You have voted for the proposal</p>
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+              </span>
+            )
+          }
+          
           {/* proposal voting phase finished and can be finalized */}
           {
             proposal.state === "3" && (
               <div className={styles.finalizeProposalContainer}>
-                <button onClick={() => handleProposalFinalization(proposal.id)}>Finalize Proposal</button>
+                <button className="primaryBtn" onClick={() => handleProposalFinalization(proposal.id)}>Finalize Proposal</button>
               </div>
             )
           }
@@ -324,6 +389,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
             ['1', '4', '5', '6'].includes(proposal.state) && (
               <div className={styles.finalizedProposalContainer}>
                 <span>This proposal was {proposalState} by the community</span>
+              </div>
+            )
+          }
+
+          {/* execute proposal */}
+          {
+            proposal.state === "4" && (
+              <div className={styles.finalizeProposalContainer}>
+                <button className="primaryBtn" onClick={() => handleProposalExecution(proposal.id)}>Execute Proposal</button>
               </div>
             )
           }
