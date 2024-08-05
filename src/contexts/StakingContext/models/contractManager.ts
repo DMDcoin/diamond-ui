@@ -220,7 +220,7 @@ export class ContractManager {
   }
 
   public getDaoContract(): DiamondDao {
-    let contractAddress = '0x655aF015eD2937deD2Ec70b11282df2824eaB228';
+    let contractAddress = '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0';
 
     const abi: any = JsonDiamonDao.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
@@ -244,7 +244,7 @@ export class ContractManager {
   }
 
   public async getHbbftAggregator(): Promise<HbbftAggregator> {
-    let contractAddress = '0x577D8B7408a6F2CFD3DC91DF2f8994E92314873f';
+    let contractAddress = '0x3C71cB925E5F4227D2793360a1149cc4fd450a91';
 
     const abi: any = JsonHbbtAggregator.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
