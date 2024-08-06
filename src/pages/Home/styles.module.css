@@ -152,7 +152,25 @@ h1 {
 
 .heroSplit {
   gap: 1rem;
+  overflow: hidden;
   max-width: 100%;
+}
+
+.heroSplitImg {
+  opacity: 0;
+  transform: translateX(500px);
+  animation: ImgMoveXAndFade 1.5s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+@keyframes ImgMoveXAndFade {
+  0% {
+    transform: translateX(500px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .heroWrapper {
@@ -325,4 +343,75 @@ h1 {
 
 .poolBanned {
   color: red;
+}
+
+.mainHeading > h1 {
+  overflow: hidden;
+  transform: translateY(115px);
+  animation: headingMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+.div-block, .div-block-2, .div-block-3 {
+  overflow: hidden;
+}
+
+@keyframes headingMoveYAndFade {
+  from {
+    transform: translateY(115px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.heroDescription {
+  transform: translateY(140px);
+  animation: descriptionMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes descriptionMoveYAndFade {
+  0% {
+    transform: translateY(140px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.actionBtn {
+  opacity: 0;
+  animation: actionBtnMoveYAndFade 0.6s cubic-bezier(0.5, 1, 0.89, 1) forwards;
+  animation-delay: 0.7s;
+}
+
+@keyframes actionBtnMoveYAndFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.gridContainer {
+  overflow: hidden;
+}
+
+.gridBlock {
+  opacity: 0;
+  transform: translateY(300px);
+  animation: gridBlockMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes gridBlockMoveYAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
