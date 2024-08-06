@@ -21,6 +21,7 @@ interface StakingContextProps {
   validCandidates: number;
   epochStartBlock: number;
   myTotalStake: BigNumber;
+  isSyncingPools: boolean;
   myPool: Pool | undefined;
   activeValidators: number;
   minimumGasFee: BigNumber;
@@ -402,6 +403,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pendingValidatorAddrs: Array<string>,
     blockNumber: number
   ) => {
+    setIsSyncingPools(true);
     const batchSize = 10;
     let updatedPools: Pool[] = [...pools];
     let poolsToUpdate: Pool[] = [];
@@ -455,6 +457,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     updateStakeAmounts(updatedPools);
     setCachedPools(blockNumber, updatedPools);
     console.log("[INFO] Cached Data:", JSON.parse(localStorage.getItem('poolsData') || '{}'));
+    setIsSyncingPools(false);
   }
 
   const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
@@ -824,6 +827,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     totalDaoStake,
     minimumGasFee,
     epochStartTime,
+    isSyncingPools,
     epochStartBlock,
     myCandidateStake,
     candidateMinStake,

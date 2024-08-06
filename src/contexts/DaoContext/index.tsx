@@ -283,10 +283,18 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   };
 
+  const getProposalExists = async (targets: string[], values: string[], callDatas: string[], description: string) => {
+    const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
+      targets, values, callDatas, description
+    ).call();
+    return await web3Context.contractsManager.daoContract.methods.proposalExists(proposalId).call();
+  }
+
   const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
+        if (await getProposalExists(targets, values, callDatas, description)) return toast.warn("Proposal already exists");
 
         try {
           web3Context.showLoader(true, "Creating proposal 💎");
@@ -526,6 +534,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const executeProposal = async (proposalId: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return resolve("");
+        if ((await getProposalDetails(proposalId)).proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
 
         web3Context.showLoader(true, "Executing proposal 💎");
         try {
