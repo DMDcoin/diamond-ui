@@ -181,13 +181,13 @@ const Home: React.FC<HomeProps> = ({}) => {
                     <div className="hero-container">
                         <div className="hero-wrapper">
                             <div className="hero-split">
-                                <div className="div-block-2">
+                                <div className={styles.mainHeading + " div-block-2"}>
                                     <h1 data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e0e" className="heading">Become DMD Chain Participant</h1>
                                 </div>
                                 <div className="div-block">
                                     <p
                                         data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10"
-                                        className="margin-bottom-24px"
+                                        className={styles.heroDescription + " margin-bottom-24px"}
                                     >
                                         Welcome to the DMD Diamond Blockchain Staking Platform –
                                         your gateway to earning rewards while contributing to
@@ -196,12 +196,14 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         of your digital assets.
                                     </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div>
+                                <div className="div-block-3"><button onClick={connectWallet} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
-                            <div className="hero-split hero-split-responsive"><img
+                            <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
+                                <img
                                     src={getStartedImg}
                                     loading="lazy" width="500" data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e15" alt=""
-                                    className="shadow-two" /></div>
+                                    className={styles.heroSplitImg + " shadow-two"} />
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -211,24 +213,24 @@ const Home: React.FC<HomeProps> = ({}) => {
         {!userWallet.myAddr && (
             <section className="features-section">
                 <div className="w-layout-blockcontainer container w-container">
-                    <div className="w-layout-grid grid">
+                    <div className={styles.gridContainer + "w-layout-grid grid"}>
                         <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
                             data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
-                            className="grid-block"><img
+                            className={styles.gridBlock + " grid-block"}><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
                             <div className="text-block">It&#x27;s Easy</div>
                         </div>
                         <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
                             data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
-                            className="grid-block"><img
+                            className={styles.gridBlock + " grid-block"}><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
                             <div className="text-block">It&#x27;s Secure</div>
                         </div>
                         <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
                             data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
-                            className="grid-block"><img
+                            className={styles.gridBlock + " grid-block"}><img
                                 src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
                                 loading="lazy" width="80" alt="" />
                             <div className="text-block">All In One Place</div>
