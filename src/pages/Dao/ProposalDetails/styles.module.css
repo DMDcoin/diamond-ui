@@ -268,6 +268,7 @@ h1, h2, h3, h4, p, span {
   min-width: 50%;
   font-weight: 700;
   flex-direction: column;
+  overflow-x: auto;
 }
 
 .cupDetailsContainer > div {
@@ -336,4 +337,20 @@ input {
 
 .descriptionContainer::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+@media (max-width: 600px) {
+  .cupDetailsContainer {
+    margin: 5px;
+    min-width: 100%;
+    flex-direction: column;
+  }
+
+  .cupDetailsContainer > div {
+    gap: 0.25rem;
+  }
+
+  .cupDetailsContainer > div > div > span {
+    max-width: 200px;
+  }
 }
