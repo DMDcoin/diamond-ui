@@ -37,7 +37,7 @@
     "stream-http": "^3.2.0",
     "typechain": "^8.3.2",
     "url": "^0.11.3",
-    "viem": "^2.13.1",
+    "viem": "^1.21.4",
     "wagmi": "^1.4.13",
     "web-vitals": "^4.0.1",
     "web3": "^1.8.1",
@@ -78,6 +78,9 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "react-app-rewired": "^2.2.1",
+    "typescript": "^5.4.5"
+  },
+  "overrides": {
     "typescript": "^5.4.5"
   },
   "proxy": "https://alpha3.uniq.domains/rpc"
