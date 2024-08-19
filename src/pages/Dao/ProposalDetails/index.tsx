@@ -82,7 +82,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     if (proposal) {
       setProposal(proposal);
       daoContext.setProposalsState([proposal]);
-      daoContext.getProposalVotingStats(proposal.id).then((res) => {
+      daoContext.getProposalVotingStats(proposal.id).then((res) => {        
         setVotingStats(res);
       });
       setProposalState(daoContext.getStateString(proposal.state));
@@ -135,10 +135,10 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    if ((proposalType === "0" || proposalType === "2") && positive.minus(negative).isGreaterThan(33)) {
+    if ((proposalType === "Open" || proposalType === "Ecosystem Paramaeter Change") && positive.minus(negative).isGreaterThan(33)) {
       return true;
     }
-    if (proposalType === "1" && positive.minus(negative).isGreaterThan(50)) {
+    if (proposalType === "Contract upgrade" && positive.minus(negative).isGreaterThan(50)) {
       return true;
     }
     return false;
@@ -285,7 +285,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         </div>
                         <div>
                           <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed() : 0} DMD ({
-                            votingStats && totalDaoStake && votingStats.total.dividedBy(totalDaoStake).toFixed(2)
+                            votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(2)
                           }% | 33% required)</span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>

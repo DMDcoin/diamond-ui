@@ -21,37 +21,31 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface ConnectivityTrackerHbbftMock extends BaseContract {
+export interface IBonusScoreSystem extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): ConnectivityTrackerHbbftMock;
-  clone(): ConnectivityTrackerHbbftMock;
+  ): IBonusScoreSystem;
+  clone(): IBonusScoreSystem;
   methods: {
-    earlyEpochEnd(
-      arg0: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
+    getValidatorScore(mining: string): NonPayableTransactionObject<string>;
 
-    epochPenaltiesSent(
-      arg0: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    isEarlyEpochEnd(
-      epoch: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    isEpochPenaltiesSent(
-      epoch: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    penaliseFaultyValidators(
-      epoch: number | string | BN
+    penaliseBadPerformance(
+      mining: string,
+      time: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    setEarlyEpochEnd(
-      epoch: number | string | BN,
-      set: boolean
+    penaliseNoKeyWrite(mining: string): NonPayableTransactionObject<void>;
+
+    penaliseNoStandBy(
+      mining: string,
+      time: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    rewardStandBy(
+      mining: string,
+      time: number | string | BN
     ): NonPayableTransactionObject<void>;
   };
   events: {

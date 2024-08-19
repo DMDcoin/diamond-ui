@@ -139,7 +139,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     let daoStake = totalDaoStake;
     if (totalDaoStake.isZero() && contractsManager.stContract) {
-      daoStake = new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address));
+      daoStake = BigNumber(await contractsManager.stContract?.methods.totalStakedAmount().call());
     }
 
     let candidateStake = new BigNumber(0);
@@ -343,7 +343,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           setDaoPot(web3.utils.fromWei(daoPotValue, 'ether'));
         })
 
-        contractsManager.stContract && setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
+        contractsManager.stContract && setTotalDaoStake(BigNumber(await contractsManager.stContract?.methods.totalStakedAmount().call()));
       }
     }
 

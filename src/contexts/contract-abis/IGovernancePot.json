@@ -1,0 +1,18 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IGovernancePot",
+  "sourceName": "contracts/interfaces/IGovernancePot.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "switchPhase",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

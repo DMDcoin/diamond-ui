@@ -72,6 +72,8 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   methods: {
     blockRewardContract(): NonPayableTransactionObject<string>;
 
+    bonusScoreContract(): NonPayableTransactionObject<string>;
+
     checkReportMissingConnectivityCallable(
       caller: string,
       validator: string,
@@ -98,6 +100,14 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
 
     getFlaggedValidators(): NonPayableTransactionObject<string[]>;
 
+    getFlaggedValidatorsByEpoch(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<string[]>;
+
+    getFlaggedValidatorsCount(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
     getValidatorConnectivityScore(
       epoch: number | string | BN,
       validator: string
@@ -108,11 +118,17 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       _validatorSetContract: string,
       _stakingContract: string,
       _blockRewardContract: string,
+      _bonusScoreContract: string,
       _minReportAgeBlocks: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     isEarlyEpochEnd(
       arg0: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
+    isFaultyValidator(
+      validator: string,
+      epoch: number | string | BN
     ): NonPayableTransactionObject<boolean>;
 
     isReported(
@@ -124,6 +140,10 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
     minReportAgeBlocks(): NonPayableTransactionObject<string>;
 
     owner(): NonPayableTransactionObject<string>;
+
+    penaliseFaultyValidators(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     renounceOwnership(): NonPayableTransactionObject<void>;
 
