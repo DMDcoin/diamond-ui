@@ -172,6 +172,11 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const connectWallet = async () => {
     try {
+      if (typeof window.ethereum === 'undefined') {
+        toast.warn('MetaMask is not installed. Please install it to continue.');
+        return;
+      }
+
       // const chainOptions: { rpc: Record<number, string> } = {
       //   rpc: { [chainId]: rpcUrl },
       // };
@@ -197,11 +202,12 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       const provider = new Web3(web3ModalInstance);
   
       // force user to change to DMD network
+      const chainIdHex = new Web3().utils.toHex(chainId);
       if (await web3ModalInstance.request({ method: 'eth_chainId' }) !== chainId) {
         try {
           await web3ModalInstance.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: new Web3().utils.toHex(chainId) }],
+            params: [{ chainId: chainIdHex }],
           });
         } catch (err: any) {
           if (err.code === 4902) {
@@ -209,10 +215,11 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainName: "DMD",
-                  chainId: new Web3().utils.toHex(chainId),
+                  chainName: process.env.REACT_APP_CHAIN_NAME || "DMD Diamond",
+                  chainId: chainIdHex,
                   nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
                   rpcUrls: [rpcUrl],
+                  blockExplorerUrls: [process.env.REACT_APP_EXPLORER_URL || 'https://explorer.uniq.diamonds'],
                 },
               ],
             });

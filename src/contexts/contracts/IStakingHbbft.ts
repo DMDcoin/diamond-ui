@@ -38,6 +38,8 @@ export interface IStakingHbbft extends BaseContract {
       _stakingPool: string
     ): NonPayableTransactionObject<string>;
 
+    getPoolsInactive(): NonPayableTransactionObject<string[]>;
+
     getPoolsLikelihood(): NonPayableTransactionObject<{
       0: string[];
       1: string;
@@ -112,6 +114,13 @@ export interface IStakingHbbft extends BaseContract {
     stakingWithdrawDisallowPeriod(): NonPayableTransactionObject<string>;
 
     startTimeOfNextPhaseTransition(): NonPayableTransactionObject<string>;
+
+    totalStakedAmount(): NonPayableTransactionObject<string>;
+
+    updatePoolLikelihood(
+      mining: string,
+      validatorScore: number | string | BN
+    ): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

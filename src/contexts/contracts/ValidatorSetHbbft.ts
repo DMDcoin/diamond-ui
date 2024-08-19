@@ -43,6 +43,10 @@ export type SetBanDuration = ContractEventLog<{
   _value: string;
   0: string;
 }>;
+export type SetBonusScoreContract = ContractEventLog<{
+  _address: string;
+  0: string;
+}>;
 export type SetMaxValidators = ContractEventLog<{
   _count: string;
   0: string;
@@ -93,6 +97,8 @@ export interface ValidatorSetHbbft extends BaseContract {
 
     blockRewardContract(): NonPayableTransactionObject<string>;
 
+    bonusScoreSystem(): NonPayableTransactionObject<string>;
+
     canCallAnnounceAvailability(
       _miningAddress: string
     ): NonPayableTransactionObject<boolean>;
@@ -123,11 +129,7 @@ export interface ValidatorSetHbbft extends BaseContract {
 
     initialize(
       _contractOwner: string,
-      _blockRewardContract: string,
-      _randomContract: string,
-      _stakingContract: string,
-      _keyGenHistoryContract: string,
-      _validatorInactivityThreshold: number | string | BN,
+      _params: [string, string, string, string, string, number | string | BN],
       _initialMiningAddresses: string[],
       _initialStakingAddresses: string[]
     ): NonPayableTransactionObject<void>;
@@ -219,6 +221,10 @@ export interface ValidatorSetHbbft extends BaseContract {
       _banDuration: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    setBonusScoreSystemAddress(
+      _address: string
+    ): NonPayableTransactionObject<void>;
+
     setMaxValidators(
       _maxValidators: number | string | BN
     ): NonPayableTransactionObject<void>;
@@ -278,6 +284,12 @@ export interface ValidatorSetHbbft extends BaseContract {
       cb?: Callback<SetBanDuration>
     ): EventEmitter;
 
+    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
+    SetBonusScoreContract(
+      options?: EventOptions,
+      cb?: Callback<SetBonusScoreContract>
+    ): EventEmitter;
+
     SetMaxValidators(cb?: Callback<SetMaxValidators>): EventEmitter;
     SetMaxValidators(
       options?: EventOptions,
@@ -333,6 +345,16 @@ export interface ValidatorSetHbbft extends BaseContract {
     event: "SetBanDuration",
     options: EventOptions,
     cb: Callback<SetBanDuration>
+  ): void;
+
+  once(
+    event: "SetBonusScoreContract",
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+  once(
+    event: "SetBonusScoreContract",
+    options: EventOptions,
+    cb: Callback<SetBonusScoreContract>
   ): void;
 
   once(event: "SetMaxValidators", cb: Callback<SetMaxValidators>): void;

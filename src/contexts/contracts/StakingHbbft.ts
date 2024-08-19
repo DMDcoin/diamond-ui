@@ -103,6 +103,10 @@ export type RestakeReward = ContractEventLog<{
   2: string;
   3: string;
 }>;
+export type SetBonusScoreContract = ContractEventLog<{
+  _address: string;
+  0: string;
+}>;
 export type SetChangeAbleParameter = ContractEventLog<{
   setter: string;
   getter: string;
@@ -149,6 +153,8 @@ export interface StakingHbbft extends BaseContract {
     ): NonPayableTransactionObject<string>;
 
     areStakeAndWithdrawAllowed(): NonPayableTransactionObject<boolean>;
+
+    bonusScoreContract(): NonPayableTransactionObject<string>;
 
     candidateMinStake(): NonPayableTransactionObject<string>;
 
@@ -202,6 +208,7 @@ export interface StakingHbbft extends BaseContract {
     initialize(
       _contractOwner: string,
       stakingParams: [
+        string,
         string,
         string[],
         number | string | BN,
@@ -315,6 +322,10 @@ export interface StakingHbbft extends BaseContract {
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
+    setBonusScoreContract(
+      _bonusScoreContract: string
+    ): NonPayableTransactionObject<void>;
+
     setDelegatorMinStake(
       _minStake: number | string | BN
     ): NonPayableTransactionObject<void>;
@@ -388,7 +399,14 @@ export interface StakingHbbft extends BaseContract {
 
     startTimeOfNextPhaseTransition(): NonPayableTransactionObject<string>;
 
+    totalStakedAmount(): NonPayableTransactionObject<string>;
+
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
+
+    updatePoolLikelihood(
+      mining: string,
+      validatorScore: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     validatorSetContract(): NonPayableTransactionObject<string>;
 
@@ -457,6 +475,12 @@ export interface StakingHbbft extends BaseContract {
     RestakeReward(
       options?: EventOptions,
       cb?: Callback<RestakeReward>
+    ): EventEmitter;
+
+    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
+    SetBonusScoreContract(
+      options?: EventOptions,
+      cb?: Callback<SetBonusScoreContract>
     ): EventEmitter;
 
     SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
@@ -560,6 +584,16 @@ export interface StakingHbbft extends BaseContract {
     event: "RestakeReward",
     options: EventOptions,
     cb: Callback<RestakeReward>
+  ): void;
+
+  once(
+    event: "SetBonusScoreContract",
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+  once(
+    event: "SetBonusScoreContract",
+    options: EventOptions,
+    cb: Callback<SetBonusScoreContract>
   ): void;
 
   once(

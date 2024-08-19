@@ -366,9 +366,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const subscribeToEvents = async () => {
     if (!events) {
+      let phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
+      setPhaseTimer(phase);
+      
       const interval = setInterval(async () => {
         try {
-          const phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
+          phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
           
           setDaoPhase((prevPhase: any) => {
             if (prevPhase && phase && prevPhase.phase !== phase.phase) {
