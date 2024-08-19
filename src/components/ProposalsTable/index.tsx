@@ -131,7 +131,7 @@ const ProposalsTable = (props: TableProps) => {
                       <button className="primaryBtn">
                         Needs Finalization
                       </button>
-                    ) : proposal.state === "4" && daoContext.daoPhase.phase == Number(proposal.daoPhaseCount) + 1 ?
+                    ) : proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1 ?
                     (
                       <button className="primaryBtn">
                         Needs Execution

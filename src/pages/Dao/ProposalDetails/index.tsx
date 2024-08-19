@@ -395,11 +395,11 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* execute proposal */}
           {
-            proposal.state === "4" && daoContext.daoPhase.phase == Number(proposal.daoPhaseCount) + 1 ? (
+            proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1 ? (
               <div className={styles.finalizeProposalContainer}>
                 <button className="primaryBtn" onClick={() => handleProposalExecution(proposal.id)}>Execute Proposal</button>
               </div>
-            ) : proposal.state === "4" && daoContext.daoPhase.phase != Number(proposal.daoPhaseCount) + 1 && (
+            ) : proposal.state === "4" && daoContext.daoPhase.daoEpoch != Number(proposal.daoPhaseCount) + 1 && (
               <p>Proposal execution window is over</p>
             )
           }
