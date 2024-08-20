@@ -201,8 +201,11 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     try {
       const contract = getContractByName(contractName);
       const parameterData = await (contract?.methods as any)['getAllowedParamsRange'](EcosystemParameters[contractName][methodName].setter).call();
+      console.log(parameterData)
       setEpcParamRange(parameterData.range.length ? parameterData.range : ['0', '0']);
-    } catch(err) {}
+    } catch(err) {
+      console.log(err)
+    }
   }
 
   return (
