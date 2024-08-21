@@ -164,7 +164,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         }
 
         targets = [contractAddress as string];
-        values = [epcValue];
+        values = ["0"];
         calldatas = [encodedCallData as string];
       }
     } catch(err: any) {
