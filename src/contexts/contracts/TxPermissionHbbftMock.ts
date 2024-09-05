@@ -74,8 +74,6 @@ export interface TxPermissionHbbftMock extends BaseContract {
   methods: {
     ANNOUNCE_AVAILABILITY_SIGNATURE(): NonPayableTransactionObject<string>;
 
-    REPORT_MALICIOUS_SIGNATURE(): NonPayableTransactionObject<string>;
-
     REPORT_MISSING_CONNECTIVITY_SELECTOR(): NonPayableTransactionObject<string>;
 
     REPORT_RECONNECT_SELECTOR(): NonPayableTransactionObject<string>;
@@ -121,6 +119,10 @@ export interface TxPermissionHbbftMock extends BaseContract {
 
     getAllowedParamsRange(
       _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
     ): NonPayableTransactionObject<[string, string[]]>;
 
     initAllowedChangeableParameter(

@@ -21,17 +21,25 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IStakingHbbft extends BaseContract {
+export interface ReentrancyAttacker extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IStakingHbbft;
-  clone(): IStakingHbbft;
+  ): ReentrancyAttacker;
+  clone(): ReentrancyAttacker;
   methods: {
-    stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
+    attack(): NonPayableTransactionObject<void>;
 
-    totalStakedAmount(): NonPayableTransactionObject<string>;
+    calls(): NonPayableTransactionObject<string>;
+
+    dao(): NonPayableTransactionObject<string>;
+
+    getBalance(): NonPayableTransactionObject<string>;
+
+    proposalId(): NonPayableTransactionObject<string>;
+
+    setId(_proposalId: number | string | BN): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

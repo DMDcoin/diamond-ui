@@ -156,7 +156,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         setMyTotalStake(totalStakedByMe);
         pool.myStake = new BigNumber(myStake[1] ?? 0);
         pool.totalStake = new BigNumber(myStake[2] ?? 0);
-        pool.votingPower = BigNumber(myStake[2] ?? 0).dividedBy(daoStake).multipliedBy(100).decimalPlaces(2);
+        pool.votingPower = BigNumber(pool.totalStake).isGreaterThan(0) ? BigNumber(pool.totalStake).dividedBy(daoStake).multipliedBy(100).decimalPlaces(2) : new BigNumber(0);
 
         if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(myStake[1] ?? 0);
         setMyCandidateStake(candidateStake);
@@ -441,8 +441,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       
     // Fetch the updated pool data in one call
     if (poolsToUpdate.length > 0) {
+      poolsToUpdate.map(p => console.log(p.stakingAddress))
       const updatedPoolData = await contractsManager.aggregator?.methods.getPoolsData(poolsToUpdate.map(p => p.stakingAddress)).call();
-  
+      console.log(updatedPoolData)
       if (updatedPoolData) {
         // Process each updated pool data
         await Promise.all(updatedPoolData.map(async (updatedData: any, index: number) => {
@@ -463,16 +464,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
 
-    pool.miningAddress = updatedPoolData[0];
-    pool.banCount = parseInt(updatedPoolData[1]);
-    pool.bannedUntil = new BigNumber(updatedPoolData[2]);
-    pool.availableSince = new BigNumber(updatedPoolData[3]);
-    pool.miningPublicKey = updatedPoolData[4];
-    pool.delegators = updatedPoolData[5].map((address: string) => new Delegator(address));
-    pool.keyGenMode = new BigNumber(updatedPoolData[6]).toNumber();
-    pool.totalStake = new BigNumber(updatedPoolData[7]);
+    console.log({updatedPoolData})
 
-    await getDelegatorsData(pool, updatedPoolData[5].map((address: string) => new Delegator(address)), blockNumber).then((result) => {
+    pool.miningAddress = updatedPoolData[0];
+    pool.availableSince = new BigNumber(updatedPoolData[1]);
+    pool.miningPublicKey = updatedPoolData[2];
+    pool.delegators = updatedPoolData[3].map((address: string) => new Delegator(address));
+    pool.keyGenMode = new BigNumber(updatedPoolData[4]).toNumber();
+    pool.totalStake = new BigNumber(updatedPoolData[5]);
+
+    await getDelegatorsData(pool, updatedPoolData[3].map((address: string) => new Delegator(address)), blockNumber).then((result) => {
       pool.ownStake = result.ownStake;
       pool.delegators = result.delegators;
       pool.candidateStake = result.candidateStake;

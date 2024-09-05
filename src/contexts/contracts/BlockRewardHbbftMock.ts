@@ -103,6 +103,10 @@ export interface BlockRewardHbbftMock extends BaseContract {
       _selector: string
     ): NonPayableTransactionObject<[string, string[]]>;
 
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
     getGovernanceAddress(): NonPayableTransactionObject<string>;
 
     getPotsShares(

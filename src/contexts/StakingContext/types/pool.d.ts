@@ -23,7 +23,6 @@ export interface IPool {
     claimableReward: string;
     keyGenMode: KeyGenMode;
     bannedUntil: BN;
-    banCount: number;
     parts: string;
     numberOfAcks: number;
     availableSince: BN;

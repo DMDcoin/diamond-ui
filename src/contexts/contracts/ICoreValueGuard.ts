@@ -21,17 +21,22 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IStakingHbbft extends BaseContract {
+export interface ICoreValueGuard extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IStakingHbbft;
-  clone(): IStakingHbbft;
+  ): ICoreValueGuard;
+  clone(): ICoreValueGuard;
   methods: {
-    stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
+    getAllowedParamsRangeWithSelector(
+      funcSelector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
 
-    totalStakedAmount(): NonPayableTransactionObject<string>;
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

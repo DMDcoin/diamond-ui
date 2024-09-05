@@ -21,16 +21,6 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export type Initialized = ContractEventLog<{
-  version: string;
-  0: string;
-}>;
-export type OwnershipTransferred = ContractEventLog<{
-  previousOwner: string;
-  newOwner: string;
-  0: string;
-  1: string;
-}>;
 export type RemoveChangeAbleParameter = ContractEventLog<{
   funcSelector: string;
   0: string;
@@ -43,45 +33,37 @@ export type SetChangeAbleParameter = ContractEventLog<{
   1: string;
   2: string[];
 }>;
+export type SetDelegatorMinStake = ContractEventLog<{
+  minStake: string;
+  0: string;
+}>;
 
-export interface ValueGuards extends BaseContract {
+export interface MockStakingHbbft extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): ValueGuards;
-  clone(): ValueGuards;
+  ): MockStakingHbbft;
+  clone(): MockStakingHbbft;
   methods: {
     allowedParameterRange(
       arg0: string | number[]
     ): NonPayableTransactionObject<string>;
 
-    getAllowedParamsRange(
-      _selector: string
-    ): NonPayableTransactionObject<[string, string[]]>;
+    delegatorMinStake(): NonPayableTransactionObject<string>;
 
     getAllowedParamsRangeWithSelector(
       _selector: string | number[]
     ): NonPayableTransactionObject<[string, string[]]>;
-
-    initAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
 
     isWithinAllowedRange(
       funcSelector: string | number[],
       newVal: number | string | BN
     ): NonPayableTransactionObject<boolean>;
 
-    owner(): NonPayableTransactionObject<string>;
-
     removeAllowedChangeableParameter(
       funcSelector: string
     ): NonPayableTransactionObject<void>;
-
-    renounceOwnership(): NonPayableTransactionObject<void>;
 
     setAllowedChangeableParameter(
       setter: string,
@@ -89,21 +71,20 @@ export interface ValueGuards extends BaseContract {
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
-    transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
+    setDelegatorMinStake(
+      _minStake: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    setStake(
+      staking: string,
+      stakeAmount: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    stakeAmountTotal(staking: string): NonPayableTransactionObject<string>;
+
+    totalStakedAmount(): NonPayableTransactionObject<string>;
   };
   events: {
-    Initialized(cb?: Callback<Initialized>): EventEmitter;
-    Initialized(
-      options?: EventOptions,
-      cb?: Callback<Initialized>
-    ): EventEmitter;
-
-    OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
-    OwnershipTransferred(
-      options?: EventOptions,
-      cb?: Callback<OwnershipTransferred>
-    ): EventEmitter;
-
     RemoveChangeAbleParameter(
       cb?: Callback<RemoveChangeAbleParameter>
     ): EventEmitter;
@@ -118,23 +99,15 @@ export interface ValueGuards extends BaseContract {
       cb?: Callback<SetChangeAbleParameter>
     ): EventEmitter;
 
+    SetDelegatorMinStake(cb?: Callback<SetDelegatorMinStake>): EventEmitter;
+    SetDelegatorMinStake(
+      options?: EventOptions,
+      cb?: Callback<SetDelegatorMinStake>
+    ): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "Initialized", cb: Callback<Initialized>): void;
-  once(
-    event: "Initialized",
-    options: EventOptions,
-    cb: Callback<Initialized>
-  ): void;
-
-  once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
-  once(
-    event: "OwnershipTransferred",
-    options: EventOptions,
-    cb: Callback<OwnershipTransferred>
-  ): void;
-
   once(
     event: "RemoveChangeAbleParameter",
     cb: Callback<RemoveChangeAbleParameter>
@@ -153,5 +126,12 @@ export interface ValueGuards extends BaseContract {
     event: "SetChangeAbleParameter",
     options: EventOptions,
     cb: Callback<SetChangeAbleParameter>
+  ): void;
+
+  once(event: "SetDelegatorMinStake", cb: Callback<SetDelegatorMinStake>): void;
+  once(
+    event: "SetDelegatorMinStake",
+    options: EventOptions,
+    cb: Callback<SetDelegatorMinStake>
   ): void;
 }

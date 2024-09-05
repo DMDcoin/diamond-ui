@@ -170,6 +170,10 @@ export interface StakingHbbft extends BaseContract {
       _selector: string
     ): NonPayableTransactionObject<[string, string[]]>;
 
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
     getPoolInternetAddress(_poolAddress: string): NonPayableTransactionObject<{
       0: string;
       1: string;
