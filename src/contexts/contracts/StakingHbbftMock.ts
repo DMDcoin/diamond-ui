@@ -186,6 +186,10 @@ export interface StakingHbbftMock extends BaseContract {
       _selector: string
     ): NonPayableTransactionObject<[string, string[]]>;
 
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
     getDelegatorStakeSnapshot(
       pool: string,
       delegator: string,

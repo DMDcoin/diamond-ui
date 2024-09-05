@@ -26,7 +26,6 @@ export class Pool {
   public claimableReward: string = '0';
   public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
   public bannedUntil: BigNumber = new BigNumber('0');
-  public banCount: number = 0;
   public parts: string = ''; // if part of the treshhold key, or pending validator, this holds the PARTS
   public numberOfAcks: number = 0; // if part of the treshhold key, or pending validator, this holds the number of ACKS
   public availableSince: BigNumber = new BigNumber(0); // availability

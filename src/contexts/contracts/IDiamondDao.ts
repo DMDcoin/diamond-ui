@@ -21,16 +21,6 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export type Initialized = ContractEventLog<{
-  version: string;
-  0: string;
-}>;
-export type OwnershipTransferred = ContractEventLog<{
-  previousOwner: string;
-  newOwner: string;
-  0: string;
-  1: string;
-}>;
 export type ProposalCanceled = ContractEventLog<{
   proposer: string;
   proposalId: string;
@@ -62,18 +52,6 @@ export type ProposalExecuted = ContractEventLog<{
   proposalId: string;
   0: string;
   1: string;
-}>;
-export type RemoveChangeAbleParameter = ContractEventLog<{
-  funcSelector: string;
-  0: string;
-}>;
-export type SetChangeAbleParameter = ContractEventLog<{
-  setter: string;
-  getter: string;
-  params: string[];
-  0: string;
-  1: string;
-  2: string[];
 }>;
 export type SetChangeAbleParameters = ContractEventLog<{
   allowed: boolean;
@@ -130,54 +108,18 @@ export type VotingFinalized = ContractEventLog<{
   2: boolean;
 }>;
 
-export interface DiamondDao extends BaseContract {
+export interface IDiamondDao extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): DiamondDao;
-  clone(): DiamondDao;
+  ): IDiamondDao;
+  clone(): IDiamondDao;
   methods: {
-    DAO_PHASE_DURATION(): NonPayableTransactionObject<string>;
-
-    MAX_NEW_PROPOSALS(): NonPayableTransactionObject<string>;
-
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
-
     cancel(
       proposalId: number | string | BN,
       reason: string
     ): NonPayableTransactionObject<void>;
-
-    countVotes(
-      proposalId: number | string | BN
-    ): NonPayableTransactionObject<[string, string, string, string]>;
-
-    createProposalFee(): NonPayableTransactionObject<string>;
-
-    currentPhaseProposals(
-      arg0: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    daoEpochStakeSnapshot(
-      arg0: number | string | BN,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    daoPhase(): NonPayableTransactionObject<{
-      start: string;
-      end: string;
-      daoEpoch: string;
-      phase: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-    }>;
-
-    daoPhaseCount(): NonPayableTransactionObject<string>;
 
     execute(
       proposalId: number | string | BN
@@ -186,16 +128,6 @@ export interface DiamondDao extends BaseContract {
     finalize(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<void>;
-
-    getAllowedParamsRange(
-      _selector: string
-    ): NonPayableTransactionObject<[string, string[]]>;
-
-    getAllowedParamsRangeWithSelector(
-      _selector: string | number[]
-    ): NonPayableTransactionObject<[string, string[]]>;
-
-    getCurrentPhaseProposals(): NonPayableTransactionObject<string[]>;
 
     getProposal(
       proposalId: number | string | BN
@@ -215,71 +147,16 @@ export interface DiamondDao extends BaseContract {
       ]
     >;
 
-    getProposalVoters(
-      proposalId: number | string | BN
-    ): NonPayableTransactionObject<string[]>;
-
-    getProposalVotersCount(
-      proposalId: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    governancePot(): NonPayableTransactionObject<string>;
-
     hashProposal(
       targets: string[],
       values: (number | string | BN)[],
       calldatas: (string | number[])[],
-      description: string
+      descriptionHash: string
     ): NonPayableTransactionObject<string>;
-
-    initAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
-    initialize(
-      _validatorSet: string,
-      _stakingHbbft: string,
-      _reinsertPot: string,
-      _txPermission: string,
-      _createProposalFee: number | string | BN,
-      _startTimestamp: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
-
-    isWithinAllowedRange(
-      funcSelector: string | number[],
-      newVal: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    lastDaoPhaseCount(): NonPayableTransactionObject<string>;
-
-    owner(): NonPayableTransactionObject<string>;
 
     proposalExists(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<boolean>;
-
-    proposals(arg0: number | string | BN): NonPayableTransactionObject<{
-      proposer: string;
-      votingDaoEpoch: string;
-      state: string;
-      title: string;
-      description: string;
-      discussionUrl: string;
-      daoPhaseCount: string;
-      proposalType: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-      4: string;
-      5: string;
-      6: string;
-      7: string;
-    }>;
 
     propose(
       targets: string[],
@@ -289,73 +166,6 @@ export interface DiamondDao extends BaseContract {
       description: string,
       discussionUrl: string
     ): PayableTransactionObject<void>;
-
-    quorumReached(
-      _type: number | string | BN,
-      result: [
-        number | string | BN,
-        number | string | BN,
-        number | string | BN,
-        number | string | BN
-      ]
-    ): NonPayableTransactionObject<boolean>;
-
-    reinsertPot(): NonPayableTransactionObject<string>;
-
-    removeAllowedChangeableParameter(
-      funcSelector: string
-    ): NonPayableTransactionObject<void>;
-
-    renounceOwnership(): NonPayableTransactionObject<void>;
-
-    results(arg0: number | string | BN): NonPayableTransactionObject<{
-      countYes: string;
-      countNo: string;
-      stakeYes: string;
-      stakeNo: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-    }>;
-
-    setAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
-    setCreateProposalFee(
-      _fee: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setIsCoreContract(
-      _add: string,
-      isCore: boolean
-    ): NonPayableTransactionObject<void>;
-
-    stakingHbbft(): NonPayableTransactionObject<string>;
-
-    statistic(): NonPayableTransactionObject<{
-      total: string;
-      accepted: string;
-      declined: string;
-      canceled: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-    }>;
-
-    switchPhase(): NonPayableTransactionObject<void>;
-
-    transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
-
-    unfinalizedProposals(): NonPayableTransactionObject<string>;
-
-    unfinalizedProposalsExist(): NonPayableTransactionObject<boolean>;
-
-    validatorSet(): NonPayableTransactionObject<string>;
 
     vote(
       proposalId: number | string | BN,
@@ -367,32 +177,8 @@ export interface DiamondDao extends BaseContract {
       _vote: number | string | BN,
       reason: string
     ): NonPayableTransactionObject<void>;
-
-    votes(
-      arg0: number | string | BN,
-      arg1: string
-    ): NonPayableTransactionObject<{
-      timestamp: string;
-      vote: string;
-      reason: string;
-      0: string;
-      1: string;
-      2: string;
-    }>;
   };
   events: {
-    Initialized(cb?: Callback<Initialized>): EventEmitter;
-    Initialized(
-      options?: EventOptions,
-      cb?: Callback<Initialized>
-    ): EventEmitter;
-
-    OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
-    OwnershipTransferred(
-      options?: EventOptions,
-      cb?: Callback<OwnershipTransferred>
-    ): EventEmitter;
-
     ProposalCanceled(cb?: Callback<ProposalCanceled>): EventEmitter;
     ProposalCanceled(
       options?: EventOptions,
@@ -409,20 +195,6 @@ export interface DiamondDao extends BaseContract {
     ProposalExecuted(
       options?: EventOptions,
       cb?: Callback<ProposalExecuted>
-    ): EventEmitter;
-
-    RemoveChangeAbleParameter(
-      cb?: Callback<RemoveChangeAbleParameter>
-    ): EventEmitter;
-    RemoveChangeAbleParameter(
-      options?: EventOptions,
-      cb?: Callback<RemoveChangeAbleParameter>
-    ): EventEmitter;
-
-    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
-    SetChangeAbleParameter(
-      options?: EventOptions,
-      cb?: Callback<SetChangeAbleParameter>
     ): EventEmitter;
 
     SetChangeAbleParameters(
@@ -469,20 +241,6 @@ export interface DiamondDao extends BaseContract {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "Initialized", cb: Callback<Initialized>): void;
-  once(
-    event: "Initialized",
-    options: EventOptions,
-    cb: Callback<Initialized>
-  ): void;
-
-  once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
-  once(
-    event: "OwnershipTransferred",
-    options: EventOptions,
-    cb: Callback<OwnershipTransferred>
-  ): void;
-
   once(event: "ProposalCanceled", cb: Callback<ProposalCanceled>): void;
   once(
     event: "ProposalCanceled",
@@ -502,26 +260,6 @@ export interface DiamondDao extends BaseContract {
     event: "ProposalExecuted",
     options: EventOptions,
     cb: Callback<ProposalExecuted>
-  ): void;
-
-  once(
-    event: "RemoveChangeAbleParameter",
-    cb: Callback<RemoveChangeAbleParameter>
-  ): void;
-  once(
-    event: "RemoveChangeAbleParameter",
-    options: EventOptions,
-    cb: Callback<RemoveChangeAbleParameter>
-  ): void;
-
-  once(
-    event: "SetChangeAbleParameter",
-    cb: Callback<SetChangeAbleParameter>
-  ): void;
-  once(
-    event: "SetChangeAbleParameter",
-    options: EventOptions,
-    cb: Callback<SetChangeAbleParameter>
   ): void;
 
   once(

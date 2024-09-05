@@ -18,9 +18,6 @@ import JsonRegistry from '../../contract-abis/Registry.json';
 import { TxPermissionHbbft } from '../../contracts/TxPermissionHbbft';
 import JsonTxPermissionHbbft from '../../contract-abis/TxPermissionHbbft.json';
 
-import { AdminUpgradeabilityProxy } from '../../contracts/AdminUpgradeabilityProxy';
-import JsonAdminUpgradeabilityProxy from '../../contract-abis/AdminUpgradeabilityProxy.json';
-
 import { RandomHbbft } from '../../contracts/RandomHbbft';
 import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
 
@@ -91,13 +88,6 @@ export class ContractManager {
     return result;
   }
 
-  public getUpgradabilityProxy(address: string) : AdminUpgradeabilityProxy {
-
-    const abi : any = JsonAdminUpgradeabilityProxy.abi;
-    let result : any = new this.web3.eth.Contract(abi, address);
-    return result;
-  }
-
   public async getRewardHbbft() : Promise<BlockRewardHbbft> {
     if (this.cachedRewardContract) {
       return this.cachedRewardContract;
@@ -159,13 +149,6 @@ export class ContractManager {
     const abi : any = JsonKeyGenHistory.abi;
     const contract : any = new this.web3.eth.Contract(abi, contractAddress);
     this.cachedKeyGenHistory = contract;
-    return contract;
-  }
-
-  public getAdminUpgradeabilityProxy(contractAddress: string) : AdminUpgradeabilityProxy {
-    
-    const abi : any = JsonAdminUpgradeabilityProxy.abi;
-    const contract : any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;
   }
 
