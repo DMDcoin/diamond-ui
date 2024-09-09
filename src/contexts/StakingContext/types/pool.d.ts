@@ -22,7 +22,6 @@ export interface IPool {
     validatorRewardShare: number;
     claimableReward: string;
     keyGenMode: KeyGenMode;
-    bannedUntil: BN;
     parts: string;
     numberOfAcks: number;
     availableSince: BN;

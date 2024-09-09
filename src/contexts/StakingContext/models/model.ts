@@ -25,7 +25,6 @@ export class Pool {
   public validatorRewardShare: number = 0; // percent
   public claimableReward: string = '0';
   public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
-  public bannedUntil: BigNumber = new BigNumber('0');
   public parts: string = ''; // if part of the treshhold key, or pending validator, this holds the PARTS
   public numberOfAcks: number = 0; // if part of the treshhold key, or pending validator, this holds the number of ACKS
   public availableSince: BigNumber = new BigNumber(0); // availability
@@ -36,13 +35,6 @@ export class Pool {
 
   constructor(stakingAddress: string) {
     this.stakingAddress = stakingAddress;
-  }
-
-  public isBanned(currentTimestamp?: BigNumber): boolean {
-    if (!currentTimestamp) {
-      currentTimestamp = new BigNumber(Math.floor(Date.now() / 1000));
-    }
-    return this.bannedUntil.isGreaterThan(currentTimestamp);
   }
 
   public get isWrittenParts(): boolean | undefined {
