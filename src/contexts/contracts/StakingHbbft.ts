@@ -228,6 +228,8 @@ export interface StakingHbbft extends BaseContract {
 
     isPoolActive(_stakingAddress: string): NonPayableTransactionObject<boolean>;
 
+    isPoolValid(_stakingAddress: string): NonPayableTransactionObject<boolean>;
+
     isWithinAllowedRange(
       funcSelector: string | number[],
       newVal: number | string | BN

@@ -110,9 +110,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   };
 
   const handleCastVote = async (vote: number) => {
-    if (pools.filter(
-      (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
-    ).length <= 0) {
+    if (!web3Context.contractsManager.stContract?.methods.isPoolValid(web3Context.userWallet.myAddr)) {
       toast.warning(`Only validator candidates can vote`);
       return;
     }

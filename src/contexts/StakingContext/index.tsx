@@ -760,9 +760,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else if (new BigNumber(pool.myStake).plus(new BigNumber(stakeAmountWei)).isLessThan(delegatorMinStake)) {
       toast.warn(`Min. staking amount is ${delegatorMinStake.dividedBy(10**18)}`);
       return false;
-    } else if (BigNumber(pool.bannedUntil).isGreaterThan(BigNumber(new Date().getTime() / 1000))) {
-      toast.warn("Cannot stake on a pool which is currently banned");
-      return false;
     } else {
       try {
         showLoader(true, `Staking ${stakeAmount} DMD 💎`);
