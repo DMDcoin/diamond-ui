@@ -50,9 +50,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
     try {
-      createPool(publicKey, new BigNumber(stakeAmount)).then((res) => {
-        if (res) navigate(`/staking/details/${userWallet.myAddr}`);
-      });
+      createPool(publicKey, new BigNumber(stakeAmount));
     } catch (err) {
       console.log(err);
       toast.error("Error in creating pool");
@@ -61,7 +59,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
 
   return (
     <>
-      <button className={styles.tableButton} onClick={openModal}>
+      <button className="primaryBtn" onClick={openModal}>
         {buttonText}
       </button>
 
@@ -75,7 +73,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
 
             <form className={styles.form} onSubmit={handleCreatePool}>
               <span>
-                Please stake atleast 10,000 DMD
+                Please stake at least 10,000 DMD
                 coins (50,000 max) to become a validator candidate.
               </span>
 

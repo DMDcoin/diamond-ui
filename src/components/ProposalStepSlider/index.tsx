@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./styles.module.css";
 import BigNumber from "bignumber.js";
+import { formatCryptoUnitValue } from "../../utils/common";
 
 interface ProposalStepSliderProps {
     state: string;
@@ -38,9 +39,9 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ paramsRange, st
 
     return (
         <div className={styles.sliderContainer}>
-            <span>{BigNumber(state).dividedBy(10**18).toString()} DMD</span>
+            <span>{formatCryptoUnitValue(state)}</span>
             <div>
-                <span>{BigNumber(paramsRange[0]).dividedBy(10**18).toString()} DMD</span>
+                <span>{formatCryptoUnitValue(paramsRange[0])}</span>
                 <input
                     type="range"
                     min={paramsRange[0]}
@@ -49,7 +50,7 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ paramsRange, st
                     onChange={handleChange}
                     className={styles.rangeInput}
                 />
-                <span>{BigNumber(paramsRange[paramsRange.length - 1]).dividedBy(10**18).toString()} DMD</span>
+                <span>{formatCryptoUnitValue(paramsRange[paramsRange.length - 1])}</span>
             </div>
         </div>
     );

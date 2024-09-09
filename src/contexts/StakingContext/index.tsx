@@ -2,13 +2,13 @@ import React, { ErrorInfo, createContext, useContext, useEffect, useState } from
 
 import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
+import { PoolCache } from "./types/cache";
 import { useWeb3Context } from "../Web3Context";
 import { Delegator, Pool } from "./models/model";
 import { BlockType, NonPayableTx } from "./types/contracts";
 import { ContextProviderProps } from "../Web3Context/types";
-import { getAddressFromPublicKey } from "../../utils/common";
-import { PoolCache } from "./types/cache";
-import { UserWallet } from "./models/wallet";
+import { getAddressFromPublicKey, isValidAddress } from "../../utils/common";
+import { useDaoContext } from "../DaoContext";
 
 
 interface StakingContextProps {
@@ -21,20 +21,25 @@ interface StakingContextProps {
   validCandidates: number;
   epochStartBlock: number;
   myTotalStake: BigNumber;
+  isSyncingPools: boolean;
+  myPool: Pool | undefined;
   activeValidators: number;
   minimumGasFee: BigNumber;
+  totalDaoStake: BigNumber;
+  myCandidateStake: BigNumber;
   stakingInitialized: boolean;
   candidateMinStake: BigNumber;
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {}
+  claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
-  getOrderedUnstakeAmount: (pool: Pool) => Promise<BigNumber>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
-  claimOrderedUnstake: (pool: Pool, claimAmount: BigNumber) => Promise<boolean>;
+  getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -63,10 +68,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     value: '0'
   });
 
+  const [myPool, setMyPool] = useState<Pool | undefined>(undefined);
   const [pools, setPools] = useState<Pool[]>(Array.from({ length: 10 }, () => (new Pool(""))));
   const [stakingEpoch, setStakingEpoch] = useState<number>(0);
   const [keyGenRound, setKeyGenRound] = useState<number>(0);
   const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
+  const [myCandidateStake, setMyCandidateStake] = useState<BigNumber>(new BigNumber(0));
   const [totalDaoStake, setTotalDaoStake] = useState<BigNumber>(new BigNumber(0));
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>(0);
   const [latestBlockNumber, setLatestBlockNumber] = useState<number>(0);
@@ -80,6 +87,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [epochStartBlock, setEpochStartBlock] = useState<number>(0);
   const [epochStartTime, setEpochStartTime] = useState<number>(0);
   const [stakingEpochEndTime, setStakingEpochEndTime] = useState<number>(0);
+  const [stakingEpochEndBlock, setStakingEpochEndBlock] = useState<number>(0);
   const [deltaPot, setDeltaPot] = useState<string>('');
   const [daoPot, setDaoPot] = useState<string>('');
   const [reinsertPot, setReinsertPot] = useState<string>('');
@@ -92,45 +100,76 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    console.log("[INFO] Updating stake amounts");
-
-    setPools(prevPools => {
-      let totalStake = BigNumber(0);
-
-      prevPools.forEach(pool => {
-        pool.stakingAddress && getMyStake(pool.stakingAddress).then((result) => {
-          totalStake = totalStake.plus(result);
-          setMyTotalStake(totalStake);
-          pool.myStake = new BigNumber(result);
-        });
-      });
-      
-      return prevPools;
-    });
-
-    updatePoolsVotingPower(totalDaoStake);
-  }, [totalDaoStake, userWallet, pools]);
+    if (pools.filter(pool => pool.miningAddress).length == pools.length) {
+      console.log("[INFO] Updating stake amounts");
+      updateStakeAmounts();
+    }
+  }, [totalDaoStake, userWallet.myAddr]);
 
   useEffect(() => {
     if (web3Initialized) {
-      showLoader(true, "");
+      // localStorage.clear();
       retrieveGlobalValues().then((bn: number) => {
         syncPoolsState(bn, true);
         initializeStakingDataAdapter();
-        showLoader(false, "");
       })
     }
   }, [web3Initialized]);
 
-  const updatePoolsVotingPower = async (totalDaoStake: BigNumber) => {
-    if (contractsManager.stContract) {
-      setPools(prevPools => {
-        prevPools.forEach(pool => {
-          pool.votingPower = BigNumber(pool.totalStake).dividedBy(totalDaoStake).multipliedBy(100).decimalPlaces(2);
-        });
-        return prevPools;
-      });
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
+      toast.error(err.message);
+    } else {
+      toast.error(alternateMsg);
     }
+  }
+
+  const updateStakeAmounts = async (poolsInp?: Pool[]) => {
+    const poolsStakingAddresses = poolsInp ? poolsInp.map(p => p.stakingAddress) : pools.map(p => p.stakingAddress);
+    const myAddr = userWallet.myAddr || '0x0000000000000000000000000000000000000000';
+
+    let myStakeAmounts: any;
+    let orderedWithdraws: any;
+
+    myStakeAmounts = await contractsManager.aggregator?.methods.getUserStakes(myAddr, poolsStakingAddresses).call();
+
+    if (myAddr != '0x0000000000000000000000000000000000000000') {
+      orderedWithdraws = await contractsManager.aggregator?.methods.getUserOrderedWithdraws(myAddr, poolsStakingAddresses).call();
+    }
+
+    let daoStake = totalDaoStake;
+    if (totalDaoStake.isZero() && contractsManager.stContract) {
+      daoStake = BigNumber(await contractsManager.stContract?.methods.totalStakedAmount().call());
+    }
+
+    let candidateStake = new BigNumber(0);
+    let totalStakedByMe = new BigNumber(0);
+
+    setPools((prevPools: any) => {
+      const newPools = prevPools.map((pool: Pool) => ({ ...pool }));
+      
+      poolsStakingAddresses.forEach((stakingAddress, index) => {
+        let pool = newPools.filter((p: Pool) => p.stakingAddress === stakingAddress)[0];
+
+        let myStake = myStakeAmounts[index];
+        totalStakedByMe = totalStakedByMe.plus(myStake[1] ?? 0);
+        setMyTotalStake(totalStakedByMe);
+        pool.myStake = new BigNumber(myStake[1] ?? 0);
+        pool.totalStake = new BigNumber(myStake[2] ?? 0);
+        pool.votingPower = BigNumber(pool.totalStake).isGreaterThan(0) ? BigNumber(pool.totalStake).dividedBy(daoStake).multipliedBy(100).decimalPlaces(2) : new BigNumber(0);
+
+        if (userWallet.myAddr && pool.stakingAddress != userWallet.myAddr) candidateStake = candidateStake.plus(myStake[1] ?? 0);
+        setMyCandidateStake(candidateStake);
+
+        if (orderedWithdraws) {
+          let orderedWithdrawAmount = orderedWithdraws[index];
+          pool.orderedWithdrawAmount = new BigNumber(orderedWithdrawAmount[1] ?? 0);
+          pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
+        }
+      });
+      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
+      return newPools;
+    });
   }
  
   const initializeStakingDataAdapter = async () => {
@@ -140,16 +179,47 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getLatestStakingBlockNumber = async () => {
-    if (contractsManager.stContract) {
-      const events = await contractsManager.stContract.getPastEvents(
-        'allEvents',
-        {
-          fromBlock: 0,
-          toBlock: 'latest'
-        });
-      const latestEvent = events[events.length - 1];
-      return latestEvent.blockNumber;
+    let allEvents: any[] = [];
+    const eventsBatchSize = 100000;
+    const currentBlock = await web3.eth.getBlockNumber();
+  
+    // Retrieve the last block number from localStorage
+    const storedBlockNumber = parseInt(localStorage.getItem('stakingLatestBlockN') || '0', 10);
+    const startBlock = isNaN(storedBlockNumber) ? 0 : storedBlockNumber;
+  
+    const promises: Promise<void>[] = [];
+  
+    for (let i = startBlock; i < currentBlock; i += eventsBatchSize) {
+      const start = i;
+      const end = Math.min(i + eventsBatchSize - 1, currentBlock);
+  
+      if (contractsManager.stContract) {
+        const promise = contractsManager.stContract.getPastEvents(
+          'allEvents',
+          {
+            fromBlock: start,
+            toBlock: end
+          }).then((events) => {
+            events.forEach(e => allEvents.push(e));
+          }).catch((error) => {
+            console.error(`Error fetching events from block ${start} to ${end}:`, error);
+          });
+  
+        promises.push(promise);
+      }
     }
+  
+    await Promise.allSettled(promises);
+  
+    const latestEvent = allEvents.reduce((maxEvent: any, event: any) => 
+      event.blockNumber > maxEvent.blockNumber ? event : maxEvent, allEvents[0]);
+  
+    const latestBlockNumber = latestEvent?.blockNumber ?? currentBlock;
+  
+    // Store the latest block number in localStorage
+    localStorage.setItem('stakingLatestBlockN', latestBlockNumber.toString());
+  
+    return latestBlockNumber;
   }
 
   /**
@@ -201,7 +271,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }
       )
       
-    }, 300000)); // 10 seconds
+    }, 300000)); // 5 minutes
   }
 
   const handleNewBlock = async (blockNumber: number) : Promise<void> => {
@@ -230,42 +300,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     await syncPoolsState(blockHeader.number, isNewEpoch);
   }
 
-  const getBlockHistoryInfoAsString = () => {
-    return isShowHistoric ? `historic block #${showHistoricBlock}` : 'latest';
-  }
-
   const tx = () : NonPayableTx | undefined => {
     return undefined;
-  }
-
-  const block = () : BlockType => {
-    if ( isShowHistoric ) {
-      return showHistoricBlock;
-    }
-
-    return currentBlockNumber;
-  }
-
-  const getMyStake = async (stakingAddress: string, blockNumber?: number): Promise<string> => {
-    if (!web3 || !userWallet || !contractsManager.stContract || !userWallet.myAddr) {
-      return '0';
-    }
-    
-    const stakeAmount = contractsManager.stContract.methods.stakeAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber || block());
-    return stakeAmount;
-  }
-
-  const getBannedUntil = async (miningAddress: string): Promise<any> => {
-    return new BigNumber((await contractsManager.vsContract.methods.bannedUntil(miningAddress).call(tx(), block())));
-  }
-
-  const getBanCount = async (miningAddress: string): Promise<number> => {
-    return parseInt(await contractsManager.vsContract.methods.banCounter(miningAddress).call(tx(), block()));
-  }
-
-  const getAvailableSince = async (miningAddress: string, blockNumber: number): Promise<any> => {
-    const rawResult = await contractsManager.vsContract.methods.validatorAvailableSince(miningAddress).call(tx(), blockNumber);
-    return new BigNumber(rawResult);
   }
 
   const retrieveGlobalValues = async () => {
@@ -285,85 +321,56 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.warn('Unexpected defaultBlock: ', web3.eth.defaultBlock);
     }
 
-    let updatedStakingEpoch;
-    const promises: Promise<any>[] = [];
+    const globals = await contractsManager.aggregator?.methods.getGlobals().call({}, latestBlockNumber);
 
-    if (contractsManager.stContract) {
-      setCandidateMinStake(new BigNumber(await contractsManager.stContract.methods.candidateMinStake().call(tx(), latestBlockNumber)));
-      setDelegatorMinStake(new BigNumber(await contractsManager.stContract.methods.delegatorMinStake().call(tx(), latestBlockNumber)));
-      updatedStakingEpoch = parseInt(await contractsManager.stContract.methods.stakingEpoch().call(tx(), latestBlockNumber));
-      setStakingEpoch(updatedStakingEpoch);
-      setTotalDaoStake(new BigNumber(await web3.eth.getBalance(contractsManager.stContract.options.address)));
-    }
-    setMinimumGasFee(new BigNumber(await contractsManager.contracts.getContractPermission().methods.minimumGasPrice().call(tx(), latestBlockNumber)));
+    if (globals) {
+      setKeyGenRound(parseInt(globals[2]));
+      setStakingEpoch(parseInt(globals[3]));
+      setMinimumGasFee(new BigNumber(globals[4]));
+      setCandidateMinStake(new BigNumber(globals[5]));
+      setDelegatorMinStake(new BigNumber(globals[6]));
+      setStakeWithdrawDisallowPeriod(parseInt(globals[12]));
 
-    // those values are asumed to be not changeable.
-    setEpochDuration(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingFixedEpochDuration().call(tx(), latestBlockNumber)));
-    setStakeWithdrawDisallowPeriod(parseInt(await (await contractsManager.contracts.getStakingHbbft()).methods.stakingWithdrawDisallowPeriod().call(tx(), latestBlockNumber)));
+      if (parseInt(globals[3]) !== oldStakingEpoch) {
+        setEpochStartBlock(parseInt(globals[8]));
+        setEpochStartTime(parseInt(globals[7]));
+        setDeltaPot(web3.utils.fromWei(globals[0], 'ether'));
+        setReinsertPot(web3.utils.fromWei(globals[1], 'ether'));
+        setStakingEpochEndTime(parseInt(globals[10]));
+        setCanStakeOrWithdrawNow(globals[9]);
 
-    promises.push(
-      contractsManager.contracts.getCurrentKeyGenRound(latestBlockNumber).then((result) => {
-        setKeyGenRound(result);
-      }),
-    );
-
-    if (updatedStakingEpoch !== oldStakingEpoch && contractsManager.stContract && contractsManager.brContract) {
-      promises.push(
-        contractsManager.stContract.methods.stakingEpochStartBlock().call(tx(), latestBlockNumber).then((result) => {
-          setEpochStartBlock(parseInt(result));
-        }),
-        contractsManager.stContract.methods.stakingEpochStartTime().call(tx(), latestBlockNumber).then((result) => {
-          setEpochStartTime(parseInt(result));
-        }),
-        contractsManager.brContract.methods.deltaPot().call(tx(), latestBlockNumber).then((result) => {
-          setDeltaPot(web3.utils.fromWei(result, 'ether'));
-        }),
-        contractsManager.brContract.methods.reinsertPot().call(tx(), latestBlockNumber).then((result) => {
-          setReinsertPot(web3.utils.fromWei(result, 'ether'));
-        }),
-        contractsManager.stContract.methods.stakingFixedEpochEndTime().call(tx(), latestBlockNumber).then((result) => {
-          setStakingEpochEndTime(parseInt(result));
-        }),
-        contractsManager.stContract.methods.areStakeAndWithdrawAllowed().call(tx(), latestBlockNumber).then((result) => {
-          setCanStakeOrWithdrawNow(result);
-        }),  
         web3.eth.getBalance(process.env.REACT_APP_DAO_CONTRACT_ADDRESS || '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
           setDaoPot(web3.utils.fromWei(daoPotValue, 'ether'));
         })
-      );
+
+        contractsManager.stContract && setTotalDaoStake(BigNumber(await contractsManager.stContract?.methods.totalStakedAmount().call()));
+      }
     }
 
     return latestBlockNumber;
   }
   
-  const syncPoolsState = async (blockNumber: number, isNewEpoch: boolean) => {
-    const newCurrentValidators = await contractsManager.vsContract.methods.getValidators().call(tx(), blockNumber);
+  const syncPoolsState = async (blockNumber: number, isNewEpoch: boolean) => {    
+    let activePoolAddrs: Array<string> = [];
+    let inactivePoolAddrs: Array<string> = [];
+    let newCurrentValidators: Array<string> = [];
+    let toBeElectedPoolAddrs: Array<string> = [];
+    let pendingValidatorAddrs: Array<string> = [];
+
+    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
+
+    if (poolsData) {
+      activePoolAddrs = poolsData[0];
+      newCurrentValidators = poolsData[1];
+      inactivePoolAddrs = poolsData[2];
+      toBeElectedPoolAddrs = poolsData[3];
+      pendingValidatorAddrs = poolsData[4];
+    }
+
     const validatorWithoutPool: Array<string> = [...newCurrentValidators];
 
     if (currentValidators.toString() !== newCurrentValidators.toString()) {
       setCurrentValidators(newCurrentValidators);
-    }
-    
-    let activePoolAddrs: Array<string> = [];
-    let inactivePoolAddrs: Array<string> = [];
-    let toBeElectedPoolAddrs: Array<string> = [];
-    let pendingValidatorAddrs: Array<string> = [];
-
-    if (contractsManager.stContract) {
-      await Promise.allSettled([
-        contractsManager.stContract.methods.getPools().call(tx(), blockNumber).then((result) => {
-          activePoolAddrs = result;
-        }),
-        contractsManager.stContract.methods.getPoolsInactive().call(tx(), blockNumber).then((result) => {
-          inactivePoolAddrs = result;
-        }),
-        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), blockNumber).then((result) => {
-          toBeElectedPoolAddrs = result;
-        }),
-        contractsManager.vsContract.methods.getPendingValidators().call(tx(), blockNumber).then((result) => {
-          pendingValidatorAddrs = result;
-        }),
-      ])
     }
 
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
@@ -387,7 +394,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       return newPools;
     });
   }
-  
+
   const updatePools = async (
     pools: Pool[],
     validatorWithoutPool: Array<string>,
@@ -396,86 +403,81 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pendingValidatorAddrs: Array<string>,
     blockNumber: number
   ) => {
-    // update pools in batches of 10 for less rpc calls at once
+    setIsSyncingPools(true);
     const batchSize = 10;
     let updatedPools: Pool[] = [...pools];
-
+    let poolsToUpdate: Pool[] = [];
+    let poolIndicesToUpdate: number[] = [];
+    
     for (let i = 0; i < pools.length; i += batchSize) {
       const batch = pools.slice(i, i + batchSize);
       
-      const batchPromises = batch.map((p) => {
+      const batchPromises = batch.map((p, index) => {
         const ixValidatorWithoutPool = validatorWithoutPool.indexOf(p.miningAddress);
         if (ixValidatorWithoutPool !== -1) {
           validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
         }
-        p.votingPower = BigNumber(p.totalStake).dividedBy(totalDaoStake).multipliedBy(100);
-
-        const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) =>  p.stakingAddress == cachedPool.stakingAddress );
-
-        return cachedPool || updatePool(p, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
-      });
-
-      await Promise.allSettled(batchPromises).then((batchResults) => {
-        batchResults.forEach((result) => {
-          if (result.status === 'fulfilled') {
-            const pIndex = updatedPools.findIndex(p => p.stakingAddress === result.value.stakingAddress);
-            if (pIndex !== -1) {
-              updatedPools[pIndex] = result.value;
-            } else {  
-              updatedPools.push(result.value);
-            }
+  
+        const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) => p.stakingAddress === cachedPool.stakingAddress);
+  
+        if (cachedPool) {
+          // refetching isActive and isCurrentValidator as are cached and not updated
+          if (validatorWithoutPool.filter((v) => v === cachedPool.miningAddress).length > 0) {
+            cachedPool.isCurrentValidator = true;
+          } else {
+            cachedPool.isCurrentValidator = false;
           }
-        });
-
-        setPools([...updatedPools]);
+          cachedPool.isActive = activePoolAddrs.indexOf(cachedPool.stakingAddress) >= 0;
+          // Update the pool in updatedPools array directly
+          updatedPools[i + index] = cachedPool;
+        } else {
+          poolsToUpdate.push(p);
+          poolIndicesToUpdate.push(i + index); // Keep track of the index to update later
+        }
       });
+      
+      await Promise.allSettled(batchPromises);
     }
-    
+      
+    // Fetch the updated pool data in one call
+    if (poolsToUpdate.length > 0) {
+      poolsToUpdate.map(p => console.log(p.stakingAddress))
+      const updatedPoolData = await contractsManager.aggregator?.methods.getPoolsData(poolsToUpdate.map(p => p.stakingAddress)).call();
+      console.log(updatedPoolData)
+      if (updatedPoolData) {
+        // Process each updated pool data
+        await Promise.all(updatedPoolData.map(async (updatedData: any, index: number) => {
+          let pool = await updatePool(poolsToUpdate[index], updatedData, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+          updatedPools[poolIndicesToUpdate[index]] = pool;
+        }));
+      } 
+    }
+  
+    // Set the updated pools
+    setPools([...updatedPools]);
+    updateStakeAmounts(updatedPools);
     setCachedPools(blockNumber, updatedPools);
     console.log("[INFO] Cached Data:", JSON.parse(localStorage.getItem('poolsData') || '{}'));
+    setIsSyncingPools(false);
   }
 
-  const updatePool = async (pool: Pool, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
+  const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
 
-    pool.miningAddress = await contractsManager.vsContract.methods.miningByStakingAddress(stakingAddress).call(tx(), blockNumber);
-    await Promise.allSettled([
-      contractsManager.vsContract.methods.getPublicKey(pool.miningAddress).call(tx(), blockNumber).then((result) => {
-        pool.miningPublicKey = result;
-      }),
-      getAvailableSince(pool.miningAddress, blockNumber).then((result) => {
-        pool.availableSince = result;
-      }),
-      getMyStake(stakingAddress, blockNumber).then((result) => {
-        pool.myStake = new BigNumber(result);
-      }),
-    ]);
+    console.log({updatedPoolData})
 
-    if (contractsManager.stContract) {
-      await Promise.allSettled([
-        contractsManager.stContract.methods.poolDelegators(stakingAddress).call(tx(), blockNumber).then((result) => {
-          getDelegatorsData(stakingAddress, result.map(address => new Delegator(address)), blockNumber).then((result) => {
-            pool.delegators = result.delegators;
-            pool.candidateStake = result.candidateStake;
-          });
-        }),
-        contractsManager.stContract.methods.stakeAmountTotal(stakingAddress).call(tx(), blockNumber).then((result) => {
-          pool.totalStake = new BigNumber(result);
-        }),
-        userWallet.myAddr ? contractsManager.stContract.methods.orderedWithdrawAmount(stakingAddress, userWallet.myAddr).call(tx(), blockNumber).then((result) => {
-          pool.orderedWithdrawAmount = new BigNumber(result);
-        }) : new BigNumber(0),
-        getBanCount(pool.miningAddress).then((result) => {
-          pool.banCount = result;
-        }),
-        getBannedUntil(pool.miningAddress).then((result) => {
-          pool.bannedUntil = new BigNumber(result);
-        }),
-        contractsManager.contracts.getPendingValidatorState(pool.miningAddress, blockNumber).then((result) => {
-          pool.keyGenMode = result;
-        }),
-      ])
-    }
+    pool.miningAddress = updatedPoolData[0];
+    pool.availableSince = new BigNumber(updatedPoolData[1]);
+    pool.miningPublicKey = updatedPoolData[2];
+    pool.delegators = updatedPoolData[3].map((address: string) => new Delegator(address));
+    pool.keyGenMode = new BigNumber(updatedPoolData[4]).toNumber();
+    pool.totalStake = new BigNumber(updatedPoolData[5]);
+
+    await getDelegatorsData(pool, updatedPoolData[3].map((address: string) => new Delegator(address)), blockNumber).then((result) => {
+      pool.ownStake = result.ownStake;
+      pool.delegators = result.delegators;
+      pool.candidateStake = result.candidateStake;
+    });
     
     pool.isAvailable = !pool.availableSince.isZero();
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
@@ -490,32 +492,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
     );
 
-    // remove pool if required
-    if (!showAllPools) {
-      if(!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && !BigNumber(pool.myStake).isGreaterThan(0)) {
-        for (let i = 0; i < pools.length; i++) {
-          if (pools[i].stakingAddress === pool.stakingAddress) {
-            pools.splice(i, 1);
-            break;
-          }
-        }
-      } else {
-        if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
-          pool.score = 0;
-        } else {
-          pool.score = 1000;
-        }
-      }
+    if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
+      pool.score = 0;
+    } else {
+      pool.score = 1000;
     }
 
-    if (pool.isPendingValidator && contractsManager.kghContract) {
-      pool.parts = await contractsManager.kghContract.methods.parts(pool.miningAddress).call(tx(), blockNumber);
-      const acksLengthBN = new BigNumber(await contractsManager.kghContract.methods.getAcksLength(pool.miningAddress).call(tx(), blockNumber));
-      pool.numberOfAcks = acksLengthBN.toNumber();
-    } else {
-      pool.parts = '';
-      pool.numberOfAcks = 0;
-    }
     return pool;
   }
 
@@ -555,24 +537,27 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     return cachedPools[blockNumber] || [];
   }
 
-  const getDelegatorsData = async (poolAddress: string, delegators: Delegator[], blockNumber: number) => {
+  const getDelegatorsData = async (pool: Pool, delegators: Delegator[], blockNumber: number) => {
+    let ownStake = new BigNumber(0);
     let candidateStake = new BigNumber(0);
 
-    await Promise.allSettled(
-      delegators.map(async (delegator: Delegator) => {
-        try {
-          const delegatedAmount = await contractsManager.stContract?.methods.stakeAmount(poolAddress, delegator.address).call(tx(), blockNumber);
-          if (delegatedAmount && poolAddress != delegator.address) {
-            delegator.amount = new BigNumber(delegatedAmount);
-            candidateStake = candidateStake.plus(delegatedAmount);
-          }
-        } catch (error) {
-          console.error(`Failed to fetch data for delegator ${delegator.address}:`, error);
-        }
-      })
-    );
+    try {
+      const delegationData = await contractsManager.aggregator?.methods.getDelegationsData(delegators.map(d => d.address), pool.stakingAddress).call(tx(), blockNumber);
 
-    return {delegators, candidateStake};
+      if (delegationData) {
+        delegationData[0].map((delegation: any, index: number) => {
+          delegators[index].address = delegation[0];
+          delegators[index].amount = new BigNumber(delegation[1]);
+        });
+
+        ownStake = new BigNumber(delegationData[1]);
+        candidateStake = new BigNumber(delegationData[2]);
+      }
+    } catch (error) {
+      console.error("Couldn't fetch delegation data:", error);
+    }
+
+    return {delegators, candidateStake, ownStake};
   }
 
   const areAddressesValidForCreatePool = async (stakingAddr: string, miningAddr: string): Promise<boolean> => {
@@ -596,34 +581,31 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let toBeElectedPoolAddrs: Array<string> = [];
     let pendingValidatorAddrs: Array<string> = [];
 
-    if (contractsManager.stContract) {
-      await Promise.allSettled([
-        contractsManager.stContract.methods.getPools().call(tx(), blockNumber).then((result) => {
-          activePoolAddrs = result;
-        }),
-        contractsManager.stContract.methods.getPoolsToBeElected().call(tx(), blockNumber).then((result) => {
-          toBeElectedPoolAddrs = result;
-        }),
-        contractsManager.vsContract.methods.getPendingValidators().call(tx(), blockNumber).then((result) => {
-          pendingValidatorAddrs = result;
-        }),
-      ])
+    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
+
+    if (poolsData) {
+      activePoolAddrs = poolsData[0];
+      toBeElectedPoolAddrs = poolsData[3];
+      pendingValidatorAddrs = poolsData[4];
     }
 
-    const updatedPoolData = await updatePool(pool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+    const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call(tx(), blockNumber);
 
-    setPools(prevPools => {
-      let exists = false;
-      let updatedPools = prevPools.map(p => {
-        if (p.stakingAddress === stakingAddr) {
-          exists = true;
-          return updatedPoolData;
+    if (updatedData && updatedData.length > 0) {
+      const updatedPoolData = await updatePool(pool, updatedData[0], activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+
+      setPools(prevPools => {
+        let updatedPools = [...prevPools]
+        const poolIndex = updatedPools.findIndex(p => p.stakingAddress === stakingAddr);
+        if (poolIndex !== -1) {
+          updatedPools[poolIndex] = updatedPoolData;
+        } else {
+          updatedPools.push(updatedPoolData);
         }
-        return p;
+        updateStakeAmounts(updatedPools);
+        return updatedPools;
       });
-      if (!exists) updatedPools.push(updatedPoolData);
-      return updatedPools as Pool[];
-    });
+    }
   }
 
   const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
@@ -659,11 +641,59 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       }
       return false;
-    } catch (error: any) {
+    } catch (err: any) {
       showLoader(false, "");
-      toast.error(error.message || "Error in creating pool");
+      handleErrorMsg(err, "Error in creating pool");
       return false;
     }
+  }
+
+  const removePool = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    const amountInWei = web3.utils.toWei(amount.toString());
+    let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
+    const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
+
+    if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
+
+    if (!canStakeOrWithdrawNow) {
+      toast.warning('Outside staking/withdraw window');
+      return false;
+    } else {
+      try {
+        let receipt;
+        showLoader(true, `Removing Pool 💎`);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+        setPools(prevPools => {
+          const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
+          updateStakeAmounts(updatedPools);
+          return updatedPools;
+        });
+        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+        toast.success(`Pool Removed 💎`);
+        showLoader(false, "");
+        return true;
+      } catch(err: any) {
+        showLoader(false, "");
+        handleErrorMsg(err, "Error in Removing Pool");
+        return false;
+      }
+    }
+  }
+
+  const getWithdrawableAmounts = async (pool: Pool): Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}> => {
+    let maxWithdrawAmount = new BigNumber(0);
+    let maxWithdrawOrderAmount = new BigNumber(0);
+
+    if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return { maxWithdrawAmount, maxWithdrawOrderAmount };
+
+    try {
+      maxWithdrawAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call());
+      maxWithdrawOrderAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call());
+    } catch (error) {
+      console.error("Couldn't fetch withdrawable amounts:", error);
+    }
+
+    return { maxWithdrawAmount, maxWithdrawOrderAmount };
   }
 
   const unstake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
@@ -675,8 +705,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
     // determine available withdraw method and allowed amount
     const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
-    const maxWithdrawAmount = await contractsManager.stContract?.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call();
-    const maxWithdrawOrderAmount = await contractsManager.stContract?.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call();  
+    const { maxWithdrawAmount, maxWithdrawOrderAmount } = await getWithdrawableAmounts(pool);
 
     if (!canStakeOrWithdrawNow) {
       toast.warning('Outside staking/withdraw window');
@@ -684,9 +713,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else {
       try {
         let receipt;
-        if (maxWithdrawAmount !== '0') {
+        if (!BigNumber(maxWithdrawAmount).isZero()) {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
-            toast.warn('Requested withdraw amount exceeds max');
+            toast.warn(`Requested withdraw amount exceeds max (${BigNumber(maxWithdrawAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
             return false;
           }
           showLoader(true, `Unstaking ${amount} DMD 💎`);
@@ -695,10 +724,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           toast.success(`Unstaked ${amount} DMD 💎`);
         } else {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
-            toast.warn('Requested withdraw order amount exceeds max');
+            toast.warn(`Requested withdraw order amount exceeds max (${BigNumber(maxWithdrawOrderAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
             return false;
-          } else if (newStakeAmount.isLessThanOrEqualTo(delegatorMinStake)) {
-            toast.warn('New stake amount must be greater than the min stake');
+          } else if (newStakeAmount.isLessThan(delegatorMinStake)) {
+            toast.warn(`New stake amount must be greater than the min. stake ${delegatorMinStake.dividedBy(10**18)} DMD 💎`);
             return false;
           } else {
             showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
@@ -712,7 +741,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       } catch(err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in withdrawing stake");
+        handleErrorMsg(err, "Error in withdrawing stake");
         return false;
       }
     }
@@ -729,7 +758,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       toast.warn("Outside staking/withdraw time window");
       return false
     } else if (new BigNumber(pool.myStake).plus(new BigNumber(stakeAmountWei)).isLessThan(delegatorMinStake)) {
-      toast.warn(`Min. staking amount is ${delegatorMinStake}`);
+      toast.warn(`Min. staking amount is ${delegatorMinStake.dividedBy(10**18)}`);
       return false;
     } else if (BigNumber(pool.bannedUntil).isGreaterThan(BigNumber(new Date().getTime() / 1000))) {
       toast.warn("Cannot stake on a pool which is currently banned");
@@ -745,24 +774,14 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return true;
       } catch (err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in Staking");
+        handleErrorMsg(err, "Error in staking");
         return false;
       }
     }
   }
 
-  const getOrderedUnstakeAmount = async (pool: Pool): Promise<BigNumber> => {
-    if (!contractsManager.stContract || !userWallet.myAddr) return new BigNumber(0);
-
-    const claimableAmount = await contractsManager.stContract.methods.orderedWithdrawAmount(pool.stakingAddress, userWallet.myAddr).call();
-    const unlockEpoch = BigNumber(await contractsManager.stContract.methods.orderWithdrawEpoch(pool.stakingAddress, userWallet.myAddr).call()).plus(1);
-
-    console.log(unlockEpoch.toString(), {stakingEpoch}, {claimableAmount})
-
-    return unlockEpoch.isLessThanOrEqualTo(stakingEpoch) ? new BigNumber(claimableAmount) : new BigNumber(0);
-  }
-
-  const claimOrderedUnstake = async (pool: Pool, claimAmount: BigNumber): Promise<boolean> => {
+  const claimOrderedUnstake = async (pool: Pool): Promise<boolean> => {
+    const claimAmount = pool.orderedWithdrawAmount;
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
 
     if (!contractsManager.stContract || !userWallet.myAddr) return false;
@@ -777,10 +796,21 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
         toast.success(`Claimed ${claimAmount.dividedBy(10**18)} DMD 💎`);
         showLoader(false, "");
+
+        setPools(prevPools => {
+          prevPools.forEach(p => {
+            if (p.stakingAddress === pool.stakingAddress) {
+              p.orderedWithdrawAmount = new BigNumber(0);
+              p.orderedWithdrawUnlockEpoch = new BigNumber(0);
+            }
+          });
+          return prevPools;
+        })
+
         return true;
       } catch (err: any) {
         showLoader(false, "");
-        toast.error(err.shortMsg || err.message || "Error in claiming ordered withdraw");
+        handleErrorMsg(err, "Error in claiming ordered withdraw");
         return false;
       }
     }
@@ -789,14 +819,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const contextValue = {
     // state
     pools,
+    myPool,
     deltaPot,
     keyGenRound,
     reinsertPot,
     stakingEpoch,
     myTotalStake,
+    totalDaoStake,
     minimumGasFee,
     epochStartTime,
+    isSyncingPools,
     epochStartBlock,
+    myCandidateStake,
     candidateMinStake,
     delegatorMinStake,
     stakingInitialized,
@@ -808,9 +842,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     unstake,
     setPools,
     createPool,
+    removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
-    getOrderedUnstakeAmount,
+    getWithdrawableAmounts,
     initializeStakingDataAdapter
   };
 

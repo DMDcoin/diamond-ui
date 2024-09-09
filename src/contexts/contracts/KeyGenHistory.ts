@@ -25,10 +25,6 @@ export type Initialized = ContractEventLog<{
   version: string;
   0: string;
 }>;
-export type NewValidatorsSet = ContractEventLog<{
-  newValidatorSet: string[];
-  0: string[];
-}>;
 export type OwnershipTransferred = ContractEventLog<{
   previousOwner: string;
   newOwner: string;
@@ -115,12 +111,6 @@ export interface KeyGenHistory extends BaseContract {
       cb?: Callback<Initialized>
     ): EventEmitter;
 
-    NewValidatorsSet(cb?: Callback<NewValidatorsSet>): EventEmitter;
-    NewValidatorsSet(
-      options?: EventOptions,
-      cb?: Callback<NewValidatorsSet>
-    ): EventEmitter;
-
     OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
     OwnershipTransferred(
       options?: EventOptions,
@@ -135,13 +125,6 @@ export interface KeyGenHistory extends BaseContract {
     event: "Initialized",
     options: EventOptions,
     cb: Callback<Initialized>
-  ): void;
-
-  once(event: "NewValidatorsSet", cb: Callback<NewValidatorsSet>): void;
-  once(
-    event: "NewValidatorsSet",
-    options: EventOptions,
-    cb: Callback<NewValidatorsSet>
   ): void;
 
   once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;

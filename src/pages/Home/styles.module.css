@@ -1,3 +1,15 @@
+h1 {
+  color: #0145b2;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25em;
+  overflow: hidden;
+}
+
+.heroSection {
+  padding-bottom: 0px;
+}
+
 .heroContainer {
   margin-top: 2rem;
 }
@@ -26,7 +38,7 @@
 .getStartedContainer > div > button {
   height: 35px;
   width: 100px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-size: 14px;
   cursor: pointer;
   overflow: hidden;
@@ -34,7 +46,7 @@
   border-radius: 5px;
   white-space: nowrap;
   text-overflow: ellipsis;
-  border: 2px solid #0E44B2;
+  border: 2px solid #0e44b2;
   background-color: transparent;
 }
 
@@ -57,7 +69,7 @@
 }
 
 .infoContainer > div > p {
-  color: #0E44B2;
+  color: #0e44b2;
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
@@ -66,30 +78,17 @@
 
 .infoContainer > div > p:first-of-type {
   font-size: 20px;
-  color: #0E44B2;
+  color: #0e44b2;
   font-weight: bold;
 }
 
-.styledTable {
+.styledTableFirst {
   width: 100%;
   border-collapse: collapse;
   font-size: 18px;
 }
 
-.styledTable > tbody > tr:nth-child(1) > td:nth-child(1) {
-  display: flex;
-  flex-direction: column;
-}
-
-.styledTable > tbody > tr:nth-child(1) > td:nth-child(1) > span {
-  font-size: 12px;
-}
-
-.styledTable tr td:nth-child(3) {
-  text-align: end;
-}
-
-.styledTable thead tr {
+.styledTableFirst thead tr {
   background-color: rgb(245, 247, 250);
   color: #0145b2;
   text-align: left;
@@ -97,51 +96,40 @@
   font-weight: 600;
 }
 
-.styledTable th,
-.styledTable td {
-  padding: 12px 0px;
+.styledTableFirst th,
+.styledTableFirst td {
+  padding: 12px 15px;
+  text-align: left;
+  height: 64px;
 }
 
-.styledTable tbody tr {
+.styledTableFirst tbody {
+  background-color: white;
+}
+
+.styledTableFirst tbody tr {
   border-bottom: 1px solid rgba(245, 247, 250, 0);
 }
 
-.styledTable img {
+.styledTableFirst img {
   border-radius: 50%;
   width: 50px;
   height: 50px;
   object-fit: cover;
 }
 
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+}
+
+.styledTableFirst > tbody > tr:nth-child(2) > td:nth-child(1) > span {
+  font-size: 12px;
+}
+
 .tableBodyRow:hover {
   cursor: pointer;
   background-color: #e6f2ff; /* Light blue */
-}
-
-.tableButton {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  background-color: rgb(245, 247, 250);
-}
-
-.tableButton:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.tableButton .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.tableButton .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .statsContainer {
@@ -150,9 +138,10 @@
 
 .loggedInBtns {
   gap: 1rem;
-  display: grid;
-  justify-content: center;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: left;
 }
 
 .loggedInBtns button {
@@ -163,6 +152,25 @@
 
 .heroSplit {
   gap: 1rem;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.heroSplitImg {
+  opacity: 0;
+  transform: translateX(500px);
+  animation: ImgMoveXAndFade 1.5s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+@keyframes ImgMoveXAndFade {
+  0% {
+    transform: translateX(500px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .heroWrapper {
@@ -196,29 +204,214 @@
   justify-content: center;
 }
 
-.tableButton {
+.clientsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableContainer {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  flex-direction: column;
+  background-color: #ffffff;
+  justify-content: space-between;
+}
+
+.styledTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+  background-color: white;
+}
+
+.styledTable th {
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.styledTable th > svg {
+  top: 50%;
+  left: auto;
+  margin-left: 10px;
+  position: absolute;
+  pointer-events: none;
+  transform: translateY(-60%);
+}
+
+.styledTable thead tr {
+  /* background-color: rgb(245, 247, 250); */
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 15px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.topValidatorsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.topValidatorsContainer > a {
+  margin-top: 2rem;
+  align-self: center;
+}
+
+.tableContainer {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  flex-direction: column;
+  background-color: #ffffff;
+  justify-content: space-between;
+}
+
+.daoPhaseBannerContainer {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+}
+
+.daoPhaseBannerContainer > div {
+  gap: 0.5rem;
+  max-width: 180px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+}
+
+.daoPhaseBannerContainer > div > button {
+  display: none;
+}
+
+.daoPhaseBannerContainer > button {
   cursor: pointer;
   padding: 8px 16px;
   border: 1px solid #0145b2;
   color: #0145b2;
   text-decoration: none;
   border-radius: 4px;
-  text-align: center;
   background-color: rgb(245, 247, 250);
 }
 
-.tableButton:hover {
+.daoPhaseBannerContainer > button:hover {
   background-color: #0145b2;
   color: white;
 }
 
-.tableButton .active {
+.daoPhaseBannerContainer > button .active {
   background-color: #0145b2;
   color: white;
   border: none;
 }
 
-.tableButton .disabled {
+.daoPhaseBannerContainer > button .disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.poolActive {
+  color: green;
+}
+
+.poolBanned {
+  color: red;
+}
+
+.mainHeading > h1 {
+  overflow: hidden;
+  transform: translateY(115px);
+  animation: headingMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+.div-block, .div-block-2, .div-block-3 {
+  overflow: hidden;
+}
+
+@keyframes headingMoveYAndFade {
+  from {
+    transform: translateY(115px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.heroDescription {
+  transform: translateY(140px);
+  animation: descriptionMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes descriptionMoveYAndFade {
+  0% {
+    transform: translateY(140px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.actionBtn {
+  opacity: 0;
+  animation: actionBtnMoveYAndFade 0.6s cubic-bezier(0.5, 1, 0.89, 1) forwards;
+  animation-delay: 0.7s;
+}
+
+@keyframes actionBtnMoveYAndFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.gridContainer {
+  overflow: hidden;
+}
+
+.gridBlock {
+  opacity: 0;
+  transform: translateY(300px);
+  animation: gridBlockMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes gridBlockMoveYAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(300px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

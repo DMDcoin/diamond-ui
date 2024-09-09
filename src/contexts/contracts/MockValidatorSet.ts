@@ -35,6 +35,8 @@ export interface MockValidatorSet extends BaseContract {
 
     getStakingContract(): NonPayableTransactionObject<string>;
 
+    isValidator(arg0: string): NonPayableTransactionObject<boolean>;
+
     keyGenMode(): NonPayableTransactionObject<string>;
 
     setKeyGenMode(
@@ -42,6 +44,11 @@ export interface MockValidatorSet extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     setStakingContract(_address: string): NonPayableTransactionObject<void>;
+
+    setValidator(
+      mining: string,
+      val: boolean
+    ): NonPayableTransactionObject<void>;
 
     stakingContract(): NonPayableTransactionObject<string>;
   };

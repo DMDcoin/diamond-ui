@@ -73,7 +73,7 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   return (
     <>
-      <button className={styles.tableButton} onClick={(e) => { e.stopPropagation(); openModal(); }}>
+      <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
         {buttonText}
       </button>
 
@@ -99,6 +99,14 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 placeholder="Enter the amount to stake"
                 onChange={(e) => setStakeAmount(Number(e.target.value))}
               />
+
+              {
+                pool.isCurrentValidator && (
+                  <span className={styles.stakeWarning}>
+                    Please note that these coins will become active in the next epoch, as the validator candidate is part of an active set. You can unstake them at any time before they become active
+                  </span>
+                )
+              }
 
               <button className={styles.formSubmit} type="submit">
                 Stake

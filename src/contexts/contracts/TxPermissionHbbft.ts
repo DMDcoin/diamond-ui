@@ -21,6 +21,14 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type BlockGasLimitChanged = ContractEventLog<{
+  _value: string;
+  0: string;
+}>;
+export type GasPriceChanged = ContractEventLog<{
+  _value: string;
+  0: string;
+}>;
 export type Initialized = ContractEventLog<{
   version: string;
   0: string;
@@ -31,8 +39,28 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type gasPriceChanged = ContractEventLog<{
+export type RemoveChangeAbleParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type SetBlockGasLimit = ContractEventLog<{
+  _blockGasLimit: string;
+  0: string;
+}>;
+export type SetChangeAbleParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
+export type SetConnectivityTracker = ContractEventLog<{
   _value: string;
+  0: string;
+}>;
+export type SetMinimumGasPrice = ContractEventLog<{
+  _minGasPrice: string;
   0: string;
 }>;
 
@@ -46,8 +74,6 @@ export interface TxPermissionHbbft extends BaseContract {
   methods: {
     ANNOUNCE_AVAILABILITY_SIGNATURE(): NonPayableTransactionObject<string>;
 
-    REPORT_MALICIOUS_SIGNATURE(): NonPayableTransactionObject<string>;
-
     REPORT_MISSING_CONNECTIVITY_SELECTOR(): NonPayableTransactionObject<string>;
 
     REPORT_RECONNECT_SELECTOR(): NonPayableTransactionObject<string>;
@@ -59,6 +85,10 @@ export interface TxPermissionHbbft extends BaseContract {
     WRITE_PART_SIGNATURE(): NonPayableTransactionObject<string>;
 
     addAllowedSender(_sender: string): NonPayableTransactionObject<void>;
+
+    allowedParameterRange(
+      arg0: string | number[]
+    ): NonPayableTransactionObject<string>;
 
     allowedSenders(): NonPayableTransactionObject<string[]>;
 
@@ -87,6 +117,20 @@ export interface TxPermissionHbbft extends BaseContract {
 
     contractVersion(): NonPayableTransactionObject<string>;
 
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     initialize(
       _allowed: string[],
       _certifier: string,
@@ -98,15 +142,30 @@ export interface TxPermissionHbbft extends BaseContract {
 
     isSenderAllowed(arg0: string): NonPayableTransactionObject<boolean>;
 
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
     keyGenHistoryContract(): NonPayableTransactionObject<string>;
 
     minimumGasPrice(): NonPayableTransactionObject<string>;
 
     owner(): NonPayableTransactionObject<string>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string
+    ): NonPayableTransactionObject<void>;
+
     removeAllowedSender(_sender: string): NonPayableTransactionObject<void>;
 
     renounceOwnership(): NonPayableTransactionObject<void>;
+
+    setAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
 
     setBlockGasLimit(
       _value: number | string | BN
@@ -125,6 +184,18 @@ export interface TxPermissionHbbft extends BaseContract {
     validatorSetContract(): NonPayableTransactionObject<string>;
   };
   events: {
+    BlockGasLimitChanged(cb?: Callback<BlockGasLimitChanged>): EventEmitter;
+    BlockGasLimitChanged(
+      options?: EventOptions,
+      cb?: Callback<BlockGasLimitChanged>
+    ): EventEmitter;
+
+    GasPriceChanged(cb?: Callback<GasPriceChanged>): EventEmitter;
+    GasPriceChanged(
+      options?: EventOptions,
+      cb?: Callback<GasPriceChanged>
+    ): EventEmitter;
+
     Initialized(cb?: Callback<Initialized>): EventEmitter;
     Initialized(
       options?: EventOptions,
@@ -137,14 +208,54 @@ export interface TxPermissionHbbft extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
-    gasPriceChanged(cb?: Callback<gasPriceChanged>): EventEmitter;
-    gasPriceChanged(
+    RemoveChangeAbleParameter(
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+    RemoveChangeAbleParameter(
       options?: EventOptions,
-      cb?: Callback<gasPriceChanged>
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+
+    SetBlockGasLimit(cb?: Callback<SetBlockGasLimit>): EventEmitter;
+    SetBlockGasLimit(
+      options?: EventOptions,
+      cb?: Callback<SetBlockGasLimit>
+    ): EventEmitter;
+
+    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
+    SetChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameter>
+    ): EventEmitter;
+
+    SetConnectivityTracker(cb?: Callback<SetConnectivityTracker>): EventEmitter;
+    SetConnectivityTracker(
+      options?: EventOptions,
+      cb?: Callback<SetConnectivityTracker>
+    ): EventEmitter;
+
+    SetMinimumGasPrice(cb?: Callback<SetMinimumGasPrice>): EventEmitter;
+    SetMinimumGasPrice(
+      options?: EventOptions,
+      cb?: Callback<SetMinimumGasPrice>
     ): EventEmitter;
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "BlockGasLimitChanged", cb: Callback<BlockGasLimitChanged>): void;
+  once(
+    event: "BlockGasLimitChanged",
+    options: EventOptions,
+    cb: Callback<BlockGasLimitChanged>
+  ): void;
+
+  once(event: "GasPriceChanged", cb: Callback<GasPriceChanged>): void;
+  once(
+    event: "GasPriceChanged",
+    options: EventOptions,
+    cb: Callback<GasPriceChanged>
+  ): void;
 
   once(event: "Initialized", cb: Callback<Initialized>): void;
   once(
@@ -160,10 +271,47 @@ export interface TxPermissionHbbft extends BaseContract {
     cb: Callback<OwnershipTransferred>
   ): void;
 
-  once(event: "gasPriceChanged", cb: Callback<gasPriceChanged>): void;
   once(
-    event: "gasPriceChanged",
+    event: "RemoveChangeAbleParameter",
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+  once(
+    event: "RemoveChangeAbleParameter",
     options: EventOptions,
-    cb: Callback<gasPriceChanged>
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(event: "SetBlockGasLimit", cb: Callback<SetBlockGasLimit>): void;
+  once(
+    event: "SetBlockGasLimit",
+    options: EventOptions,
+    cb: Callback<SetBlockGasLimit>
+  ): void;
+
+  once(
+    event: "SetChangeAbleParameter",
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+  once(
+    event: "SetChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+
+  once(
+    event: "SetConnectivityTracker",
+    cb: Callback<SetConnectivityTracker>
+  ): void;
+  once(
+    event: "SetConnectivityTracker",
+    options: EventOptions,
+    cb: Callback<SetConnectivityTracker>
+  ): void;
+
+  once(event: "SetMinimumGasPrice", cb: Callback<SetMinimumGasPrice>): void;
+  once(
+    event: "SetMinimumGasPrice",
+    options: EventOptions,
+    cb: Callback<SetMinimumGasPrice>
   ): void;
 }

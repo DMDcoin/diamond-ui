@@ -31,13 +31,17 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type ReportedMalicious = ContractEventLog<{
-  reportingValidator: string;
-  maliciousValidator: string;
-  blockNumber: string;
+export type SetBonusScoreContract = ContractEventLog<{
+  _address: string;
   0: string;
-  1: string;
-  2: string;
+}>;
+export type SetMaxValidators = ContractEventLog<{
+  _count: string;
+  0: string;
+}>;
+export type SetValidatorInactivityThreshold = ContractEventLog<{
+  _value: string;
+  0: string;
 }>;
 export type ValidatorAvailable = ContractEventLog<{
   validator: string;
@@ -60,26 +64,31 @@ export interface ValidatorSetHbbft extends BaseContract {
   ): ValidatorSetHbbft;
   clone(): ValidatorSetHbbft;
   methods: {
+    _unused2(arg0: string): NonPayableTransactionObject<string>;
+
+    _unused3(arg0: string): NonPayableTransactionObject<string>;
+
+    _unused4(arg0: string): NonPayableTransactionObject<string>;
+
+    _unused5(arg0: string): NonPayableTransactionObject<string>;
+
+    _unused6(
+      arg0: string,
+      arg1: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
+    _unused7(arg0: number | string | BN): NonPayableTransactionObject<string>;
+
+    _unused8(): NonPayableTransactionObject<string>;
+
     announceAvailability(
       _blockNumber: number | string | BN,
       _blockhash: string | number[]
     ): NonPayableTransactionObject<void>;
 
-    areDelegatorsBanned(
-      _miningAddress: string
-    ): NonPayableTransactionObject<boolean>;
-
-    banCounter(arg0: string): NonPayableTransactionObject<string>;
-
-    banDuration(): NonPayableTransactionObject<string>;
-
-    banReason(arg0: string): NonPayableTransactionObject<string>;
-
-    bannedDelegatorsUntil(arg0: string): NonPayableTransactionObject<string>;
-
-    bannedUntil(arg0: string): NonPayableTransactionObject<string>;
-
     blockRewardContract(): NonPayableTransactionObject<string>;
+
+    bonusScoreSystem(): NonPayableTransactionObject<string>;
 
     canCallAnnounceAvailability(
       _miningAddress: string
@@ -111,11 +120,7 @@ export interface ValidatorSetHbbft extends BaseContract {
 
     initialize(
       _contractOwner: string,
-      _blockRewardContract: string,
-      _randomContract: string,
-      _stakingContract: string,
-      _keyGenHistoryContract: string,
-      _validatorInactivityThreshold: number | string | BN,
+      _params: [string, string, string, string, string, number | string | BN],
       _initialMiningAddresses: string[],
       _initialStakingAddresses: string[]
     ): NonPayableTransactionObject<void>;
@@ -126,18 +131,10 @@ export interface ValidatorSetHbbft extends BaseContract {
       _miningAddress: string
     ): NonPayableTransactionObject<boolean>;
 
-    isReportValidatorValid(
-      _miningAddress: string
-    ): NonPayableTransactionObject<boolean>;
-
     isValidator(arg0: string): NonPayableTransactionObject<boolean>;
 
     isValidatorAbandoned(
       _stakingAddress: string
-    ): NonPayableTransactionObject<boolean>;
-
-    isValidatorBanned(
-      _miningAddress: string
     ): NonPayableTransactionObject<boolean>;
 
     isValidatorOrPending(
@@ -147,11 +144,6 @@ export interface ValidatorSetHbbft extends BaseContract {
     isValidatorPrevious(arg0: string): NonPayableTransactionObject<boolean>;
 
     keyGenHistoryContract(): NonPayableTransactionObject<string>;
-
-    maliceReportedForBlock(
-      _miningAddress: string,
-      _blockNumber: number | string | BN
-    ): NonPayableTransactionObject<string[]>;
 
     maxValidators(): NonPayableTransactionObject<string>;
 
@@ -171,40 +163,10 @@ export interface ValidatorSetHbbft extends BaseContract {
 
     randomContract(): NonPayableTransactionObject<string>;
 
-    removeMaliciousValidators(
-      _miningAddresses: string[]
-    ): NonPayableTransactionObject<void>;
-
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    reportMalicious(
-      _maliciousMiningAddress: string,
-      _blockNumber: number | string | BN,
-      arg2: string | number[]
-    ): NonPayableTransactionObject<void>;
-
-    reportMaliciousCallable(
-      _reportingMiningAddress: string,
-      _maliciousMiningAddress: string,
-      _blockNumber: number | string | BN
-    ): NonPayableTransactionObject<{
-      callable: boolean;
-      removeReportingValidator: boolean;
-      0: boolean;
-      1: boolean;
-    }>;
-
-    reportingCounter(
-      arg0: string,
-      arg1: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    reportingCounterTotal(
-      arg0: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    setBanDuration(
-      _banDuration: number | string | BN
+    setBonusScoreSystemAddress(
+      _address: string
     ): NonPayableTransactionObject<void>;
 
     setMaxValidators(
@@ -254,10 +216,24 @@ export interface ValidatorSetHbbft extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
-    ReportedMalicious(cb?: Callback<ReportedMalicious>): EventEmitter;
-    ReportedMalicious(
+    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
+    SetBonusScoreContract(
       options?: EventOptions,
-      cb?: Callback<ReportedMalicious>
+      cb?: Callback<SetBonusScoreContract>
+    ): EventEmitter;
+
+    SetMaxValidators(cb?: Callback<SetMaxValidators>): EventEmitter;
+    SetMaxValidators(
+      options?: EventOptions,
+      cb?: Callback<SetMaxValidators>
+    ): EventEmitter;
+
+    SetValidatorInactivityThreshold(
+      cb?: Callback<SetValidatorInactivityThreshold>
+    ): EventEmitter;
+    SetValidatorInactivityThreshold(
+      options?: EventOptions,
+      cb?: Callback<SetValidatorInactivityThreshold>
     ): EventEmitter;
 
     ValidatorAvailable(cb?: Callback<ValidatorAvailable>): EventEmitter;
@@ -289,11 +265,31 @@ export interface ValidatorSetHbbft extends BaseContract {
     cb: Callback<OwnershipTransferred>
   ): void;
 
-  once(event: "ReportedMalicious", cb: Callback<ReportedMalicious>): void;
   once(
-    event: "ReportedMalicious",
+    event: "SetBonusScoreContract",
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+  once(
+    event: "SetBonusScoreContract",
     options: EventOptions,
-    cb: Callback<ReportedMalicious>
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+
+  once(event: "SetMaxValidators", cb: Callback<SetMaxValidators>): void;
+  once(
+    event: "SetMaxValidators",
+    options: EventOptions,
+    cb: Callback<SetMaxValidators>
+  ): void;
+
+  once(
+    event: "SetValidatorInactivityThreshold",
+    cb: Callback<SetValidatorInactivityThreshold>
+  ): void;
+  once(
+    event: "SetValidatorInactivityThreshold",
+    options: EventOptions,
+    cb: Callback<SetValidatorInactivityThreshold>
   ): void;
 
   once(event: "ValidatorAvailable", cb: Callback<ValidatorAvailable>): void;

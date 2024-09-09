@@ -2,7 +2,7 @@ const Web3 = require("web3");
 const JsonDiamonDao = require("./src/contexts/contract-abis/DiamondDao.json");
 
 const web3 = new Web3(
-  new Web3.providers.HttpProvider("https://rpc.uniq.diamonds"),
+  new Web3.providers.HttpProvider("https://alpha3.uniq.domains/rpc"),
   0,
   1
 );

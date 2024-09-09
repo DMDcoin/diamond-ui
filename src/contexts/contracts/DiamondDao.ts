@@ -25,6 +25,12 @@ export type Initialized = ContractEventLog<{
   version: string;
   0: string;
 }>;
+export type OwnershipTransferred = ContractEventLog<{
+  previousOwner: string;
+  newOwner: string;
+  0: string;
+  1: string;
+}>;
 export type ProposalCanceled = ContractEventLog<{
   proposer: string;
   proposalId: string;
@@ -56,6 +62,18 @@ export type ProposalExecuted = ContractEventLog<{
   proposalId: string;
   0: string;
   1: string;
+}>;
+export type RemoveChangeAbleParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type SetChangeAbleParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
 }>;
 export type SetChangeAbleParameters = ContractEventLog<{
   allowed: boolean;
@@ -124,6 +142,10 @@ export interface DiamondDao extends BaseContract {
 
     MAX_NEW_PROPOSALS(): NonPayableTransactionObject<string>;
 
+    allowedParameterRange(
+      arg0: string | number[]
+    ): NonPayableTransactionObject<string>;
+
     cancel(
       proposalId: number | string | BN,
       reason: string
@@ -165,6 +187,14 @@ export interface DiamondDao extends BaseContract {
       proposalId: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
     getCurrentPhaseProposals(): NonPayableTransactionObject<string[]>;
 
     getProposal(
@@ -202,15 +232,31 @@ export interface DiamondDao extends BaseContract {
       description: string
     ): NonPayableTransactionObject<string>;
 
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     initialize(
       _validatorSet: string,
       _stakingHbbft: string,
       _reinsertPot: string,
+      _txPermission: string,
       _createProposalFee: number | string | BN,
       _startTimestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
+
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
+    lastDaoPhaseCount(): NonPayableTransactionObject<string>;
+
+    owner(): NonPayableTransactionObject<string>;
 
     proposalExists(
       proposalId: number | string | BN
@@ -256,6 +302,12 @@ export interface DiamondDao extends BaseContract {
 
     reinsertPot(): NonPayableTransactionObject<string>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string
+    ): NonPayableTransactionObject<void>;
+
+    renounceOwnership(): NonPayableTransactionObject<void>;
+
     results(arg0: number | string | BN): NonPayableTransactionObject<{
       countYes: string;
       countNo: string;
@@ -266,6 +318,12 @@ export interface DiamondDao extends BaseContract {
       2: string;
       3: string;
     }>;
+
+    setAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
 
     setCreateProposalFee(
       _fee: number | string | BN
@@ -290,6 +348,12 @@ export interface DiamondDao extends BaseContract {
     }>;
 
     switchPhase(): NonPayableTransactionObject<void>;
+
+    transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
+
+    unfinalizedProposals(): NonPayableTransactionObject<string>;
+
+    unfinalizedProposalsExist(): NonPayableTransactionObject<boolean>;
 
     validatorSet(): NonPayableTransactionObject<string>;
 
@@ -323,6 +387,12 @@ export interface DiamondDao extends BaseContract {
       cb?: Callback<Initialized>
     ): EventEmitter;
 
+    OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
+    OwnershipTransferred(
+      options?: EventOptions,
+      cb?: Callback<OwnershipTransferred>
+    ): EventEmitter;
+
     ProposalCanceled(cb?: Callback<ProposalCanceled>): EventEmitter;
     ProposalCanceled(
       options?: EventOptions,
@@ -339,6 +409,20 @@ export interface DiamondDao extends BaseContract {
     ProposalExecuted(
       options?: EventOptions,
       cb?: Callback<ProposalExecuted>
+    ): EventEmitter;
+
+    RemoveChangeAbleParameter(
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+    RemoveChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+
+    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
+    SetChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameter>
     ): EventEmitter;
 
     SetChangeAbleParameters(
@@ -392,6 +476,13 @@ export interface DiamondDao extends BaseContract {
     cb: Callback<Initialized>
   ): void;
 
+  once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
+  once(
+    event: "OwnershipTransferred",
+    options: EventOptions,
+    cb: Callback<OwnershipTransferred>
+  ): void;
+
   once(event: "ProposalCanceled", cb: Callback<ProposalCanceled>): void;
   once(
     event: "ProposalCanceled",
@@ -411,6 +502,26 @@ export interface DiamondDao extends BaseContract {
     event: "ProposalExecuted",
     options: EventOptions,
     cb: Callback<ProposalExecuted>
+  ): void;
+
+  once(
+    event: "RemoveChangeAbleParameter",
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+  once(
+    event: "RemoveChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(
+    event: "SetChangeAbleParameter",
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+  once(
+    event: "SetChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameter>
   ): void;
 
   once(

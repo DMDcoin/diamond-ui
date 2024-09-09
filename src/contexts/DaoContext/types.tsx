@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 
 export interface Proposal {
+  title: string;
   proposer: string;
   state: string;
   targets: string[];

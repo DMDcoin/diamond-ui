@@ -16,10 +16,9 @@ const HistoricProposals = () => {
   
   const [fetching, setFetching] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterFinalize, setFilterFinalize] = useState<boolean>(true);
-  const [indexingStatus, setIndexingStatus] = useState<string | null>(
-    "Indexing: Fetching historic proposals count"
-  );
+  const [indexingStatus, setIndexingStatus] = useState<string | null>();
 
   const handleDetailsClick = (proposalId: string) => {
     startTransition(() => {
@@ -29,7 +28,7 @@ const HistoricProposals = () => {
 
   useEffect(() => {
     if (!fetching) {
-      web3Context.showLoader(true, "");
+      web3Context.showLoader(true, "Fetching historic proposals");
       daoContext.getHistoricProposals();
       setFetching(true);
     } else {
@@ -45,55 +44,43 @@ const HistoricProposals = () => {
     }
   }, [daoContext.allDaoProposals]);
 
-  const filterUnFinalized = () => {
-    setFilterFinalize(!filterFinalize);
-    if (filterFinalize) {
-      setFilterQuery('unfinalized');
-    } else {
-      setFilterQuery('');
-    }
-  }
-
   return (
-    <div className="mainContainer">
-      <Navigation start="/dao" />
+    <section className="section">
+        <div className={styles.sectionContainer + " sectionContainer"}>
 
-      <div className={styles.historicProposalsInfoContainer}>
-        <div>
-          <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
+        <Navigation start="/dao" />
 
+        <div className={styles.historicProposalsInfoContainer}>
           <div>
-            <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setFilterQuery(e.target.value)}/>
+            <h1 className={styles.historicProposalsHeading}>Historic Proposals</h1>
 
-            <div className={filterFinalize ? '' : styles.filterActive} onClick={filterUnFinalized}>
-              <FaFilter size={25}/>
+            <div className={styles.filterContainer}>
+              <input type="text" placeholder="Search" className={styles.historicProposalsSearch} onChange={e => setSearchQuery(e.target.value)}/>
+
+              <select className={styles.historicProposalsSelect} onChange={e => setFilterQuery(e.target.value)}>
+                <option value="">All</option>
+                <option value="unfinalized">Unfinalized</option>
+                <option value="myProposals">My proposals</option>
+              </select>
             </div>
+
+            <div>{indexingStatus ? indexingStatus : ""}</div>
           </div>
-
-          <div>{indexingStatus ? indexingStatus : ""}</div>
         </div>
-      </div>
 
-      {
-        daoContext.allDaoProposals.length !== 0 ? (
+        {
           <ProposalsTable
             data={daoContext.allDaoProposals}
             handleDetailsClick={handleDetailsClick}
             getStateString={daoContext.getStateString}
+            searchQuery={searchQuery}
             filterQuery={filterQuery}
             columns={["Result"]}
           />
-        ) : (
-          <div className={styles.historicProposalsInfoContainer}>
-            <div>
-              <div>No historic proposals found</div>
-            </div>
-          </div>
-        )
-      }
+        }
 
-      
-    </div>
+      </div>
+    </section>
   );
 };
 

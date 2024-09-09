@@ -13,7 +13,7 @@ import type {
   BlockType,
   ContractEventLog,
   BaseContract,
-} from "../StakingContext/types/contracts";
+} from "./types";
 
 export interface EventOptions {
   filter?: object;
@@ -29,12 +29,18 @@ export interface ITxPermission extends BaseContract {
   ): ITxPermission;
   clone(): ITxPermission;
   methods: {
-    initialize(
-      arg0: string[],
-      arg1: string,
-      arg2: string,
-      arg3: string
-    ): NonPayableTransactionObject<void>;
+    allowedTxTypes(
+      _sender: string,
+      _to: string,
+      arg2: number | string | BN,
+      _gasPrice: number | string | BN,
+      _data: string | number[]
+    ): NonPayableTransactionObject<{
+      typesMask: string;
+      cache: boolean;
+      0: string;
+      1: boolean;
+    }>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

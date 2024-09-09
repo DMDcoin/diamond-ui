@@ -47,6 +47,10 @@ export interface IConnectivityTrackerHbbft extends BaseContract {
       epoch: number | string | BN
     ): NonPayableTransactionObject<boolean>;
 
+    penaliseFaultyValidators(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
     reportMissingConnectivity(
       validator: string,
       blockNum: number | string | BN,

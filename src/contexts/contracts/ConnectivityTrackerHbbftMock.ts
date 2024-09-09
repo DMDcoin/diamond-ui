@@ -33,9 +33,21 @@ export interface ConnectivityTrackerHbbftMock extends BaseContract {
       arg0: number | string | BN
     ): NonPayableTransactionObject<boolean>;
 
+    epochPenaltiesSent(
+      arg0: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
     isEarlyEpochEnd(
       epoch: number | string | BN
     ): NonPayableTransactionObject<boolean>;
+
+    isEpochPenaltiesSent(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
+    penaliseFaultyValidators(
+      epoch: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     setEarlyEpochEnd(
       epoch: number | string | BN,

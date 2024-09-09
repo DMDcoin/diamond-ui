@@ -31,8 +31,6 @@ export interface IBlockRewardHbbft extends BaseContract {
   methods: {
     addToReinsertPot(): PayableTransactionObject<void>;
 
-    epochsPoolGotRewardFor(arg0: string): NonPayableTransactionObject<string[]>;
-
     getGovernanceAddress(): NonPayableTransactionObject<string>;
 
     notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;

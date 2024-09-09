@@ -1,3 +1,9 @@
+h3 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 /* styles.module.css */
 .modalOverlay {
   position: fixed;
@@ -33,18 +39,16 @@
 }
 
 .form {
-  gap: 2rem;
   display: flex;
   margin-top: 20px;
-  align-items: center;
+  text-align: center;
   flex-direction: column;
   justify-content: center;
-  text-align: left;
 }
 
 .form > span {
+  margin: 10px 0;
   font-size: 14px;
-  align-self: flex-start;
 }
 
 label {
@@ -73,40 +77,22 @@ input:focus {
 }
 
 .formSubmit {
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  align-self: center;
+  border-radius: 4px;
   padding: 10px 15px;
   background-color: #007bff;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
 }
 
 .formSubmit:hover {
   background-color: #0056b3;
 }
 
-.tableButton {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  background-color: rgb(245, 247, 250);
-}
-
-.tableButton:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.tableButton .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.tableButton .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.unstakeWarning {
+  color: red;
+  margin: 10px 0;
+  font-size: 14px;
+  text-align: center;
 }
