@@ -1,58 +1,68 @@
+import BigNumber from "bignumber.js";
 import styles from "./styles.module.css";
-import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import Navigation from "../../../components/Navigation";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDaoContext } from "../../../contexts/DaoContext";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import StakeModal from "../../../components/Modals/StakeModal";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import UnstakeModal from "../../../components/Modals/UnstakeModal";
+import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import BigNumber from "bignumber.js";
-import Navigation from "../../../components/Navigation";
-
 
 interface PoolDetailsProps {}
 
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
+  const navigate = useNavigate();
   const { poolAddress } = useParams();
   const { userWallet } = useWeb3Context();
-  const { pools, getOrderedUnstakeAmount, claimOrderedUnstake } = useStakingContext();
+  const { activeProposals, getMyVote, getStateString } = useDaoContext();
+  const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
-  const [claimableUnstakeAmount, setClaimableUnstakeAmount] = useState(BigNumber(0));
+  const [filteredProposals, setFilteredProposals] = useState<any[]>([]);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
     setPool(pool as Pool);
-    console.log(pool?.isAvailable, "Available.");
-
-    if (pool) {
-      getOrderedUnstakeAmount(pool).then((amount: BigNumber) => {
-        setClaimableUnstakeAmount(amount);
-      });
-    }
+    filterProposals()
   }, [poolAddress, pools, userWallet.myAddr]);
 
-  const handleClaimUnstake = () => {
-    claimOrderedUnstake(pool as Pool, claimableUnstakeAmount).then(() => {
-      setClaimableUnstakeAmount(BigNumber(0));
-    });
+  async function filterProposals() {
+    const filteredProposals = await Promise.all(
+      activeProposals.map(async (proposal) => {
+        if (proposal.proposer === poolAddress && proposal.state == '0') {
+          return proposal;
+        } else if (proposal.state == '2') {
+          const myVote = await getMyVote(proposal.id);
+          if (myVote && myVote.vote != '0') {
+            return proposal;
+          }
+        }
+        return null;
+      })
+    );
+  
+    // Remove null values
+    const proposals = filteredProposals.filter((proposal) => proposal !== null);
+    setFilteredProposals(proposals || []);
   }
 
   return (
     <section className="section">
 
-      
-
       <div className={styles.detailsSectionContainer + " sectionContainer"}>
 
       <Navigation start="/staking" />
 
-
         {/* image address status */}
         <div className={styles.infoContainer}>
-          <img src="https://via.placeholder.com/50" alt="Image 1" />
+          <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
-          <p>{pool?.isAvailable ? "Active" : "Banned"}</p>
+          <p className={pool?.isCurrentValidator ? styles.poolActive : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
+            {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : (Number(pool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
+          </p>
         </div>
 
         {/* stats table */}
@@ -65,11 +75,11 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             <tbody>
               <tr>
                 <td>Total Stake</td>
-                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toString() : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Candidate Stake</td>
-                <td>{pool ? BigNumber(pool.candidateStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.ownStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Score</td>
@@ -87,17 +97,14 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.delegatorStatsContainer}>
 
           <div>
-            <h1>Delegators</h1>
+            <h1>Delegates</h1>
             {
               pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
-              pool && BigNumber(pool.myStake).isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
-            }
-            {
-              BigNumber(claimableUnstakeAmount).isGreaterThan(0) && userWallet.myAddr && (
-                <button className={styles.tableButton} onClick={handleClaimUnstake}>Claim Unstake</button>
-              )
+              pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
+                <button className="primaryBtn" onClick={() => claimOrderedUnstake(pool as Pool)}>Claim</button>
+              ) : pool && BigNumber(pool.myStake).isGreaterThan(0) && userWallet.myAddr && (<UnstakeModal buttonText="Unstake" pool={pool} />)
             }
           </div>          
 
@@ -122,7 +129,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                 pool && pool.delegators.length ? pool.delegators.map((delegator, i) => (
                   <tr key={i}>
                     <td>
-                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                    <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                     </td>
                     <td>{delegator.address}</td>
                     <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
@@ -142,22 +149,34 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
           <table className={styles.styledTable}>
             <thead>
-              <tr>
-                <td>Date</td>
-                <td>Proposal title</td>
-                <td>Proposal type</td>
-                <td>Voting result</td>
-                <td></td>
-              </tr>
+              {
+                filteredProposals.length ? (
+                  <tr>
+                    <td>Date</td>
+                    <td>Proposal title</td>
+                    <td>Proposal type</td>
+                    <td>Voting result</td>
+                    <td></td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td>No DAO Participations</td>
+                  </tr>
+                )
+              }
             </thead>
             <tbody>
-              <tr>
-                <td>01/01/2021</td>
-                <td>Make a...</td>
-                <td>Open proposl</td>
-                <td>Accepted</td>
-                <td><button className={styles.tableButton}>Details</button></td>
-              </tr>
+              {
+                filteredProposals.map((proposal, i) => (
+                  <tr key={i}>
+                    <td>{proposal.timestamp}</td>
+                    <td>{proposal.title}</td>
+                    <td>{proposal.proposalType}</td>
+                    <td>{getStateString(proposal.state)}</td>
+                    <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>

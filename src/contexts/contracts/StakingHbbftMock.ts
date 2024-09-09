@@ -31,16 +31,6 @@ export type ClaimedOrderedWithdrawal = ContractEventLog<{
   2: string;
   3: string;
 }>;
-export type ClaimedReward = ContractEventLog<{
-  fromPoolStakingAddress: string;
-  staker: string;
-  stakingEpoch: string;
-  nativeCoinsAmount: string;
-  0: string;
-  1: string;
-  2: string;
-  3: string;
-}>;
 export type GatherAbandonedStakes = ContractEventLog<{
   caller: string;
   stakingAddress: string;
@@ -99,6 +89,36 @@ export type RecoverAbandonedStakes = ContractEventLog<{
   1: string;
   2: string;
 }>;
+export type RemoveChangeAbleParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type RestakeReward = ContractEventLog<{
+  poolStakingAddress: string;
+  stakingEpoch: string;
+  validatorReward: string;
+  delegatorsReward: string;
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+}>;
+export type SetBonusScoreContract = ContractEventLog<{
+  _address: string;
+  0: string;
+}>;
+export type SetChangeAbleParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
+export type SetDelegatorMinStake = ContractEventLog<{
+  minStake: string;
+  0: string;
+}>;
 export type WithdrewStake = ContractEventLog<{
   fromPoolStakingAddress: string;
   staker: string;
@@ -122,6 +142,8 @@ export interface StakingHbbftMock extends BaseContract {
 
     abandonedAndRemoved(arg0: string): NonPayableTransactionObject<boolean>;
 
+    addBalance(): PayableTransactionObject<void>;
+
     addPool(
       _miningAddress: string,
       _publicKey: string | number[],
@@ -136,7 +158,13 @@ export interface StakingHbbftMock extends BaseContract {
       _stakingAddress: string
     ): NonPayableTransactionObject<void>;
 
+    allowedParameterRange(
+      arg0: string | number[]
+    ): NonPayableTransactionObject<string>;
+
     areStakeAndWithdrawAllowed(): NonPayableTransactionObject<boolean>;
+
+    bonusScoreContract(): NonPayableTransactionObject<string>;
 
     candidateMinStake(): NonPayableTransactionObject<string>;
 
@@ -144,32 +172,31 @@ export interface StakingHbbftMock extends BaseContract {
       _poolStakingAddress: string
     ): NonPayableTransactionObject<void>;
 
-    claimReward(
-      _stakingEpochs: (number | string | BN)[],
-      _poolStakingAddress: string
-    ): NonPayableTransactionObject<void>;
-
     clearDelegatorStakeSnapshot(
-      _poolStakingAddress: string,
-      _delegator: string,
-      _stakingEpoch: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    clearRewardWasTaken(
-      _poolStakingAddress: string,
-      _staker: string,
-      _epoch: number | string | BN
+      pool: string,
+      delegator: string,
+      epoch: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     currentKeyGenExtraTimeWindow(): NonPayableTransactionObject<string>;
 
     delegatorMinStake(): NonPayableTransactionObject<string>;
 
-    delegatorStakeSnapshot(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getDelegatorStakeSnapshot(
+      pool: string,
+      delegator: string,
+      epoch: number | string | BN
     ): NonPayableTransactionObject<string>;
+
+    getMaxCandidates(): NonPayableTransactionObject<string>;
 
     getPoolInternetAddress(_poolAddress: string): NonPayableTransactionObject<{
       0: string;
@@ -177,6 +204,11 @@ export interface StakingHbbftMock extends BaseContract {
     }>;
 
     getPoolPublicKey(_poolAddress: string): NonPayableTransactionObject<string>;
+
+    getPoolValidatorStakeAmount(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<string>;
 
     getPools(): NonPayableTransactionObject<string[]>;
 
@@ -193,17 +225,23 @@ export interface StakingHbbftMock extends BaseContract {
 
     getPoolsToBeRemoved(): NonPayableTransactionObject<string[]>;
 
-    getRewardAmount(
-      _stakingEpochs: (number | string | BN)[],
-      _poolStakingAddress: string,
-      _staker: string
+    getStakeSnapshotLastEpoch(
+      pool: string,
+      delegator: string
     ): NonPayableTransactionObject<string>;
 
     incrementStakingEpoch(): NonPayableTransactionObject<void>;
 
+    initAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     initialize(
       _contractOwner: string,
       stakingParams: [
+        string,
         string,
         string[],
         number | string | BN,
@@ -218,6 +256,11 @@ export interface StakingHbbftMock extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     isPoolActive(_stakingAddress: string): NonPayableTransactionObject<boolean>;
+
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
 
     maxStakeAmount(): NonPayableTransactionObject<string>;
 
@@ -268,16 +311,6 @@ export interface StakingHbbftMock extends BaseContract {
 
     owner(): NonPayableTransactionObject<string>;
 
-    poolDelegatorInactiveIndex(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    poolDelegatorIndex(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
     poolDelegators(
       _poolStakingAddress: string
     ): NonPayableTransactionObject<string[]>;
@@ -285,10 +318,6 @@ export interface StakingHbbftMock extends BaseContract {
     poolDelegatorsInactive(
       _poolStakingAddress: string
     ): NonPayableTransactionObject<string[]>;
-
-    poolInactiveIndex(arg0: string): NonPayableTransactionObject<string>;
-
-    poolIndex(arg0: string): NonPayableTransactionObject<string>;
 
     poolInfo(arg0: string): NonPayableTransactionObject<{
       publicKey: string;
@@ -301,9 +330,11 @@ export interface StakingHbbftMock extends BaseContract {
 
     poolToBeElectedIndex(arg0: string): NonPayableTransactionObject<string>;
 
-    poolToBeRemovedIndex(arg0: string): NonPayableTransactionObject<string>;
-
     recoverAbandonedStakes(): NonPayableTransactionObject<void>;
+
+    removeAllowedChangeableParameter(
+      funcSelector: string
+    ): NonPayableTransactionObject<void>;
 
     removeMyPool(): NonPayableTransactionObject<void>;
 
@@ -313,14 +344,19 @@ export interface StakingHbbftMock extends BaseContract {
 
     renounceOwnership(): NonPayableTransactionObject<void>;
 
-    rewardWasTaken(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
+    restake(
+      _poolStakingAddress: string,
+      _validatorMinRewardPercent: number | string | BN
+    ): PayableTransactionObject<void>;
 
-    setCandidateMinStake(
-      _minStake: number | string | BN
+    setAllowedChangeableParameter(
+      setter: string,
+      getter: string,
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
+    setBonusScoreContract(
+      _bonusScoreContract: string
     ): NonPayableTransactionObject<void>;
 
     setDelegatorMinStake(
@@ -336,18 +372,6 @@ export interface StakingHbbftMock extends BaseContract {
     setStakeAmountTotal(
       _poolStakingAddress: string,
       _amount: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setStakeFirstEpoch(
-      _poolStakingAddress: string,
-      _delegator: string,
-      _value: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setStakeLastEpoch(
-      _poolStakingAddress: string,
-      _delegator: string,
-      _value: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setStakingEpoch(
@@ -380,6 +404,21 @@ export interface StakingHbbftMock extends BaseContract {
       _validatorSetAddress: string
     ): NonPayableTransactionObject<void>;
 
+    snapshotPoolStakeAmounts(
+      _epoch: number | string | BN,
+      _stakingPool: string
+    ): NonPayableTransactionObject<void>;
+
+    snapshotPoolTotalStakeAmount(
+      arg0: number | string | BN,
+      arg1: string
+    ): NonPayableTransactionObject<string>;
+
+    snapshotPoolValidatorStakeAmount(
+      arg0: number | string | BN,
+      arg1: string
+    ): NonPayableTransactionObject<string>;
+
     stake(_toPoolStakingAddress: string): PayableTransactionObject<void>;
 
     stakeAmount(
@@ -393,16 +432,6 @@ export interface StakingHbbftMock extends BaseContract {
     ): NonPayableTransactionObject<string>;
 
     stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
-
-    stakeFirstEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
-
-    stakeLastEpoch(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<string>;
 
     stakingEpoch(): NonPayableTransactionObject<string>;
 
@@ -420,7 +449,14 @@ export interface StakingHbbftMock extends BaseContract {
 
     startTimeOfNextPhaseTransition(): NonPayableTransactionObject<string>;
 
+    totalStakedAmount(): NonPayableTransactionObject<string>;
+
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
+
+    updatePoolLikelihood(
+      mining: string,
+      validatorScore: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     validatorSetContract(): NonPayableTransactionObject<string>;
 
@@ -436,12 +472,6 @@ export interface StakingHbbftMock extends BaseContract {
     ClaimedOrderedWithdrawal(
       options?: EventOptions,
       cb?: Callback<ClaimedOrderedWithdrawal>
-    ): EventEmitter;
-
-    ClaimedReward(cb?: Callback<ClaimedReward>): EventEmitter;
-    ClaimedReward(
-      options?: EventOptions,
-      cb?: Callback<ClaimedReward>
     ): EventEmitter;
 
     GatherAbandonedStakes(cb?: Callback<GatherAbandonedStakes>): EventEmitter;
@@ -483,6 +513,38 @@ export interface StakingHbbftMock extends BaseContract {
       cb?: Callback<RecoverAbandonedStakes>
     ): EventEmitter;
 
+    RemoveChangeAbleParameter(
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+    RemoveChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeAbleParameter>
+    ): EventEmitter;
+
+    RestakeReward(cb?: Callback<RestakeReward>): EventEmitter;
+    RestakeReward(
+      options?: EventOptions,
+      cb?: Callback<RestakeReward>
+    ): EventEmitter;
+
+    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
+    SetBonusScoreContract(
+      options?: EventOptions,
+      cb?: Callback<SetBonusScoreContract>
+    ): EventEmitter;
+
+    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
+    SetChangeAbleParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeAbleParameter>
+    ): EventEmitter;
+
+    SetDelegatorMinStake(cb?: Callback<SetDelegatorMinStake>): EventEmitter;
+    SetDelegatorMinStake(
+      options?: EventOptions,
+      cb?: Callback<SetDelegatorMinStake>
+    ): EventEmitter;
+
     WithdrewStake(cb?: Callback<WithdrewStake>): EventEmitter;
     WithdrewStake(
       options?: EventOptions,
@@ -500,13 +562,6 @@ export interface StakingHbbftMock extends BaseContract {
     event: "ClaimedOrderedWithdrawal",
     options: EventOptions,
     cb: Callback<ClaimedOrderedWithdrawal>
-  ): void;
-
-  once(event: "ClaimedReward", cb: Callback<ClaimedReward>): void;
-  once(
-    event: "ClaimedReward",
-    options: EventOptions,
-    cb: Callback<ClaimedReward>
   ): void;
 
   once(
@@ -562,6 +617,50 @@ export interface StakingHbbftMock extends BaseContract {
     event: "RecoverAbandonedStakes",
     options: EventOptions,
     cb: Callback<RecoverAbandonedStakes>
+  ): void;
+
+  once(
+    event: "RemoveChangeAbleParameter",
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+  once(
+    event: "RemoveChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeAbleParameter>
+  ): void;
+
+  once(event: "RestakeReward", cb: Callback<RestakeReward>): void;
+  once(
+    event: "RestakeReward",
+    options: EventOptions,
+    cb: Callback<RestakeReward>
+  ): void;
+
+  once(
+    event: "SetBonusScoreContract",
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+  once(
+    event: "SetBonusScoreContract",
+    options: EventOptions,
+    cb: Callback<SetBonusScoreContract>
+  ): void;
+
+  once(
+    event: "SetChangeAbleParameter",
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+  once(
+    event: "SetChangeAbleParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeAbleParameter>
+  ): void;
+
+  once(event: "SetDelegatorMinStake", cb: Callback<SetDelegatorMinStake>): void;
+  once(
+    event: "SetDelegatorMinStake",
+    options: EventOptions,
+    cb: Callback<SetDelegatorMinStake>
   ): void;
 
   once(event: "WithdrewStake", cb: Callback<WithdrewStake>): void;

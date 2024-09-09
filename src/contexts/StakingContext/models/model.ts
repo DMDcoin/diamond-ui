@@ -3,16 +3,6 @@ import BigNumber from 'bignumber.js';
 // import { makeAutoObservable, observable } from 'mobx';
 import { KeyGenMode } from './contractManager';
 
-export class ClaimableStake {
-  public amount: BigNumber = new BigNumber(0);
-  public unlockEpoch: number = 0;
-
-  public canClaimNow(stakingEpoch: number): boolean {
-    return this.amount.gt(new BigNumber(0)) && this.unlockEpoch <= stakingEpoch;
-  }
-}
-
-
 export class Pool {
   public isUpdating: boolean = false;
   public isActive: boolean = false; // currently "active" pool
@@ -29,8 +19,6 @@ export class Pool {
   public candidateStake: BigNumber = new BigNumber(0);
   public totalStake: BigNumber = new BigNumber(0);
   public myStake: BigNumber = new BigNumber(0);
-  public orderedWithdrawAmount: BigNumber = new BigNumber(0);
-  public claimableStake: ClaimableStake = new ClaimableStake();
   public delegators: Array<Delegator> = []; // TODO: how to cast to Array<IDelegator> ?
   public isMe: boolean = false;
   public validatorStakeShare: number = 0; // percent
@@ -38,17 +26,22 @@ export class Pool {
   public claimableReward: string = '0';
   public keyGenMode: KeyGenMode = KeyGenMode.NotAPendingValidator;
   public bannedUntil: BigNumber = new BigNumber('0');
-  public banCount: number = 0;
   public parts: string = ''; // if part of the treshhold key, or pending validator, this holds the PARTS
   public numberOfAcks: number = 0; // if part of the treshhold key, or pending validator, this holds the number of ACKS
   public availableSince: BigNumber = new BigNumber(0); // availability
   public votingPower: BigNumber = new BigNumber(0);
+  public orderedWithdrawAmount: BigNumber = new BigNumber(0);
+  public orderedWithdrawUnlockEpoch: BigNumber = new BigNumber(0);
+  public ownStake: BigNumber = new BigNumber(0);
 
   constructor(stakingAddress: string) {
     this.stakingAddress = stakingAddress;
   }
 
-  public isBanned(currentTimestamp: BigNumber): boolean {
+  public isBanned(currentTimestamp?: BigNumber): boolean {
+    if (!currentTimestamp) {
+      currentTimestamp = new BigNumber(Math.floor(Date.now() / 1000));
+    }
     return this.bannedUntil.isGreaterThan(currentTimestamp);
   }
 

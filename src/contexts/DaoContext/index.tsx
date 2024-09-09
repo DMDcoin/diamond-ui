@@ -13,10 +13,9 @@ interface DaoContextProps {
   activeProposals: Proposal[];
   phaseEndTimer: string;
   allDaoProposals: Proposal[];
-  myTotalStake: BigNumber;
-  totalStakedAmount: BigNumber;
 
   initialize: () => Promise<void>;
+  setActiveProposals: (proposals: Proposal[]) => void;
   getActiveProposals: () => Promise<void>;
   dismissProposal: (proposalId: string, reason: string) => Promise<void>;
   getStateString: (stateValue: string) => string;
@@ -32,6 +31,7 @@ interface DaoContextProps {
   setProposalsState: (proposals: Proposal[]) => Promise<void>;
   getHistoricProposalsEvents: () => Promise<Array<string>>;
   getMyVote: (proposalId: string) => Promise<Vote>;
+  executeProposal: (proposalId: string) => Promise<string>;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
@@ -46,15 +46,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
-  const [myTotalStake, setMyTotalStake] = useState<BigNumber>(new BigNumber(0));
-  const [totalStakedAmount, setTotalStakedAmount] = useState<BigNumber>(new BigNumber(0));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
+    // localStorage.clear();
     if (web3Context.web3Initialized) {
       initialize();
-      getTotalStakedAmount();
-      subscribeToEvents();
     }
   }, [web3Context.userWallet, web3Context.web3Initialized]);
 
@@ -73,6 +70,18 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const phaseCount = await web3Context.contractsManager.daoContract.methods.daoPhaseCount().call();
     setDaoPhaseCount(phaseCount);
+
+    subscribeToEvents();
+  }
+
+  const handleErrorMsg = (err: Error, alternateMsg: string) => {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction"))) {
+      toast.error(err.message);
+    } else if (err.message && err.message.includes("BigNumber") || err.message.toLowerCase().includes("invalid")) {
+      toast.error("Invalid input, please check the values and try again.");
+    } else {
+      toast.error(alternateMsg);
+    }
   }
 
   const getProposalTypeString = (proposalType: string) => {
@@ -138,7 +147,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getProposalDetails = async (proposalId: string) => {
     // Retrieve allDaoProposals from localStorage
     let updatedData: Proposal | undefined = getCachedProposals().find((proposal) => proposal.id === proposalId);
-    
     let proposalDetails;
     let proposalTimestamp;
 
@@ -147,7 +155,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     if (!updatedData) updatedData = initializeProposal(proposalId);
 
     try {
-      if (updatedData && (!updatedData.proposer || !['1', '4', '5', '6'].includes(updatedData.state))) {
+      if (updatedData && (!updatedData.proposer || !['1', '5', '6'].includes(updatedData.state))) {
         proposalDetails = await web3Context.contractsManager.daoContract.methods.getProposal(proposalId).call();
         updatedData = {
           ...updatedData,
@@ -179,6 +187,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     values: Array<string> = []
   ): Proposal => {
     return {
+      title: '',
       proposer: proposer,
       state: '',
       targets: targets,
@@ -274,19 +283,21 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   };
 
+  const getProposalExists = async (targets: string[], values: string[], callDatas: string[], description: string) => {
+    const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
+      targets, values, callDatas, description
+    ).call();
+    return await web3Context.contractsManager.daoContract.methods.proposalExists(proposalId).call();
+  }
+
   const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
+        if (await getProposalExists(targets, values, callDatas, description)) return toast.warn("Proposal already exists");
 
-        const toastid = toast.loading("Creating proposal");
         try {
-          console.log(
-            targets,
-            values,
-            callDatas,
-            description
-          )
+          web3Context.showLoader(true, "Creating proposal 💎");
           await web3Context.contractsManager.daoContract.methods.propose(
             targets,
             values,
@@ -295,15 +306,18 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             description,
             discussionUrl
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
-          toast.update(toastid, { render: "Proposal Created!", type: "success", isLoading: false, autoClose: 5000 });
           const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
             targets, values, callDatas, description
           ).call();
+          web3Context.showLoader(false, "");
+          toast.success("Proposal Created 💎");
           resolve(proposalId);
-        } catch(err) {
+        } catch(err: any) {
+          console.log(err);
+          web3Context.showLoader(false, "");
           console.log(err)
-          toast.update(toastid, { render: "Proposal Creation Failed!", type: "error", isLoading: false, autoClose: 1 });
-          reject(err);
+          handleErrorMsg(err, "Proposal creation failed");
+          reject("");
         }
     });
   };
@@ -312,14 +326,16 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return new Promise<void>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
   
-        const toastid = toast.loading("Dismissing proposal");
+        web3Context.showLoader(true, "Dismissing proposal 💎");
         try {       
           await web3Context.contractsManager.daoContract.methods.cancel(proposalId, reason).send({from: web3Context.userWallet.myAddr});
-          toast.update(toastid, { render: "Proposal Dismissed!", type: "success", isLoading: false, autoClose: 5000 });
+          web3Context.showLoader(false, "");
+          toast.success("Proposal Dismissed 💎");
           resolve();
-        } catch(err) {
+        } catch(err: any) {
           console.error(err);
-          toast.update(toastid, { render: "Proposal Dismissal Failed!", type: "error", isLoading: false, autoClose: 5000 });
+          web3Context.showLoader(false, "");
+          handleErrorMsg(err, "Proposal dismissal failed");
           reject(err);
         }
     });
@@ -329,18 +345,20 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return new Promise<void>(async (resolve, reject) => {
       if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
       
-      const toastid = toast.loading("Casting vote");
+      web3Context.showLoader(true, `Casting vote 💎`);
       try {
         if (reason.length > 0) {
           await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
         } else {
           await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
         }
-        toast.update(toastid, { render: "Vote Casted!", type: "success", isLoading: false, autoClose: 5000 });
+        web3Context.showLoader(false, "");
+        toast.success(`Vote Casted 💎`);
         resolve();
-      } catch(err) {
-        console.error(err);
-        toast.update(toastid, { render: "Voting Failed!", type: "error", isLoading: false, autoClose: 5000 });
+      } catch(err: any) {
+        console.log(err);
+        web3Context.showLoader(false, "");
+        handleErrorMsg(err, "Voting Failed!");
         reject(err);
       }
     });
@@ -348,20 +366,40 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   const subscribeToEvents = async () => {
     if (!events) {
-      const interval = setInterval(async() => {
-        const phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
-        setDaoPhase((prevPhase: any) => {
-          if (prevPhase && phase && prevPhase?.phase !== phase.phase) {
-            console.log("Phase changed");
-            getActiveProposals();
-            getHistoricProposals();
-            web3Context.contractsManager.daoContract.methods.daoPhaseCount().call().then((count) => setDaoPhaseCount(count));
-            return phase;
-          }
-          return prevPhase;
-        });
-        setPhaseTimer(phase);
-      }, 2000);
+      let phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
+      setPhaseTimer(phase);
+      
+      const interval = setInterval(async () => {
+        try {
+          phase = await web3Context.contractsManager.daoContract.methods.daoPhase().call();
+          
+          setDaoPhase((prevPhase: any) => {
+            if (prevPhase && phase && prevPhase.phase !== phase.phase) {
+              console.log("Phase changed");
+              
+              try {
+                getActiveProposals();
+                getHistoricProposals();
+              } catch (proposalError) {
+                console.error("Error fetching proposals:", proposalError);
+              }
+              
+              // Fetch daoPhaseCount with error handling
+              web3Context.contractsManager.daoContract.methods.daoPhaseCount().call()
+                .then(count => setDaoPhaseCount(count))
+                .catch(countError => console.error("Error fetching daoPhaseCount:", countError));
+  
+              return phase;
+            }
+            return prevPhase;
+          });
+  
+          setPhaseTimer(phase);
+        } catch (error) {
+          console.error("Error fetching daoPhase:", error);
+        }
+      }, 5000);
+  
       setEvents(interval);
     }
   }
@@ -473,61 +511,21 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return new Promise<string>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return resolve("");
 
-        const toastid = toast.loading("Finalizing proposal");
+        web3Context.showLoader(true, "Finalizing proposal 💎");
         try {
           await web3Context.contractsManager.daoContract.methods.finalize(proposalId).send({ from: web3Context.userWallet.myAddr });
           const proposalUpdated = await getProposalDetails(proposalId);
           await setProposalsState([proposalUpdated]);
-          toast.update(toastid, { render: "Proposal Finalized!", type: "success", isLoading: false, autoClose: 5000 });
+          web3Context.showLoader(false, "");
+          toast.success("Proposal Finalized 💎");
           resolve("success");
-        } catch(err) {
-          toast.update(toastid, { render: "Proposal Finalization Failed!", type: "error", isLoading: false, autoClose: 5000 });
+        } catch(err: any) {
+          console.error(err);
+          web3Context.showLoader(false, "");
+          handleErrorMsg(err, "Proposal finalization failed");
           resolve("failed");
         }
     });
-  }
-
-  const getTotalStakedAmount = async () => {
-    console.log("[INFO] Getting Total Staked Amounts");
-    let myStakedAmount = new BigNumber(0);
-    let totalStakedAmount = new BigNumber(0);
-
-    if (!web3Context.contractsManager.stContract) {
-      web3Context.contractsManager.stContract = await web3Context.contractsManager.contracts.getStakingHbbft();
-    }
-    const allPools = await web3Context.contractsManager.stContract?.methods.getPools().call();
-    if (!allPools) return myStakedAmount;
-
-    if (web3Context.userWallet.myAddr) {
-      const myStakePromises = allPools.map(pool => {
-        return web3Context.contractsManager.stContract?.methods.stakeAmount(pool, web3Context.userWallet.myAddr).call();
-      });
-      const myStakeAmounts = await Promise.allSettled(myStakePromises);
-      myStakeAmounts.forEach((result) => {
-          if (result.status === 'fulfilled') {
-            const myStake = result.value;
-            if (myStake) myStakedAmount = myStakedAmount.plus(myStake);
-          } else {
-            console.error("Failed to fetch stake amount:", result.reason);
-          }
-      });
-    }
-    
-    const totalStakedPromises = allPools.map(pool => {
-      return web3Context.contractsManager.stContract?.methods.stakeAmountTotal(pool).call();
-    })
-    const totalStakeAmounts = await Promise.allSettled(totalStakedPromises);
-    totalStakeAmounts.forEach((result) => {
-        if (result.status === 'fulfilled') {
-          const totalStake = result.value;
-          if (totalStake) totalStakedAmount = totalStakedAmount.plus(totalStake);
-        } else {
-          console.error("Failed to fetch total stake amount:", result.reason);
-        }
-    });
-
-    setTotalStakedAmount(totalStakedAmount);
-    setMyTotalStake(myStakedAmount);
   }
 
   const getMyVote = async (proposalId: string): Promise<Vote> => {
@@ -535,6 +533,28 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       .votes(proposalId, web3Context.userWallet.myAddr)
       .call();
   };
+
+  const executeProposal = async (proposalId: string) => {
+    return new Promise<string>(async (resolve, reject) => {
+        if (!web3Context.ensureWalletConnection()) return resolve("");
+        if ((await getProposalDetails(proposalId)).proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
+
+        web3Context.showLoader(true, "Executing proposal 💎");
+        try {
+          await web3Context.contractsManager.daoContract.methods.execute(proposalId).send({ from: web3Context.userWallet.myAddr });
+          const proposalUpdated = await getProposalDetails(proposalId);
+          await setProposalsState([proposalUpdated]);
+          web3Context.showLoader(false, "");
+          toast.success("Proposal Executed 💎");
+          resolve("success");
+        } catch(err: any) {
+          console.error(err);
+          web3Context.showLoader(false, "");
+          handleErrorMsg(err, "Proposal execution failed");
+          resolve("failed");
+        }
+    });
+  }
 
   // TODO: Decode calldata of calls to our core contracts
   // const decodeCallData = (callData: string) => {
@@ -551,8 +571,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     daoInitialized,
     activeProposals,
     allDaoProposals,
-    myTotalStake,
-    totalStakedAmount,
 
     // functions
     initialize,
@@ -570,7 +588,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getProposalDetails,
     setProposalsState,
     getHistoricProposalsEvents,
-    getMyVote
+    getMyVote,
+    setActiveProposals,
+    executeProposal
   };
 
   return (

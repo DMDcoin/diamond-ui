@@ -5,12 +5,14 @@ import dmdLogo from "../../assets/images/logo.png";
 import menuIcon from "../../assets/images/menu-icon.svg";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import dmdLogoFull from "../../assets/images/logo_dmd_full.svg";
+import { useStakingContext } from "../../contexts/StakingContext";
 
 interface NavBarProps {}
 
 const NavBar: React.FC<NavBarProps> = () => {
   const navigate = useNavigate();
   const web3Context = useWeb3Context();
+  const { isSyncingPools } = useStakingContext();
   const [openSideBar, setOpenSideBar] = React.useState<boolean>(false);
 
   return (
@@ -39,7 +41,7 @@ const NavBar: React.FC<NavBarProps> = () => {
               {web3Context.userWallet && web3Context.userWallet.myAddr ? (
                 <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
               ) : (
-                <button onClick={web3Context.connectWallet} className="button w-button">Sign in</button>
+                <button onClick={web3Context.connectWallet} className="button w-button w-nav-link-button" disabled={isSyncingPools}>Sign in</button>
               )}
 
             </nav>

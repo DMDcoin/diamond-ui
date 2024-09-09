@@ -2,6 +2,7 @@
   gap: 1rem;
   width: 100%;
   display: flex;
+  color: #0145b2;
   align-items: center;
   flex-direction: column;
   justify-content: center;
@@ -15,51 +16,12 @@
   overflow-x: scroll;
 }
 
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
-th, td {
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
 .tablePagination {
   gap: 0.5rem;
   float: right;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-}
-
-.tablePagination > button {
-  font-size: 14px;
-  cursor: pointer;
-  align-self: center;
-  border-radius: 3px;
-  border: 0.5px solid black;
-  background-color: transparent;
-}
-
-table button {
-  height: 35px;
-  font-size: 14px;
-  cursor: pointer;
-  align-self: center;
-  border-radius: 5px;
-  border: 0.5px solid black;
-  background-color: transparent;
-}
-
-table button:hover {
-  background-color: #f2f2f2;
 }
 
 .loader {
@@ -69,22 +31,72 @@ table button:hover {
   width: 100%;
 }
 
-td .loader {
+@keyframes loading {
+  to {
+    background-position-x: -30%;
+  }
+}
+
+.styledTable {
+  width: 100%;
+  color: #333;
+  font-size: 18px;
+  background-color: white;
+  border-collapse: collapse;
+}
+
+.styledTable th {
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.styledTable th > svg {
+  top: 50%;
+  left: auto;
+  margin-left: 10px;
+  position: absolute;
+  pointer-events: none;
+  transform: translateY(-60%);
+}
+
+.styledTable thead tr {
+  background-color: rgb(245, 247, 250);
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 15px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.styledTable td .loader {
   background-color: #ededed;
   background: linear-gradient(
       100deg,
       rgba(255, 255, 255, 0) 40%,
       rgba(255, 255, 255, 0.5) 50%,
       rgba(255, 255, 255, 0) 60%
-    )
-    #ededed;
+    ) #ededed;
   background-size: 200% 100%;
   background-position-x: 180%;
   animation: 1s loading ease-in-out infinite;
 }
 
-@keyframes loading {
-  to {
-    background-position-x: -30%;
-  }
+.tableBodyRow:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
 }

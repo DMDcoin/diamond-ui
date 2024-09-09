@@ -10,16 +10,22 @@ import UnstakeModal from "../../components/Modals/UnstakeModal";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import StakeModal from "../../components/Modals/StakeModal";
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import p2bLogo from "../../assets/images/home/logo_p2pb2b.png";
+import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
+import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
+import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
+import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
-  const [myPool, setMyPool] = useState<Pool | null>(null);
   const { userWallet, connectWallet } = useWeb3Context();
 
   const {
     pools,
+    myPool,
     keyGenRound,
     stakingEpoch,
     epochStartTime,
@@ -29,106 +35,145 @@ const Home: React.FC<HomeProps> = ({}) => {
     minimumGasFee,
     reinsertPot,
     deltaPot,
-    myTotalStake } = useStakingContext();
-
-    useEffect(() => {
-        setMyPool(pools.find(p => p.stakingAddress === userWallet.myAddr) as Pool);
-    }, [pools, userWallet.myAddr]);
+    myTotalStake,
+    myCandidateStake,
+    claimOrderedUnstake } = useStakingContext();
 
   return (
     <>
 
         {
             userWallet.myAddr ? (
-                <section className="hero-section">
+                <section className={styles.heroSection + " hero-section"}>
                     <div className="hero-container">
                         <div className={styles.heroWrapper + " hero-wrapper"}>
                             <div className={styles.heroSplit + " hero-split" }>
                                 <div className={styles.infoContainer}>
-                                    <img src="https://via.placeholder.com/70" alt="Image 1" />
+                                    {
+                                        userWallet.myAddr ? <Jazzicon diameter={60} seed={jsNumberForAddress(userWallet.myAddr)} />
+                                        : <Jazzicon diameter={60} seed={Math.round(Math.random() * 10000000)} />
+                                    }
                                     <div>
                                         <p>User</p>
                                         <p>{userWallet.myAddr}</p>
                                     </div>
+                                    {
+                                        myPool && (
+                                            <p className={myPool?.isCurrentValidator ? styles.myPoolActive : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? styles.poolBanned : styles.poolActive)}>
+                                                {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : (Number(myPool?.bannedUntil ?? 0) > Math.floor(new Date().getTime() / 1000) ? "Banned" : "Invalid")}
+                                            </p>
+                                        )
+                                    }
                                 </div>
                                 <div className={styles.statsContainer}>
-                                    <table className={styles.styledTable}>
+                                    <table className={styles.styledTableFirst}>
                                         <thead>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>My Stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Candidate stake</td>
-                                            <td>{myTotalStake.dividedBy(10**18).toString()} DMD</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Score</td>
-                                            <td>1000</td>
-                                        </tr>
+                                            {myPool && (
+                                                <>
+                                                    <tr>
+                                                        <td>My stake</td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
+                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>
+                                                            <div className={styles.loggedInBtns}>
+                                                                {
+                                                                    myPool && (
+                                                                        <>
+                                                                            <StakeModal buttonText="Stake" pool={myPool} />
+                                                                            <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                                                            {
+                                                                                myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
+                                                                                    <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
+                                                                            }
+                                                                            {
+                                                                                myPool && !myPool.isCurrentValidator && myPool.delegators.length === 0 && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
+                                                                            }
+                                                                        </>
+                                                                    )
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            )}
+                                                <tr>
+                                                    <td>Staked on other candidate</td>
+                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                    <td>
+                                                        <div className={styles.loggedInBtns}>
+                                                            {
+                                                                !myPool && (
+                                                                    <div className={styles.noPoolButtons}>
+                                                                        <CreateValidatorModal buttonText="Create a pool"/>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                            <a className="primaryBtn" onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {myPool && (
+                                                <tr>
+                                                    <td>Score</td>
+                                                    <td>1000</td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-
-                            <div className="hero-split">
-                                <div className={styles.loggedInBtns}>
-                                    {
-                                        !myPool ? (
-                                            <div className={styles.noPoolButtons}>
-                                                <CreateValidatorModal buttonText="Create a pool"/>
-                                                <a className={styles.tableButton} onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <StakeModal buttonText="Stake" pool={myPool} />
-                                                <UnstakeModal buttonText="Unstake" pool={myPool} />
-                                            </>
-                                        )
-                                    }
-                                    {/* <button className={styles.tableButton}>See the list</button> */}
-                                    {/* <button className={styles.tableButton}>See history</button> */}
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        <table className={styles.styledTable}>
+                        {myPool && myPool.delegators.length ? <h1>Delegates</h1> : "" }
+                        <table className={styles.styledTableFirst}>
                             <thead>
                             {
                                 myPool && myPool.delegators.length ? (
-                                <tr>
-                                    <td></td>
-                                    <td>Wallet</td>
-                                    <td>Delegated Stake</td>
-                                </tr>
-                                ) : (
-                                <tr>
-                                    <td>No Delegations</td>
-                                </tr>
+                                    <>
+                                        <tr>
+                                            <td></td>
+                                            <td>Wallet</td>
+                                            <td>Delegated Stake</td>
+                                        </tr>
+                                    </>
+                                ) : myPool && (
+                                    <tr>
+                                        <td>No Delegations</td>
+                                    </tr>
                                 )
                             }
                             </thead>
                             <tbody>
                             {
                                 myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
-                                <tr key={i}>
+                                <tr key={i} className={styles.tableBodyRow}>
                                     <td>
-                                    <img src="https://via.placeholder.com/50" alt="Image 1" />
+                                        <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                                     </td>
                                     <td>{delegator.address}</td>
                                     <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
                                 </tr>
-                                )) : (
-                                <tr>
-                                </tr>
+                                )) : myPool && (
+                                    <tr>
+                                    </tr>
                                 )
                             }
                             </tbody>
                         </table>
+                    </div>
+
+                    <div className={styles.heroContainer + " hero-container"}>
+                        <div className={styles.daoPhaseBannerContainer}>
+                            <DaoPhaseBanner />
+                            <button onClick={() => {startTransition(() => {navigate('dao')})}}>Go to DAO</button>
+                        </div>
                     </div>
                 </section>
             ) : (
@@ -136,57 +181,64 @@ const Home: React.FC<HomeProps> = ({}) => {
                     <div className="hero-container">
                         <div className="hero-wrapper">
                             <div className="hero-split">
-                                <div className="div-block-2">
+                                <div className={styles.mainHeading + " div-block-2"}>
                                     <h1 data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e0e" className="heading">Become DMD Chain Participant</h1>
                                 </div>
                                 <div className="div-block">
-                                    <p data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10" className="margin-bottom-24px">Lorem ipsum dolor
-                                        sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
-                                        euismod lorem. Etiam sodales ac felis id interdum.</p>
+                                    <p
+                                        data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e10"
+                                        className={styles.heroDescription + " margin-bottom-24px"}
+                                    >
+                                        Welcome to the DMD Diamond Blockchain Staking Platform –
+                                        your gateway to earning rewards while contributing to
+                                        the security and functionality of the DMD network. Embark on
+                                        your staking adventure with us and unlock the full potential
+                                        of your digital assets.
+                                    </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet}
-                                        className="button w-button">Get Started</button></div>
+                                <div className="div-block-3"><button onClick={connectWallet} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
-                            <div className="hero-split hero-split-responsive"><img
+                            <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
+                                <img
                                     src={getStartedImg}
                                     loading="lazy" width="500" data-w-id="a02e2c67-a527-8c56-d3ff-56ecb7320e15" alt=""
-                                    className="shadow-two" /></div>
+                                    className={styles.heroSplitImg + " shadow-two"} />
+                            </div>
                         </div>
                     </div>
                 </section>
             )
         }
 
-      <section className="features-section">
-          <div className="w-layout-blockcontainer container w-container">
-              <div className="w-layout-grid grid">
-                  <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
-                      data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">It&#x27;s Easy</div>
-                  </div>
-                  <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
-                      data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">It&#x27;s Secure</div>
-                  </div>
-                  <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
-                      data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
-                      // style="-webkit-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0px, 300px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0"
-                      className="grid-block"><img
-                          src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
-                          loading="lazy" width="80" alt="" />
-                      <div className="text-block">All In One Place</div>
-                  </div>
-              </div>
-          </div>
-      </section>
+        {!userWallet.myAddr && (
+            <section className="features-section">
+                <div className="w-layout-blockcontainer container w-container">
+                    <div className={styles.gridContainer + "w-layout-grid grid"}>
+                        <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                            data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                            className={styles.gridBlock + " grid-block"}><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">It&#x27;s Easy</div>
+                        </div>
+                        <div id="w-node-ff91bb0b-4690-c47b-374c-73cc66aa85f0-55493c02"
+                            data-w-id="ff91bb0b-4690-c47b-374c-73cc66aa85f0"
+                            className={styles.gridBlock + " grid-block"}><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">It&#x27;s Secure</div>
+                        </div>
+                        <div id="w-node-d810131a-ae46-8317-3705-f066f8b53080-55493c02"
+                            data-w-id="d810131a-ae46-8317-3705-f066f8b53080"
+                            className={styles.gridBlock + " grid-block"}><img
+                                src="https://assets-global.website-files.com/65fb610d7ccccdf955493bf9/65fbfe89ded95818b4660096_img_know_diamond.svg"
+                                loading="lazy" width="80" alt="" />
+                            <div className="text-block">All In One Place</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        )}
 
       <section className="statistics-table">
           <div className="container-5">
@@ -234,65 +286,91 @@ const Home: React.FC<HomeProps> = ({}) => {
           </div>
       </section>
 
-      <section className="logos-title-large">
-          <div className="container-8">
-              <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
-              <div className="clients-wrapper"><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a395a12aaf3_logo-01.svg"
-                      loading="lazy" alt="Arise Health logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124ade1612aaf2_logo-02.svg"
-                      loading="lazy" alt="The Paak logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124ae38212aaf1_logo-03.svg"
-                      loading="lazy" alt="OE logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a411512aaf4_logo-04.svg"
-                      loading="lazy" alt="2020INC logo" className="clients-image" /><img
-                      src="https://assets-global.website-files.com/62434fa732124a0fb112aab4/62434fa732124a3cd712aaf6_logo-05.svg"
-                      loading="lazy" alt="Ephicient logo" className="clients-image" /></div>
-          </div>
-      </section>
+      {
+        userWallet.myAddr && (
+            <section className="hero-section">
+                <div className="hero-container">
+                    <div className={styles.topValidatorsContainer}>
+                        <div className="comparison-row-main">
+                            <h3 className="heading-3">Top 5 validator candidates</h3>
+                        </div>
+                        <div className={styles.tableContainer}>
+                            <table className={styles.styledTable}>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Wallet</th>
+                                        <th>Total Stake</th>
+                                        <th>Voting Power</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                    pools
+                                        .sort((a, b) => BigNumber(b.totalStake).minus(a.totalStake).toNumber())  // Sort pools by totalStake in descending order
+                                        .slice(0, 5)  // Get the top 5 pools
+                                        .map((pool, i) => (
+                                        <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                            <td>
+                                                <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
+                                            </td>
+                                            <td>{pool.stakingAddress}</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
+                                            <td>{pool.votingPower.toString()}%</td>
+                                            <td>1000</td>
+                                        </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <a className="primaryBtn" onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                    </div>
+                </div>
+            </section>
+        )
+      }
 
-      <section className="cta-banner">
-          <div className="container-7">
-              <div className="hero-wrapper-two">
-                  <h1 className="heading-3">Become DMD Chain Participant</h1>
-                  <p className="margin-bottom-24px-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                      tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum
-                      dolor sit amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis
-                      euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum dolor sit amet, consectetur
-                      adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac
-                      felis id interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tincidunt
-                      sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum. Lorem ipsum dolor sit
-                      amet, consectetur adipiscing elit. Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem.
-                      Etiam sodales ac felis id interdum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Suspendisse tincidunt sagittis eros. Quisque quis euismod lorem. Etiam sodales ac felis id interdum.
-                  </p><a href="#" className="button w-button">Get Started</a>
-              </div>
-          </div>
-      </section>
+      {
+        !userWallet.myAddr && (
+            <>
+                <section className="logos-title-large">
+                    <div className="container-8">
+                        <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
+                        <div className={styles.clientsWrapper + " clients-wrapper"}>
 
-      <section className="faq-table">
-          <div className="container-9">
-              <div className="comparison-row-main">
-                  <h2 className="heading-3">FAQ</h2>
-              </div>
-              <div className="comparison-table-2 comparison-table">
-                  <div className="comparison-row"><a id="w-node-_52dc161a-babb-9cb4-346b-70d6512420f0-55493c02" href="#"
-                          className="faq-link">What is DMD?</a></div>
-                  <div className="comparison-row"><a id="w-node-_885318db-0163-90d7-58eb-6c85d39ae9b3-55493c02" href="#"
-                          className="faq-link">What is a Node?</a></div>
-                  <div className="comparison-row"><a id="w-node-d45b2b99-b8a3-01f2-7562-55be1b54c7fa-55493c02" href="#"
-                          className="faq-link">How to stake and become a validator?</a></div>
-              </div>
-          </div>
-      </section>
+                            <img src={p2bLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                            <img src={bitmartLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                            <img src={blockserveLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                        </div>
+                    </div>
+                </section>
+
+                <section className="cta-banner">
+                    <div className="container-7">
+                        <div className="hero-wrapper-two">
+                            <h1 className="heading-3">Become DMD Chain Participant</h1>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Real-Time Analytics:</strong> Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Earn Rewards:</strong> By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.
+                            </p>
+                            <p className="margin-bottom-24px-2">
+                                    <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
+                            </p>
+                            { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
+                        </div>
+                    </div>
+                </section>
+            </>
+        )
+      }
 
     </>
   );

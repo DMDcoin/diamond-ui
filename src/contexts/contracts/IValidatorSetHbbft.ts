@@ -29,90 +29,13 @@ export interface IValidatorSetHbbft extends BaseContract {
   ): IValidatorSetHbbft;
   clone(): IValidatorSetHbbft;
   methods: {
-    announceAvailability(
-      arg0: number | string | BN,
-      arg1: string | number[]
-    ): NonPayableTransactionObject<void>;
-
-    areDelegatorsBanned(arg0: string): NonPayableTransactionObject<boolean>;
-
-    blockRewardContract(): NonPayableTransactionObject<string>;
-
-    canCallAnnounceAvailability(
-      _miningAddress: string
-    ): NonPayableTransactionObject<boolean>;
-
-    finalizeChange(): NonPayableTransactionObject<void>;
-
-    getCurrentValidatorsCount(): NonPayableTransactionObject<string>;
-
-    getPendingValidatorKeyGenerationMode(
-      arg0: string
-    ): NonPayableTransactionObject<string>;
-
-    getPendingValidators(): NonPayableTransactionObject<string[]>;
-
-    getPreviousValidators(): NonPayableTransactionObject<string[]>;
-
-    getPublicKey(arg0: string): NonPayableTransactionObject<string>;
-
-    getStakingContract(): NonPayableTransactionObject<string>;
-
-    getValidatorCountSweetSpot(
-      arg0: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    getValidators(): NonPayableTransactionObject<string[]>;
-
-    handleFailedKeyGeneration(): NonPayableTransactionObject<void>;
-
-    isFullHealth(): NonPayableTransactionObject<boolean>;
-
-    isPendingValidator(arg0: string): NonPayableTransactionObject<boolean>;
-
-    isReportValidatorValid(arg0: string): NonPayableTransactionObject<boolean>;
-
     isValidator(arg0: string): NonPayableTransactionObject<boolean>;
-
-    isValidatorAbandoned(arg0: string): NonPayableTransactionObject<boolean>;
 
     isValidatorBanned(arg0: string): NonPayableTransactionObject<boolean>;
 
     isValidatorOrPending(arg0: string): NonPayableTransactionObject<boolean>;
 
-    maxValidators(): NonPayableTransactionObject<string>;
-
     miningByStakingAddress(arg0: string): NonPayableTransactionObject<string>;
-
-    newValidatorSet(): NonPayableTransactionObject<void>;
-
-    notifyUnavailability(arg0: string): NonPayableTransactionObject<void>;
-
-    publicKeyByStakingAddress(
-      arg0: string
-    ): NonPayableTransactionObject<string>;
-
-    randomContract(): NonPayableTransactionObject<string>;
-
-    removeMaliciousValidators(
-      arg0: string[]
-    ): NonPayableTransactionObject<void>;
-
-    reportMaliciousCallable(
-      arg0: string,
-      arg1: string,
-      arg2: number | string | BN
-    ): NonPayableTransactionObject<{
-      0: boolean;
-      1: boolean;
-    }>;
-
-    setStakingAddress(
-      arg0: string,
-      arg1: string
-    ): NonPayableTransactionObject<void>;
-
-    stakingByMiningAddress(arg0: string): NonPayableTransactionObject<string>;
 
     validatorAvailableSince(arg0: string): NonPayableTransactionObject<string>;
   };
