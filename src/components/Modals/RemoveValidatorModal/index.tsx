@@ -47,7 +47,7 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    removePool(pool, BigNumber(pool.ownStake).dividedBy(10**18)).then((success: boolean) => {
+    removePool(pool).then((success: boolean) => {
       closeModal();
     });
   }
@@ -82,7 +82,7 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 in the previous pool.
               </p>
 
-              <button className={styles.formSubmit} type="submit" disabled={pool.delegators.length > 0}>
+              <button className={styles.formSubmit} type="submit">
                 Remove
               </button>
             </form>

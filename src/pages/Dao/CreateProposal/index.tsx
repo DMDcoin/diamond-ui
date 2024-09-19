@@ -145,7 +145,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             return calldata;
           });         
       } else if (proposalType === 'ecosystem-parameter-change') {
-        let encodedCallData;
+        let encodedCallData = "0x";
         const [, , methodSetter] = epcMethodSetter.split(":");
 
         if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcContractName)
@@ -154,14 +154,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         const contract = getContractByName(epcContractName);
         const contractAddress = contract?.options.address;
 
-        if (["Certifier", "Tx Permission"].includes(epcContractName)) {
-          if (methodSetter === 'addAllowedSender' || methodSetter === 'removeAllowedSender') {
-            if (!isValidAddress(epcValue)) throw new Error(`Invalid ${methodSetter} address`);
-          }
-          encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
-        } else if (["Staking", "Validator", "Block Reward", "Connectivity Tracker"].includes(epcContractName)) {
-          encodedCallData = (contract?.methods as any)[epcMethodSetter](epcValue).encodeABI();
-        }
+        encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
 
         targets = [contractAddress as string];
         values = ["0"];
@@ -201,7 +194,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     try {
       const contract = getContractByName(contractName);
       const parameterData = await (contract?.methods as any)['getAllowedParamsRange'](EcosystemParameters[contractName][methodName].setter).call();
-      console.log(parameterData)
       setEpcParamRange(parameterData.range.length ? parameterData.range : ['0', '0']);
     } catch(err) {
       console.log(err)

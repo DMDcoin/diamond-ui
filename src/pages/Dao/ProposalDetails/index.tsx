@@ -14,7 +14,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 import Tooltip from "../../../components/Tooltip";
-import { formatCryptoUnitValue } from "../../../utils/common";
+import { extractValueFromCalldata, formatCryptoUnitValue } from "../../../utils/common";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -110,9 +110,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   };
 
   const handleCastVote = async (vote: number) => {
-    if (pools.filter(
-      (p) => Number(p.bannedUntil ?? 0) <= Math.floor(new Date().getTime() / 1000) && p.stakingAddress === web3Context.userWallet.myAddr
-    ).length <= 0) {
+    if (!web3Context.contractsManager.stContract?.methods.isPoolValid(web3Context.userWallet.myAddr)) {
       toast.warning(`Only validator candidates can vote`);
       return;
     }
@@ -214,7 +212,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                 <div>
                   <span>Proposed value</span>
-                  <span>{formatCryptoUnitValue(proposal.values[0])}</span>
+                  <span>{formatCryptoUnitValue(extractValueFromCalldata(proposal.calldatas[0]))}</span>
                 </div>
               </div>
             )
