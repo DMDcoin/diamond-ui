@@ -2,7 +2,6 @@ import BigNumber from "bignumber.js";
 
 const Web3 = require('web3');
 const web3 = new Web3();
-// const { publicToAddress } = require("ethereumjs-util");
 const { toBuffer, bufferToHex, ecrecover, publicToAddress, hashPersonalMessage, fromRpcSig } = require('ethereumjs-util');
 
 
@@ -12,6 +11,15 @@ export const isValidAddress = (address: string): boolean => {
 
 export const getFunctionSelector = (signature: string): string => {
   return web3.utils.sha3(signature).slice(0, 10);
+};
+
+export const extractValueFromCalldata = (calldata: string): string => {
+  const encodedValue = calldata.slice(10, 74);
+  
+  // Decode the value as a uint256
+  const value = web3.utils.hexToNumberString(`0x${encodedValue}`);
+  
+  return value;
 };
 
 export const getFunctionName = (abi: any[], selector: string): string => {
