@@ -21,6 +21,9 @@ import JsonTxPermissionHbbft from '../../contract-abis/TxPermissionHbbft.json';
 import { RandomHbbft } from '../../contracts/RandomHbbft';
 import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
 
+import { BonusScoreSystem } from '../../contracts';
+import JsonBonusScoreSystem from '../../contract-abis/BonusScoreSystem.json';
+
 import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao, HbbftAggregator } from '../../contracts';
 import JsonDiamonDao  from '../../contract-abis/DiamondDao.json';
 import JsonCertifierHbbft from '../../contract-abis/CertifierHbbft.json';
@@ -230,6 +233,14 @@ export class ContractManager {
     let contractAddress = '0x9990000000000000000000000000000000000000';
 
     const abi: any = JsonHbbtAggregator.abi;
+    const contract: any = new this.web3.eth.Contract(abi, contractAddress);
+    return contract;
+  }
+
+  public async getBonusScoreSystem(blockNumber: BlockType = 'latest'): Promise<BonusScoreSystem> {
+    let contractAddress = await this.getValidatorSetHbbft().methods.bonusScoreSystem().call({}, blockNumber);
+
+    const abi: any = JsonBonusScoreSystem.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;
   }

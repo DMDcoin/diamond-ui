@@ -15,6 +15,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 import {
   BlockRewardHbbft,
+  BonusScoreSystem,
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
@@ -38,6 +39,7 @@ interface ContractsState {
   tpContract?: TxPermissionHbbft;
   ctContract?: ConnectivityTrackerHbbft;
   aggregator?: HbbftAggregator;
+  bsContract?: BonusScoreSystem
 }
 
 interface Web3ContextProps {
@@ -142,7 +144,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         tpContract,
         brContract,
         ctContract,
-        aggregator
+        aggregator,
+        bsContract
       ] = await Promise.all([
         contractManager.getValidatorSetHbbft(),
         contractManager.getDaoContract(),
@@ -151,7 +154,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         contractManager.getContractPermission(),
         contractManager.getRewardHbbft(),
         contractManager.getConnectivityTracker(),
-        contractManager.getHbbftAggregator()
+        contractManager.getHbbftAggregator(),
+        contractManager.getBonusScoreSystem()
       ]);
     
       setContractsManager({
@@ -163,7 +167,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         tpContract,
         brContract,
         ctContract,
-        aggregator
+        aggregator,
+        bsContract,
       });
     } catch (error: any) {
       toast.warn(`Failed to initialize contracts: ${error.message}`);

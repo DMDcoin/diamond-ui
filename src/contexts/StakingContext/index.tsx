@@ -441,9 +441,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       
     // Fetch the updated pool data in one call
     if (poolsToUpdate.length > 0) {
-      poolsToUpdate.map(p => console.log(p.stakingAddress))
       const updatedPoolData = await contractsManager.aggregator?.methods.getPoolsData(poolsToUpdate.map(p => p.stakingAddress)).call();
-      console.log(updatedPoolData)
       if (updatedPoolData) {
         // Process each updated pool data
         await Promise.all(updatedPoolData.map(async (updatedData: any, index: number) => {
@@ -463,8 +461,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
-
-    console.log({updatedPoolData})
 
     pool.miningAddress = updatedPoolData[0];
     pool.availableSince = new BigNumber(updatedPoolData[1]);
@@ -492,11 +488,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
     );
 
-    if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
-      pool.score = 0;
-    } else {
-      pool.score = 1000;
-    }
+    pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call({}, blockNumber));
 
     return pool;
   }

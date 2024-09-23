@@ -1,5 +1,7 @@
 .sliderContainer {
   width: 100%;
+  margin-top: 10px;
+  position: relative;
   text-align: center;
 }
 
@@ -7,11 +9,30 @@
   display: flex;
   font-size: 12px;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
 }
 
 .rangeInput {
+  z-index: 1;
   width: 100%;
   height: 40px;
   padding: 5px;
+  border: 0px;
+  position: relative;
+}
+
+.valContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.currentValue {
+  position: absolute;
+  top: -10px;
+  z-index: 2;
+  white-space: nowrap;
 }
