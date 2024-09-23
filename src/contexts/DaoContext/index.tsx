@@ -23,7 +23,7 @@ interface DaoContextProps {
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
   createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string>;
   getProposalTimestamp: (proposalId: string) => Promise<number>;
-  timestampToDate: (timestamp: number) => string;
+  timestampToDate: (timestamp: string) => string;
   getHistoricProposals: () => Promise<void>;
   finalizeProposal: (proposalId: string) => Promise<string>;
   getCachedProposals: () => Proposal[];
@@ -168,7 +168,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
       if (updatedData && !updatedData.timestamp) {
         proposalTimestamp = await getProposalTimestamp(proposalId);
-        updatedData.timestamp = timestampToDate(proposalTimestamp);
+        updatedData.timestamp = proposalTimestamp.toString();
       }
     } catch (error) {}
 

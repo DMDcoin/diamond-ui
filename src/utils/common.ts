@@ -34,8 +34,8 @@ export const getFunctionName = (abi: any[], selector: string): string => {
   return matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function';
 };
 
-export const timestampToDate = (timestamp: number) => {
-  const date = new Date(timestamp * 1000);
+export const timestampToDate = (timestamp: string) => {
+  const date = new Date(Number(timestamp) * 1000);
   const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
   const day = date.getDate();
   const year = date.getFullYear();

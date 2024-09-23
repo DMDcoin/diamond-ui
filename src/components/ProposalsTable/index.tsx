@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDaoContext } from '../../contexts/DaoContext';
 import { Proposal } from '../../contexts/DaoContext/types';
 import { useWeb3Context } from '../../contexts/Web3Context';
+import { timestampToDate } from '../../utils/common';
 
 interface TableProps {
   data: any[];
@@ -45,9 +46,8 @@ const ProposalsTable = (props: TableProps) => {
 
   useEffect(() => {
     let filteredData: any[] = data;
-    const lastItemIndex = currentPage * itemsPerPage;
-    const firstItemIndex = lastItemIndex - itemsPerPage;
-
+  
+    // Apply filtering based on filterQuery
     if (filterQuery) {
       if (filterQuery === 'unfinalized') {
         filteredData = filteredData.filter((proposal: Proposal) => proposal.state === "3");
@@ -55,17 +55,25 @@ const ProposalsTable = (props: TableProps) => {
         filteredData = filteredData.filter((proposal: Proposal) => proposal.proposer === web3Context.userWallet?.myAddr);
       }
     }
-
+  
+    // Apply searching based on searchQuery
     if (searchQuery) {
       filteredData = filteredData.filter((proposal: Proposal) =>
         proposal.proposer.toLowerCase().match(searchQuery.toLowerCase()) ||
         proposal.description.toLowerCase().match(searchQuery.toLowerCase()) ||
         getStateString(proposal.state).toLowerCase().match(searchQuery.toLowerCase()) ||
-        proposal.timestamp.toLowerCase().match(searchQuery.toLowerCase())
+        timestampToDate(proposal.timestamp).toLowerCase().match(searchQuery.toLowerCase())
       );
     }
-
-    setCurrentItems(filteredData.slice(firstItemIndex, lastItemIndex))
+  
+    // Sort by timestamp in descending order
+    filteredData.sort((a, b) => b.timestamp - a.timestamp);
+  
+    const lastItemIndex = currentPage * itemsPerPage;
+    const firstItemIndex = lastItemIndex - itemsPerPage;
+  
+    // Set current items and total pages
+    setCurrentItems(filteredData.slice(firstItemIndex, lastItemIndex));
     setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
     setFilteredData(filteredData);
   }, [data, filterQuery, searchQuery, currentPage, web3Context.userWallet.myAddr]);
@@ -97,7 +105,7 @@ const ProposalsTable = (props: TableProps) => {
                 <tr className={styles.tableBodyRow} key={key} onClick={() => handleDetailsClick(proposal.id)}>
                   <td>
                     {
-                      proposal.timestamp || (<div className={styles.loader}></div>)
+                      timestampToDate(proposal.timestamp) || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td>
