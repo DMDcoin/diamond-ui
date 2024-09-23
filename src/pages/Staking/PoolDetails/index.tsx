@@ -10,6 +10,7 @@ import UnstakeModal from "../../../components/Modals/UnstakeModal";
 import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
+import { timestampToDate } from "../../../utils/common";
 
 interface PoolDetailsProps {}
 
@@ -170,7 +171,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               {
                 filteredProposals.map((proposal, i) => (
                   <tr key={i}>
-                    <td>{proposal.timestamp}</td>
+                    <td>{timestampToDate(proposal.timestamp)}</td>
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
                     <td>{proposal.myVote == "2" ? "Yes" : proposal.myVote == "1" ? "No" : "Yes"}</td>
