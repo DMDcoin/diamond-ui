@@ -60,7 +60,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
-          <p className={pool?.isCurrentValidator ? styles.poolActive : styles.poolBanned}>
+          <p className={pool?.isCurrentValidator || pool?.isActive  ? styles.poolActive : styles.poolBanned}>
             {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : "Invalid"}
           </p>
         </div>

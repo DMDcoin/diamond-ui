@@ -59,7 +59,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </div>
                                     {
                                         myPool && (
-                                            <p className={myPool?.isCurrentValidator ? styles.myPoolActive : styles.poolBanned}>
+                                            <p className={myPool?.isCurrentValidator || myPool?.isActive ? styles.myPoolActive : styles.poolBanned}>
                                                 {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : "Invalid"}
                                             </p>
                                         )

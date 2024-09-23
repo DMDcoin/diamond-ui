@@ -143,7 +143,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             <th></th>
                             <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
                                 Status
-                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is banned or inactive for some period of time" />
+                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is inactive for some period of time" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>
@@ -188,7 +188,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                 </td>
-                                <td className={pool?.isCurrentValidator ? styles.poolActive : styles.poolBanned}>
+                                <td className={pool?.isCurrentValidator || pool.isActive ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isCurrentValidator === 'boolean'
                                         ? pool.isCurrentValidator ? "Active" : pool.isActive ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
