@@ -153,7 +153,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
         const contract = getContractByName(epcContractName);
         const contractAddress = contract?.options.address;
-
+        console.log(contract?.methods, epcContractName, methodSetter, epcValue);
         encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
 
         targets = [contractAddress as string];
@@ -161,6 +161,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         calldatas = [encodedCallData as string];
       }
     } catch(err: any) {
+      console.log(err);
       return toast.error(err.message);
     }
 
