@@ -113,7 +113,13 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                     </div>
                                                                 )
                                                             }
-                                                            <a className="primaryBtn" onClick={() => {startTransition(() => {navigate('staking')})}}>See the list</a>
+                                                            <a className="primaryBtn" onClick={() => { 
+                                                                startTransition(() => { 
+                                                                    navigate('staking', { state: { filter: 'stakedOn' } }); 
+                                                                }) 
+                                                            }}>
+                                                                See the list
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>

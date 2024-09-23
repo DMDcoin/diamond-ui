@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from '@fortawesome/free-solid-svg-icons';
@@ -17,6 +17,7 @@ interface ValidatorsTableProps {
 
 const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
     const navigate = useNavigate();
+    const location = useLocation();  // Use useLocation to get the passed state
     const { userWallet } = useWeb3Context();
     const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
@@ -25,6 +26,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: string } | null>(null);
+
+    useEffect(() => {
+        // If a filter is passed via state, apply it
+        if (location.state?.filter) {
+            setFilter(location.state.filter);
+        }
+    }, [location.state]);
 
     // Handle filter change
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

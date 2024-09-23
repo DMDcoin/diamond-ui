@@ -321,7 +321,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                     })}
                   </select>
 
-                  <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
+                  <ProposalStepSlider contractName={epcContractName} paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
                 </div>
               </>
             )
