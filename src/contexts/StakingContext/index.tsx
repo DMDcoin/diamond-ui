@@ -32,11 +32,11 @@ interface StakingContextProps {
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {};
-  removePool: (pool: Pool) => Promise<boolean>;
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
@@ -640,7 +640,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const removePool = async (pool: Pool): Promise<boolean> => {
+  const removePool = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    const amountInWei = web3.utils.toWei(amount.toString());
+
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
     const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
 
@@ -653,7 +655,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       try {
         let receipt;
         showLoader(true, `Removing Pool 💎`);
-        receipt = await contractsManager.stContract.methods.removeMyPool().send(txOpts);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
         setPools(prevPools => {
           const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
           updateStakeAmounts(updatedPools);
