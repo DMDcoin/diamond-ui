@@ -91,7 +91,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       case '1':
         return 'Contract upgrade';
       case '2':
-        return 'Ecosystem Paramaeter Change';
+        return 'Ecosystem Parameter Change';
       default:
         return 'Unknown';
     }
