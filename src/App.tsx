@@ -5,6 +5,7 @@ import Loader from "./components/Loader";
 import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+const FAQ = lazy(() => import("./pages/FAQ"));
 const Home = lazy(() => import("./pages/Home"));
 const DaoHome = lazy(() => import("./pages/Dao/DaoHome"));
 const Pools = lazy(() => import("./pages/Staking/Pools"));
@@ -58,6 +59,9 @@ const App: React.FC<AppProps> = () => {
       <Suspense fallback={<Loader isLoading={true} />}>
         <Routes>
           <Route index element={<Home />} />
+
+          <Route path="faqs" element={<FAQ />} />
+
           <Route path="dao" element={<DaoHome />} />
           <Route path="dao/create" element={<CreateProposal />} />
           <Route path="dao/historic" element={<HistoricProposals />} />
