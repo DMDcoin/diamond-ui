@@ -167,7 +167,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
-      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
+      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10**18))));
       return newPools;
     });
   }
