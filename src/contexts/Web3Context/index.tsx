@@ -171,7 +171,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         bsContract,
       });
     } catch (error: any) {
-      toast.warn(`Failed to initialize contracts: ${error.message}`);
+      toast.warn(`${error.message}`);
     }
   };
 
