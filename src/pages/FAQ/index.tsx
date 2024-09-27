@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./styles.module.css";
 
 interface FAQProps { }
 
 const FAQ: React.FC<FAQProps> = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <section className="section">
             <div className={styles.sectionContainer + " sectionContainer"}>
@@ -148,7 +152,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>13. Can I stake to any validator? </summary>
                     <p>
-                        Yes, you can delegate to any validator except the ones which are banned.
+                        Yes, you can delegate to any validator except the ones which are invalid.
                     </p>
                 </details>
 

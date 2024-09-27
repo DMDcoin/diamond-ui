@@ -357,7 +357,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                 <section className="cta-banner">
                     <div className="container-7">
                         <div className="hero-wrapper-two">
-                            <h1 className="heading-3">Become DMD Chain Participant</h1>
+                            <h2 className="heading-3">Become DMD Chain Participant</h2>
                             <p className="margin-bottom-24px-2">
                                     <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
                             </p>
@@ -371,6 +371,99 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
                             </p>
                             { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
+                        </div>
+                    </div>
+                </section>
+
+                <section className="logos-title-large">
+                    <div className="container-8">
+                        <div className="hero-wrapper-two">
+                            <h2 className="heading-3 heading-left">Frequently Asked Questions</h2>
+
+                            <details>
+                                <summary>1. What Is Staking?</summary>
+                                <p>
+                                    Staking in the DMD ecosystem is a way for holders to grow their holdings while contributing to the security and governance of the network. You can either become a validator (actively participate in the network's operations) or delegate your DMD to a validator and by doing so increase his chance to become selected as an active validator. Validators perform tasks like creating new blocks and validating transactions, while delegators support a validator by staking their DMD with them and sharing in the rewards.
+                                </p>
+                            </details>
+
+                            <details>
+                                <summary>2. Who Is A Validator?</summary>
+                                <p>
+                                    Blockchain validators or validator candidates are responsible for verifying and adding transactions to the blockchain. Users delegate their coins, or stake, to a validator. Validators receive 20% rewards from each Epoch they participate in as active validators, as a Validator operator reward. The rest of the Validator rewards (80%) are distributed proportionally based on the staked coins on that validator.
+                                </p>
+                                <p>
+                                    <strong>Validator candidates require:</strong>
+                                    <ul style={{ listStyleType: 'disc' }}>
+                                        <li>Full node installation of the DMDv4 chain on a Linux server with the DMD version of Open Ethereum, which includes the DMDv4 extensions (HBBFT/POSDAO) and proper configuration.</li>
+                                        <li>Internet with a Static IP address and reliable 24/7 uptime.</li>
+                                        <li>Minimum collateral of 10,000 DMD (from validator candidate owner), with a maximum of 50,000 DMD staked on one validator candidate (combined from the owner and others who stake on top of the node).</li>
+                                        <li>Link to the address of the node that performs the work.</li>
+                                        <li>Validator candidate registration and collateral locking through the POSDAO dApp.</li>
+                                    </ul>
+                                </p>
+                                <p>
+                                    Explore more about validators <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/D.-The-DMD-Diamond-Blockchain's-Solutions#d62-validators">here</a>.
+                                </p>
+                            </details>
+
+                            <details>
+                                <summary>3. How do I participate in Staking?</summary>
+                                <p>
+                                    <ol>
+                                        <li><strong>Acquire DMD Tokens:</strong><br />
+                                            You can buy DMD tokens from supported cryptocurrency exchanges.
+                                        </li>
+                                        <br />
+                                        <li><strong>Choose a Staking Method:</strong><br />
+                                            You can choose from multiple staking options:
+                                            <ul style={{ listStyleType: 'disc' }}>
+                                                <li><strong>Stake as a Validator:</strong> This requires running a full node and actively participating in network operations. It’s more technical and requires at least 10,000 DMD. As a node operator, you also earn 20% of the validator rewards in addition to rewards proportional to your coin holdings.</li>
+                                                <li><strong>Delegate to a Validator:</strong> If running a full node is not feasible, you can delegate your DMD to an existing validator. This is easier and still earns you rewards proportional to your coin holdings.</li>
+                                            </ul>
+                                        </li>
+                                        <br />
+                                        <li><strong>Start Staking:</strong><br />
+                                            <ul style={{ listStyleType: 'disc' }}>
+                                                <li><strong>Access the Staking Interface:</strong> You can connect to our user-friendly interface with your wallet.</li>
+                                                <li><strong>Choose a Validator (if delegating):</strong> Research and choose a reliable validator to delegate your DMD. Look for validators with a good track record and solid reputation.</li>
+                                                <li><strong>Set the Amount:</strong> Decide how much DMD you want to stake or delegate.</li>
+                                                <li><strong>Confirm and Stake:</strong> Once you’ve chosen your validator and set the amount, confirm the transaction to start staking.</li>
+                                            </ul>
+                                        </li>
+                                    </ol>
+                                </p>
+                            </details>
+
+                            <details>
+                                <summary>4. I have some DMD. Which validator should I delegate it to?</summary>
+                                <p>
+                                    Choosing a validator for delegating your DMD is an important decision that can affect your staking rewards and the security of your coins. Here are some steps and considerations to help you choose the right validator:
+                                </p>
+                                <ul style={{ listStyleType: 'disc' }}>
+                                    <li><strong>Reputation and Reliability:</strong> Look for validators with a good reputation in the community. Validators with a history of uptime are generally more reliable.</li>
+                                    <li><strong>Community Involvement:</strong> Validators that are actively involved in the community and governance might be more aligned with the network’s long-term success.</li>
+                                    <li><strong>Diversify Your Delegation:</strong> To mitigate risk, you might consider splitting your DMD across multiple validators. This way, if one validator underperforms, your other staked tokens are still earning rewards.</li>
+                                </ul>
+                            </details>
+
+
+                            <details>
+                                <summary>5. Is there a minimum amount of DMD required to stake? </summary>
+                                <p>
+                                    The minimum required amount for staking is 100 DMD, when you want to stake on top of the validator candidate. If you want to create a pool as validator candidate yourself, 10000 DMD is required to be locked in staking mode.
+                                </p>
+                            </details>
+
+                            <details>
+                                <summary>6. What about rewards from staking?</summary>
+                                <p>The rewards per epoch cycle (12 hours) are always 1/6000 of all coins in delta pot and reinsert pot combined. Upfront, the DAO Governance share is taken (10%). The rest of the epoch rewards are split between all validators of the actual active set, and then once again between the participants (coin owners) on each validator. So if there are 25 validators in the active set, each validator gets 1/25 of this epoch rewards. Before this validator reward is split between coin owners on that validator proportional, a 20% share of rewards is removed and accounted to the node operator (validator owner) for the effort to set up and maintain the validator node. </p>
+                                <p>More calculation examples <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/D.-The-DMD-Diamond-Blockchain's-Solutions#d62-validators">here</a></p>
+                            </details>
+
+                            <div className="div-block-3">
+                                <a onClick={() => {startTransition(() => {navigate('faqs')})}} className="button w-button">See More</a>
+                            </div>
                         </div>
                     </div>
                 </section>
