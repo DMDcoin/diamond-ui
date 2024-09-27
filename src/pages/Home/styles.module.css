@@ -476,3 +476,7 @@ details > p {
   border-radius: 5px;
   user-select: text; /* Allow text selection inside the content */
 }
+
+details > ul > * {
+  text-align: left;
+}
