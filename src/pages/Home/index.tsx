@@ -354,23 +354,35 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
                 </section>
 
-                <section className="cta-banner">
-                    <div className="container-7">
-                        <div className="hero-wrapper-two">
-                            <h2 className="heading-3">Become DMD Chain Participant</h2>
-                            <p className="margin-bottom-24px-2">
-                                    <strong>Seamless Staking Experience:</strong> Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.
-                            </p>
-                            <p className="margin-bottom-24px-2">
-                                    <strong>Real-Time Analytics:</strong> Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.
-                            </p>
-                            <p className="margin-bottom-24px-2">
-                                    <strong>Earn Rewards:</strong> By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.
-                            </p>
-                            <p className="margin-bottom-24px-2">
-                                    <strong>Community Support:</strong> Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.
-                            </p>
-                            { !userWallet.myAddr && <div className="div-block-3"><button onClick={connectWallet} className="button w-button">Get Started</button></div> }
+                <section className={styles.featuresSection + " features-section"}>
+                    <h2 className={styles.heading3 + " heading-3"}>Become DMD Chain Participant</h2>
+
+                    <div className="w-layout-blockcontainer container w-container">
+                        <div className={styles.gridContainer2 + " w-layout-grid grid"}>
+                            <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                                data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                                className={styles.gridBlock2 + " grid-block"}>
+                                <div className="text-block">Seamless Staking Experience</div>
+                                <p>Begin your journey by connecting your cryptocurrency wallet and explore the variety of staking options available. Our intuitive UI ensures a smooth and straightforward staking process.</p>
+                            </div>
+                            <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                                data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                                className={styles.gridBlock2 + " grid-block"}>
+                                <div className="text-block">Real-Time Analytics</div>
+                                <p>Stay informed with transparent data on staking pools, performance, and rewards. Our platform provides you with the insights needed to make the best staking decisions.</p>
+                            </div>
+                            <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                                data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                                className={styles.gridBlock2 + " grid-block"}>
+                                <div className="text-block">Earn Rewards</div>
+                                <p>By staking your DMD coins, you actively participate in transaction validation, securing the blockchain, and in return, receive additional DMD as rewards.</p>
+                            </div>
+                            <div id="w-node-_82c72029-306b-2137-d6f7-1cef7db8fe67-55493c02"
+                                data-w-id="82c72029-306b-2137-d6f7-1cef7db8fe67"
+                                className={styles.gridBlock2 + " grid-block"}>
+                                <div className="text-block">Community Support</div>
+                                <p>Join a community of like-minded individuals passionate about decentralized finance and the growth of the DMD ecosystem. Participate in the Decentralized Governance by voting on the proposals created by the community members.</p>
+                            </div>
                         </div>
                     </div>
                 </section>
