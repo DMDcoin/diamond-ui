@@ -248,14 +248,22 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
             {/* Pagination */}
             <ul className={styles.pagination}>
                 <li
-                    onClick={() => handlePageClick(currentPage - 1)}
+                    onClick={() => {
+                        if (currentPage !== 0) {
+                            handlePageClick(currentPage - 1);
+                        }
+                    }}
                     className={currentPage === 0 ? styles.disabled : ""}
                 >
                     Previous
                 </li>
                 {renderPageNumbers()}
                 <li
-                    onClick={() => handlePageClick(currentPage + 1)}
+                    onClick={() => {
+                        if (currentPage !== pageCount - 1) {
+                            handlePageClick(currentPage + 1);
+                        }
+                    }}
                     className={currentPage === pageCount - 1 ? styles.disabled : ""}
                 >
                     Next
