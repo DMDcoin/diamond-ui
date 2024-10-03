@@ -239,7 +239,6 @@ export class ContractManager {
 
   public async getBonusScoreSystem(blockNumber: BlockType = 'latest'): Promise<BonusScoreSystem> {
     let contractAddress = await this.getValidatorSetHbbft().methods.bonusScoreSystem().call({}, blockNumber);
-
     const abi: any = JsonBonusScoreSystem.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;

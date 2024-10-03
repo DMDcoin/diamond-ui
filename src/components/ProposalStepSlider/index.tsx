@@ -77,7 +77,7 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, p
                         left: getAdjustedLeft(),
                     }}
                 >
-                    Current: <strong>{contractName === "Block Reward" ? `${state} %` : formatCryptoUnitValue(state)}</strong>
+                    {state == startingVal ? "Current" : "Change to" }: <strong>{contractName === "Block Reward" ? `${state} %` : formatCryptoUnitValue(state)}</strong>
                 </span>
             </div>
             <div>

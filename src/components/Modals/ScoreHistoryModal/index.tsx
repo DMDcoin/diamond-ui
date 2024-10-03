@@ -11,12 +11,11 @@ interface ModalProps {
   pool: Pool;
 }
 
-const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
+const ScoreHistoryModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [stakeAmount, setStakeAmount] = useState(0);
-  const { stake, setPools } = useStakingContext();
-  const { web3, ensureWalletConnection } = useWeb3Context();
+
+  const { fetchPoolScoreHistory } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -45,15 +44,12 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     };
   }, [isOpen]);
 
-  const handleStake = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!ensureWalletConnection()) return;
-
-    stake(pool, new BigNumber(stakeAmount)).then((success: boolean) => {
-      console.log("Stake success", success);
-      closeModal();
-    });
-  }
+  useEffect(() => {
+    // if (isOpen) {
+    console.log("fetching score history");
+      fetchPoolScoreHistory(pool);
+    // }
+  }, [pool]);
 
   return (
     <>
@@ -67,34 +63,10 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
             </button>
-            <h2>Stake DMD</h2>
+            <h2>Score History</h2>
 
-            <form className={styles.form} onSubmit={handleStake}>
-              <span>
-                Please enter the amount you want to stake
-              </span>
-
-              <input
-                // min={0}
-                // max={pool.myStake.toNumber()}
-                type="number"
-                value={stakeAmount}
-                className={styles.formInput}
-                placeholder="Enter the amount to stake"
-                onChange={(e) => setStakeAmount(Number(e.target.value))}
-              />
-
-              {
-                pool.isCurrentValidator && (
-                  <span className={styles.stakeWarning}>
-                    Please note that these coins will become active in the next epoch, as the validator candidate is part of an active set. You can unstake them at any time before they become active
-                  </span>
-                )
-              }
-
-              <button className={styles.formSubmit} type="submit">
-                Stake
-              </button>
+            <form className={styles.form} onSubmit={() => {}}>
+              
             </form>
           </div>
         </div>
@@ -103,4 +75,4 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   );
 };
 
-export default StakeModal;
+export default ScoreHistoryModal;
