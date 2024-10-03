@@ -32,6 +32,7 @@ interface StakingContextProps {
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {};
+  fetchPoolScoreHistory: (pool: Pool) => {};
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
@@ -167,6 +168,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
+      // setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
       setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10**18))));
       return newPools;
     });
@@ -756,11 +758,16 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else {
       try {
         showLoader(true, `Staking ${stakeAmount} DMD 💎`);
+        console.log("here")
         const receipt = await contractsManager.stContract?.methods.stake(pool.stakingAddress).send(txOpts);
+        console.log("here")
         if (!showHistoricBlock && receipt) setCurrentBlockNumber(receipt.blockNumber);
+        console.log("here")
+        await addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
+        console.log("here")
         toast.success(`Staked ${stakeAmount} DMD 💎`);
+        console.log("here")
         showLoader(false, "");
-        addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
         return true;
       } catch (err: any) {
         showLoader(false, "");
@@ -806,6 +813,23 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
+  const fetchPoolScoreHistory = async (pool: Pool): Promise<void> => {
+    console.log(pool.stakingAddress, pool.miningAddress)
+    try {
+      await contractsManager.bsContract?.getPastEvents('allEvents', {
+        // filter: { miningAddress: pool.miningAddress }, // Filter by indexed parameter
+        fromBlock: 0,  // You can specify the block range here
+        toBlock: 'latest'
+      }).then((events) => {
+        console.log(events);
+      }).catch((error) => {
+        console.error(`Error fetching events`, error);
+      });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
   const contextValue = {
     // state
     pools,
@@ -835,6 +859,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
+    fetchPoolScoreHistory,
     getWithdrawableAmounts,
     initializeStakingDataAdapter
   };

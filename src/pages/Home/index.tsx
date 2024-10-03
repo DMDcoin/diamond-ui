@@ -16,6 +16,7 @@ import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
 import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 import DaoPhaseBanner from "../../components/DaoPhaseBanner";
+import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
 
 interface HomeProps {}
 
@@ -126,7 +127,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             {myPool && (
                                                 <tr>
                                                     <td>Score</td>
-                                                    <td>1000</td>
+                                                    <td>{myPool.score}</td>
+                                                    {/* <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td> */}
+                                                    <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0xc0F323f6E9a3438F4752e640E6fb3e994807df38") || myPool} buttonText="Score History" /></td>
                                                 </tr>
                                             )}
                                         </tbody>
@@ -404,16 +407,14 @@ const Home: React.FC<HomeProps> = ({}) => {
                                 <p>
                                     Blockchain validators or validator candidates are responsible for verifying and adding transactions to the blockchain. Users delegate their coins, or stake, to a validator. Validators receive 20% rewards from each Epoch they participate in as active validators, as a Validator operator reward. The rest of the Validator rewards (80%) are distributed proportionally based on the staked coins on that validator.
                                 </p>
-                                <p>
-                                    <strong>Validator candidates require:</strong>
-                                    <ul style={{ listStyleType: 'disc' }}>
-                                        <li>Full node installation of the DMDv4 chain on a Linux server with the DMD version of Open Ethereum, which includes the DMDv4 extensions (HBBFT/POSDAO) and proper configuration.</li>
-                                        <li>Internet with a Static IP address and reliable 24/7 uptime.</li>
-                                        <li>Minimum collateral of 10,000 DMD (from validator candidate owner), with a maximum of 50,000 DMD staked on one validator candidate (combined from the owner and others who stake on top of the node).</li>
-                                        <li>Link to the address of the node that performs the work.</li>
-                                        <li>Validator candidate registration and collateral locking through the POSDAO dApp.</li>
-                                    </ul>
-                                </p>
+                                <p><strong>Validator candidates require:</strong></p>
+                                <ul style={{ listStyleType: 'disc' }}>
+                                    <li>Full node installation of the DMDv4 chain on a Linux server with the DMD version of Open Ethereum, which includes the DMDv4 extensions (HBBFT/POSDAO) and proper configuration.</li>
+                                    <li>Internet with a Static IP address and reliable 24/7 uptime.</li>
+                                    <li>Minimum collateral of 10,000 DMD (from validator candidate owner), with a maximum of 50,000 DMD staked on one validator candidate (combined from the owner and others who stake on top of the node).</li>
+                                    <li>Link to the address of the node that performs the work.</li>
+                                    <li>Validator candidate registration and collateral locking through the POSDAO dApp.</li>
+                                </ul>
                                 <p>
                                     Explore more about validators <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/D.-The-DMD-Diamond-Blockchain's-Solutions#d62-validators">here</a>.
                                 </p>
@@ -421,7 +422,8 @@ const Home: React.FC<HomeProps> = ({}) => {
 
                             <details>
                                 <summary>3. How do I participate in Staking?</summary>
-                                <p>
+                                <div style={{ textAlign: 'left' }}>
+                                    <p></p>
                                     <ol>
                                         <li><strong>Acquire DMD Tokens:</strong><br />
                                             You can buy DMD tokens from supported cryptocurrency exchanges.
@@ -444,7 +446,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             </ul>
                                         </li>
                                     </ol>
-                                </p>
+                                </div>
                             </details>
 
                             <details>
