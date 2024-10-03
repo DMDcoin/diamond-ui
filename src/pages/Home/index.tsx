@@ -128,8 +128,8 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <tr>
                                                     <td>Score</td>
                                                     <td>{myPool.score}</td>
-                                                    {/* <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td> */}
-                                                    <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0xc0F323f6E9a3438F4752e640E6fb3e994807df38") || myPool} buttonText="Score History" /></td>
+                                                    <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td>
+                                                    {/* <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0x1bc4e0508473A9840A40Ad424B792097f70967Ee") || myPool} buttonText="Score History" /></td> */}
                                                 </tr>
                                             )}
                                         </tbody>

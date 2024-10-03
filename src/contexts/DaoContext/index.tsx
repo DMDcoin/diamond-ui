@@ -537,13 +537,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const executeProposal = async (proposalId: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return resolve("");
-        if ((await getProposalDetails(proposalId)).proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
+        let proposalDetails = await getProposalDetails(proposalId);
+        if (proposalDetails.proposalType == 'Contract upgrade' &&  proposalDetails.proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
 
         web3Context.showLoader(true, "Executing proposal 💎");
         try {
           await web3Context.contractsManager.daoContract.methods.execute(proposalId).send({ from: web3Context.userWallet.myAddr });
-          const proposalUpdated = await getProposalDetails(proposalId);
-          await setProposalsState([proposalUpdated]);
+          proposalDetails = await getProposalDetails(proposalId);
+          await setProposalsState([proposalDetails]);
           web3Context.showLoader(false, "");
           toast.success("Proposal Executed 💎");
           resolve("success");
