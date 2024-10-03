@@ -32,8 +32,6 @@ interface ContractsState {
   vsContract: ValidatorSetHbbft;
   stContract?: StakingHbbft;
   brContract?: BlockRewardHbbft;
-  kghContract?: KeyGenHistory;
-  rngContract?: RandomHbbft;
   daoContract: DiamondDao;
   crContract?: CertifierHbbft;
   tpContract?: TxPermissionHbbft;
@@ -161,14 +159,14 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       setContractsManager({
         contracts: contractManager,
         vsContract,
-        daoContract,
         stContract,
+        brContract,
+        daoContract,
         crContract,
         tpContract,
-        brContract,
         ctContract,
         aggregator,
-        bsContract,
+        bsContract
       });
     } catch (error: any) {
       toast.warn(`${error.message}`);

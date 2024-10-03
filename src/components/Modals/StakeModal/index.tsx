@@ -50,7 +50,6 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     if (!ensureWalletConnection()) return;
 
     stake(pool, new BigNumber(stakeAmount)).then((success: boolean) => {
-      console.log("Stake success", success);
       closeModal();
     });
   }

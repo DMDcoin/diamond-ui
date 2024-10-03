@@ -10,8 +10,6 @@ export interface StakingContextState {
   // vsContract: ValidatorSetHbbft;
   // stContract?: StakingHbbft;
   // brContract?: BlockRewardHbbftCoins;
-  // kghContract?: KeyGenHistory;
-  // rngContract?: RandomHbbft;
   showAllPools: boolean;
   isShowHistoric: boolean;
   isReadingData: boolean;

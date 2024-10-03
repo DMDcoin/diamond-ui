@@ -758,15 +758,10 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     } else {
       try {
         showLoader(true, `Staking ${stakeAmount} DMD 💎`);
-        console.log("here")
         const receipt = await contractsManager.stContract?.methods.stake(pool.stakingAddress).send(txOpts);
-        console.log("here")
         if (!showHistoricBlock && receipt) setCurrentBlockNumber(receipt.blockNumber);
-        console.log("here")
         await addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
-        console.log("here")
         toast.success(`Staked ${stakeAmount} DMD 💎`);
-        console.log("here")
         showLoader(false, "");
         return true;
       } catch (err: any) {
