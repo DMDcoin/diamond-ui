@@ -25,3 +25,5 @@ yarn-error.log*
 todo
 
 package-lock.json
+
+createProposals.js
