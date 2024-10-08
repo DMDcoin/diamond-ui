@@ -1,11 +1,13 @@
 import "./index.css";
 import App from "./App";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify"
 import { DaoContextProvider } from "./contexts/DaoContext";
 import { Web3ContextProvider } from "./contexts/Web3Context";
 import { StakingContextProvider } from "./contexts/StakingContext";
+import { WalletConnectContextProvider } from "./contexts/WalletConnect";
 
 interface AppContextProviderProps {
   children: React.ReactNode;
@@ -15,13 +17,15 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({
   children,
 }) => {
   return (
-    <Web3ContextProvider>
-      <DaoContextProvider>
-        <StakingContextProvider>
-          {children}
-        </StakingContextProvider>
-      </DaoContextProvider>
-    </Web3ContextProvider>
+    <WalletConnectContextProvider>
+      <Web3ContextProvider>
+        <DaoContextProvider>
+          <StakingContextProvider>
+            {children}
+          </StakingContextProvider>
+        </DaoContextProvider>
+      </Web3ContextProvider>
+    </WalletConnectContextProvider>
   );
 };
 
