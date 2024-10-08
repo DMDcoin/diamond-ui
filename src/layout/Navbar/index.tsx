@@ -1,11 +1,10 @@
-import React, { startTransition } from "react";
 import "./styles.css";
+import React, { startTransition } from "react";
 import { useNavigate } from "react-router-dom";
-import dmdLogo from "../../assets/images/logo.png";
-import menuIcon from "../../assets/images/menu-icon.svg";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import dmdLogoFull from "../../assets/images/logo_dmd_full.svg";
 import { useStakingContext } from "../../contexts/StakingContext";
+import { useWalletConnectContext } from "../../contexts/WalletConnect";
 
 interface NavBarProps {}
 
@@ -13,7 +12,7 @@ const NavBar: React.FC<NavBarProps> = () => {
   const navigate = useNavigate();
   const web3Context = useWeb3Context();
   const { isSyncingPools } = useStakingContext();
-  const [openSideBar, setOpenSideBar] = React.useState<boolean>(false);
+  const walletConnectContext = useWalletConnectContext();
 
   return (
     <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" className="navbar w-nav">
@@ -41,7 +40,7 @@ const NavBar: React.FC<NavBarProps> = () => {
               {web3Context.userWallet && web3Context.userWallet.myAddr ? (
                 <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
               ) : (
-                <button onClick={web3Context.connectWallet} className="button w-button w-nav-link-button" disabled={isSyncingPools}>Sign in</button>
+                <button onClick={() => walletConnectContext.appKit.open()} className="button w-button w-nav-link-button" disabled={isSyncingPools}>Sign in</button>
               )}
 
             </nav>

@@ -125,3 +125,7 @@ body {
     max-width: 100%;
   }
 }
+
+w3m-modal {
+  z-index: 1001;
+}
