@@ -32,11 +32,12 @@ interface StakingContextProps {
   delegatorMinStake: BigNumber;
   
   initializeStakingDataAdapter: () => {};
-  removePool: (pool: Pool) => Promise<boolean>;
+  fetchPoolScoreHistory: (pool: Pool) => {};
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
+  removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
   createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
@@ -167,7 +168,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
-      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
+      // setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr));
+      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10**18))));
       return newPools;
     });
   }
@@ -441,9 +443,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       
     // Fetch the updated pool data in one call
     if (poolsToUpdate.length > 0) {
-      poolsToUpdate.map(p => console.log(p.stakingAddress))
       const updatedPoolData = await contractsManager.aggregator?.methods.getPoolsData(poolsToUpdate.map(p => p.stakingAddress)).call();
-      console.log(updatedPoolData)
       if (updatedPoolData) {
         // Process each updated pool data
         await Promise.all(updatedPoolData.map(async (updatedData: any, index: number) => {
@@ -463,8 +463,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
 
   const updatePool = async (pool: Pool, updatedPoolData: any, activePoolAddrs: Array<string>, toBeElectedPoolAddrs: Array<string>, pendingValidatorAddrs: Array<string>, blockNumber: number) : Promise<Pool>  => {
     const { stakingAddress } = pool;
-
-    console.log({updatedPoolData})
 
     pool.miningAddress = updatedPoolData[0];
     pool.availableSince = new BigNumber(updatedPoolData[1]);
@@ -492,11 +490,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
     );
 
-    if (!pool.isCurrentValidator && !pool.isAvailable && !pool.isToBeElected && !pool.isPendingValidator && !pool.isMe && BigNumber(pool.myStake).isGreaterThan(0)) {
-      pool.score = 0;
-    } else {
-      pool.score = 1000;
-    }
+    pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call({}, blockNumber));
 
     return pool;
   }
@@ -648,7 +642,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const removePool = async (pool: Pool): Promise<boolean> => {
+  const removePool = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
+    const amountInWei = web3.utils.toWei(amount.toString());
+
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
     const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
 
@@ -661,7 +657,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       try {
         let receipt;
         showLoader(true, `Removing Pool 💎`);
-        receipt = await contractsManager.stContract.methods.removeMyPool().send(txOpts);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
         setPools(prevPools => {
           const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
           updateStakeAmounts(updatedPools);
@@ -764,9 +760,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         showLoader(true, `Staking ${stakeAmount} DMD 💎`);
         const receipt = await contractsManager.stContract?.methods.stake(pool.stakingAddress).send(txOpts);
         if (!showHistoricBlock && receipt) setCurrentBlockNumber(receipt.blockNumber);
+        await addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
         toast.success(`Staked ${stakeAmount} DMD 💎`);
         showLoader(false, "");
-        addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
         return true;
       } catch (err: any) {
         showLoader(false, "");
@@ -812,6 +808,23 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
+  const fetchPoolScoreHistory = async (pool: Pool): Promise<void> => {
+    console.log(pool.stakingAddress, pool.miningAddress)
+    try {
+      await contractsManager.bsContract?.getPastEvents('allEvents', {
+        // filter: { miningAddress: pool.miningAddress }, // Filter by indexed parameter
+        fromBlock: 0,  // You can specify the block range here
+        toBlock: 'latest'
+      }).then((events) => {
+        console.log(events);
+      }).catch((error) => {
+        console.error(`Error fetching events`, error);
+      });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
   const contextValue = {
     // state
     pools,
@@ -841,6 +854,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
+    fetchPoolScoreHistory,
     getWithdrawableAmounts,
     initializeStakingDataAdapter
   };

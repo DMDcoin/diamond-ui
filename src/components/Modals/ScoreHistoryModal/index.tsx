@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { toast } from "react-toastify";
 import styles from "./styles.module.css";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
@@ -10,11 +11,11 @@ interface ModalProps {
   pool: Pool;
 }
 
-const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
+const ScoreHistoryModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const { removePool, setPools } = useStakingContext();
-  const { web3, ensureWalletConnection } = useWeb3Context();
+
+  const { fetchPoolScoreHistory } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -43,14 +44,12 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     };
   }, [isOpen]);
 
-  const handleRemovePool = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!ensureWalletConnection()) return;
-
-    removePool(pool, BigNumber(pool.ownStake).dividedBy(10**18)).then((success: boolean) => {
-      closeModal();
-    });
-  }
+  useEffect(() => {
+    // if (isOpen) {
+    console.log("fetching score history");
+      fetchPoolScoreHistory(pool);
+    // }
+  }, [pool]);
 
   return (
     <>
@@ -64,27 +63,10 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
             </button>
-            <h3>{`Remove node ${pool.stakingAddress}`}</h3>
+            <h2>Score History</h2>
 
-            <form className={styles.form} onSubmit={handleRemovePool}>
-
-              <input
-                type="number"
-                value={BigNumber(pool.ownStake).dividedBy(10**18).toString()}
-                className={styles.formInput}
-                onChange={() => {}}
-              />
-
-              <p className={styles.unstakeWarning}>
-                Only your entire stake in the pool is available for withdrawal.
-                Please note, if you remove that pool from the candidate list, a
-                new pool can never be setup with the same address that was used
-                in the previous pool.
-              </p>
-
-              <button className={styles.formSubmit} type="submit">
-                Remove
-              </button>
+            <form className={styles.form} onSubmit={() => {}}>
+              
             </form>
           </div>
         </div>
@@ -93,4 +75,4 @@ const RemoveValidatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   );
 };
 
-export default RemoveValidatorModal;
+export default ScoreHistoryModal;

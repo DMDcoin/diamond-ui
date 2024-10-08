@@ -10,6 +10,7 @@ import UnstakeModal from "../../../components/Modals/UnstakeModal";
 import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
+import { timestampToDate } from "../../../utils/common";
 
 interface PoolDetailsProps {}
 
@@ -33,11 +34,12 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
     const filteredProposals = await Promise.all(
       activeProposals.map(async (proposal) => {
         if (proposal.proposer === poolAddress && proposal.state == '0') {
-          return proposal;
+          const myVote = await getMyVote(proposal.id);
+          return { ...proposal, myVote: myVote.vote };
         } else if (proposal.state == '2') {
           const myVote = await getMyVote(proposal.id);
           if (myVote && myVote.vote != '0') {
-            return proposal;
+            return { ...proposal, myVote: myVote.vote };
           }
         }
         return null;
@@ -60,7 +62,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{poolAddress}</p>
-          <p className={pool?.isCurrentValidator ? styles.poolActive : styles.poolBanned}>
+          <p className={pool?.isCurrentValidator || pool?.isActive  ? styles.poolActive : styles.poolBanned}>
             {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : "Invalid"}
           </p>
         </div>
@@ -155,7 +157,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>Date</td>
                     <td>Proposal title</td>
                     <td>Proposal type</td>
-                    <td>Voting result</td>
+                    <td>Voting Result</td>
                     <td></td>
                   </tr>
                 ) : (
@@ -169,10 +171,10 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
               {
                 filteredProposals.map((proposal, i) => (
                   <tr key={i}>
-                    <td>{proposal.timestamp}</td>
+                    <td>{timestampToDate(proposal.timestamp)}</td>
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
-                    <td>{getStateString(proposal.state)}</td>
+                    <td>{proposal.myVote == "2" ? "Yes" : proposal.myVote == "1" ? "No" : "Yes"}</td>
                     <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
                   </tr>
                 ))

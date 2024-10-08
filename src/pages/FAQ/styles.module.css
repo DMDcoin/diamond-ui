@@ -1,0 +1,59 @@
+.sectionContainer > h1 {
+    color: #0145b2;
+    text-align: center;
+    padding-bottom: 30px;
+}
+
+.sectionContainer > details {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+    background-color: white;
+}
+
+.sectionContainer > details > summary {
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none; /* Prevents text selection */
+}
+
+.sectionContainer > details > summary::marker {
+    display: none;
+}
+
+.sectionContainer > details > summary::after {
+    content: "+";
+    position: absolute;
+    right: 20px;
+    font-size: 1.5em;
+    color: #007bff;
+    transition: transform 0.3s ease;
+}
+
+.sectionContainer > details[open] summary::after {
+    content: "-";
+    color: red;
+    transform: rotate(180deg);
+}
+
+.sectionContainer > details[open] summary {
+    color: #007bff;
+}
+
+.sectionContainer > details > p {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    user-select: text; /* Allow text selection inside the content */
+}

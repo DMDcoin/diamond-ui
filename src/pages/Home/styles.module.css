@@ -405,6 +405,53 @@ h1 {
   animation-delay: 0.2s;
 }
 
+.gridContainer2 {
+  display: grid;
+  grid-row-gap: 20px;
+  grid-auto-flow: row;
+  align-items: stretch;
+  grid-column-gap: 40px;
+  justify-items: stretch;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1441px) {
+  .gridContainer2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gridBlock2 {
+    min-height: auto;
+  }
+
+  .gridContainer2 {
+    grid-template-columns: 1fr; /* 1 column for smaller screens */
+  }
+}
+
+.gridBlock2 {
+  opacity: 0;
+  margin: 2px 0px;
+  padding: 20px;
+  transform: translateY(300px);
+  animation: gridBlockMoveYAndFade 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-delay: 0.2s;
+  box-shadow: 0 2px 5px rgba(1, 69, 178, .2);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Keep content aligned at the top inside the card */
+  align-items: stretch; /* Ensure child elements stretch to fill height */
+  height: 100%; /* Ensure the grid item fills the entire height of its container */
+}
+
+.gridBlock2 > div {
+  position: sticky;
+  top: 0;
+  height: 50px; /* This should remain as it is for the sticky header */
+}
+
 @keyframes gridBlockMoveYAndFade {
   0% {
     opacity: 0;
@@ -414,4 +461,67 @@ h1 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+details {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+  background-color: white;
+}
+
+details > summary {
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #f7f7f7;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none; /* Prevents text selection */
+}
+
+details > summary::marker {
+  display: none;
+}
+
+details > summary::after {
+  content: "+";
+  position: absolute;
+  right: 20px;
+  font-size: 1.5em;
+  color: #007bff;
+  transition: transform 0.3s ease;
+}
+
+details[open] summary::after {
+  content: "-";
+  color: red;
+  transform: rotate(180deg);
+}
+
+details[open] summary {
+  color: #007bff;
+}
+
+details > p {
+  margin: 5px 0;
+  padding: 10px;
+  text-align: left;
+  border-radius: 5px;
+  user-select: text; /* Allow text selection inside the content */
+}
+
+details > ul > * {
+  text-align: left;
+}
+
+.heading3 {
+  margin: 40px 0px;
 }
