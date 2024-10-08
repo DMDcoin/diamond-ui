@@ -23,7 +23,7 @@ interface DaoContextProps {
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
   createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string>;
   getProposalTimestamp: (proposalId: string) => Promise<number>;
-  timestampToDate: (timestamp: number) => string;
+  timestampToDate: (timestamp: string) => string;
   getHistoricProposals: () => Promise<void>;
   finalizeProposal: (proposalId: string) => Promise<string>;
   getCachedProposals: () => Proposal[];
@@ -91,7 +91,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       case '1':
         return 'Contract upgrade';
       case '2':
-        return 'Ecosystem Paramaeter Change';
+        return 'Ecosystem Parameter Change';
       default:
         return 'Unknown';
     }
@@ -168,7 +168,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
       if (updatedData && !updatedData.timestamp) {
         proposalTimestamp = await getProposalTimestamp(proposalId);
-        updatedData.timestamp = timestampToDate(proposalTimestamp);
+        updatedData.timestamp = proposalTimestamp.toString();
       }
     } catch (error) {}
 
@@ -537,13 +537,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const executeProposal = async (proposalId: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return resolve("");
-        if ((await getProposalDetails(proposalId)).proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
+        let proposalDetails = await getProposalDetails(proposalId);
+        if (proposalDetails.proposalType == 'Contract upgrade' &&  proposalDetails.proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
 
         web3Context.showLoader(true, "Executing proposal 💎");
         try {
           await web3Context.contractsManager.daoContract.methods.execute(proposalId).send({ from: web3Context.userWallet.myAddr });
-          const proposalUpdated = await getProposalDetails(proposalId);
-          await setProposalsState([proposalUpdated]);
+          proposalDetails = await getProposalDetails(proposalId);
+          await setProposalsState([proposalDetails]);
           web3Context.showLoader(false, "");
           toast.success("Proposal Executed 💎");
           resolve("success");

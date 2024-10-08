@@ -48,25 +48,8 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const handleStake = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
-    const amountInWei = web3.utils.toWei(stakeAmount.toString());
 
     stake(pool, new BigNumber(stakeAmount)).then((success: boolean) => {
-    //   if (success) {
-    //     setPools((pools) => {
-    //       const updatedPools = pools.map((p) => {
-    //         if (p.stakingAddress === pool.stakingAddress) {
-    //           return {
-    //             ...p,
-    //             myStake: p.myStake.plus(amountInWei),
-    //             totalStake: p.totalStake.plus(amountInWei),
-    //           };
-    //         }
-    //         return p;
-    //       });
-    //       return updatedPools as Pool[];
-    //     });
-    //   }
-
       closeModal();
     });
   }

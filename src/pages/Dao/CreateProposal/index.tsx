@@ -31,7 +31,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [epcParamRange, setEpcParamRange] = useState<string[]>([]);
   const [epcContractName, setEpcContractName] = useState<string>("Staking");
   const [epcMethodName, setEpcMethodName] = useState<string>("Delegator Min. Stake");
-  const [epcMethodSetter, setEpcMethodSetter] = useState<string>("setDelegatorMinStake(uint256)");
+  const [epcMethodSetter, setEpcMethodSetter] = useState<string>("Staking:Delegator Min. Stake:setDelegatorMinStake(uint256)");
   
   const [openProposalFields, setOpenProposalFields] = useState<{ target: string; amount: string; }[]>([
     { target: "", amount: "" }
@@ -153,7 +153,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
         const contract = getContractByName(epcContractName);
         const contractAddress = contract?.options.address;
-
         encodedCallData = (contract?.methods as any)[methodSetter](epcValue).encodeABI();
 
         targets = [contractAddress as string];
@@ -322,7 +321,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                     })}
                   </select>
 
-                  <ProposalStepSlider paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
+                  <ProposalStepSlider contractName={epcContractName} paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
                 </div>
               </>
             )

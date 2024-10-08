@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSort } from '@fortawesome/free-solid-svg-icons';
@@ -17,6 +17,7 @@ interface ValidatorsTableProps {
 
 const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
     const navigate = useNavigate();
+    const location = useLocation();  // Use useLocation to get the passed state
     const { userWallet } = useWeb3Context();
     const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
@@ -25,6 +26,13 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     const [sortConfig, setSortConfig] = useState<{ key: string, direction: string } | null>(null);
+
+    useEffect(() => {
+        // If a filter is passed via state, apply it
+        if (location.state?.filter) {
+            setFilter(location.state.filter);
+        }
+    }, [location.state]);
 
     // Handle filter change
     const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -143,7 +151,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                             <th></th>
                             <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
                                 Status
-                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is banned or inactive for some period of time" />
+                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is inactive for some period of time" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>
@@ -188,7 +196,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                 </td>
-                                <td className={pool?.isCurrentValidator ? styles.poolActive : styles.poolBanned}>
+                                <td className={pool?.isCurrentValidator || pool.isActive ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isCurrentValidator === 'boolean'
                                         ? pool.isCurrentValidator ? "Active" : pool.isActive ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
@@ -240,14 +248,22 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
             {/* Pagination */}
             <ul className={styles.pagination}>
                 <li
-                    onClick={() => handlePageClick(currentPage - 1)}
+                    onClick={() => {
+                        if (currentPage !== 0) {
+                            handlePageClick(currentPage - 1);
+                        }
+                    }}
                     className={currentPage === 0 ? styles.disabled : ""}
                 >
                     Previous
                 </li>
                 {renderPageNumbers()}
                 <li
-                    onClick={() => handlePageClick(currentPage + 1)}
+                    onClick={() => {
+                        if (currentPage !== pageCount - 1) {
+                            handlePageClick(currentPage + 1);
+                        }
+                    }}
                     className={currentPage === pageCount - 1 ? styles.disabled : ""}
                 >
                     Next

@@ -14,7 +14,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 import Tooltip from "../../../components/Tooltip";
-import { extractValueFromCalldata, formatCryptoUnitValue } from "../../../utils/common";
+import { extractValueFromCalldata, formatCryptoUnitValue, timestampToDate } from "../../../utils/common";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -149,7 +149,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
         <Navigation start="/dao" />
 
         <div className={styles.daoDetailsHeading}>
-          <h4>Date: {proposal.timestamp}</h4>
+          <h4>Date: {timestampToDate(proposal.timestamp)}</h4>
           <button>{proposalState}</button>
         </div>
         <div className={styles.daoDetailsContainer}>

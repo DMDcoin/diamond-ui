@@ -15,6 +15,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 import {
   BlockRewardHbbft,
+  BonusScoreSystem,
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
@@ -31,13 +32,12 @@ interface ContractsState {
   vsContract: ValidatorSetHbbft;
   stContract?: StakingHbbft;
   brContract?: BlockRewardHbbft;
-  kghContract?: KeyGenHistory;
-  rngContract?: RandomHbbft;
   daoContract: DiamondDao;
   crContract?: CertifierHbbft;
   tpContract?: TxPermissionHbbft;
   ctContract?: ConnectivityTrackerHbbft;
   aggregator?: HbbftAggregator;
+  bsContract?: BonusScoreSystem
 }
 
 interface Web3ContextProps {
@@ -142,7 +142,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         tpContract,
         brContract,
         ctContract,
-        aggregator
+        aggregator,
+        bsContract
       ] = await Promise.all([
         contractManager.getValidatorSetHbbft(),
         contractManager.getDaoContract(),
@@ -151,22 +152,24 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         contractManager.getContractPermission(),
         contractManager.getRewardHbbft(),
         contractManager.getConnectivityTracker(),
-        contractManager.getHbbftAggregator()
+        contractManager.getHbbftAggregator(),
+        contractManager.getBonusScoreSystem()
       ]);
     
       setContractsManager({
         contracts: contractManager,
         vsContract,
-        daoContract,
         stContract,
+        brContract,
+        daoContract,
         crContract,
         tpContract,
-        brContract,
         ctContract,
-        aggregator
+        aggregator,
+        bsContract
       });
     } catch (error: any) {
-      toast.warn(`Failed to initialize contracts: ${error.message}`);
+      toast.warn(`${error.message}`);
     }
   };
 
