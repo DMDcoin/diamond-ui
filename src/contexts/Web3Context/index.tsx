@@ -1,16 +1,15 @@
 import Web3 from "web3";
-import Web3Modal from "web3modal";
-import { useAccount } from "wagmi";
 import BigNumber from "bignumber.js";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
+import { useAccount, useDisconnect } from "wagmi";
 import { CURR_VERSION_INFO } from "../../constants";
+import { switchChain, watchAccount } from '@wagmi/core';
 import { UserWallet } from "../StakingContext/models/wallet";
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { switchChain, watchAccount } from '@wagmi/core'
 
 
 import {
@@ -56,6 +55,7 @@ interface Web3ContextProps {
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
+  const { disconnect } = useDisconnect();
   const { appKit } = useWalletConnectContext();
   const { connector, isConnected } = useAccount();
 
@@ -191,10 +191,10 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           showLoader(false, "");
         } catch (err: any) {
           if (err.code === 4001) {
-            await connector.disconnect();
             showLoader(false, "");
-            toast.warn("Please connect to the DMD Network to continue logging in");
-            return appKit.close(); // close modal if user denies
+            await connector.disconnect();
+            disconnect();
+            return toast.warn("Please connect to the DMD Network to continue");
           } else {
             console.error("[Wallet Connect] Error", err);
             showLoader(false, "");
@@ -207,7 +207,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
       // Retrieve the wallet address
       const walletAddress = (await provider.eth.getAccounts())[0];
-  
+
       // Fetch the wallet balance
       const myBalance = new BigNumber(await provider.eth.getBalance(walletAddress));
       const wallet = new UserWallet(provider.utils.toChecksumAddress(walletAddress), myBalance);

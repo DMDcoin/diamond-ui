@@ -1,13 +1,13 @@
 import { defineChain } from "viem";
-import { cookieStorage, createStorage, http } from 'wagmi';
 import { defaultWagmiConfig } from "@web3modal/wagmi";
+import { cookieStorage, createStorage, http } from 'wagmi';
 
 export const projectId = import.meta.env.VITE_APP_WC_PROJECT_ID;
 
 // Create wagmiConfig
 export const networks = [
     defineChain({
-        id: 777018,
+        id: Number(import.meta.env.VITE_APP_CHAINID) || 777018,
         name: "DMD Diamond",
         nativeCurrency: {
             name: "DMD",
@@ -23,7 +23,7 @@ export const networks = [
         blockExplorers: {
             default: {
                 name: "DMD Explorer",
-                url: "http://62.171.133.46:4400/",
+                url: import.meta.env.VITE_APP_EXPLORER_URL || "http://62.171.133.46:4400/",
             },
         },
     })
