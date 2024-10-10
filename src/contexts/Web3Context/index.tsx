@@ -10,7 +10,7 @@ import { UserWallet } from "../StakingContext/models/wallet";
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { switchChain } from '@wagmi/core'
+import { switchChain, watchAccount } from '@wagmi/core'
 
 
 import {
@@ -46,7 +46,6 @@ interface Web3ContextProps {
   contractsManager: ContractsState;
   web3Initialized: boolean;
 
-  connectWallet: () => Promise<{ provider: Web3; wallet: UserWallet } | undefined>;
   setUserWallet: (newUserWallet: UserWallet) => void;
   setContractsManager: (newContractsManager: ContractsState) => void;
   ensureWalletConnection: () => boolean;
@@ -60,53 +59,6 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const { appKit } = useWalletConnectContext();
   const { connector, isConnected } = useAccount();
 
-  useEffect(() => {
-    if (connector && isConnected) {
-      connectWalletWagmi(connector);
-    }
-  }, [connector, isConnected]);
-
-  const connectWalletWagmi = async (connector: any) => {
-    try {
-      let provider = await connector.getProvider();
-      provider = new Web3(provider);
-      
-      // Check if the user is on the correct network, if not switch to the desired network
-      const chainIdHex = new Web3().utils.toHex(chainId);
-      if (await provider.eth.getChainId() !== Number(chainId)) {
-        try {
-          await switchChain(wagmiConfig, { chainId: Number(chainId) });
-        } catch (err: any) {
-          if (err.code === 4001) {
-            await connector.disconnect();
-            return appKit.close();
-          } else {
-            console.error("[Wallet Connect] Error", err);
-            return undefined;
-          }
-        }
-      }
-
-      appKit.close();
-
-      // Retrieve the wallet address
-      const walletAddress = (await provider.eth.getAccounts())[0];
-  
-      // Fetch the wallet balance
-      const myBalance = new BigNumber(await provider.eth.getBalance(walletAddress));
-      const wallet = new UserWallet(provider.utils.toChecksumAddress(walletAddress), myBalance);
-  
-      // Set the wallet and provider in the app state
-      setWeb3(provider);
-      setUserWallet(wallet);
-      reinitializeContractsWithProvider(provider);
-  
-      return { provider, wallet };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
@@ -114,9 +66,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   // Initialize Web3 with CustomHttpProvider
   const chainId = import.meta.env.VITE_APP_CHAINID || 777018;
   const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://alpha4.uniq.domains/rpc';
+  const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
-  const [web3ModalInstance, setWeb3ModalInstance] = useState<any>(null);
-  const [accountChangeListener, setAccountChangeListener] = useState<any>(null);
 
   const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BigNumber(0)));
   const initialContracts = new ContractManager(web3);
@@ -127,30 +78,34 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
+    if (connector?.getProvider && isConnected) {
+      InitializeWagmiWallet(connector);
+    }
+  }, [connector, isConnected]);
+
+  useEffect(() => {
     console.log("[INFO] Initializing Web3 Context");
     initialize();
     handleCacheReset();
   }, []);
 
   useEffect(() => {
-    // handle account change
-    if (!accountChangeListener && web3ModalInstance) {
-      const listener = (accounts: Array<string>) => {
-        if (accounts && accounts.length === 0) {
-          window.location.reload();
-        } else {
-          connectWallet();
-        }
-      };
-      
-      web3ModalInstance.on("accountsChanged", listener);
-      setAccountChangeListener(listener);
-  
+    if (wagmiConnector) {
+      const unwatch = watchAccount(wagmiConfig, {
+        onChange(account) { 
+          if (account.address) {
+            InitializeWagmiWallet(wagmiConnector);
+          } else {
+            window.location.reload();
+          }
+        },
+      })
+    
       return () => {
-        web3ModalInstance.off("accountsChanged", listener);
+        unwatch()
       };
     }
-  }, [web3ModalInstance]);
+  }, [wagmiConnector]);
 
   const initialize = async () => {
     if (!web3Initialized) {
@@ -223,92 +178,46 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   };
 
-  const connectWallet = async () => {
+  const InitializeWagmiWallet = async (connector: any) => {
     try {
-      // Ensure MetaMask or WalletConnect are available
-      if (typeof window.ethereum === 'undefined') {
-        toast.warn('MetaMask is not installed. Please install it to continue.');
-        return;
-      }
-  
-      // Define WalletConnect V2 options
-      const providerOptions = {
-        walletconnect: {
-          package: WalletConnectProvider,
-          options: {
-            projectId: '<YOUR_WALLETCONNECT_PROJECT_ID>',  // You'll need to get this from WalletConnect
-            rpc: {
-              [chainId]: rpcUrl, // RPC URLs for the desired chain
-            },
-            chains: [chainId],   // Array of chain IDs supported
-          },
-        },
-      };
-  
-      // Initialize Web3Modal with WalletConnect v2 options
-      const web3Modal = new Web3Modal({
-        network: "mainnet",
-        cacheProvider: false,
-        providerOptions,
-      });
-  
-      // Clear cache so on each connect it asks for wallet type
-      web3Modal.clearCachedProvider();
-  
-      // Connect using Web3Modal
-      const web3ModalInstance = await web3Modal.connect();
-      setWeb3ModalInstance(web3ModalInstance);
-  
-      // Create a Web3 provider instance
-      const provider = new Web3(web3ModalInstance);
-  
+      let provider = await connector.getProvider();
+      provider = new Web3(provider);
+
       // Check if the user is on the correct network, if not switch to the desired network
-      const chainIdHex = new Web3().utils.toHex(chainId);
-      if (await web3ModalInstance.request({ method: 'eth_chainId' }) !== chainId) {
+      if (await provider.eth.getChainId() !== Number(chainId)) {
         try {
-          await web3ModalInstance.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: chainIdHex }],
-          });
+          await switchChain(wagmiConfig, { chainId: Number(chainId) });
         } catch (err: any) {
-          if (err.code === 4902) {
-            // Chain not added yet, attempt to add it
-            await web3ModalInstance.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainName: import.meta.env.VITE_APP_CHAIN_NAME || "DMD Diamond",
-                  chainId: chainIdHex,
-                  nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
-                  rpcUrls: [rpcUrl],
-                  blockExplorerUrls: null,
-                },
-              ],
-            });
+          if (err.code === 4001) {
+            await connector.disconnect();
+            return appKit.close(); // close modal if user denies
           } else {
             console.error("[Wallet Connect] Error", err);
             return undefined;
           }
         }
       }
-  
+
+      appKit.close(); // close modal after login
+
       // Retrieve the wallet address
-      const walletAddress = (await web3ModalInstance.request({ method: 'eth_accounts' }))[0];
+      const walletAddress = (await provider.eth.getAccounts())[0];
   
       // Fetch the wallet balance
       const myBalance = new BigNumber(await provider.eth.getBalance(walletAddress));
       const wallet = new UserWallet(provider.utils.toChecksumAddress(walletAddress), myBalance);
-  
+
       // Set the wallet and provider in the app state
       setWeb3(provider);
       setUserWallet(wallet);
+      setWagmiConnector(connector);
       reinitializeContractsWithProvider(provider);
-  
+        
       return { provider, wallet };
     } catch (err) {
-      console.error("[Wallet Connect]", err);
+      console.error(err);
     }
-  };
+  }
 
   const ensureWalletConnection = (): boolean => {
     if (!userWallet.myAddr) {
@@ -338,7 +247,6 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setContractsManager,  // Set the new contractsManager state
 
     // other functions
-    connectWallet,
     ensureWalletConnection,
     showLoader,
     getUpdatedBalance
