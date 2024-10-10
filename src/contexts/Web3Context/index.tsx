@@ -186,13 +186,18 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       // Check if the user is on the correct network, if not switch to the desired network
       if (await provider.eth.getChainId() !== Number(chainId)) {
         try {
+          showLoader(true, "Please connect to the DMD Network");
           await switchChain(wagmiConfig, { chainId: Number(chainId) });
+          showLoader(false, "");
         } catch (err: any) {
           if (err.code === 4001) {
             await connector.disconnect();
+            showLoader(false, "");
+            toast.warn("Please connect to the DMD Network to continue logging in");
             return appKit.close(); // close modal if user denies
           } else {
             console.error("[Wallet Connect] Error", err);
+            showLoader(false, "");
             return undefined;
           }
         }
