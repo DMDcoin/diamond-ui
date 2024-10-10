@@ -26,7 +26,7 @@ const appKit = createWeb3Modal({
         "--w3m-color-mix": "#0e44b2",
         "--w3m-color-mix-strength": 20,
     },
-    allWallets: "HIDE"
+    allWallets: "HIDE",
 });
 
 interface WalletConnectContextProps { 

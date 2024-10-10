@@ -17,12 +17,14 @@ import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
+import { useWalletConnectContext } from "../../contexts/WalletConnect";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
-  const { userWallet, connectWallet } = useWeb3Context();
+  const { userWallet } = useWeb3Context();
+  const walletConnectContext = useWalletConnectContext();
 
   const {
     pools,
@@ -205,7 +207,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         of your digital assets.
                                     </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
+                                <div className="div-block-3"><button onClick={() => walletConnectContext.appKit.open()} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
                             <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
                                 <img
