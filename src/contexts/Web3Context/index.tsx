@@ -57,7 +57,7 @@ const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const { disconnect } = useDisconnect();
   const { appKit } = useWalletConnectContext();
-  const { connector, isConnected } = useAccount();
+  const { connector, isConnected, status } = useAccount();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
@@ -78,10 +78,12 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
-    if (connector?.getProvider && isConnected) {
+    console.log({isConnected, status})
+
+    if (connector?.getProvider && isConnected && status === 'connected') {
       InitializeWagmiWallet(connector);
     }
-  }, [connector, isConnected]);
+  }, [connector, isConnected, status]);
 
   useEffect(() => {
     console.log("[INFO] Initializing Web3 Context");
