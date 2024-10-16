@@ -181,10 +181,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        <div className={styles.daoPhaseBannerContainer}>
-                            <DaoPhaseBanner />
-                            <button onClick={() => {startTransition(() => {navigate('dao')})}}>Go to DAO</button>
-                        </div>
+                        <DaoPhaseBanner showDaoStats={true} />
                     </div>
                 </section>
             ) : (
