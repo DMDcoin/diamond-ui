@@ -105,7 +105,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.log("[INFO] Updating stake amounts");
       updateStakeAmounts();
     }
-  }, [totalDaoStake, userWallet.myAddr]);
+  }, [totalDaoStake, userWallet.myAddr, isSyncingPools]);
 
   useEffect(() => {
     if (web3Initialized) {
@@ -455,9 +455,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   
     // Set the updated pools
     setPools([...updatedPools]);
-    updateStakeAmounts(updatedPools);
     setCachedPools(blockNumber, updatedPools);
     console.log("[INFO] Cached Data:", JSON.parse(localStorage.getItem('poolsData') || '{}'));
+    await updateStakeAmounts(updatedPools);
     setIsSyncingPools(false);
   }
 

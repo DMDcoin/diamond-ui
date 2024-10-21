@@ -43,13 +43,16 @@ const DaoHome: React.FC<DaoProps> = () => {
 
             <p>
               Stake:{" "}
-              {stakingContext.myTotalStake
-                ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
-                : 0}{" "}
-              DMD
+              <span style={{ fontWeight: "bold" }}>
+                {stakingContext.myTotalStake
+                  ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
+                  : 0}
+                  {" "}
+                  DMD
+              </span>
             </p>
             <p>
-              Voting power{" "}
+              Voting power:{" "}
               <span style={{ fontWeight: "bold" }}>
                 {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
                 %

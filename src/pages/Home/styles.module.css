@@ -288,55 +288,6 @@ h1 {
   justify-content: space-between;
 }
 
-.daoPhaseBannerContainer {
-  gap: 1rem;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  background-color: white;
-}
-
-.daoPhaseBannerContainer > div {
-  gap: 0.5rem;
-  max-width: 180px;
-  height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 24px;
-}
-
-.daoPhaseBannerContainer > div > button {
-  display: none;
-}
-
-.daoPhaseBannerContainer > button {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: 1px solid #0145b2;
-  color: #0145b2;
-  text-decoration: none;
-  border-radius: 4px;
-  background-color: rgb(245, 247, 250);
-}
-
-.daoPhaseBannerContainer > button:hover {
-  background-color: #0145b2;
-  color: white;
-}
-
-.daoPhaseBannerContainer > button .active {
-  background-color: #0145b2;
-  color: white;
-  border: none;
-}
-
-.daoPhaseBannerContainer > button .disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
 .poolActive {
   color: green;
 }
