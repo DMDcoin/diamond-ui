@@ -14,3 +14,13 @@
 .daoPhaseBanner > * {
   margin: 0px;
 }
+
+.daoBtn {
+  align-self: center;
+  margin-top: 10px;
+  max-width: 120px;
+}
+
+.statisticsTable {
+  padding: 0px;
+}

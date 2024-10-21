@@ -17,12 +17,14 @@ import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
+import { useWalletConnectContext } from "../../contexts/WalletConnect";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
-  const { userWallet, connectWallet } = useWeb3Context();
+  const { userWallet } = useWeb3Context();
+  const walletConnectContext = useWalletConnectContext();
 
   const {
     pools,
@@ -179,10 +181,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        <div className={styles.daoPhaseBannerContainer}>
-                            <DaoPhaseBanner />
-                            <button onClick={() => {startTransition(() => {navigate('dao')})}}>Go to DAO</button>
-                        </div>
+                        <DaoPhaseBanner showDaoStats={true} />
                     </div>
                 </section>
             ) : (
@@ -205,7 +204,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         of your digital assets.
                                     </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
+                                <div className="div-block-3"><button onClick={() => walletConnectContext.appKit.open()} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
                             <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
                                 <img
@@ -325,9 +324,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                             </td>
                                             <td>{pool.stakingAddress}</td>
-                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>
-                                            <td>1000</td>
+                                            <td>{pool.score}</td>
                                         </tr>
                                         ))
                                     }
