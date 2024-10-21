@@ -62,8 +62,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const chainId = process.env.REACT_APP_CHAINID || 777017;
-  const rpcUrl = process.env.REACT_APP_RPC_URL || 'https://alpha4.uniq.domains/rpc';
+  const chainId = import.meta.env.VITE_APP_CHAINID || 777017;
+  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://alpha4.uniq.domains/rpc';
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
   const [web3ModalInstance, setWeb3ModalInstance] = useState<any>(null);
   const [accountChangeListener, setAccountChangeListener] = useState<any>(null);
@@ -218,7 +218,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainName: process.env.REACT_APP_CHAIN_NAME || "DMD Diamond",
+                  chainName: import.meta.env.VITE_APP_CHAIN_NAME || "DMD Diamond",
                   chainId: chainIdHex,
                   nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
                   rpcUrls: [rpcUrl],
