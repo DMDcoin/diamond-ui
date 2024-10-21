@@ -78,8 +78,6 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
-    console.log({isConnected, status})
-
     if (connector?.getProvider && isConnected && status === 'connected') {
       InitializeWagmiWallet(connector);
     }
