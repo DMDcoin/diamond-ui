@@ -324,9 +324,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                             </td>
                                             <td>{pool.stakingAddress}</td>
-                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>
-                                            <td>1000</td>
+                                            <td>{pool.score}</td>
                                         </tr>
                                         ))
                                     }
