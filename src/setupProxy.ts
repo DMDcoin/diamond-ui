@@ -6,7 +6,7 @@ module.exports = function(app: Application) {
   app.use(
     '/rpc',
     createProxyMiddleware({
-      target: process.env.REACT_APP_RPC_URL,
+      target: import.meta.env.VITE_APP_RPC_URL,
       changeOrigin: true,
       pathRewrite: {
         '^/rpc': '', // remove /rpc from the URL path before forwarding

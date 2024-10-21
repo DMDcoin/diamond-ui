@@ -341,7 +341,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         setStakingEpochEndTime(parseInt(globals[10]));
         setCanStakeOrWithdrawNow(globals[9]);
 
-        web3.eth.getBalance(process.env.REACT_APP_DAO_CONTRACT_ADDRESS || '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
+        web3.eth.getBalance(import.meta.env.VITE_APP_DAO_CONTRACT_ADDRESS || '0xDA0da0da0Da0Da0Da0DA00DA0da0da0DA0DA0dA0').then((daoPotValue) => {
           setDaoPot(web3.utils.fromWei(daoPotValue, 'ether'));
         })
 
