@@ -15,7 +15,7 @@ interface ValidatorsTableProps {
     itemsPerPage?: number;
 }
 
-const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
+const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 }) => {
     const navigate = useNavigate();
     const location = useLocation();  // Use useLocation to get the passed state
     const { userWallet } = useWeb3Context();
@@ -123,7 +123,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
 
     return (
         <div className={styles.sectionContainer + " sectionContainer"}>
-            <h1>Validator Candidates</h1>
+            <h1>Validators</h1>
 
             {/* Filter and Search */}
             <div className={styles.filterContainer}>
@@ -246,29 +246,31 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
             </div>
 
             {/* Pagination */}
-            <ul className={styles.pagination}>
-                <li
-                    onClick={() => {
-                        if (currentPage !== 0) {
-                            handlePageClick(currentPage - 1);
-                        }
-                    }}
-                    className={currentPage === 0 ? styles.disabled : ""}
-                >
-                    Previous
-                </li>
-                {renderPageNumbers()}
-                <li
-                    onClick={() => {
-                        if (currentPage !== pageCount - 1) {
-                            handlePageClick(currentPage + 1);
-                        }
-                    }}
-                    className={currentPage === pageCount - 1 ? styles.disabled : ""}
-                >
-                    Next
-                </li>
-            </ul>
+            {poolsCopy.length > itemsPerPage && (
+                <ul className={styles.pagination}>
+                    <li
+                        onClick={() => {
+                            if (currentPage !== 0) {
+                                handlePageClick(currentPage - 1);
+                            }
+                        }}
+                        className={currentPage === 0 ? styles.disabled : ""}
+                    >
+                        Previous
+                    </li>
+                    {renderPageNumbers()}
+                    <li
+                        onClick={() => {
+                            if (currentPage !== pageCount - 1) {
+                                handlePageClick(currentPage + 1);
+                            }
+                        }}
+                        className={currentPage === pageCount - 1 ? styles.disabled : ""}
+                    >
+                        Next
+                    </li>
+                </ul>
+            )}
         </div>
     );
 };

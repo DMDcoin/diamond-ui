@@ -1,9 +1,10 @@
 import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
 import { useDaoContext } from "../../contexts/DaoContext";
+import { useWeb3Context } from "../../contexts/Web3Context";
 import { startTransition, useEffect, useState } from "react";
 import FinalizeProposalsWarn from "../Modals/FinalizeProposalsWarn";
-import { useWeb3Context } from "../../contexts/Web3Context";
+import { useStakingContext } from "../../contexts/StakingContext";
 
 interface DaoProps {
   showDaoStats?: boolean;
@@ -13,6 +14,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
   const navigate = useNavigate();
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
+  const stakingContext = useStakingContext();
 
   const [unfinalizedProposalsExist, setUnfinalizedProposalsExist] = useState<boolean>(true);
 
@@ -52,25 +54,46 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
                   <div id="w-node-e5752c0d-27c5-1c42-e24d-fa9c23646ba9-55493c02">Till the end</div>
                 </div>
 
-                <a className={styles.daoBtn + " primaryBtn"} onClick={() => { startTransition(() => { navigate('staking') }) }}>Go to DAO</a>
+                <a className={styles.daoBtn + " primaryBtn"} onClick={() => { startTransition(() => { navigate('dao') }) }}>Go to DAO</a>
               </div>
             </div>
           </section>
         ) : (
           <div className={styles.daoPhaseBanner}>
             {daoContext.daoPhase?.phase === "1" && <div></div>}
-            <h4>
-              {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
-            </h4>
-            <p>{daoContext.phaseEndTimer} till the end</p>
-            {daoContext.daoPhase?.phase === "1" ? (
-              <p></p>
-            ) : unfinalizedProposalsExist ? (
-              <FinalizeProposalsWarn buttonText="Create Proposal" />
-            ) : daoContext.daoPhase?.phase === "0" && (
-              <button className="primaryBtn" onClick={() => { startTransition(() => { navigate("/dao/create") }) }}>Create Proposal</button>
-            )
-            }
+            <div>
+              <h4>{daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}</h4>
+              
+              {daoContext.daoPhase?.phase === "1" ? (
+                <p></p>
+              ) : unfinalizedProposalsExist ? (
+                <FinalizeProposalsWarn buttonText="Create Proposal" />
+              ) : daoContext.daoPhase?.phase === "0" && (
+                <button className="primaryBtn" onClick={() => { startTransition(() => { navigate("/dao/create") }) }}>Create Proposal</button>
+              )
+              }
+            </div>
+
+            <p><strong>Timer:</strong> {daoContext.phaseEndTimer} till the end</p>
+            
+            <p>
+              <strong>Stake:</strong>{" "}
+              <span>
+                {stakingContext.myTotalStake
+                  ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
+                  : 0}
+                  {" "}
+                  DMD
+              </span>
+            </p>
+
+            <p>
+              <strong>Voting power:</strong>{" "}
+              <span>
+                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
+                %
+              </span>
+            </p>
           </div>
         )
       }

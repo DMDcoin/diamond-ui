@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { timestampToDateTime } from "../../utils/common";
+import { timestampToDateTime, truncateAddress } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 import { useStakingContext } from "../../contexts/StakingContext";
@@ -58,7 +58,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     }
                                     <div>
                                         <p>User</p>
-                                        <p>{userWallet.myAddr}</p>
+                                        <p>{truncateAddress(userWallet.myAddr)}</p>
                                     </div>
                                     {
                                         myPool && (
@@ -130,7 +130,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <tr>
                                                     <td>Score</td>
                                                     <td>{myPool.score}</td>
-                                                    <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td>
+                                                    {/* <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td> */}
                                                     {/* <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0x1bc4e0508473A9840A40Ad424B792097f70967Ee") || myPool} buttonText="Score History" /></td> */}
                                                 </tr>
                                             )}
