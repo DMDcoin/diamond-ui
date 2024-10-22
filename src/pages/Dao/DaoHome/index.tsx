@@ -37,28 +37,9 @@ const DaoHome: React.FC<DaoProps> = () => {
   return (
     <section className="section">
       <div className={styles.sectionContainer + " sectionContainer"}>
+        
         <div className={styles.daoInfoContainer}>
-          <div>
-            <h1 className={styles.daoHeading}>Governance</h1>
-
-            <p>
-              Stake:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {stakingContext.myTotalStake
-                  ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
-                  : 0}
-                  {" "}
-                  DMD
-              </span>
-            </p>
-            <p>
-              Voting power:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
-                %
-              </span>
-            </p>
-          </div>
+          <h1>Governance</h1>
 
           <DaoPhaseBanner />
         </div>
@@ -93,8 +74,7 @@ const DaoHome: React.FC<DaoProps> = () => {
 
         <span
           onClick={() => startTransition(() => navigate("/dao/historic"))}
-          className={styles.historicProposalsLink}
-        >
+          className={styles.historicProposalsLink}>
           Historic Proposals
         </span>
       </div>

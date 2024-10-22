@@ -1,14 +1,22 @@
 .daoPhaseBanner {
+  gap: 0.5rem;
   display: flex;
-  padding: 20px;
   color: #0145b2;
   min-width: 350px;
-  text-align: center;
-  border-radius: 50px;
   flex-direction: column;
   background-color: white;
-  border: 1px solid #0145b2;
-  justify-content: space-between;
+}
+
+.daoPhaseBanner > div > h4 {
+  font-size: 24px;
+  text-align: center;
+}
+
+.daoPhaseBanner > div {
+  gap: 2rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .daoPhaseBanner > * {

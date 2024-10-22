@@ -175,3 +175,8 @@ export const formatCryptoUnitValue = (value: string | number): string => {
     return `${BigNumber(value).dividedBy(10**1)} Wei`;
   }
 }
+
+export const truncateAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 7)}...${address.slice(-5)}`;
+};
