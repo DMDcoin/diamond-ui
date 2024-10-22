@@ -13,6 +13,7 @@ interface DaoContextProps {
   activeProposals: Proposal[];
   phaseEndTimer: string;
   allDaoProposals: Proposal[];
+  governancePotBalance: BigNumber;
 
   initialize: () => Promise<void>;
   setActiveProposals: (proposals: Proposal[]) => void;
@@ -46,6 +47,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
+  const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
@@ -70,6 +72,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const phaseCount = await web3Context.contractsManager.daoContract.methods.daoPhaseCount().call();
     setDaoPhaseCount(phaseCount);
+
+    const governancePot = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    setGovernancePotBalance(BigNumber(governancePot).dividedBy(1e18));
 
     subscribeToEvents();
   }
@@ -572,6 +577,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     daoInitialized,
     activeProposals,
     allDaoProposals,
+    governancePotBalance,
 
     // functions
     initialize,

@@ -36,7 +36,7 @@ export const getFunctionName = (abi: any[], selector: string): string => {
 
 export const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
-  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const month = date.toLocaleString('en-US', { month: 'short' }); // Get short month name
   const day = date.getDate();
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
@@ -44,7 +44,7 @@ export const timestampToDate = (timestamp: string) => {
 
 export const timestampToDateTime = (timestamp: number) => {
   const date = new Date(timestamp * 1000);
-  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const month = date.toLocaleString('en-US', { month: 'short' }); // Get short month name
   const day = date.getDate();
   const year = date.getFullYear();
   
