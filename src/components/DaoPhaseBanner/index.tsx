@@ -56,7 +56,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
 
                 <div className="comparison-row">
                   <div id="w-node-_92822878-c41a-30b0-3d9e-ff70e92725ec-55493c02" className="text-block-3">{daoContext.governancePotBalance.toFixed(2)} DMD</div>
-                  <div id="w-node-e5752c0d-27c5-1c42-e24d-fa9c23646ba9-55493c02">Governance Pot.</div>
+                  <div id="w-node-e5752c0d-27c5-1c42-e24d-fa9c23646ba9-55493c02">Governance Pot</div>
                 </div>
 
                 <a className={styles.daoBtn + " primaryBtn"} onClick={() => { startTransition(() => { navigate('dao') }) }}>Go to DAO</a>
@@ -78,8 +78,6 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               )
               }
             </div>
-
-            <p><strong>Timer:</strong> {daoContext.phaseEndTimer} till the end</p>
             
             <p>
               <strong>Stake:</strong>{" "}
@@ -97,6 +95,15 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               <span>
                 {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
                 %
+              </span>
+            </p>
+
+            <p><strong>Timer:</strong> {daoContext.phaseEndTimer} till the end</p>
+
+            <p>
+              <strong>Governance Pot:</strong>{" "}
+              <span>
+                {daoContext.governancePotBalance.toFixed(2)} DMD
               </span>
             </p>
           </div>

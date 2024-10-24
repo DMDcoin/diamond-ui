@@ -24,6 +24,7 @@ interface HomeProps {}
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
   const { userWallet } = useWeb3Context();
+  const { isSyncingPools } = useStakingContext();
   const walletConnectContext = useWalletConnectContext();
 
   const {
@@ -204,7 +205,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         of your digital assets.
                                     </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={() => walletConnectContext.appKit.open()} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
+                                <div className="div-block-3"><button onClick={() => walletConnectContext.appKit.open()} disabled={isSyncingPools} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
                             <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
                                 <img
