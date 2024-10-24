@@ -203,7 +203,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(0) + " DMD" : (<div className={styles.loader}></div>)
+                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
                                     {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'

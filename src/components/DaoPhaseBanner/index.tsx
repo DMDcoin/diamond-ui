@@ -18,10 +18,6 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
 
   const [unfinalizedProposalsExist, setUnfinalizedProposalsExist] = useState<boolean>(true);
 
-  useEffect(() => {
-    console.log({ showDaoStats }, daoContext.daoPhase?.phase)
-  }, [showDaoStats]);
-
   // TODO: get this from the contract
   useEffect(() => {
     web3Context.contractsManager.daoContract.methods.unfinalizedProposalsExist().call().then((res: boolean) => {
