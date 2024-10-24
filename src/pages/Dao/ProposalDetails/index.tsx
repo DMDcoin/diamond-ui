@@ -133,7 +133,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    if ((proposalType === "Open" || proposalType === "Ecosystem Paramaeter Change") && positive.minus(negative).isGreaterThan(33)) {
+    if ((proposalType === "Open" || proposalType === "Ecosystem Parameter Change") && positive.minus(negative).isGreaterThan(33)) {
       return true;
     }
     if (proposalType === "Contract upgrade" && positive.minus(negative).isGreaterThan(50)) {
@@ -203,7 +203,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* ecosystem proposals */}
           {
-            proposal.proposalType === "Ecosystem Paramaeter Change" && (
+            proposal.proposalType === "Ecosystem Parameter Change" && (
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
@@ -278,13 +278,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | 33% required)</span>
+                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
                           <Tooltip text="Exceeding difference between yes and no answers | required difference" />
                         </div>
                         <div>
-                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed() : 0} DMD ({
+                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(2) : 0} DMD ({
                             votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(2)
-                          }% | 33% required)</span>
+                          }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>
                       </div>
