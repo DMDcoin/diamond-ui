@@ -10,7 +10,7 @@ import UnstakeModal from "../../../components/Modals/UnstakeModal";
 import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import { timestampToDate } from "../../../utils/common";
+import { timestampToDate, truncateAddress } from "../../../utils/common";
 
 interface PoolDetailsProps {}
 
@@ -61,7 +61,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         {/* image address status */}
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
-          <p>{poolAddress}</p>
+          <p>{truncateAddress(poolAddress || "")}</p>
           <p className={pool?.isCurrentValidator || pool?.isActive  ? styles.poolActive : styles.poolBanned}>
             {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : "Invalid"}
           </p>
