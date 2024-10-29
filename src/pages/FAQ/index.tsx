@@ -192,7 +192,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>18. How the DAO voting is performed?</summary>
                     <p>
-                        There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The new proposals stay in the ‘new proposal’ state till the voting phase starts or the proposal is dismissed by the creator. During a voting phase, the list of proposals are moved from ‘new proposal’ state to ‘ongoing’ state so that every validator candidate can vote on the proposal. Once the voting phase is finished, a new proposal phase starts.
+                    There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The proposals of the current proposal + voting phase stay in the Active proposals list till the dao phase finishes. During a voting phase, proposals creation is not available, but every validator candidate can vote on the proposals from the Active list, except from the dismissed ones. Once the voting phase is finished, a new proposal phase starts.
                     </p>
                 </details>
 
