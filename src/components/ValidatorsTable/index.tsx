@@ -50,11 +50,11 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isActive && !pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => pool.isToBeElected);
     } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isActive);
     } else if (filter === 'invalid') {
-        poolsCopy = poolsCopy.filter(pool => !pool.isActive && !pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => !pool.isActive && !pool.isToBeElected);
     } else if (filter === 'stakedOn') {
         poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
     }
@@ -196,9 +196,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                 </td>
-                                <td className={pool?.isActive || pool.isActive ? styles.poolActive : styles.poolBanned}>
+                                <td className={pool?.isActive || pool.isToBeElected ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isActive === 'boolean'
-                                        ? pool.isActive ? "Active" : pool.isActive ? "Valid" : "Invalid"
+                                        ? pool.isActive ? "Active" : pool.isToBeElected ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
