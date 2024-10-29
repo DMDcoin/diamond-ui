@@ -133,13 +133,11 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    if ((proposalType === "Open" || proposalType === "Ecosystem Parameter Change") && positive.minus(negative).isGreaterThan(33)) {
-      return true;
-    }
-    if (proposalType === "Contract upgrade" && positive.minus(negative).isGreaterThan(50)) {
-      return true;
-    }
-    return false;
+    const threshold = proposalType === "Contract upgrade" ? 50 : 33;
+    const hasSufficientVotes = positive.minus(negative).isGreaterThan(threshold);
+    const hasRequiredParticipation = votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).isGreaterThan(threshold);
+    
+    return hasSufficientVotes && hasRequiredParticipation;
   };
 
   return (
