@@ -127,7 +127,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               {canBeUnstakedAmount.isZero() ? (
                 <span>
                   Amount to be ordered:{" "}
-                  {canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
+                  {canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isActive ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
                 </span>
               ) : (
                 <span>
@@ -139,12 +139,12 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               <input
                 min={
                   canBeUnstakedAmount.isZero()
-                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isActive ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
                     : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
                 }
                 max={
                   canBeUnstakedAmount.isZero()
-                  ? Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                  ? Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isActive ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
                   : Math.max(0, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
                 }
                 type="number"
@@ -155,10 +155,10 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
+                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isActive ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
               }
 
-              {pool.isCurrentValidator && canBeUnstakedAmount.isGreaterThan(0) &&
+              {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
                 canBeOrderedAmount.isGreaterThan(0) ? (
                   <p className={styles.unstakeWarning}>
                     Please note, that this node is a part of current Epoch
@@ -167,7 +167,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                     soon as Epoch ends.
                   </p>
                 ) : (
-                  pool.isCurrentValidator && canBeOrderedAmount.isGreaterThan(0) && (
+                  pool.isActive && canBeOrderedAmount.isGreaterThan(0) && (
                     <p className={styles.unstakeWarning}>
                       Please note, that this node is a part of current Epoch
                       validators set. We will prepare the coins, but you need to
