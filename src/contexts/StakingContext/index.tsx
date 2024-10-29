@@ -95,7 +95,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const [canStakeOrWithdrawNow, setCanStakeOrWithdrawNow] = useState<boolean>(false);
   const [stakingAllowedTimeframe, setStakingAllowedTimeframe] = useState<number>(0);
   const [isSyncingPools, setIsSyncingPools] = useState<boolean>(true);
-  const [currentValidators, setCurrentValidators] = useState<string[]>([]);
   const [currentValidatorsWithoutPools, setCurrentValidatorsWithoutPools] = useState<string[]>([]);
   const [numbersOfValidators, setNumbersOfValidators] = useState<number>(0);
   const [newBlockPolling, setNewBlockPolling] = useState<NodeJS.Timeout | undefined>(undefined);
@@ -355,28 +354,20 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const syncPoolsState = async (blockNumber: number, isNewEpoch: boolean) => {    
     let activePoolAddrs: Array<string> = [];
     let inactivePoolAddrs: Array<string> = [];
-    let newCurrentValidators: Array<string> = [];
     let toBeElectedPoolAddrs: Array<string> = [];
     let pendingValidatorAddrs: Array<string> = [];
 
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
 
     if (poolsData) {
-      activePoolAddrs = poolsData[0];
-      newCurrentValidators = poolsData[1];
+      activePoolAddrs = poolsData[1];
       inactivePoolAddrs = poolsData[2];
       toBeElectedPoolAddrs = poolsData[3];
       pendingValidatorAddrs = poolsData[4];
     }
 
-    const validatorWithoutPool: Array<string> = [...newCurrentValidators];
-
-    if (currentValidators.toString() !== newCurrentValidators.toString()) {
-      setCurrentValidators(newCurrentValidators);
-    }
-
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
-    const allPools = activePoolAddrs.concat(inactivePoolAddrs);
+    const allPools = activePoolAddrs.concat(inactivePoolAddrs).concat(toBeElectedPoolAddrs).concat(pendingValidatorAddrs);
 
     // check if there is a new pool that is not tracked yet within the context.
     setPools(prevPools => {
@@ -392,14 +383,13 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       // filter empty pools
       newPools = newPools.filter(pool => pool.stakingAddress);
 
-      updatePools(newPools, validatorWithoutPool, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
+      updatePools(newPools, activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
       return newPools;
     });
   }
 
   const updatePools = async (
     pools: Pool[],
-    validatorWithoutPool: Array<string>,
     activePoolAddrs: Array<string>,
     toBeElectedPoolAddrs: Array<string>,
     pendingValidatorAddrs: Array<string>,
@@ -414,20 +404,15 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     for (let i = 0; i < pools.length; i += batchSize) {
       const batch = pools.slice(i, i + batchSize);
       
-      const batchPromises = batch.map((p, index) => {
-        const ixValidatorWithoutPool = validatorWithoutPool.indexOf(p.miningAddress);
-        if (ixValidatorWithoutPool !== -1) {
-          validatorWithoutPool.splice(ixValidatorWithoutPool, 1);
-        }
-  
+      const batchPromises = batch.map((p, index) => {  
         const cachedPool: Pool | undefined = getCachedPools(blockNumber).find((cachedPool) => p.stakingAddress === cachedPool.stakingAddress);
   
         if (cachedPool) {
           // refetching isActive and isCurrentValidator as are cached and not updated
-          if (validatorWithoutPool.filter((v) => v === cachedPool.miningAddress).length > 0) {
-            cachedPool.isCurrentValidator = true;
+          if (activePoolAddrs.filter((v) => v === cachedPool.miningAddress).length > 0) {
+            cachedPool.isActive = true;
           } else {
-            cachedPool.isCurrentValidator = false;
+            cachedPool.isActive = false;
           }
           cachedPool.isActive = activePoolAddrs.indexOf(cachedPool.stakingAddress) >= 0;
           // Update the pool in updatedPools array directly
@@ -482,14 +467,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
     pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
-
-    setCurrentValidators(
-      prevState => {
-        pool.isCurrentValidator = prevState.indexOf(pool.miningAddress) >= 0;    
-        return prevState;
-      }
-    );
-
     pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call({}, blockNumber));
 
     return pool;
@@ -844,7 +821,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     delegatorMinStake,
     stakingInitialized,
     validCandidates: pools.filter(pool => pool.isAvailable).length,
-    activeValidators: pools.filter(pool => pool.isCurrentValidator).length,
+    activeValidators: pools.filter(pool => pool.isActive).length,
 
     // methods
     stake,

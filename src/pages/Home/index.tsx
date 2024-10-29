@@ -63,8 +63,8 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     </div>
                                     {
                                         myPool && (
-                                            <p className={myPool?.isCurrentValidator || myPool?.isActive ? styles.poolActive : styles.poolBanned}>
-                                                {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : "Invalid"}
+                                            <p className={myPool?.isActive || myPool?.isActive ? styles.poolActive : styles.poolBanned}>
+                                                {myPool?.isActive ? "Active" : myPool?.isActive ? "Valid" : "Invalid"}
                                             </p>
                                         )
                                     }
@@ -95,7 +95,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                                     <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
                                                                             }
                                                                             {
-                                                                                myPool && !myPool.isCurrentValidator && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
+                                                                                myPool && !myPool.isActive && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
                                                                             }
                                                                         </>
                                                                     )
