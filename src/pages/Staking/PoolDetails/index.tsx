@@ -62,8 +62,8 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
           <p>{truncateAddress(poolAddress || "")}</p>
-          <p className={pool?.isActive || pool?.isToBeElected ? styles.poolActive : styles.poolBanned}>
-            {pool?.isActive ? "Active" : pool?.isToBeElected ? "Valid" : "Invalid"}
+          <p className={pool?.isActive || (pool?.isToBeElected || pool?.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
+            {pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Valid" : "Invalid"}
           </p>
         </div>
 
@@ -101,7 +101,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegates</h1>
             {
-              pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
+              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
               pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (

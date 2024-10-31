@@ -196,9 +196,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                 </td>
-                                <td className={pool?.isActive || pool.isToBeElected ? styles.poolActive : styles.poolBanned}>
+                                <td className={pool?.isActive || (pool.isToBeElected || pool.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isActive === 'boolean'
-                                        ? pool.isActive ? "Active" : pool.isToBeElected ? "Valid" : "Invalid"
+                                        ? pool.isActive ? "Active" : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
@@ -216,7 +216,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                         <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
-                                                pool.isActive && (
+                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && (
                                                     <StakeModal buttonText="Stake" pool={pool} />
                                                 )
                                             }

@@ -5,6 +5,7 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { toast } from "react-toastify";
+import { truncateAddress } from "../../../utils/common";
 
 interface ModalProps {
   buttonText: string;
@@ -96,15 +97,15 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     if (ownPool && canBeOrderedAmount.isZero()) {
       return "Unstake DMD";
     } else if (!ownPool && canBeOrderedAmount.isZero()) {
-      return `Unstake from ${pool.stakingAddress}`;
+      return `Unstake from ${truncateAddress(pool.stakingAddress)}`;
     } else if (ownPool && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
       return "Unstake DMD";
     } else if (canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
-      return `Unstake DMD from ${pool.stakingAddress}`;
+      return `Unstake DMD from ${truncateAddress(pool.stakingAddress)}`;
     } else if (ownPool && !canBeOrderedAmount.isZero()) {
       return "Order DMD";
     } else {
-      return `Order DMD from ${pool.stakingAddress}`;
+      return `Order DMD from ${truncateAddress(pool.stakingAddress)}`;
     }
   };
 

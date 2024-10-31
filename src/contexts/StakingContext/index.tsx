@@ -461,7 +461,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       pool.delegators = result.delegators;
       pool.candidateStake = result.candidateStake;
     });
-    
+
     pool.isAvailable = !pool.availableSince.isZero();
     pool.isActive = activePoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
@@ -555,7 +555,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
 
     if (poolsData) {
-      activePoolAddrs = poolsData[0];
+      activePoolAddrs = poolsData[1];
       toBeElectedPoolAddrs = poolsData[3];
       pendingValidatorAddrs = poolsData[4];
     }
