@@ -23,6 +23,7 @@
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
     "assert": "^2.1.0",
+    "axios": "^1.7.7",
     "bignumber.js": "^9.1.2",
     "bn.js": "^5.2.1",
     "browserify-zlib": "^0.2.0",
