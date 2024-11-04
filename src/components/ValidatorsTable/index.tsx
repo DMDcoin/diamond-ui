@@ -50,7 +50,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isToBeElected);
+        poolsCopy = poolsCopy.filter(pool => pool.isToBeElected && !pool.isActive);
     } else if (filter === 'active') {
         poolsCopy = poolsCopy.filter(pool => pool.isActive);
     } else if (filter === 'invalid') {

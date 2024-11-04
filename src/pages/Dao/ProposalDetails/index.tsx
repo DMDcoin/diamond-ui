@@ -14,7 +14,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 import Tooltip from "../../../components/Tooltip";
-import { extractValueFromCalldata, formatCryptoUnitValue, timestampToDate } from "../../../utils/common";
+import { decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, timestampToDate } from "../../../utils/common";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -80,6 +80,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const setProposalDetails = useCallback((proposal: any) => {
     if (proposal) {
+      // console.log({proposal});
       setProposal(proposal);
       daoContext.setProposalsState([proposal]);
       daoContext.getProposalVotingStats(proposal.id).then((res) => {        
@@ -231,6 +232,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <span>Call Data</span>
                         <span>{proposal.calldatas[i]}</span>
                       </div>
+                      {/* <>This: {decodeCallData(web3Context, proposal.targets[i], proposal.calldatas[i])}</> */}
                     </div>   
                   ))
                 }

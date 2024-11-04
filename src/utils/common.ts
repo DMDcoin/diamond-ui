@@ -1,3 +1,4 @@
+import axios from "axios";
 import BigNumber from "bignumber.js";
 
 const Web3 = require('web3');
@@ -22,7 +23,7 @@ export const extractValueFromCalldata = (calldata: string): string => {
   return value;
 };
 
-export const getFunctionName = (abi: any[], selector: string): string => {
+export const getFunctionNameWithAbi = (abi: any[], selector: string): string => {
   const matchingFunction = abi.find(item => {
       if (item.type === 'function') {
           const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
@@ -33,6 +34,52 @@ export const getFunctionName = (abi: any[], selector: string): string => {
   });
   return matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function';
 };
+
+export const getFunctionNameFromDirectory = async (selector: string): Promise<string | null> => {
+  try {
+    const response = await axios.get(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+    const results = response.data.results;
+    
+    if (results.length > 0) {
+      return results[0].text_signature; // Returns the first matching function name
+    }
+  } catch (error) {
+    console.error("Error fetching function name:", error);
+  }
+  return null; // Returns null if no match found
+};
+
+export const extractTargetAddressFromCalldata = (calldata: string): string => {
+  // Assuming the address is the first parameter after the function selector (first 4 bytes)
+  const encodedAddress = calldata.slice(10, 74); // Next 32 bytes after the selector
+
+  // Convert to standard 20-byte address format
+  const address = `0x${encodedAddress.slice(24)}`; // Take the last 40 hex characters
+
+  return address;
+};
+
+export const getContractByAddress = (web3Context: any, contractAddress: string): any => {
+  const contracts = Object.values(web3Context.contractsManager);
+  return contracts.find((contract: any) => contract.options?.address === contractAddress);
+};
+
+export const decodeCallData = (web3Context: any, contractAddress: any, calldata: string) => {
+  const contract = getContractByAddress(web3Context, contractAddress);
+  const selector = getFunctionSelector(calldata);
+  const value = extractValueFromCalldata(calldata);
+  getFunctionNameFromDirectory(selector).then((functionName) => {
+    if (functionName) {
+      console.log(`${functionName}(${value})`);
+      return `${functionName}(${value})`;
+    } else {
+      console.log({selector})
+      functionName = getFunctionNameWithAbi(contract.options.jsonInterface, selector);
+      console.log(`${functionName}(${value})`);
+      return `${functionName}(${value})`;
+    }
+  });
+}
 
 export const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
