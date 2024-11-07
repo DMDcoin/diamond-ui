@@ -38,6 +38,7 @@ export type ProposalCreated = ContractEventLog<{
   title: string;
   description: string;
   discussionUrl: string;
+  proposalFee: string;
   0: string;
   1: string;
   2: string[];
@@ -46,6 +47,7 @@ export type ProposalCreated = ContractEventLog<{
   5: string;
   6: string;
   7: string;
+  8: string;
 }>;
 export type ProposalExecuted = ContractEventLog<{
   caller: string;

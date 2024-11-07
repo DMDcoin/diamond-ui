@@ -21,19 +21,15 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IStakingHbbft extends BaseContract {
+export interface IERC20 extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IStakingHbbft;
-  clone(): IStakingHbbft;
+  ): IERC20;
+  clone(): IERC20;
   methods: {
-    isPoolValid(arg0: string): NonPayableTransactionObject<boolean>;
-
-    stakeAmountTotal(arg0: string): NonPayableTransactionObject<string>;
-
-    totalStakedAmount(): NonPayableTransactionObject<string>;
+    balanceOf(account: string): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

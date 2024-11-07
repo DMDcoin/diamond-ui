@@ -294,10 +294,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             proposalType === "ecosystem-parameter-change" && (
               <>
               <p>
-                Please note that every parameter from the list can be changed
-                once a month, so if there are multiple proposals for a single
-                parameter change, the one with the highest exceeding voting
-                power wins.
+                  Each parameter from the list can be changed only once a month. If there are multiple proposals to change the same parameter, all with enough "yes" votes and participation during the DAO phase, the community will decide which proposal will be finalized and executed.
               </p>
 
                 <div>
@@ -328,9 +325,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           }
 
           <p>
-            Please note that you pay a proposal price and a service fee when you
-            submit a new voting creation. You can dismiss the proposal during
-            the proposal phase, but you will lose your funds.
+            Please note that you pay a proposal price and a service fee when you submit a new voting creation. You can dismiss the proposal during the proposal phase, but you will lose your funds. If your proposal is accepted, the proposal fee is returned to you on the proposal finalization.
           </p>
 
           <button>Create</button>
