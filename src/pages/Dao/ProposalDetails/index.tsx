@@ -14,7 +14,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
 import Tooltip from "../../../components/Tooltip";
-import { decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, timestampToDate } from "../../../utils/common";
+import { extractValueFromCalldata, formatCryptoUnitValue, getFunctionNameWithAbi, timestampToDate } from "../../../utils/common";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -206,7 +206,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
-                  <span>Gas price</span>
+                  <span>{getFunctionNameWithAbi(web3Context, proposal.targets[0], proposal.calldatas[0])}</span>
                 </div>
 
                 <div>
