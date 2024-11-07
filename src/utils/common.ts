@@ -14,6 +14,10 @@ export const getFunctionSelector = (signature: string): string => {
   return web3.utils.sha3(signature).slice(0, 10);
 };
 
+export const extractFunctionSelectorFromCalldata = (calldata: string): string => {
+  return calldata.slice(0, 10);
+}
+
 export const extractValueFromCalldata = (calldata: string): string => {
   const encodedValue = calldata.slice(10, 74);
   
@@ -23,16 +27,46 @@ export const extractValueFromCalldata = (calldata: string): string => {
   return value;
 };
 
-export const getFunctionNameWithAbi = (abi: any[], selector: string): string => {
+export const getAbiWithContractAddress = (web3Context: any, contractAddress: string): any[] => {
+  try {
+    const contracts = Object.keys(web3Context.contractsManager);
+    const contractName = contracts.find((contract: any) => web3Context.contractsManager[contract].options?.address === contractAddress);
+    if (contractName) {
+      return web3Context.contractsManager[contractName].options.jsonInterface;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching contract ABI:", error);
+    return [];
+  }
+}
+
+function capitalizeFirstLetter(string: string): string {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function formatFunctionName(functionString: string): string {
+  // Remove parameters like `(uint256)`
+  let formatted = functionString.replace(/\(.*\)/, "");
+
+  formatted = formatted.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+
+  // Capitalize the first letter and add "Set" at the start
+  return capitalizeFirstLetter(formatted);
+}
+
+export const getFunctionNameWithAbi = (web3Context: any, contractAddress: string, calldata: string): string => {
+  const selector = extractFunctionSelectorFromCalldata(calldata);
+  const abi = getAbiWithContractAddress(web3Context, contractAddress);
   const matchingFunction = abi.find(item => {
       if (item.type === 'function') {
-          const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
-          const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
-          return calculatedSelector === selector;
+        const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
+        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        return calculatedSelector === selector;
       }
       return false;
   });
-  return matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function';
+  return formatFunctionName(matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function');
 };
 
 export const getFunctionNameFromDirectory = async (selector: string): Promise<string | null> => {
@@ -64,22 +98,22 @@ export const getContractByAddress = (web3Context: any, contractAddress: string):
   return contracts.find((contract: any) => contract.options?.address === contractAddress);
 };
 
-export const decodeCallData = (web3Context: any, contractAddress: any, calldata: string) => {
-  const contract = getContractByAddress(web3Context, contractAddress);
-  const selector = getFunctionSelector(calldata);
-  const value = extractValueFromCalldata(calldata);
-  getFunctionNameFromDirectory(selector).then((functionName) => {
-    if (functionName) {
-      console.log(`${functionName}(${value})`);
-      return `${functionName}(${value})`;
-    } else {
-      console.log({selector})
-      functionName = getFunctionNameWithAbi(contract.options.jsonInterface, selector);
-      console.log(`${functionName}(${value})`);
-      return `${functionName}(${value})`;
-    }
-  });
-}
+// export const decodeCallData = (web3Context: any, contractAddress: any, calldata: string) => {
+//   const contract = getContractByAddress(web3Context, contractAddress);
+//   const selector = getFunctionSelector(calldata);
+//   const value = extractValueFromCalldata(calldata);
+//   getFunctionNameFromDirectory(selector).then((functionName) => {
+//     if (functionName) {
+//       console.log(`${functionName}(${value})`);
+//       return `${functionName}(${value})`;
+//     } else {
+//       console.log({selector})
+//       functionName = getFunctionNameWithAbi(contract.options.jsonInterface, selector);
+//       console.log(`${functionName}(${value})`);
+//       return `${functionName}(${value})`;
+//     }
+//   });
+// }
 
 export const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
