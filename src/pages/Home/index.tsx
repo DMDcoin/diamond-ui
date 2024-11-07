@@ -301,7 +301,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                 <div className="hero-container">
                     <div className={styles.topValidatorsContainer}>
                         <div className="comparison-row-main">
-                            <h3 className="heading-3">Top 5 validator candidates</h3>
+                            <h3 className="heading-3">Top 5 validators</h3>
                         </div>
                         <div className={styles.tableContainer}>
                             <table className={styles.styledTable}>

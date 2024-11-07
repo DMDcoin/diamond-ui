@@ -29,25 +29,17 @@ export interface ReentrancyAttacker extends BaseContract {
   ): ReentrancyAttacker;
   clone(): ReentrancyAttacker;
   methods: {
-    attack(
-      mining: string,
-      time: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    attack(): NonPayableTransactionObject<void>;
 
-    bonusScoreSystem(): NonPayableTransactionObject<string>;
+    calls(): NonPayableTransactionObject<string>;
 
-    funcId(): NonPayableTransactionObject<string>;
+    dao(): NonPayableTransactionObject<string>;
 
-    setFuncId(id: string | number[]): NonPayableTransactionObject<void>;
+    getBalance(): NonPayableTransactionObject<string>;
 
-    stakingFixedEpochDuration(): NonPayableTransactionObject<string>;
+    proposalId(): NonPayableTransactionObject<string>;
 
-    timeArgValue(): NonPayableTransactionObject<string>;
-
-    updatePoolLikelihood(
-      mining: string,
-      arg1: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    setId(_proposalId: number | string | BN): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

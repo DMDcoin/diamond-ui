@@ -269,6 +269,12 @@
           "internalType": "string",
           "name": "discussionUrl",
           "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "proposalFee",
+          "type": "uint256"
         }
       ],
       "name": "ProposalCreated",

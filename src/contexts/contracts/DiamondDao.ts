@@ -48,6 +48,7 @@ export type ProposalCreated = ContractEventLog<{
   title: string;
   description: string;
   discussionUrl: string;
+  proposalFee: string;
   0: string;
   1: string;
   2: string[];
@@ -56,6 +57,7 @@ export type ProposalCreated = ContractEventLog<{
   5: string;
   6: string;
   7: string;
+  8: string;
 }>;
 export type ProposalExecuted = ContractEventLog<{
   caller: string;
@@ -261,6 +263,10 @@ export interface DiamondDao extends BaseContract {
     proposalExists(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<boolean>;
+
+    proposalFee(
+      arg0: number | string | BN
+    ): NonPayableTransactionObject<string>;
 
     proposals(arg0: number | string | BN): NonPayableTransactionObject<{
       proposer: string;

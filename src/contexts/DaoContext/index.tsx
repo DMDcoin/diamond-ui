@@ -124,19 +124,41 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   };
 
   const getProposalTimestamp = async (proposalId: string): Promise<number> => {
-    const events = await web3Context.contractsManager.daoContract.getPastEvents(
-      'ProposalCreated',
-      {
-        filter: { proposalId: proposalId },
-        fromBlock: 0,
-        toBlock: 'latest'
-      });
+    const daoContractAbi: any = web3Context.contractsManager.daoContract.options.jsonInterface;
 
-      return new Promise((resolve, reject) => {
-        events && web3Context.web3.eth.getBlock(events[0].blockNumber, (err, block) => {
-            resolve(block.timestamp as number);
-        });
-      })
+    // Find all possible signatures for the ProposalCreated event
+    const eventSignatures = [
+      web3Context.web3.utils.keccak256('ProposalCreated(address,uint256,address[],uint256[],bytes[],string,string,string)'),
+      daoContractAbi.find((item: any) => item.name === 'ProposalCreated' && item.type === 'event')?.signature
+    ].filter(Boolean); // Remove any undefined signatures
+
+    const proposalIdTopic = web3Context.web3.utils.padLeft(web3Context.web3.utils.toHex(proposalId), 64);
+
+    for (const signature of eventSignatures) {
+        try {
+            const logs = await web3Context.web3.eth.getPastLogs({
+                address: web3Context.contractsManager.daoContract.options.address,
+                topics: [
+                    signature,    // Event signature for ProposalCreated
+                    null,         // Placeholder for first parameter if it's not indexed
+                    proposalIdTopic // Filter by proposalId
+                ],
+                fromBlock: 0,
+                toBlock: 'latest'
+            });
+
+            if (logs && logs.length > 0) {
+                // Fetch the timestamp of the block where the event was emitted
+                const block = await web3Context.web3.eth.getBlock(logs[0].blockNumber);
+                return block.timestamp as number;
+            }
+        } catch (error) {
+            console.error(`Error fetching logs with signature ${signature}:`, error);
+            // Continue to the next signature if there's an error
+        }
+    }
+
+    throw new Error("No events found for the given proposalId");
   };
 
   const getCachedProposals = () => {
@@ -436,22 +458,35 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     const eventsBatchSize = 100000;
 
+    const daoContractAbi = web3Context.contractsManager.daoContract.options.jsonInterface;
+    const currentEventSignature: any = daoContractAbi.find(item => item.name === 'ProposalCreated' && item.type === 'event');
+    
+    const oldEventSignatures = [
+      web3Context.web3.utils.keccak256('ProposalCreated(address,uint256,address[],uint256[],bytes[],string,string,string)'),
+      currentEventSignature?.signature
+    ]
+
     for (let i = 0; i < currentBlock; i += eventsBatchSize) {
       const start = i;
       const end = Math.min(i + eventsBatchSize - 1, currentBlock);
 
-      await web3Context.contractsManager.daoContract.getPastEvents(
-        'ProposalCreated',
-        {
-          filter: {},
-          fromBlock: start,
-          toBlock: end
-        }).then(async (events) => {
-          events.map(async (event) => {
-            allProposals.push(event.returnValues);
-          });
-        });
-    }
+      // Fetch logs for all event signatures
+      const logs = await web3Context.web3.eth.getPastLogs({
+        address: web3Context.contractsManager.daoContract.options.address,
+        topics: [oldEventSignatures], // Filter by all signatures
+        fromBlock: start,
+        toBlock: end
+      });
+
+      logs.forEach((log: any) => {
+        const decoded = web3Context.web3.eth.abi.decodeLog(
+          currentEventSignature?.inputs,
+          log.data,
+          log.topics.slice(1)
+        );
+        allProposals.push(decoded);
+      });
+    };
 
     allProposals.forEach(async (p) => {
       const proposalIndex = storedProposals.findIndex((proposal) => proposal.id === p[1]);

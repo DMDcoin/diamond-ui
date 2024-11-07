@@ -35,18 +35,7 @@ export interface MockValidatorSetHbbft extends BaseContract {
       available: boolean
     ): NonPayableTransactionObject<void>;
 
-    addBanned(
-      _miningAddress: string,
-      _bannedUntil: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    bannedUntil(arg0: string): NonPayableTransactionObject<string>;
-
     isValidator(mining: string): NonPayableTransactionObject<boolean>;
-
-    isValidatorBanned(
-      _miningAddress: string
-    ): NonPayableTransactionObject<boolean>;
 
     isValidatorOrPending(
       _miningAddress: string
