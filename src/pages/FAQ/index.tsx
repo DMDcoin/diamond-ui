@@ -121,24 +121,21 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>9. Can I unstake my DMD?</summary>
                     <p>
-                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator candidates list or detailed page. Once you click on it, a popup will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node.
-                    </p>
-                    <p>
-                        ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment. You need to unstake them to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet, as you did before. At this point, a popup will appear indicating that the unstake succeeded.
+                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node. ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet, as you did before. At this point, a pop-up will appear indicating that the unstake succeeded.
                     </p>
                 </details>
 
                 <details>
                     <summary>10. What does ordering DMD mean? </summary>
                     <p>
-                        Order flow takes place if some of the coins are not available to be unstaked at the moment, as they are part of the stake of the active validator. You need to order them after all the available coins are withdrawn. So firstly you need to unstake all available coins, Diamond UI tells you the amount. To order DMD you need to create a separate unstake request by clicking on ‘Unstake’ once again. In this case, as well, the amount to be ordered will be shown on the UI. Your ordered coins will be kept till you claim them as soon as the Epoch ends. Moreover, you can order your coins from active validator in such a way, that 100 DMD must be left in staking mode, they can be further claimed, once the validator candidate is moved from the active set.
+                        Order flow takes place if some of the coins are not available to be unstaked at the moment, as they are part of the stake of the active validator or pending validator, who is preparing to become active in the next epoch (usually the status lasts for 5 minutes maximum). So firstly you need to unstake all available coins, Diamond UI tells you the amount. To order DMD you need to create a separate unstake request by clicking on ‘Unstake’ once again. In this case, as well, the amount to be ordered will be shown on the UI. Your ordered coins will be kept till you claim them as soon as the Epoch ends.
                     </p>
                 </details>
 
                 <details>
                     <summary>11. What is claiming DMD mean?</summary>
                     <p>
-                        Claiming is available for the delegates, who have previously ordered coins. To do claiming, please, click ‘Claim’ button near your stake amount in the validator candidates list. The button appears near your staked coins on the Epoch end.
+                        To claim coins, please, click ‘Claim’ button near your stake amount in the validator candidates list. The button appears near your staked coins on the Epoch end and it means, that your ordered coins are ready to be unstaked. Moreover, you can order your coins from active validator in such a way, that the delegator minimum stake must be left in staking mode, it can be further unstaked, once the validator candidate is moved from the active set. The claiming process is the same as the unstaking process, you need to approve the transaction in your wallet. After the transaction is completed, a pop-up will appear indicating that the claim succeeded.
                     </p>
                 </details>
 
