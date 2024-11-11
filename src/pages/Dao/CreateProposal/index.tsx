@@ -328,7 +328,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           }
 
           <p>
-            Please note that you pay a proposal price and a service fee when you submit a new voting creation. You can dismiss the proposal during the proposal phase, but you will lose your funds. If your proposal is accepted, the proposal fee is returned to you on the proposal finalization.
+            Please note that you pay a proposal fee and a service fee when you submit a new voting creation. You can dismiss the proposal during the proposal phase, but you will lose your funds. If your proposal is accepted, the proposal fee is returned to you on the proposal finalization.
           </p>
 
           <button>Create</button>
