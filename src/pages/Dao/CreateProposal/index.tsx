@@ -146,7 +146,10 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
           });         
       } else if (proposalType === 'ecosystem-parameter-change') {
         let encodedCallData = "0x";
-        const [, , methodSetter] = epcMethodSetter.split(":");
+        const [contractName, methodName, methodSetter] = epcMethodSetter.split(":");
+
+        const epcContractVal = await getEpcContractValue(contractName, methodName);
+        if (new BigNumber(epcValue).isEqualTo(epcContractVal)) return toast.warn("Cannot propose the same value");
 
         if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcContractName)
         && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${methodSetter} value`);
