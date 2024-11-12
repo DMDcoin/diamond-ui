@@ -167,12 +167,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           pool.orderedWithdrawUnlockEpoch = new BigNumber(orderedWithdrawAmount[2]).isGreaterThan(0) ? new BigNumber(orderedWithdrawAmount[2]).plus(1) : new BigNumber(0);
         }
       });
-
-      setMyPool(newPools.find((p: Pool) => {
-        if(p.stakingAddress === userWallet.myAddr){
-          console.log(p.ownStake.toString());
-        }
-      }));
       
       setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10**18))));
       return newPools;
@@ -711,9 +705,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         } else {
           if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
             toast.warn(`Requested withdraw order amount exceeds max (${BigNumber(maxWithdrawOrderAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
-            return false;
-          } else if (newStakeAmount.isLessThan(delegatorMinStake)) {
-            toast.warn(`New stake amount must be greater than the min. stake ${delegatorMinStake.dividedBy(10**18)} DMD 💎`);
             return false;
           } else {
             showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
