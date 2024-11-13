@@ -43,14 +43,22 @@ export type SetChangeableParameter = ContractEventLog<{
   1: string;
   2: string[];
 }>;
+export type SetValueA = ContractEventLog<{
+  _val: string;
+  0: string;
+}>;
+export type SetValueB = ContractEventLog<{
+  _val: string;
+  0: string;
+}>;
 
-export interface ValueGuards extends BaseContract {
+export interface ValueGuardsMock extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): ValueGuards;
-  clone(): ValueGuards;
+  ): ValueGuardsMock;
+  clone(): ValueGuardsMock;
   methods: {
     allowedParameterRange(
       arg0: string | number[]
@@ -63,6 +71,21 @@ export interface ValueGuards extends BaseContract {
     getAllowedParamsRangeWithSelector(
       _selector: string | number[]
     ): NonPayableTransactionObject<[string, string[]]>;
+
+    getValueB(): NonPayableTransactionObject<string>;
+
+    initAllowedChangableParam(
+      setter: string | number[],
+      getter: string | number[],
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
+    initialize(
+      _initialValueA: number | string | BN,
+      _initialValueB: number | string | BN,
+      allowedRangeValueA: (number | string | BN)[],
+      allowedRangeValueB: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
 
     isWithinAllowedRange(
       funcSelector: string | number[],
@@ -83,7 +106,19 @@ export interface ValueGuards extends BaseContract {
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
+    setUnprotectedValueC(
+      _val: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    setValueA(_val: number | string | BN): NonPayableTransactionObject<void>;
+
+    setValueB(_val: number | string | BN): NonPayableTransactionObject<void>;
+
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
+
+    valueA(): NonPayableTransactionObject<string>;
+
+    valueC(): NonPayableTransactionObject<string>;
   };
   events: {
     Initialized(cb?: Callback<Initialized>): EventEmitter;
@@ -111,6 +146,12 @@ export interface ValueGuards extends BaseContract {
       options?: EventOptions,
       cb?: Callback<SetChangeableParameter>
     ): EventEmitter;
+
+    SetValueA(cb?: Callback<SetValueA>): EventEmitter;
+    SetValueA(options?: EventOptions, cb?: Callback<SetValueA>): EventEmitter;
+
+    SetValueB(cb?: Callback<SetValueB>): EventEmitter;
+    SetValueB(options?: EventOptions, cb?: Callback<SetValueB>): EventEmitter;
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
@@ -147,5 +188,19 @@ export interface ValueGuards extends BaseContract {
     event: "SetChangeableParameter",
     options: EventOptions,
     cb: Callback<SetChangeableParameter>
+  ): void;
+
+  once(event: "SetValueA", cb: Callback<SetValueA>): void;
+  once(
+    event: "SetValueA",
+    options: EventOptions,
+    cb: Callback<SetValueA>
+  ): void;
+
+  once(event: "SetValueB", cb: Callback<SetValueB>): void;
+  once(
+    event: "SetValueB",
+    options: EventOptions,
+    cb: Callback<SetValueB>
   ): void;
 }
