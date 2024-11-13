@@ -39,7 +39,7 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type RemoveChangeAbleParameter = ContractEventLog<{
+export type RemoveChangeableParameter = ContractEventLog<{
   funcSelector: string;
   0: string;
 }>;
@@ -47,7 +47,7 @@ export type SetBlockGasLimit = ContractEventLog<{
   _blockGasLimit: string;
   0: string;
 }>;
-export type SetChangeAbleParameter = ContractEventLog<{
+export type SetChangeableParameter = ContractEventLog<{
   setter: string;
   getter: string;
   params: string[];
@@ -125,12 +125,6 @@ export interface TxPermissionHbbftMock extends BaseContract {
       _selector: string | number[]
     ): NonPayableTransactionObject<[string, string[]]>;
 
-    initAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
     initialize(
       _allowed: string[],
       _certifier: string,
@@ -154,7 +148,7 @@ export interface TxPermissionHbbftMock extends BaseContract {
     owner(): NonPayableTransactionObject<string>;
 
     removeAllowedChangeableParameter(
-      funcSelector: string
+      funcSelector: string | number[]
     ): NonPayableTransactionObject<void>;
 
     removeAllowedSender(_sender: string): NonPayableTransactionObject<void>;
@@ -162,8 +156,8 @@ export interface TxPermissionHbbftMock extends BaseContract {
     renounceOwnership(): NonPayableTransactionObject<void>;
 
     setAllowedChangeableParameter(
-      setter: string,
-      getter: string,
+      setter: string | number[],
+      getter: string | number[],
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
@@ -212,12 +206,12 @@ export interface TxPermissionHbbftMock extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
-    RemoveChangeAbleParameter(
-      cb?: Callback<RemoveChangeAbleParameter>
+    RemoveChangeableParameter(
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
-    RemoveChangeAbleParameter(
+    RemoveChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<RemoveChangeAbleParameter>
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
 
     SetBlockGasLimit(cb?: Callback<SetBlockGasLimit>): EventEmitter;
@@ -226,10 +220,10 @@ export interface TxPermissionHbbftMock extends BaseContract {
       cb?: Callback<SetBlockGasLimit>
     ): EventEmitter;
 
-    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
-    SetChangeAbleParameter(
+    SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
+    SetChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<SetChangeAbleParameter>
+      cb?: Callback<SetChangeableParameter>
     ): EventEmitter;
 
     SetConnectivityTracker(cb?: Callback<SetConnectivityTracker>): EventEmitter;
@@ -276,13 +270,13 @@ export interface TxPermissionHbbftMock extends BaseContract {
   ): void;
 
   once(
-    event: "RemoveChangeAbleParameter",
-    cb: Callback<RemoveChangeAbleParameter>
+    event: "RemoveChangeableParameter",
+    cb: Callback<RemoveChangeableParameter>
   ): void;
   once(
-    event: "RemoveChangeAbleParameter",
+    event: "RemoveChangeableParameter",
     options: EventOptions,
-    cb: Callback<RemoveChangeAbleParameter>
+    cb: Callback<RemoveChangeableParameter>
   ): void;
 
   once(event: "SetBlockGasLimit", cb: Callback<SetBlockGasLimit>): void;
@@ -293,13 +287,13 @@ export interface TxPermissionHbbftMock extends BaseContract {
   ): void;
 
   once(
-    event: "SetChangeAbleParameter",
-    cb: Callback<SetChangeAbleParameter>
+    event: "SetChangeableParameter",
+    cb: Callback<SetChangeableParameter>
   ): void;
   once(
-    event: "SetChangeAbleParameter",
+    event: "SetChangeableParameter",
     options: EventOptions,
-    cb: Callback<SetChangeAbleParameter>
+    cb: Callback<SetChangeableParameter>
   ): void;
 
   once(

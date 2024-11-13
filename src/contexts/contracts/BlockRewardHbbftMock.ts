@@ -25,6 +25,7 @@ export type CoinsRewarded = ContractEventLog<{
   rewards: string;
   0: string;
 }>;
+export type EarlyEpochEndNotificationReceived = ContractEventLog<{}>;
 export type Initialized = ContractEventLog<{
   version: string;
   0: string;
@@ -35,11 +36,11 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type RemoveChangeAbleParameter = ContractEventLog<{
+export type RemoveChangeableParameter = ContractEventLog<{
   funcSelector: string;
   0: string;
 }>;
-export type SetChangeAbleParameter = ContractEventLog<{
+export type SetChangeableParameter = ContractEventLog<{
   setter: string;
   getter: string;
   params: string[];
@@ -55,6 +56,10 @@ export type SetDeltaPotPayoutFraction = ContractEventLog<{
   _fraction: string;
   0: string;
 }>;
+export type SetGovernancePotShareNominator = ContractEventLog<{
+  value: string;
+  0: string;
+}>;
 export type SetReinsertPotPayoutFraction = ContractEventLog<{
   _fraction: string;
   0: string;
@@ -68,9 +73,7 @@ export interface BlockRewardHbbftMock extends BaseContract {
   ): BlockRewardHbbftMock;
   clone(): BlockRewardHbbftMock;
   methods: {
-    REWARD_PERCENT_MULTIPLIER(): NonPayableTransactionObject<string>;
-
-    VALIDATOR_MIN_REWARD_PERCENT(): NonPayableTransactionObject<string>;
+    VALIDATOR_FIXED_REWARD_PERCENT(): NonPayableTransactionObject<string>;
 
     addToDeltaPot(): PayableTransactionObject<void>;
 
@@ -119,12 +122,6 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     governancePotShareNominator(): NonPayableTransactionObject<string>;
 
-    initAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
     initialize(
       _contractOwner: string,
       _validatorSet: string,
@@ -147,18 +144,20 @@ export interface BlockRewardHbbftMock extends BaseContract {
     reinsertPotPayoutFraction(): NonPayableTransactionObject<string>;
 
     removeAllowedChangeableParameter(
-      funcSelector: string
+      funcSelector: string | number[]
     ): NonPayableTransactionObject<void>;
 
     renounceOwnership(): NonPayableTransactionObject<void>;
+
+    resetEarlyEpochEnd(): NonPayableTransactionObject<void>;
 
     reward(_isEpochEndBlock: boolean): NonPayableTransactionObject<string>;
 
     sendCoins(): PayableTransactionObject<void>;
 
     setAllowedChangeableParameter(
-      setter: string,
-      getter: string,
+      setter: string | number[],
+      getter: string | number[],
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
@@ -174,11 +173,6 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     setReinsertPotPayoutFraction(
       _value: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setValidatorMinRewardPercent(
-      _stakingEpoch: number | string | BN,
-      _percent: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setdeltaPotPayoutFraction(
@@ -200,6 +194,14 @@ export interface BlockRewardHbbftMock extends BaseContract {
       cb?: Callback<CoinsRewarded>
     ): EventEmitter;
 
+    EarlyEpochEndNotificationReceived(
+      cb?: Callback<EarlyEpochEndNotificationReceived>
+    ): EventEmitter;
+    EarlyEpochEndNotificationReceived(
+      options?: EventOptions,
+      cb?: Callback<EarlyEpochEndNotificationReceived>
+    ): EventEmitter;
+
     Initialized(cb?: Callback<Initialized>): EventEmitter;
     Initialized(
       options?: EventOptions,
@@ -212,18 +214,18 @@ export interface BlockRewardHbbftMock extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
-    RemoveChangeAbleParameter(
-      cb?: Callback<RemoveChangeAbleParameter>
+    RemoveChangeableParameter(
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
-    RemoveChangeAbleParameter(
+    RemoveChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<RemoveChangeAbleParameter>
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
 
-    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
-    SetChangeAbleParameter(
+    SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
+    SetChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<SetChangeAbleParameter>
+      cb?: Callback<SetChangeableParameter>
     ): EventEmitter;
 
     SetConnectivityTracker(cb?: Callback<SetConnectivityTracker>): EventEmitter;
@@ -238,6 +240,14 @@ export interface BlockRewardHbbftMock extends BaseContract {
     SetDeltaPotPayoutFraction(
       options?: EventOptions,
       cb?: Callback<SetDeltaPotPayoutFraction>
+    ): EventEmitter;
+
+    SetGovernancePotShareNominator(
+      cb?: Callback<SetGovernancePotShareNominator>
+    ): EventEmitter;
+    SetGovernancePotShareNominator(
+      options?: EventOptions,
+      cb?: Callback<SetGovernancePotShareNominator>
     ): EventEmitter;
 
     SetReinsertPotPayoutFraction(
@@ -258,6 +268,16 @@ export interface BlockRewardHbbftMock extends BaseContract {
     cb: Callback<CoinsRewarded>
   ): void;
 
+  once(
+    event: "EarlyEpochEndNotificationReceived",
+    cb: Callback<EarlyEpochEndNotificationReceived>
+  ): void;
+  once(
+    event: "EarlyEpochEndNotificationReceived",
+    options: EventOptions,
+    cb: Callback<EarlyEpochEndNotificationReceived>
+  ): void;
+
   once(event: "Initialized", cb: Callback<Initialized>): void;
   once(
     event: "Initialized",
@@ -273,23 +293,23 @@ export interface BlockRewardHbbftMock extends BaseContract {
   ): void;
 
   once(
-    event: "RemoveChangeAbleParameter",
-    cb: Callback<RemoveChangeAbleParameter>
+    event: "RemoveChangeableParameter",
+    cb: Callback<RemoveChangeableParameter>
   ): void;
   once(
-    event: "RemoveChangeAbleParameter",
+    event: "RemoveChangeableParameter",
     options: EventOptions,
-    cb: Callback<RemoveChangeAbleParameter>
+    cb: Callback<RemoveChangeableParameter>
   ): void;
 
   once(
-    event: "SetChangeAbleParameter",
-    cb: Callback<SetChangeAbleParameter>
+    event: "SetChangeableParameter",
+    cb: Callback<SetChangeableParameter>
   ): void;
   once(
-    event: "SetChangeAbleParameter",
+    event: "SetChangeableParameter",
     options: EventOptions,
-    cb: Callback<SetChangeAbleParameter>
+    cb: Callback<SetChangeableParameter>
   ): void;
 
   once(
@@ -310,6 +330,16 @@ export interface BlockRewardHbbftMock extends BaseContract {
     event: "SetDeltaPotPayoutFraction",
     options: EventOptions,
     cb: Callback<SetDeltaPotPayoutFraction>
+  ): void;
+
+  once(
+    event: "SetGovernancePotShareNominator",
+    cb: Callback<SetGovernancePotShareNominator>
+  ): void;
+  once(
+    event: "SetGovernancePotShareNominator",
+    options: EventOptions,
+    cb: Callback<SetGovernancePotShareNominator>
   ): void;
 
   once(

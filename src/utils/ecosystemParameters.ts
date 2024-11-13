@@ -14,6 +14,15 @@ interface EcosystemParameters {
 }
 
 export const EcosystemParameters: EcosystemParameters = {
+  "DAO": {
+    "Create proposal fee": {
+      getter: "createProposalFee()",
+      setter: "setCreateProposalFee(uint256)",
+      params: [],
+      value: undefined
+    }
+  },
+
   "Staking": {
     "Delegator Min. Stake": {
       getter: "delegatorMinStake()",
@@ -47,10 +56,10 @@ export const EcosystemParameters: EcosystemParameters = {
     },
   },
 
-  "DAO": {
-    "Create proposal fee": {
-      getter: "createProposalFee()",
-      setter: "setCreateProposalFee(uint256)",
+  "Connectivity Tracker": {
+    "Report Disallow Period": {
+      getter: "reportDisallowPeriod()",
+      setter: "setReportDisallowPeriod(uint256)",
       params: [],
       value: undefined
     }

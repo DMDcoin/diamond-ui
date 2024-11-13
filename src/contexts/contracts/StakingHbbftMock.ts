@@ -89,7 +89,7 @@ export type RecoverAbandonedStakes = ContractEventLog<{
   1: string;
   2: string;
 }>;
-export type RemoveChangeAbleParameter = ContractEventLog<{
+export type RemoveChangeableParameter = ContractEventLog<{
   funcSelector: string;
   0: string;
 }>;
@@ -107,7 +107,7 @@ export type SetBonusScoreContract = ContractEventLog<{
   _address: string;
   0: string;
 }>;
-export type SetChangeAbleParameter = ContractEventLog<{
+export type SetChangeableParameter = ContractEventLog<{
   setter: string;
   getter: string;
   params: string[];
@@ -232,12 +232,6 @@ export interface StakingHbbftMock extends BaseContract {
 
     incrementStakingEpoch(): NonPayableTransactionObject<void>;
 
-    initAllowedChangeableParameter(
-      setter: string,
-      getter: string,
-      params: (number | string | BN)[]
-    ): NonPayableTransactionObject<void>;
-
     initialize(
       _contractOwner: string,
       stakingParams: [
@@ -335,7 +329,7 @@ export interface StakingHbbftMock extends BaseContract {
     recoverAbandonedStakes(): NonPayableTransactionObject<void>;
 
     removeAllowedChangeableParameter(
-      funcSelector: string
+      funcSelector: string | number[]
     ): NonPayableTransactionObject<void>;
 
     removeMyPool(): NonPayableTransactionObject<void>;
@@ -352,8 +346,8 @@ export interface StakingHbbftMock extends BaseContract {
     ): PayableTransactionObject<void>;
 
     setAllowedChangeableParameter(
-      setter: string,
-      getter: string,
+      setter: string | number[],
+      getter: string | number[],
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
@@ -515,12 +509,12 @@ export interface StakingHbbftMock extends BaseContract {
       cb?: Callback<RecoverAbandonedStakes>
     ): EventEmitter;
 
-    RemoveChangeAbleParameter(
-      cb?: Callback<RemoveChangeAbleParameter>
+    RemoveChangeableParameter(
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
-    RemoveChangeAbleParameter(
+    RemoveChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<RemoveChangeAbleParameter>
+      cb?: Callback<RemoveChangeableParameter>
     ): EventEmitter;
 
     RestakeReward(cb?: Callback<RestakeReward>): EventEmitter;
@@ -535,10 +529,10 @@ export interface StakingHbbftMock extends BaseContract {
       cb?: Callback<SetBonusScoreContract>
     ): EventEmitter;
 
-    SetChangeAbleParameter(cb?: Callback<SetChangeAbleParameter>): EventEmitter;
-    SetChangeAbleParameter(
+    SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
+    SetChangeableParameter(
       options?: EventOptions,
-      cb?: Callback<SetChangeAbleParameter>
+      cb?: Callback<SetChangeableParameter>
     ): EventEmitter;
 
     SetDelegatorMinStake(cb?: Callback<SetDelegatorMinStake>): EventEmitter;
@@ -622,13 +616,13 @@ export interface StakingHbbftMock extends BaseContract {
   ): void;
 
   once(
-    event: "RemoveChangeAbleParameter",
-    cb: Callback<RemoveChangeAbleParameter>
+    event: "RemoveChangeableParameter",
+    cb: Callback<RemoveChangeableParameter>
   ): void;
   once(
-    event: "RemoveChangeAbleParameter",
+    event: "RemoveChangeableParameter",
     options: EventOptions,
-    cb: Callback<RemoveChangeAbleParameter>
+    cb: Callback<RemoveChangeableParameter>
   ): void;
 
   once(event: "RestakeReward", cb: Callback<RestakeReward>): void;
@@ -649,13 +643,13 @@ export interface StakingHbbftMock extends BaseContract {
   ): void;
 
   once(
-    event: "SetChangeAbleParameter",
-    cb: Callback<SetChangeAbleParameter>
+    event: "SetChangeableParameter",
+    cb: Callback<SetChangeableParameter>
   ): void;
   once(
-    event: "SetChangeAbleParameter",
+    event: "SetChangeableParameter",
     options: EventOptions,
-    cb: Callback<SetChangeAbleParameter>
+    cb: Callback<SetChangeableParameter>
   ): void;
 
   once(event: "SetDelegatorMinStake", cb: Callback<SetDelegatorMinStake>): void;
