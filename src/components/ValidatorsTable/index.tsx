@@ -149,7 +149,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                     <thead>
                         <tr>
                             <th></th>
-                            <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
+                            <th className={getClassNamesFor('isActive')} onClick={() => requestSort('isActive')}>
                                 Status
                                 <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is inactive for some period of time" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
