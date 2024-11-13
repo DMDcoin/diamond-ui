@@ -71,7 +71,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     if (unstakeAmount.isLessThanOrEqualTo(0)) return toast.warn("Cannot unstake 0 DMD 💎");
     const amountInWei = web3.utils.toWei(unstakeAmount.toString());
     const remainingStake = canBeUnstakedAmount.minus(amountInWei);
-
+    
     if (canBeUnstakedAmount.isZero()) {
       if (BigNumber(amountInWei).isGreaterThan(canBeOrderedAmount)) {
         return toast.warn(`Cannot order more than ${canBeOrderedAmount.dividedBy(10 ** 18).toString()} DMD`);
@@ -151,26 +151,26 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               {canBeUnstakedAmount.isZero() ? (
                 <span>
                   Amount you can order:{" "}
-                  {ownPool ? Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString()))} DMD
+                  {ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toString()} DMD
                 </span>
               ) : (
                 <span>
                   Amount you can unstake:{" "}
-                  {ownPool ? Math.max(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeUnstakedAmount.dividedBy(10 ** 18).toString()))} DMD
+                  {ownPool ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18)).toString()} DMD
                 </span>
               )}
 
               <input
                 min={
                   canBeUnstakedAmount.isZero()
-                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString())))
-                    : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.dividedBy(10 ** 18).toString())))
+                    ? BigNumber.maximum(0, BigNumber.minimum(1, canBeOrderedAmount.dividedBy(10 ** 18))).toString()
+                    : BigNumber.maximum(0, BigNumber.minimum(1, canBeUnstakedAmount.dividedBy(10 ** 18))).toString()
                 }
-                max={
-                  ownPool ? 
-                  canBeUnstakedAmount.isGreaterThan(0) ? Math.max(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18).toString())) : Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18).toString()))
-                  : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString()
-                }
+                // max={
+                //   ownPool ? 
+                //   canBeUnstakedAmount.isGreaterThan(0) ? BigNumber.maximum(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18).toString())) : BigNumber.maximum(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18).toString()))
+                //   : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString()
+                // }
                 type="number"
                 step="any"
                 value={unstakeAmount.toString()}
@@ -180,7 +180,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {ownPool ? Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString()))} DMD</span>)
+                !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toString()} DMD</span>)
               }
 
               {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
@@ -203,8 +203,8 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
               <button className={styles.formSubmit} type="submit" disabled={
                 canBeUnstakedAmount.isZero()
-                ? Math.max(0, canBeOrderedAmount.dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
-                : Math.max(0, canBeUnstakedAmount.dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+                ? BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toNumber() >= 1 ? false : true
+                : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18)).toNumber() >= 1 ? false : true
               }>
                 {canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
               </button>
