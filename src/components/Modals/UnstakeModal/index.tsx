@@ -151,12 +151,12 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               {canBeUnstakedAmount.isZero() ? (
                 <span>
                   Amount you can order:{" "}
-                  {canBeOrderedAmount.dividedBy(10 ** 18).toString()} DMD
+                  {ownPool ? Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString()))} DMD
                 </span>
               ) : (
                 <span>
                   Amount you can unstake:{" "}
-                  {canBeUnstakedAmount.dividedBy(10 ** 18).toString()} DMD
+                  {ownPool ? Math.max(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeUnstakedAmount.dividedBy(10 ** 18).toString()))} DMD
                 </span>
               )}
 
@@ -165,6 +165,11 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                   canBeUnstakedAmount.isZero()
                     ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString())))
                     : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.dividedBy(10 ** 18).toString())))
+                }
+                max={
+                  ownPool ? 
+                  canBeUnstakedAmount.isGreaterThan(0) ? Math.max(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18).toString())) : Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18).toString()))
+                  : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString()
                 }
                 type="number"
                 step="any"
@@ -175,7 +180,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {Math.max(0, Number(canBeOrderedAmount.dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
+                !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {ownPool ? Math.max(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18).toString())) : Math.max(0, Number(canBeOrderedAmount.dividedBy(10 ** 18).toString()))} DMD</span>)
               }
 
               {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
