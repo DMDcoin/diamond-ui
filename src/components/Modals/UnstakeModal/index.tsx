@@ -70,9 +70,10 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
     if (unstakeAmount.isLessThanOrEqualTo(0)) return toast.warn("Cannot unstake 0 DMD 💎");
     const amountInWei = web3.utils.toWei(unstakeAmount.toString());
-    const remainingStake = canBeUnstakedAmount.minus(amountInWei);
     
     if (canBeUnstakedAmount.isZero()) {
+      const remainingStake = canBeOrderedAmount.minus(amountInWei);
+
       if (BigNumber(amountInWei).isGreaterThan(canBeOrderedAmount)) {
         return toast.warn(`Cannot order more than ${canBeOrderedAmount.dividedBy(10 ** 18).toString()} DMD`);
       }
@@ -83,6 +84,8 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
         return toast.warn(`Ordered amount is invalid. You must order the full amount or leave at least the minimum stake of ${delegatorMinStake.dividedBy(10 ** 18).toString()} DMD.`);
       }
     } else {
+      const remainingStake = canBeUnstakedAmount.minus(amountInWei);
+
       if (BigNumber(amountInWei).isGreaterThan(canBeUnstakedAmount)) {
         return toast.warn(`Cannot unstake more than ${canBeUnstakedAmount.dividedBy(10 ** 18).toString()} DMD`);
       }
