@@ -13,8 +13,11 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
+import copy from 'copy-to-clipboard';
 import Tooltip from "../../../components/Tooltip";
-import { extractValueFromCalldata, formatCryptoUnitValue, getFunctionNameWithAbi, timestampToDate } from "../../../utils/common";
+import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionNameWithAbi, timestampToDate } from "../../../utils/common";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -80,7 +83,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const setProposalDetails = useCallback((proposal: any) => {
     if (proposal) {
-      // console.log({proposal});
       setProposal(proposal);
       daoContext.setProposalsState([proposal]);
       daoContext.getProposalVotingStats(proposal.id).then((res) => {        
@@ -140,6 +142,11 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     
     return hasSufficientVotes && hasRequiredParticipation;
   };
+
+  const copyData = (data: string) => {
+    copy(data);
+    toast.success("Copied to clipboard");
+  }
 
   return (
     <section className="section">
@@ -227,12 +234,50 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div>
                         <span>Target Address</span>
                         <span>{proposal.targets[i]}</span>
+                        <button 
+                          className={styles.copyButton} 
+                          onClick={() => copyData(String(proposal.targets[i]))} 
+                          aria-label="Copy to clipboard"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </button>
                       </div>
                       <div>
                         <span>Call Data</span>
                         <span>{proposal.calldatas[i]}</span>
+                        <button 
+                          className={styles.copyButton} 
+                          onClick={() => copyData(String(proposal.calldatas[i]))} 
+                          aria-label="Copy to clipboard"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </button>
                       </div>
-                      {/* <>This: {decodeCallData(web3Context, proposal.targets[i], proposal.calldatas[i])}</> */}
+                        <>
+                          {(() => {
+                            const res: any = decodeCallData(web3Context.contractsManager, target, proposal.calldatas[i]);
+                            if (Object.keys(res).length > 0) { // Check if res is not an empty object
+                              return (
+                                <>
+                                  <h3>Decoded Call Data</h3>
+                                  {Object.entries(res).map(([key, value]) => (
+                                    <div key={key} className={styles.decodedData}>
+                                      <span>{capitalizeFirstLetter(key)}: </span>
+                                      <span>{String(value)}</span>
+                                      <button 
+                                        className={styles.copyButton} 
+                                        onClick={() => copyData(String(value))} 
+                                        aria-label="Copy to clipboard"
+                                      >
+                                        <FontAwesomeIcon icon={faCopy} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </>
+                              );
+                            }
+                          })()}
+                        </>
                     </div>   
                   ))
                 }
