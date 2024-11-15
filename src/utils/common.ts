@@ -1,5 +1,6 @@
 import axios from "axios";
 import BigNumber from "bignumber.js";
+import ProxyAdmin from "../contexts/contract-abis/ProxyAdmin.json";
 
 const Web3 = require('web3');
 const web3 = new Web3();
@@ -27,12 +28,12 @@ export const extractValueFromCalldata = (calldata: string): string => {
   return value;
 };
 
-export const getAbiWithContractAddress = (web3Context: any, contractAddress: string): any[] => {
+export const getAbiWithContractAddress = (contractsManager: any, contractAddress: string): any[] => {
   try {
-    const contracts = Object.keys(web3Context.contractsManager);
-    const contractName = contracts.find((contract: any) => web3Context.contractsManager[contract].options?.address === contractAddress);
+    const contracts = Object.keys(contractsManager);
+    const contractName = contracts.find((contract: any) => contractsManager[contract].options?.address === contractAddress);
     if (contractName) {
-      return web3Context.contractsManager[contractName].options.jsonInterface;
+      return contractsManager[contractName].options.jsonInterface;
     }
     return [];
   } catch (error) {
@@ -41,7 +42,7 @@ export const getAbiWithContractAddress = (web3Context: any, contractAddress: str
   }
 }
 
-function capitalizeFirstLetter(string: string): string {
+export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -55,9 +56,9 @@ function formatFunctionName(functionString: string): string {
   return capitalizeFirstLetter(formatted);
 }
 
-export const getFunctionNameWithAbi = (web3Context: any, contractAddress: string, calldata: string): string => {
+export const getFunctionNameWithAbi = (contractsManager: any, contractAddress: string, calldata: string): string => {
   const selector = extractFunctionSelectorFromCalldata(calldata);
-  const abi = getAbiWithContractAddress(web3Context, contractAddress);
+  const abi = getAbiWithContractAddress(contractsManager, contractAddress);
   const matchingFunction = abi.find(item => {
       if (item.type === 'function') {
         const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
@@ -93,27 +94,67 @@ export const extractTargetAddressFromCalldata = (calldata: string): string => {
   return address;
 };
 
-export const getContractByAddress = (web3Context: any, contractAddress: string): any => {
-  const contracts = Object.values(web3Context.contractsManager);
-  return contracts.find((contract: any) => contract.options?.address === contractAddress);
+export const getCoreContractByAddress = (contractsManager: any, contractAddresses: Array<string>): any => {
+  const contracts = Object.values(contractsManager);
+  
+  return contractAddresses
+    .map((contractAddress) =>
+      contracts.find((contract: any) => contract.options?.address.toLowerCase() === contractAddress.toLowerCase())
+    )
+    .find((contract) => contract !== undefined) || null;
 };
 
-// export const decodeCallData = (web3Context: any, contractAddress: any, calldata: string) => {
-//   const contract = getContractByAddress(web3Context, contractAddress);
-//   const selector = getFunctionSelector(calldata);
-//   const value = extractValueFromCalldata(calldata);
-//   getFunctionNameFromDirectory(selector).then((functionName) => {
-//     if (functionName) {
-//       console.log(`${functionName}(${value})`);
-//       return `${functionName}(${value})`;
-//     } else {
-//       console.log({selector})
-//       functionName = getFunctionNameWithAbi(contract.options.jsonInterface, selector);
-//       console.log(`${functionName}(${value})`);
-//       return `${functionName}(${value})`;
-//     }
-//   });
-// }
+export const getMatchingFunction = (selector: string, abis: Array<any>) => {
+  for (const abi of abis) {
+    const matchingFunction = abi.find((item: any) => {
+      if (item.type === 'function') {
+        const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
+        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        if (calculatedSelector === selector) {
+          // Stop processing further once a match is found
+          return true;
+        }
+      }
+      return false;
+    });
+  
+    // If a matching function is found, break the loop
+    if (matchingFunction) {
+      return matchingFunction;
+    }
+  }
+}
+
+export const decodeCallData = (contractsManager: any, contractAddress: any, calldata: string) => {
+  const extractedTargetContractAddress = extractTargetAddressFromCalldata(calldata);
+  const contract = getCoreContractByAddress(contractsManager, [contractAddress, extractedTargetContractAddress]);
+  let selector = extractFunctionSelectorFromCalldata(calldata);
+  if (selector == '0x00000000') selector = getFunctionSelector(calldata);
+  const matchingFunction = getMatchingFunction(selector, [ProxyAdmin.abi, contract.options.jsonInterface]);
+  if (!matchingFunction) return {};
+  const decodedData = web3.eth.abi.decodeParameters(matchingFunction.inputs, calldata.slice(10));
+  
+  const length = decodedData.__length__;
+  const filteredObj = Object.fromEntries(
+    Object.entries(decodedData)
+      .filter(([key, value]) => key !== '__length__' && (isNaN(Number(key)) || Number(key) >= length))
+  );
+
+  return {"Function Name": matchingFunction.name, ...filteredObj};
+
+  const value = extractValueFromCalldata(calldata);
+  getFunctionNameFromDirectory(selector).then((functionName) => {
+    if (functionName) {
+      console.log(`${functionName}(${value})`);
+      return `${functionName}(${value})`;
+    } else {
+      console.log({selector})
+      functionName = getFunctionNameWithAbi(contractsManager, contractAddress, calldata);
+      console.log(`${functionName}(${value})`);
+      return `${functionName}(${value})`;
+    }
+  });
+}
 
 export const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
