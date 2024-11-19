@@ -131,3 +131,9 @@ form button .disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.epcSelectContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
