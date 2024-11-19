@@ -15,7 +15,7 @@ import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 import BigNumber from "bignumber.js";
 import copy from 'copy-to-clipboard';
 import Tooltip from "../../../components/Tooltip";
-import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionNameWithAbi, timestampToDate } from "../../../utils/common";
+import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionInfoWithAbi, timestampToDate } from "../../../utils/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
@@ -175,10 +175,31 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {/* discussion link */}
           {
             proposal?.discussionUrl?.length > 0 && (
-              <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+              (() => {
+                try {
+                  // Attempt to create a URL object to validate the format
+                  new URL(proposal.discussionUrl);
+                  return (
+                    <a
+                      className={styles.proposalDiscussionLink}
+                      href={proposal.discussionUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Discussion Link...
+                    </a>
+                  );
+                } catch (error) {
+                  // If it's not a valid URL, display the fallback text
+                  return (
+                    <span className={styles.invalidUrlFallback}>
+                      <strong>Discussion here:</strong> {proposal.discussionUrl}
+                    </span>
+                  );
+                }
+              })()
             )
           }
-          
 
           {/* open proposals */}
           {
@@ -213,7 +234,19 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
-                  <span>{getFunctionNameWithAbi(web3Context, proposal.targets[0], proposal.calldatas[0])}</span>
+                  <span>
+                    {
+                    (() => {
+                        const { parameterName, parameterDescription } = getFunctionInfoWithAbi(web3Context.contractsManager, proposal.targets[0], proposal.calldatas[0])
+                        return (
+                          <>
+                            {parameterName}
+                            <Tooltip text={parameterDescription} />
+                          </>
+                        )
+                      })()
+                    }
+                  </span>
                 </div>
 
                 <div>

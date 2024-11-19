@@ -56,7 +56,24 @@ function formatFunctionName(functionString: string): string {
   return capitalizeFirstLetter(formatted);
 }
 
-export const getFunctionNameWithAbi = (contractsManager: any, contractAddress: string, calldata: string): string => {
+export const getParameterDescription = (parameterName: string): string => {
+  if (parameterName === "setCreateProposalFee") {
+    return "Fee required to create a governance proposal.";
+  } else if (parameterName === "setDelegatorMinStake") {
+    return "Minimum stake required for a delegator to participate.";
+  } else if (parameterName === "setMinimumGasPrice") {
+    return "The lowest gas price allowed for transactions.";
+  } else if (parameterName === "setBlockGasLimit") {
+    return "Maximum gas allowed per block.";
+  } else if (parameterName === "setGovernancePotShareNominator") {
+    return "The portion of the governance pot allocated to rewards.";
+  } else if (parameterName === "setReportDisallowPeriod") {
+    return "Timeframe during which a node announces maintenance to avoid penalties.";
+  }
+  return "";
+}
+
+export const getFunctionInfoWithAbi = (contractsManager: any, contractAddress: string, calldata: string) => {
   const selector = extractFunctionSelectorFromCalldata(calldata);
   const abi = getAbiWithContractAddress(contractsManager, contractAddress);
   const matchingFunction = abi.find(item => {
@@ -67,7 +84,7 @@ export const getFunctionNameWithAbi = (contractsManager: any, contractAddress: s
       }
       return false;
   });
-  return formatFunctionName(matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function');
+  return {parameterName: formatFunctionName(matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function'), parameterDescription: getParameterDescription(matchingFunction ? matchingFunction.name : '')};
 };
 
 export const getFunctionNameFromDirectory = async (selector: string): Promise<string | null> => {
@@ -141,19 +158,6 @@ export const decodeCallData = (contractsManager: any, contractAddress: any, call
   );
 
   return {"Function Name": matchingFunction.name, ...filteredObj};
-
-  const value = extractValueFromCalldata(calldata);
-  getFunctionNameFromDirectory(selector).then((functionName) => {
-    if (functionName) {
-      console.log(`${functionName}(${value})`);
-      return `${functionName}(${value})`;
-    } else {
-      console.log({selector})
-      functionName = getFunctionNameWithAbi(contractsManager, contractAddress, calldata);
-      console.log(`${functionName}(${value})`);
-      return `${functionName}(${value})`;
-    }
-  });
 }
 
 export const timestampToDate = (timestamp: string) => {

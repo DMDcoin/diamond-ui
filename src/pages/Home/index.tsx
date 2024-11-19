@@ -117,13 +117,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                     </div>
                                                                 )
                                                             }
-                                                            <a className="primaryBtn" onClick={() => { 
-                                                                startTransition(() => { 
-                                                                    navigate('staking', { state: { filter: 'stakedOn' } }); 
-                                                                }) 
-                                                            }}>
-                                                                See the list
-                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -131,8 +124,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <tr>
                                                     <td>Score</td>
                                                     <td>{myPool.score}</td>
-                                                    {/* <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td> */}
-                                                    {/* <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0x1bc4e0508473A9840A40Ad424B792097f70967Ee") || myPool} buttonText="Score History" /></td> */}
                                                 </tr>
                                             )}
                                         </tbody>
@@ -179,6 +170,45 @@ const Home: React.FC<HomeProps> = ({}) => {
                             }
                             </tbody>
                         </table>
+                    </div>
+
+                    <div className={styles.heroContainer + " hero-container"}>
+                        <div className={styles.topValidatorsContainer}>
+                            <div className="comparison-row-main">
+                                <h3 className="heading-3">Validators I've Staked On</h3>
+                            </div>
+                            <div className={styles.tableContainer}>
+                                <table className={styles.styledTable}>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Wallet</th>
+                                            <th>Total Stake</th>
+                                            <th>Voting Power</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                        pools
+                                            .filter((p) => BigNumber(p.myStake).isGreaterThan(0))  // Sort pools by totalStake in descending order
+                                            .slice(0, 5)  // Get the top 5 pools
+                                            .map((pool, i) => (
+                                            <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                                <td>
+                                                    <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
+                                                </td>
+                                                <td>{pool.stakingAddress}</td>
+                                                <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                <td>{pool.votingPower.toString()}%</td>
+                                                <td>{pool.score}</td>
+                                            </tr>
+                                            ))
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>

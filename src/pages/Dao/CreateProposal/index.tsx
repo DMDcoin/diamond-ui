@@ -12,6 +12,7 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { HiMiniPlusCircle, HiMiniMinusCircle } from "react-icons/hi2";
 import ProposalStepSlider from "../../../components/ProposalStepSlider";
 import { EcosystemParameters } from "../../../utils/ecosystemParameters";
+import Tooltip from "../../../components/Tooltip";
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface CreateProposalProps {}
@@ -30,6 +31,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const [epcValue, setEpcValue] = useState<string>("0");
   const [epcParamRange, setEpcParamRange] = useState<string[]>([]);
   const [epcContractName, setEpcContractName] = useState<string>("Staking");
+  const [epcMethodDescription, setEpcMethodDescription] = useState<string>("");
   const [epcMethodName, setEpcMethodName] = useState<string>("Delegator Min. Stake");
   const [epcMethodSetter, setEpcMethodSetter] = useState<string>("Staking:Delegator Min. Stake:setDelegatorMinStake(uint256)");
   
@@ -48,6 +50,22 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       });
     }
   });
+
+  useEffect(() => {
+    if (epcMethodName === "Create proposal fee") {
+      setEpcMethodDescription("Fee required to create a governance proposal.");
+    } else if (epcMethodName === "Delegator Min. Stake") {
+      setEpcMethodDescription("Minimum stake required for a delegator to participate.");
+    } else if (epcMethodName === "Minimum Gas Price") {
+      setEpcMethodDescription("The lowest gas price allowed for transactions.");
+    } else if (epcMethodName === "Block Gas Limit") {
+      setEpcMethodDescription("Maximum gas allowed per block.");
+    } else if (epcMethodName === "Governance Pot Share Nominator") {
+      setEpcMethodDescription("The portion of the governance pot allocated to rewards.");
+    } else if (epcMethodName === "Report Disallow Period") {
+      setEpcMethodDescription("Timeframe during which a node announces maintenance to avoid penalties.");
+    }
+  }, [epcMethodName]);
 
   const handleAddOpenProposalField = () => {
     setOpenProposalFields([...openProposalFields, { target: "", amount: "" }]);
@@ -301,27 +319,32 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
               </p>
 
                 <div>
-                  <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
-                    const [contractName, methodName, methodSetter] = e.target.value.split(":");
-                    const epcContractVal = await getEpcContractValue(contractName, methodName);
-                    setEpcValue(epcContractVal);
-                    setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
-                    setEpcContractName(contractName);
-                    loadEpcData(contractName, methodName);
-                  }}>
-                    {Object.keys(EcosystemParameters).map((contractName) => {
-                      return (
-                        <optgroup key={contractName} label={contractName}>
-                          {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
-                            const methodSetter = EcosystemParameters[contractName][methodName].setter;
-                            return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
-                          })}
-                        </optgroup>
-                      );
-                    })}
-                  </select>
+                  <div className={styles.epcSelectContainer}>
+                    <select className={styles.epcSelect} name="epcContractName" id="epcContractName" value={epcMethodSetter} onChange={async (e) => {
+                      const [contractName, methodName, methodSetter] = e.target.value.split(":");
+                      const epcContractVal = await getEpcContractValue(contractName, methodName);
+                      setEpcValue(epcContractVal);
+                      setEpcMethodSetter(`${contractName}:${methodName}:${methodSetter}`)
+                      setEpcMethodName(methodName);
+                      setEpcContractName(contractName);
+                      loadEpcData(contractName, methodName);
+                    }}>
+                      {Object.keys(EcosystemParameters).map((contractName) => {
+                        return (
+                          <optgroup key={contractName} label={contractName}>
+                            {Object.keys(EcosystemParameters[contractName]).map((methodName: any) => {
+                              const methodSetter = EcosystemParameters[contractName][methodName].setter;
+                              return <option key={methodSetter} value={`${contractName}:${methodName}:${methodSetter}`}>{methodName}</option>;
+                            })}
+                          </optgroup>
+                        );
+                      })}
+                    </select>
 
-                  <ProposalStepSlider contractName={epcContractName} paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
+                    <Tooltip text={epcMethodDescription} />
+                  </div>
+
+                  <ProposalStepSlider parameterName={epcMethodName} paramsRange={epcParamRange} state={epcValue} setState={setEpcValue} />
                 </div>
               </>
             )
