@@ -184,6 +184,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             <th></th>
                                             <th>Wallet</th>
                                             <th>Total Stake</th>
+                                            <th>My Stake</th>
                                             <th>Voting Power</th>
                                             <th>Score</th>
                                         </tr>
@@ -200,6 +201,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 </td>
                                                 <td>{pool.stakingAddress}</td>
                                                 <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                                 <td>{pool.votingPower.toString()}%</td>
                                                 <td>{pool.score}</td>
                                             </tr>
