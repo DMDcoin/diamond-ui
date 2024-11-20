@@ -17,12 +17,21 @@ interface PoolDetailsProps {}
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const navigate = useNavigate();
   const { poolAddress } = useParams();
-  const { userWallet } = useWeb3Context();
-  const { activeProposals, getMyVote, getStateString } = useDaoContext();
+  const { userWallet, web3Initialized, showLoader } = useWeb3Context();
+  const { activeProposals, getMyVote, getActiveProposals } = useDaoContext();
   const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
   const [filteredProposals, setFilteredProposals] = useState<any[]>([]);
+
+  useEffect(() => {
+    try {
+      if (!activeProposals.length && web3Initialized) {
+        showLoader(true, "");
+        getActiveProposals();
+      }
+    } catch(err) {}
+  }, [web3Initialized]);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
