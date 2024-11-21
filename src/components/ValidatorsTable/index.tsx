@@ -151,7 +151,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                             <th></th>
                             <th className={getClassNamesFor('isActive')} onClick={() => requestSort('isActive')}>
                                 Status
-                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is inactive for some period of time" />
+                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate who is flagged unavailable on the blockchain or has not enough stake" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>

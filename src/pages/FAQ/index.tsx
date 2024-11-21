@@ -171,7 +171,7 @@ const FAQ: React.FC<FAQProps> = () => {
                         <ul>
                             <li>Active candidate is part of the active set</li>
                             <li>Valid - is not part of the active set, but can be elected</li>
-                            <li>Invalid - a candidate, who is inactive for some period of time.</li>
+                            <li>Invalid - a candidate who is flagged unavailable on the blockchain or has not enough stake.</li>
                         </ul>
                     </p>
                 </details>
