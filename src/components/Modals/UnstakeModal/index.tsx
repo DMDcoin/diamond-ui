@@ -5,6 +5,7 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 import { toast } from "react-toastify";
+import { truncateAddress } from "../../../utils/common";
 
 interface ModalProps {
   buttonText: string;
@@ -14,7 +15,7 @@ interface ModalProps {
 const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [unstakeAmount, setUnstakeAmount] = useState(0);
+  const [unstakeAmount, setUnstakeAmount] = useState(BigNumber(0));
   const [ownPool, setOwnPool] = useState<boolean>(false);
   const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
   const [canBeOrderedAmount, setCanBeOrderedAmount] = useState<BigNumber>(new BigNumber(0));
@@ -67,8 +68,34 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
 
-    if (unstakeAmount <= 0) return toast.warn("Cannot unstake 0 DMD 💎");
+    if (unstakeAmount.isLessThanOrEqualTo(0)) return toast.warn("Cannot unstake 0 DMD 💎");
     const amountInWei = web3.utils.toWei(unstakeAmount.toString());
+    
+    if (canBeUnstakedAmount.isZero()) {
+      const remainingStake = canBeOrderedAmount.minus(amountInWei);
+
+      if (BigNumber(amountInWei).isGreaterThan(canBeOrderedAmount)) {
+        return toast.warn(`Cannot order more than ${canBeOrderedAmount.dividedBy(10 ** 18).toString()} DMD`);
+      }
+
+      if (
+        !BigNumber(amountInWei).isEqualTo(canBeOrderedAmount) && remainingStake.isLessThan(delegatorMinStake)
+      ) {
+        return toast.warn(`Ordered amount is invalid. You must order the full amount or leave at least the minimum stake of ${delegatorMinStake.dividedBy(10 ** 18).toString()} DMD.`);
+      }
+    } else {
+      const remainingStake = canBeUnstakedAmount.minus(amountInWei);
+
+      if (BigNumber(amountInWei).isGreaterThan(canBeUnstakedAmount)) {
+        return toast.warn(`Cannot unstake more than ${canBeUnstakedAmount.dividedBy(10 ** 18).toString()} DMD`);
+      }
+
+      if (
+        !BigNumber(amountInWei).isEqualTo(canBeUnstakedAmount) && remainingStake.isLessThan(ownPool ? candidateMinStake : delegatorMinStake)
+      ) {
+        return toast.warn(`Unstake amount is invalid. You must unstake the full amount or leave at least the minimum stake of ${(ownPool ? candidateMinStake : delegatorMinStake).dividedBy(10 ** 18).toString()} DMD.`);
+      }
+    }    
 
     unstake(pool, new BigNumber(unstakeAmount)).then((success: boolean) => {
       if (success) {
@@ -96,15 +123,15 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     if (ownPool && canBeOrderedAmount.isZero()) {
       return "Unstake DMD";
     } else if (!ownPool && canBeOrderedAmount.isZero()) {
-      return `Unstake from ${pool.stakingAddress}`;
+      return `Unstake from ${truncateAddress(pool.stakingAddress)}`;
     } else if (ownPool && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
       return "Unstake DMD";
     } else if (canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
-      return `Unstake DMD from ${pool.stakingAddress}`;
+      return `Unstake DMD from ${truncateAddress(pool.stakingAddress)}`;
     } else if (ownPool && !canBeOrderedAmount.isZero()) {
       return "Order DMD";
     } else {
-      return `Order DMD from ${pool.stakingAddress}`;
+      return `Order DMD from ${truncateAddress(pool.stakingAddress)}`;
     }
   };
 
@@ -126,39 +153,40 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
               {canBeUnstakedAmount.isZero() ? (
                 <span>
-                  Amount to be ordered:{" "}
-                  {canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
+                  Amount you can order:{" "}
+                  {ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toString()} DMD
                 </span>
               ) : (
                 <span>
-                  Amount available to be unstaked:{" "}
-                  {canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(2)} DMD
+                  Amount you can unstake:{" "}
+                  {ownPool ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18)).toString()} DMD
                 </span>
               )}
 
               <input
                 min={
                   canBeUnstakedAmount.isZero()
-                    ? Math.max(0, Math.min(1, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
-                    : Math.max(0, Math.min(1, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0))))
+                    ? BigNumber.maximum(0, BigNumber.minimum(1, canBeOrderedAmount.dividedBy(10 ** 18))).toString()
+                    : BigNumber.maximum(0, BigNumber.minimum(1, canBeUnstakedAmount.dividedBy(10 ** 18))).toString()
                 }
                 max={
-                  canBeUnstakedAmount.isZero()
-                  ? Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
-                  : Math.max(0, Number(canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toFixed(0)))
+                  ownPool ? 
+                  canBeUnstakedAmount.isGreaterThan(0) ? BigNumber.maximum(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18))).toString() : BigNumber.maximum(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18))).toString()
+                  : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString()
                 }
                 type="number"
-                value={unstakeAmount}
+                step="any"
+                value={unstakeAmount.toString()}
                 className={styles.formInput}
                 placeholder="Enter the amount to unstake"
-                onChange={(e) => setUnstakeAmount(Number(e.target.value))}
+                onChange={(e) => setUnstakeAmount(new BigNumber(e.target.value))}
               />
 
               {
-                !canBeUnstakedAmount.isZero() && (<span>Amount to be ordered: {Math.max(0, Number(canBeOrderedAmount.minus(ownPool ? candidateMinStake : pool.isCurrentValidator ? delegatorMinStake : 0).dividedBy(10 ** 18).toFixed(2)))} DMD</span>)
+                !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toString()} DMD</span>)
               }
 
-              {pool.isCurrentValidator && canBeUnstakedAmount.isGreaterThan(0) &&
+              {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
                 canBeOrderedAmount.isGreaterThan(0) ? (
                   <p className={styles.unstakeWarning}>
                     Please note, that this node is a part of current Epoch
@@ -167,7 +195,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                     soon as Epoch ends.
                   </p>
                 ) : (
-                  pool.isCurrentValidator && canBeOrderedAmount.isGreaterThan(0) && (
+                  pool.isActive && canBeOrderedAmount.isGreaterThan(0) && (
                     <p className={styles.unstakeWarning}>
                       Please note, that this node is a part of current Epoch
                       validators set. We will prepare the coins, but you need to
@@ -178,8 +206,8 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
               <button className={styles.formSubmit} type="submit" disabled={
                 canBeUnstakedAmount.isZero()
-                ? Math.max(0, canBeOrderedAmount.minus(ownPool ? candidateMinStake : delegatorMinStake).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
-                : Math.max(0, canBeUnstakedAmount.minus(ownPool ? candidateMinStake : 0).dividedBy(10 ** 18).toNumber()) >= 1 ? false : true
+                ? BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toNumber() >= 1 ? false : true
+                : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18)).toNumber() >= 1 ? false : true
               }>
                 {canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
               </button>

@@ -56,6 +56,8 @@ export interface MockStakingHbbft extends BaseContract {
       _selector: string | number[]
     ): NonPayableTransactionObject<[string, string[]]>;
 
+    isPoolValid(_stakingAddress: string): NonPayableTransactionObject<boolean>;
+
     isWithinAllowedRange(
       funcSelector: string | number[],
       newVal: number | string | BN
@@ -83,6 +85,8 @@ export interface MockStakingHbbft extends BaseContract {
     stakeAmountTotal(staking: string): NonPayableTransactionObject<string>;
 
     totalStakedAmount(): NonPayableTransactionObject<string>;
+
+    validatorSet(): NonPayableTransactionObject<string>;
   };
   events: {
     RemoveChangeAbleParameter(

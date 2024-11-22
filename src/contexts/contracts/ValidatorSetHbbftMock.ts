@@ -35,6 +35,10 @@ export type SetBonusScoreContract = ContractEventLog<{
   _address: string;
   0: string;
 }>;
+export type SetConnectivityTrackerContract = ContractEventLog<{
+  _address: string;
+  0: string;
+}>;
 export type SetMaxValidators = ContractEventLog<{
   _count: string;
   0: string;
@@ -94,6 +98,8 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       _miningAddress: string
     ): NonPayableTransactionObject<boolean>;
 
+    connectivityTracker(): NonPayableTransactionObject<string>;
+
     finalizeChange(): NonPayableTransactionObject<void>;
 
     forceFinalizeNewValidators(): NonPayableTransactionObject<void>;
@@ -128,9 +134,21 @@ export interface ValidatorSetHbbftMock extends BaseContract {
 
     initialize(
       _contractOwner: string,
-      _params: [string, string, string, string, string, number | string | BN],
+      _params: [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        number | string | BN
+      ],
       _initialMiningAddresses: string[],
       _initialStakingAddresses: string[]
+    ): NonPayableTransactionObject<void>;
+
+    initializeV2(
+      _connectivityTracker: string
     ): NonPayableTransactionObject<void>;
 
     isFullHealth(): NonPayableTransactionObject<boolean>;
@@ -162,7 +180,7 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     newValidatorSet(): NonPayableTransactionObject<void>;
 
     notifyUnavailability(
-      _stakingAddress: string
+      _miningAddress: string
     ): NonPayableTransactionObject<void>;
 
     owner(): NonPayableTransactionObject<string>;
@@ -180,6 +198,8 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     setBonusScoreSystemAddress(
       _address: string
     ): NonPayableTransactionObject<void>;
+
+    setConnectivityTracker(_address: string): NonPayableTransactionObject<void>;
 
     setIsFullHealth(_healthy: boolean): NonPayableTransactionObject<void>;
 
@@ -253,6 +273,14 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       cb?: Callback<SetBonusScoreContract>
     ): EventEmitter;
 
+    SetConnectivityTrackerContract(
+      cb?: Callback<SetConnectivityTrackerContract>
+    ): EventEmitter;
+    SetConnectivityTrackerContract(
+      options?: EventOptions,
+      cb?: Callback<SetConnectivityTrackerContract>
+    ): EventEmitter;
+
     SetMaxValidators(cb?: Callback<SetMaxValidators>): EventEmitter;
     SetMaxValidators(
       options?: EventOptions,
@@ -304,6 +332,16 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     event: "SetBonusScoreContract",
     options: EventOptions,
     cb: Callback<SetBonusScoreContract>
+  ): void;
+
+  once(
+    event: "SetConnectivityTrackerContract",
+    cb: Callback<SetConnectivityTrackerContract>
+  ): void;
+  once(
+    event: "SetConnectivityTrackerContract",
+    options: EventOptions,
+    cb: Callback<SetConnectivityTrackerContract>
   ): void;
 
   once(event: "SetMaxValidators", cb: Callback<SetMaxValidators>): void;

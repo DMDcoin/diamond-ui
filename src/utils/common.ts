@@ -1,4 +1,6 @@
+import axios from "axios";
 import BigNumber from "bignumber.js";
+import ProxyAdmin from "../contexts/contract-abis/ProxyAdmin.json";
 
 const Web3 = require('web3');
 const web3 = new Web3();
@@ -13,6 +15,10 @@ export const getFunctionSelector = (signature: string): string => {
   return web3.utils.sha3(signature).slice(0, 10);
 };
 
+export const extractFunctionSelectorFromCalldata = (calldata: string): string => {
+  return calldata.slice(0, 10);
+}
+
 export const extractValueFromCalldata = (calldata: string): string => {
   const encodedValue = calldata.slice(10, 74);
   
@@ -22,21 +28,141 @@ export const extractValueFromCalldata = (calldata: string): string => {
   return value;
 };
 
-export const getFunctionName = (abi: any[], selector: string): string => {
+export const getAbiWithContractAddress = (contractsManager: any, contractAddress: string): any[] => {
+  try {
+    const contracts = Object.keys(contractsManager);
+    const contractName = contracts.find((contract: any) => contractsManager[contract].options?.address === contractAddress);
+    if (contractName) {
+      return contractsManager[contractName].options.jsonInterface;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching contract ABI:", error);
+    return [];
+  }
+}
+
+export function capitalizeFirstLetter(string: string): string {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function formatFunctionName(functionString: string): string {
+  // Remove parameters like `(uint256)`
+  let formatted = functionString.replace(/\(.*\)/, "");
+
+  formatted = formatted.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
+
+  // Capitalize the first letter and add "Set" at the start
+  return capitalizeFirstLetter(formatted);
+}
+
+export const getParameterDescription = (parameterName: string): string => {
+  if (parameterName === "setCreateProposalFee") {
+    return "Fee required to create a governance proposal.";
+  } else if (parameterName === "setDelegatorMinStake") {
+    return "Minimum stake required for a delegator to participate.";
+  } else if (parameterName === "setMinimumGasPrice") {
+    return "The lowest gas price allowed for transactions.";
+  } else if (parameterName === "setBlockGasLimit") {
+    return "Maximum gas allowed per block.";
+  } else if (parameterName === "setGovernancePotShareNominator") {
+    return "The portion of the governance pot allocated to rewards.";
+  } else if (parameterName === "setReportDisallowPeriod") {
+    return "Timeframe during which a node announces maintenance to avoid penalties.";
+  }
+  return "";
+}
+
+export const getFunctionInfoWithAbi = (contractsManager: any, contractAddress: string, calldata: string) => {
+  const selector = extractFunctionSelectorFromCalldata(calldata);
+  const abi = getAbiWithContractAddress(contractsManager, contractAddress);
   const matchingFunction = abi.find(item => {
       if (item.type === 'function') {
-          const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
-          const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
-          return calculatedSelector === selector;
+        const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
+        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        return calculatedSelector === selector;
       }
       return false;
   });
-  return matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function';
+  return {parameterName: formatFunctionName(matchingFunction ? `${matchingFunction.name}(${matchingFunction.inputs.map((input: any) => input.type).join(',')})` : 'Unknown function'), parameterDescription: getParameterDescription(matchingFunction ? matchingFunction.name : '')};
 };
+
+export const getFunctionNameFromDirectory = async (selector: string): Promise<string | null> => {
+  try {
+    const response = await axios.get(`https://www.4byte.directory/api/v1/signatures/?hex_signature=${selector}`);
+    const results = response.data.results;
+    
+    if (results.length > 0) {
+      return results[0].text_signature; // Returns the first matching function name
+    }
+  } catch (error) {
+    console.error("Error fetching function name:", error);
+  }
+  return null; // Returns null if no match found
+};
+
+export const extractTargetAddressFromCalldata = (calldata: string): string => {
+  // Assuming the address is the first parameter after the function selector (first 4 bytes)
+  const encodedAddress = calldata.slice(10, 74); // Next 32 bytes after the selector
+
+  // Convert to standard 20-byte address format
+  const address = `0x${encodedAddress.slice(24)}`; // Take the last 40 hex characters
+
+  return address;
+};
+
+export const getCoreContractByAddress = (contractsManager: any, contractAddresses: Array<string>): any => {
+  const contracts = Object.values(contractsManager);
+  
+  return contractAddresses
+    .map((contractAddress) =>
+      contracts.find((contract: any) => contract.options?.address.toLowerCase() === contractAddress.toLowerCase())
+    )
+    .find((contract) => contract !== undefined) || null;
+};
+
+export const getMatchingFunction = (selector: string, abis: Array<any>) => {
+  for (const abi of abis) {
+    const matchingFunction = abi.find((item: any) => {
+      if (item.type === 'function') {
+        const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
+        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        if (calculatedSelector === selector) {
+          // Stop processing further once a match is found
+          return true;
+        }
+      }
+      return false;
+    });
+  
+    // If a matching function is found, break the loop
+    if (matchingFunction) {
+      return matchingFunction;
+    }
+  }
+}
+
+export const decodeCallData = (contractsManager: any, contractAddress: any, calldata: string) => {
+  const extractedTargetContractAddress = extractTargetAddressFromCalldata(calldata);
+  const contract = getCoreContractByAddress(contractsManager, [contractAddress, extractedTargetContractAddress]);
+  let selector = extractFunctionSelectorFromCalldata(calldata);
+  if (selector == '0x00000000') selector = getFunctionSelector(calldata);
+  const matchingFunction = getMatchingFunction(selector, [ProxyAdmin.abi, contract.options.jsonInterface]);
+  if (!matchingFunction) return {};
+  const decodedData = web3.eth.abi.decodeParameters(matchingFunction.inputs, calldata.slice(10));
+  
+  const length = decodedData.__length__;
+  const filteredObj = Object.fromEntries(
+    Object.entries(decodedData)
+      .filter(([key, value]) => key !== '__length__' && (isNaN(Number(key)) || Number(key) >= length))
+  );
+
+  return {"Function Name": matchingFunction.name, ...filteredObj};
+}
 
 export const timestampToDate = (timestamp: string) => {
   const date = new Date(Number(timestamp) * 1000);
-  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const month = date.toLocaleString('en-US', { month: 'short' }); // Get short month name
   const day = date.getDate();
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
@@ -44,7 +170,7 @@ export const timestampToDate = (timestamp: string) => {
 
 export const timestampToDateTime = (timestamp: number) => {
   const date = new Date(timestamp * 1000);
-  const month = date.toLocaleString('default', { month: 'short' }); // Get short month name
+  const month = date.toLocaleString('en-US', { month: 'short' }); // Get short month name
   const day = date.getDate();
   const year = date.getFullYear();
   
@@ -175,3 +301,8 @@ export const formatCryptoUnitValue = (value: string | number): string => {
     return `${BigNumber(value).dividedBy(10**1)} Wei`;
   }
 }
+
+export const truncateAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.slice(0, 7)}...${address.slice(-5)}`;
+};

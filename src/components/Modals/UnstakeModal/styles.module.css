@@ -28,6 +28,10 @@ h3 {
   border-radius: 8px;
 }
 
+.modalContent > h3 {
+  text-align: center;
+}
+
 .modalClose {
   position: absolute;
   top: 10px;
@@ -83,6 +87,7 @@ input:focus {
   align-self: center;
   border-radius: 4px;
   padding: 10px 15px;
+  margin-top: 10px;
   background-color: #007bff;
 }
 

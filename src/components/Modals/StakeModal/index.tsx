@@ -84,7 +84,7 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               />
 
               {
-                pool.isCurrentValidator && (
+                pool.isActive && (
                   <span className={styles.stakeWarning}>
                     Please note that these coins will become active in the next epoch, as the validator candidate is part of an active set. You can unstake them at any time before they become active
                   </span>

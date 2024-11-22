@@ -10,19 +10,28 @@ import UnstakeModal from "../../../components/Modals/UnstakeModal";
 import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import { timestampToDate } from "../../../utils/common";
+import { timestampToDate, truncateAddress } from "../../../utils/common";
 
 interface PoolDetailsProps {}
 
 const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   const navigate = useNavigate();
   const { poolAddress } = useParams();
-  const { userWallet } = useWeb3Context();
-  const { activeProposals, getMyVote, getStateString } = useDaoContext();
+  const { userWallet, web3Initialized, showLoader } = useWeb3Context();
+  const { activeProposals, getMyVote, getActiveProposals } = useDaoContext();
   const { pools, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const [pool, setPool] = useState<Pool | null>(null);
   const [filteredProposals, setFilteredProposals] = useState<any[]>([]);
+
+  useEffect(() => {
+    try {
+      if (!activeProposals.length && web3Initialized) {
+        showLoader(true, "");
+        getActiveProposals();
+      }
+    } catch(err) {}
+  }, [web3Initialized]);
 
   useEffect(() => {
     const pool = pools.find((pool) => pool.stakingAddress === poolAddress);
@@ -61,9 +70,9 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         {/* image address status */}
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
-          <p>{poolAddress}</p>
-          <p className={pool?.isCurrentValidator || pool?.isActive  ? styles.poolActive : styles.poolBanned}>
-            {pool?.isCurrentValidator ? "Active" : pool?.isActive ? "Valid" : "Invalid"}
+          <p>{truncateAddress(poolAddress || "")}</p>
+          <p className={pool?.isActive || (pool?.isToBeElected || pool?.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
+            {pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Valid" : "Invalid"}
           </p>
         </div>
 
@@ -101,7 +110,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegates</h1>
             {
-              pool?.isActive && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
+              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
               pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
@@ -174,7 +183,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>{timestampToDate(proposal.timestamp)}</td>
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
-                    <td>{proposal.myVote == "2" ? "Yes" : proposal.myVote == "1" ? "No" : "Yes"}</td>
+                    <td>{proposal.myVote == "2" ? "Yes" : proposal.myVote == "1" ? "No" : "Not Voted"}</td>
                     <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
                   </tr>
                 ))
