@@ -13,8 +13,11 @@ import { useStakingContext } from "../../../contexts/StakingContext";
 import { TotalVotingStats, Vote } from "../../../contexts/DaoContext/types";
 
 import BigNumber from "bignumber.js";
+import copy from 'copy-to-clipboard';
 import Tooltip from "../../../components/Tooltip";
-import { extractValueFromCalldata, formatCryptoUnitValue, timestampToDate } from "../../../utils/common";
+import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionInfoWithAbi, timestampToDate } from "../../../utils/common";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -133,14 +136,17 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    if ((proposalType === "Open" || proposalType === "Ecosystem Paramaeter Change") && positive.minus(negative).isGreaterThan(33)) {
-      return true;
-    }
-    if (proposalType === "Contract upgrade" && positive.minus(negative).isGreaterThan(50)) {
-      return true;
-    }
-    return false;
+    const threshold = proposalType === "Contract upgrade" ? 50 : 33;
+    const hasSufficientVotes = positive.minus(negative).isGreaterThan(threshold);
+    const hasRequiredParticipation = votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).isGreaterThan(threshold);
+    
+    return hasSufficientVotes && hasRequiredParticipation;
   };
+
+  const copyData = (data: string) => {
+    copy(data);
+    toast.success("Copied to clipboard");
+  }
 
   return (
     <section className="section">
@@ -169,10 +175,31 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {/* discussion link */}
           {
             proposal?.discussionUrl?.length > 0 && (
-              <a className={styles.proposalDiscussionLink} href={proposal.discussionUrl} rel="noreferrer" target="_blank">Discussion Link...</a>
+              (() => {
+                try {
+                  // Attempt to create a URL object to validate the format
+                  new URL(proposal.discussionUrl);
+                  return (
+                    <a
+                      className={styles.proposalDiscussionLink}
+                      href={proposal.discussionUrl}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Discussion Link...
+                    </a>
+                  );
+                } catch (error) {
+                  // If it's not a valid URL, display the fallback text
+                  return (
+                    <span className={styles.invalidUrlFallback}>
+                      <strong>Discussion here:</strong> {proposal.discussionUrl}
+                    </span>
+                  );
+                }
+              })()
             )
           }
-          
 
           {/* open proposals */}
           {
@@ -203,11 +230,23 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* ecosystem proposals */}
           {
-            proposal.proposalType === "Ecosystem Paramaeter Change" && (
+            proposal.proposalType === "Ecosystem Parameter Change" && (
               <div className={styles.ecpDetailsContainer}>
                 <div>
                   <span>Parameter</span>
-                  <span>Gas price</span>
+                  <span>
+                    {
+                    (() => {
+                        const { parameterName, parameterDescription } = getFunctionInfoWithAbi(web3Context.contractsManager, proposal.targets[0], proposal.calldatas[0])
+                        return (
+                          <>
+                            {parameterName}
+                            <Tooltip text={parameterDescription} />
+                          </>
+                        )
+                      })()
+                    }
+                  </span>
                 </div>
 
                 <div>
@@ -228,11 +267,50 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div>
                         <span>Target Address</span>
                         <span>{proposal.targets[i]}</span>
+                        <button 
+                          className={styles.copyButton} 
+                          onClick={() => copyData(String(proposal.targets[i]))} 
+                          aria-label="Copy to clipboard"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </button>
                       </div>
                       <div>
                         <span>Call Data</span>
                         <span>{proposal.calldatas[i]}</span>
+                        <button 
+                          className={styles.copyButton} 
+                          onClick={() => copyData(String(proposal.calldatas[i]))} 
+                          aria-label="Copy to clipboard"
+                        >
+                          <FontAwesomeIcon icon={faCopy} />
+                        </button>
                       </div>
+                        <>
+                          {(() => {
+                            const res: any = decodeCallData(web3Context.contractsManager, target, proposal.calldatas[i]);
+                            if (Object.keys(res).length > 0) { // Check if res is not an empty object
+                              return (
+                                <>
+                                  <h3>Decoded Call Data</h3>
+                                  {Object.entries(res).map(([key, value]) => (
+                                    <div key={key} className={styles.decodedData}>
+                                      <span>{capitalizeFirstLetter(key)}: </span>
+                                      <span>{String(value)}</span>
+                                      <button 
+                                        className={styles.copyButton} 
+                                        onClick={() => copyData(String(value))} 
+                                        aria-label="Copy to clipboard"
+                                      >
+                                        <FontAwesomeIcon icon={faCopy} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </>
+                              );
+                            }
+                          })()}
+                        </>
                     </div>   
                   ))
                 }
@@ -278,13 +356,13 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | 33% required)</span>
+                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
                           <Tooltip text="Exceeding difference between yes and no answers | required difference" />
                         </div>
                         <div>
-                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed() : 0} DMD ({
+                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(2) : 0} DMD ({
                             votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(2)
-                          }% | 33% required)</span>
+                          }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>
                       </div>

@@ -1,6 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 import styles from "./styles.module.css";
-import { timestampToDateTime } from "../../utils/common";
+import { timestampToDateTime, truncateAddress } from "../../utils/common";
 import { useWeb3Context } from "../../contexts/Web3Context";
 import getStartedImg from "../../assets/images/home/getStarted.svg"
 import { useStakingContext } from "../../contexts/StakingContext";
@@ -17,12 +17,15 @@ import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
+import { useWalletConnectContext } from "../../contexts/WalletConnect";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
-  const { userWallet, connectWallet } = useWeb3Context();
+  const { userWallet } = useWeb3Context();
+  const { isSyncingPools } = useStakingContext();
+  const walletConnectContext = useWalletConnectContext();
 
   const {
     pools,
@@ -56,12 +59,12 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     }
                                     <div>
                                         <p>User</p>
-                                        <p>{userWallet.myAddr}</p>
+                                        <p>{truncateAddress(userWallet.myAddr)}</p>
                                     </div>
                                     {
                                         myPool && (
-                                            <p className={myPool?.isCurrentValidator || myPool?.isActive ? styles.poolActive : styles.poolBanned}>
-                                                {myPool?.isCurrentValidator ? "Active" : myPool?.isActive ? "Valid" : "Invalid"}
+                                            <p className={myPool?.isActive || (myPool?.isToBeElected || myPool?.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
+                                                {myPool?.isActive ? "Active" : (myPool?.isToBeElected || myPool?.isPendingValidator) ? "Valid" : "Invalid"}
                                             </p>
                                         )
                                     }
@@ -92,7 +95,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                                     <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
                                                                             }
                                                                             {
-                                                                                myPool && !myPool.isCurrentValidator && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
+                                                                                myPool && !myPool.isActive && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
                                                                             }
                                                                         </>
                                                                     )
@@ -114,13 +117,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                     </div>
                                                                 )
                                                             }
-                                                            <a className="primaryBtn" onClick={() => { 
-                                                                startTransition(() => { 
-                                                                    navigate('staking', { state: { filter: 'stakedOn' } }); 
-                                                                }) 
-                                                            }}>
-                                                                See the list
-                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -128,8 +124,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <tr>
                                                     <td>Score</td>
                                                     <td>{myPool.score}</td>
-                                                    <td><ScoreHistoryModal pool={myPool} buttonText="Score History" /></td>
-                                                    {/* <td><ScoreHistoryModal pool={pools.find(p => p.stakingAddress == "0x1bc4e0508473A9840A40Ad424B792097f70967Ee") || myPool} buttonText="Score History" /></td> */}
                                                 </tr>
                                             )}
                                         </tbody>
@@ -179,10 +173,48 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        <div className={styles.daoPhaseBannerContainer}>
-                            <DaoPhaseBanner />
-                            <button onClick={() => {startTransition(() => {navigate('dao')})}}>Go to DAO</button>
+                        <div className={styles.topValidatorsContainer}>
+                            <div className="comparison-row-main">
+                                <h3 className="heading-3">Validators I've Staked On</h3>
+                            </div>
+                            <div className={styles.tableContainer}>
+                                <table className={styles.styledTable}>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Wallet</th>
+                                            <th>Total Stake</th>
+                                            <th>My Stake</th>
+                                            <th>Voting Power</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                        pools
+                                            .filter((p) => BigNumber(p.myStake).isGreaterThan(0))  // Sort pools by totalStake in descending order
+                                            .slice(0, 5)  // Get the top 5 pools
+                                            .map((pool, i) => (
+                                            <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                                <td>
+                                                    <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
+                                                </td>
+                                                <td>{pool.stakingAddress}</td>
+                                                <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
+                                                <td>{pool.votingPower.toString()}%</td>
+                                                <td>{pool.score}</td>
+                                            </tr>
+                                            ))
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                    </div>
+
+                    <div className={styles.heroContainer + " hero-container"}>
+                        <DaoPhaseBanner showDaoStats={true} />
                     </div>
                 </section>
             ) : (
@@ -205,7 +237,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                         of your digital assets.
                                     </p>
                                 </div>
-                                <div className="div-block-3"><button onClick={connectWallet} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
+                                <div className="div-block-3"><button onClick={() => walletConnectContext.appKit.open()} disabled={isSyncingPools} className={styles.actionBtn + " button w-button"}>Get Started</button></div>
                             </div>
                             <div className={styles.heroSplit + " hero-split hero-split-responsive"}>
                                 <img
@@ -301,7 +333,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                 <div className="hero-container">
                     <div className={styles.topValidatorsContainer}>
                         <div className="comparison-row-main">
-                            <h3 className="heading-3">Top 5 validator candidates</h3>
+                            <h3 className="heading-3">Top 5 validators</h3>
                         </div>
                         <div className={styles.tableContainer}>
                             <table className={styles.styledTable}>
@@ -325,9 +357,9 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                             </td>
                                             <td>{pool.stakingAddress}</td>
-                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toString()} DMD</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>
-                                            <td>1000</td>
+                                            <td>{pool.score}</td>
                                         </tr>
                                         ))
                                     }

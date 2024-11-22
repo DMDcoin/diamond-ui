@@ -5,12 +5,12 @@ import { formatCryptoUnitValue } from "../../utils/common";
 
 interface ProposalStepSliderProps {
     state: string;
-    contractName: string;
+    parameterName: string;
     paramsRange: string[];
     setState: (value: string) => void;
 }
 
-const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, paramsRange, state, setState }) => {
+const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ parameterName, paramsRange, state, setState }) => {
     const [startingVal, setStartingVal] = useState<string | undefined>(undefined);
     const textRef = useRef<HTMLSpanElement>(null);
 
@@ -51,20 +51,30 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, p
         const textWidth = textRef.current?.offsetWidth || 0;
         const containerWidth = textRef.current?.parentElement?.offsetWidth || 0;
 
-        // Calculate the left offset
-        let leftOffset = percentage - textWidth / containerWidth * 50;
+        let leftOffset = percentage - (textWidth / containerWidth) * 50;
 
-        // Prevent overflow on the left
         if (leftOffset < 0) {
             leftOffset = 0;
         }
 
-        // Prevent overflow on the right
         if (leftOffset > 100 - (textWidth / containerWidth) * 100) {
             leftOffset = 100 - (textWidth / containerWidth) * 100;
         }
 
         return `${leftOffset}%`;
+    };
+
+    const formatValue = (value: string) => {
+        if (parameterName === "Governance Pot Share Nominator") {
+            return `${value} %`;
+        }
+        if (parameterName === "Report Disallow Period") {
+            return `${Number(value) / 60} minutes`;
+        }
+        if (parameterName === "Block Gas Limit") {
+            return `${Number(value) / 10**6} mGas`;
+        }
+        return formatCryptoUnitValue(value);
     };
 
     return (
@@ -77,7 +87,7 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, p
                         left: getAdjustedLeft(),
                     }}
                 >
-                    {state == startingVal ? "Current" : "Change to" }: <strong>{contractName === "Block Reward" ? `${state} %` : formatCryptoUnitValue(state)}</strong>
+                    {state === startingVal ? "Current" : "Change to"}: <strong>{formatValue(state)}</strong>
                 </span>
             </div>
             <div>
@@ -93,11 +103,11 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, p
                 <div className={styles.valContainer}>
                     <div>
                         <span>Min. </span>
-                        <span>{contractName === "Block Reward" ? `${paramsRange[0]} %` : formatCryptoUnitValue(paramsRange[0])}</span>
+                        <span>{formatValue(paramsRange[0])}</span>
                     </div>
                     <div>
                         <span>Max. </span>
-                        <span>{contractName === "Block Reward" ? `${paramsRange[paramsRange.length - 1]} %` : formatCryptoUnitValue(paramsRange[paramsRange.length - 1])}</span>
+                        <span>{formatValue(paramsRange[paramsRange.length - 1])}</span>
                     </div>
                 </div>
             </div>
@@ -106,3 +116,4 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ contractName, p
 };
 
 export default ProposalStepSlider;
+

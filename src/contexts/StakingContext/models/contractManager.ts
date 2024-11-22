@@ -222,8 +222,8 @@ export class ContractManager {
   }
 
   public async getConnectivityTracker(): Promise<ConnectivityTrackerHbbft> {
-    let contractAddress = '0x65219102B1AFBC624C56CDbf02186B8341703456';
-
+    let bsContract = await this.getBonusScoreSystem();
+    let contractAddress = await bsContract.methods.connectivityTracker().call();
     const abi: any = JsonConnectivityTrackerHbbft.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);
     return contract;

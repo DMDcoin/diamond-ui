@@ -44,3 +44,4 @@ export type { TxPermissionHbbftMock } from "./TxPermissionHbbftMock";
 export type { ValidatorSetHbbft } from "./ValidatorSetHbbft";
 export type { ValidatorSetHbbftMock } from "./ValidatorSetHbbftMock";
 export type { ValueGuards } from "./ValueGuards";
+export type { ValueGuardsMock } from "./ValueGuardsMock";

@@ -1,17 +1,16 @@
 import Web3 from "web3";
-import Web3Modal from "web3modal";
 import BigNumber from "bignumber.js";
-import copy from "copy-to-clipboard";
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import { ContextProviderProps } from "./types";
+import { useAccount, useDisconnect } from "wagmi";
 import { CURR_VERSION_INFO } from "../../constants";
-import { walletConnectProvider } from "@web3modal/wagmi";
-import { CustomWeb3HttpProvider } from "./Web3Provider";
+import { switchChain, watchAccount } from '@wagmi/core';
 import { UserWallet } from "../StakingContext/models/wallet";
-import { requestPublicKeyMetamask } from "../../utils/common";
+import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ContractManager } from "../StakingContext/models/contractManager";
 import React, { createContext, useContext, useEffect, useState } from "react";
+
 
 import {
   BlockRewardHbbft,
@@ -20,12 +19,12 @@ import {
   ConnectivityTrackerHbbft,
   DiamondDao,
   HbbftAggregator,
-  KeyGenHistory,
-  RandomHbbft,
   StakingHbbft,
   TxPermissionHbbft,
   ValidatorSetHbbft,
 } from "../contracts";
+import { wagmiConfig } from "../WalletConnect/config";
+import { useWalletConnectContext } from "../WalletConnect";
 
 interface ContractsState {
   contracts: ContractManager;
@@ -46,7 +45,6 @@ interface Web3ContextProps {
   contractsManager: ContractsState;
   web3Initialized: boolean;
 
-  connectWallet: () => Promise<{ provider: Web3; wallet: UserWallet } | undefined>;
   setUserWallet: (newUserWallet: UserWallet) => void;
   setContractsManager: (newContractsManager: ContractsState) => void;
   ensureWalletConnection: () => boolean;
@@ -57,16 +55,19 @@ interface Web3ContextProps {
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
 
 const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
+  const { disconnect } = useDisconnect();
+  const { appKit } = useWalletConnectContext();
+  const { connector, isConnected, status } = useAccount();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const chainId = process.env.REACT_APP_CHAINID || 777017;
-  const rpcUrl = process.env.REACT_APP_RPC_URL || 'https://alpha4.uniq.domains/rpc';
+  const chainId = import.meta.env.VITE_APP_CHAINID || 777018;
+  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://alpha3.uniq.domains/alpha4/rpc/';
+  const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
-  const [web3ModalInstance, setWeb3ModalInstance] = useState<any>(null);
-  const [accountChangeListener, setAccountChangeListener] = useState<any>(null);
 
   const [userWallet, setUserWallet] = useState<UserWallet>(new UserWallet("", new BigNumber(0)));
   const initialContracts = new ContractManager(web3);
@@ -77,30 +78,34 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   });
 
   useEffect(() => {
+    if (connector?.getProvider && isConnected && status === 'connected') {
+      InitializeWagmiWallet(connector);
+    }
+  }, [connector, isConnected, status]);
+
+  useEffect(() => {
     console.log("[INFO] Initializing Web3 Context");
     initialize();
     handleCacheReset();
   }, []);
 
   useEffect(() => {
-    // handle account change
-    if (!accountChangeListener && web3ModalInstance) {
-      const listener = (accounts: Array<string>) => {
-        if (accounts && accounts.length === 0) {
-          window.location.reload();
-        } else {
-          connectWallet();
-        }
-      };
-      
-      web3ModalInstance.on("accountsChanged", listener);
-      setAccountChangeListener(listener);
-  
+    if (wagmiConnector) {
+      const unwatch = watchAccount(wagmiConfig, {
+        onChange(account) { 
+          if (account.address) {
+            InitializeWagmiWallet(wagmiConnector);
+          } else {
+            window.location.reload();
+          }
+        },
+      })
+    
       return () => {
-        web3ModalInstance.off("accountsChanged", listener);
+        unwatch()
       };
     }
-  }, [web3ModalInstance]);
+  }, [wagmiConnector]);
 
   const initialize = async () => {
     if (!web3Initialized) {
@@ -173,84 +178,51 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   };
 
-  const connectWallet = async () => {
+  const InitializeWagmiWallet = async (connector: any) => {
     try {
-      if (typeof window.ethereum === 'undefined') {
-        toast.warn('MetaMask is not installed. Please install it to continue.');
-        return;
-      }
+      let provider = await connector.getProvider();
+      provider = new Web3(provider);
 
-      // const chainOptions: { rpc: Record<number, string> } = {
-      //   rpc: { [chainId]: rpcUrl },
-      // };
-
-      const providerOptions = {
-        // walletconnect: {
-        //   package: walletConnectProvider,
-        //   options: chainOptions,
-        // },
-      };
-  
-      const web3Modal = new Web3Modal({
-        network: "mainnet",
-        cacheProvider: false,
-        providerOptions
-      });
-  
-      // clear cache so on each connect it asks for wallet type
-      web3Modal.clearCachedProvider();
-      const web3ModalInstance = await web3Modal.connect();
-      setWeb3ModalInstance(web3ModalInstance);
-
-      const provider = new Web3(web3ModalInstance);
-  
-      // force user to change to DMD network
-      const chainIdHex = new Web3().utils.toHex(chainId);
-      if (await web3ModalInstance.request({ method: 'eth_chainId' }) !== chainId) {
+      // Check if the user is on the correct network, if not switch to the desired network
+      if (await provider.eth.getChainId() !== Number(chainId)) {
         try {
-          await web3ModalInstance.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: chainIdHex }],
-          });
+          showLoader(true, "Please connect to the DMD Network");
+          await switchChain(wagmiConfig, { chainId: Number(chainId) });
+          showLoader(false, "");
         } catch (err: any) {
-          if (err.code === 4902) {
-            await web3ModalInstance.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainName: process.env.REACT_APP_CHAIN_NAME || "DMD Diamond",
-                  chainId: chainIdHex,
-                  nativeCurrency: { name: "DMD", decimals: 18, symbol: "DMD" },
-                  rpcUrls: [rpcUrl],
-                  blockExplorerUrls: null,
-                },
-              ],
-            });
+          if (err.code === 4001) {
+            showLoader(false, "");
+            await connector.disconnect();
+            disconnect();
+            return toast.warn("Please connect to the DMD Network to continue");
           } else {
-            console.error("[Wallet Connect] Other Error", err);
+            console.error("[Wallet Connect] Error", err);
+            showLoader(false, "");
             return undefined;
           }
         }
       }
-  
-      const walletAddress = (await web3ModalInstance.request({ method: 'eth_accounts' }))[0];
 
-      // try {
-      //   await requestPublicKeyMetamask(provider, walletAddress).then((res) => copy(res))
-      // } catch {}
+      appKit.close(); // close modal after login
 
-      const myBalance = new BigNumber(await web3.eth.getBalance(walletAddress));
-      const wallet = new UserWallet(web3.utils.toChecksumAddress(walletAddress), myBalance);
+      // Retrieve the wallet address
+      const walletAddress = (await provider.eth.getAccounts())[0];
 
+      // Fetch the wallet balance
+      const myBalance = new BigNumber(await provider.eth.getBalance(walletAddress));
+      const wallet = new UserWallet(provider.utils.toChecksumAddress(walletAddress), myBalance);
+
+      // Set the wallet and provider in the app state
       setWeb3(provider);
       setUserWallet(wallet);
+      setWagmiConnector(connector);
       reinitializeContractsWithProvider(provider);
-
+        
       return { provider, wallet };
     } catch (err) {
-      console.error("[Wallet Connect]", err);
+      console.error(err);
     }
-  };
+  }
 
   const ensureWalletConnection = (): boolean => {
     if (!userWallet.myAddr) {
@@ -280,7 +252,6 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setContractsManager,  // Set the new contractsManager state
 
     // other functions
-    connectWallet,
     ensureWalletConnection,
     showLoader,
     getUpdatedBalance
@@ -289,6 +260,15 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   return (
     <Web3Context.Provider value={contextValue}>
       <Loader isLoading={isLoading} loadingMessage={loadingMessage}/>
+      {/* <WalletConnectModalSign
+                projectId={"2cceb4f25f1cb889b967ea3c40bfd7cd"}
+                metadata={{
+                    name: 'My Dapp',
+                    description: 'My Dapp description',
+                    url: 'https://my-dapp.com',
+                    icons: ['https://my-dapp.com/logo.png']
+                }}
+            /> */}
       {children}
     </Web3Context.Provider>
   );

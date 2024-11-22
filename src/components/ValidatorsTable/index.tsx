@@ -15,7 +15,7 @@ interface ValidatorsTableProps {
     itemsPerPage?: number;
 }
 
-const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) => {
+const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 }) => {
     const navigate = useNavigate();
     const location = useLocation();  // Use useLocation to get the passed state
     const { userWallet } = useWeb3Context();
@@ -50,11 +50,11 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
     let poolsCopy = [...pools];
 
     if (filter === 'valid') {
-        poolsCopy = poolsCopy.filter(pool => pool.isActive && !pool.isCurrentValidator);
+        poolsCopy = poolsCopy.filter(pool => pool.isToBeElected && !pool.isActive);
     } else if (filter === 'active') {
-        poolsCopy = poolsCopy.filter(pool => pool.isCurrentValidator);
+        poolsCopy = poolsCopy.filter(pool => pool.isActive);
     } else if (filter === 'invalid') {
-        poolsCopy = poolsCopy.filter(pool => !pool.isCurrentValidator && !pool.isActive);
+        poolsCopy = poolsCopy.filter(pool => !pool.isActive && !pool.isToBeElected);
     } else if (filter === 'stakedOn') {
         poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
     }
@@ -123,7 +123,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
 
     return (
         <div className={styles.sectionContainer + " sectionContainer"}>
-            <h1>Validator Candidates</h1>
+            <h1>Validators</h1>
 
             {/* Filter and Search */}
             <div className={styles.filterContainer}>
@@ -149,9 +149,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                     <thead>
                         <tr>
                             <th></th>
-                            <th className={getClassNamesFor('isCurrentValidator')} onClick={() => requestSort('isCurrentValidator')}>
+                            <th className={getClassNamesFor('isActive')} onClick={() => requestSort('isActive')}>
                                 Status
-                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate, who is inactive for some period of time" />
+                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate who is flagged unavailable on the blockchain or has not enough stake" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('stakingAddress')}>
@@ -196,14 +196,14 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                 <td>
                                     <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                 </td>
-                                <td className={pool?.isCurrentValidator || pool.isActive ? styles.poolActive : styles.poolBanned}>
-                                    {typeof pool.isCurrentValidator === 'boolean'
-                                        ? pool.isCurrentValidator ? "Active" : pool.isActive ? "Valid" : "Invalid"
+                                <td className={pool?.isActive || (pool.isToBeElected || pool.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
+                                    {typeof pool.isActive === 'boolean'
+                                        ? pool.isActive ? "Active" : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(0) + " DMD" : (<div className={styles.loader}></div>)
+                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
                                     {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
@@ -216,7 +216,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
                                         <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
-                                                pool.isActive && (
+                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && (
                                                     <StakeModal buttonText="Stake" pool={pool} />
                                                 )
                                             }
@@ -246,29 +246,31 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 10 }) 
             </div>
 
             {/* Pagination */}
-            <ul className={styles.pagination}>
-                <li
-                    onClick={() => {
-                        if (currentPage !== 0) {
-                            handlePageClick(currentPage - 1);
-                        }
-                    }}
-                    className={currentPage === 0 ? styles.disabled : ""}
-                >
-                    Previous
-                </li>
-                {renderPageNumbers()}
-                <li
-                    onClick={() => {
-                        if (currentPage !== pageCount - 1) {
-                            handlePageClick(currentPage + 1);
-                        }
-                    }}
-                    className={currentPage === pageCount - 1 ? styles.disabled : ""}
-                >
-                    Next
-                </li>
-            </ul>
+            {poolsCopy.length > itemsPerPage && (
+                <ul className={styles.pagination}>
+                    <li
+                        onClick={() => {
+                            if (currentPage !== 0) {
+                                handlePageClick(currentPage - 1);
+                            }
+                        }}
+                        className={currentPage === 0 ? styles.disabled : ""}
+                    >
+                        Previous
+                    </li>
+                    {renderPageNumbers()}
+                    <li
+                        onClick={() => {
+                            if (currentPage !== pageCount - 1) {
+                                handlePageClick(currentPage + 1);
+                            }
+                        }}
+                        className={currentPage === pageCount - 1 ? styles.disabled : ""}
+                    >
+                        Next
+                    </li>
+                </ul>
+            )}
         </div>
     );
 };

@@ -285,11 +285,20 @@ h1, h2, h3, h4, p, span {
   align-items: center; /* Align items in the center vertically */
 }
 
+.cupDetailsContainer > div > div > *:first-child {
+  margin-right: auto;
+}
+
+
 .cupDetailsContainer > div > div > span {
-  max-width: 400px; /* Increased max-width for better readability */
+  max-width: 450px; /* Increased max-width for better readability */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.cupDetailsContainer > div > h3 {
+ text-align: left; 
 }
 
 .proposalDiscussionLink {
@@ -353,4 +362,28 @@ input {
   .cupDetailsContainer > div > div > span {
     max-width: 200px;
   }
+}
+
+/* Add to styles.module.css or a separate stylesheet */
+.decodedData {
+  display: flex;
+  align-items: center;
+}
+
+.decodedData > *:first-child {
+  margin-right: auto;
+}
+
+.copyButton {
+  margin-left: 10px;
+  background-color: #96c9ff;
+  color: white;
+  border: none;
+  padding: 3px 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.copyButton:hover {
+  background-color: #0056b3;
 }

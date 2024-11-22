@@ -30,3 +30,8 @@
   font-size: 1.5rem;
   cursor: pointer;
 }
+
+.modalContent > section {
+  display: flex;
+  flex-direction: column;
+}

@@ -37,6 +37,10 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type RemoveChangeableParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
 export type ReportMissingConnectivity = ContractEventLog<{
   reporter: string;
   validator: string;
@@ -53,12 +57,20 @@ export type ReportReconnect = ContractEventLog<{
   1: string;
   2: string;
 }>;
+export type SetChangeableParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
 export type SetEarlyEpochEndToleranceLevel = ContractEventLog<{
   _level: string;
   0: string;
 }>;
-export type SetMinReportAgeBlocks = ContractEventLog<{
-  _minReportAge: string;
+export type SetReportDisallowPeriod = ContractEventLog<{
+  _reportDisallowPeriodSeconds: string;
   0: string;
 }>;
 
@@ -70,6 +82,10 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   ): ConnectivityTrackerHbbft;
   clone(): ConnectivityTrackerHbbft;
   methods: {
+    allowedParameterRange(
+      arg0: string | number[]
+    ): NonPayableTransactionObject<string>;
+
     blockRewardContract(): NonPayableTransactionObject<string>;
 
     bonusScoreContract(): NonPayableTransactionObject<string>;
@@ -98,6 +114,14 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
 
     earlyEpochEndToleranceLevel(): NonPayableTransactionObject<string>;
 
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
+
     getFlaggedValidators(): NonPayableTransactionObject<string[]>;
 
     getFlaggedValidatorsByEpoch(
@@ -119,7 +143,7 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       _stakingContract: string,
       _blockRewardContract: string,
       _bonusScoreContract: string,
-      _minReportAgeBlocks: number | string | BN
+      _reportDisallowPeriodSeconds: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     isEarlyEpochEnd(
@@ -127,8 +151,8 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
     ): NonPayableTransactionObject<boolean>;
 
     isFaultyValidator(
-      validator: string,
-      epoch: number | string | BN
+      epoch: number | string | BN,
+      validator: string
     ): NonPayableTransactionObject<boolean>;
 
     isReported(
@@ -137,7 +161,10 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       reporter: string
     ): NonPayableTransactionObject<boolean>;
 
-    minReportAgeBlocks(): NonPayableTransactionObject<string>;
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
 
     owner(): NonPayableTransactionObject<string>;
 
@@ -145,7 +172,13 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       epoch: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string | number[]
+    ): NonPayableTransactionObject<void>;
+
     renounceOwnership(): NonPayableTransactionObject<void>;
+
+    reportDisallowPeriod(): NonPayableTransactionObject<string>;
 
     reportMissingConnectivity(
       validator: string,
@@ -159,12 +192,18 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       blockHash: string | number[]
     ): NonPayableTransactionObject<void>;
 
+    setAllowedChangeableParameter(
+      setter: string | number[],
+      getter: string | number[],
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
     setEarlyEpochEndToleranceLevel(
       _level: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    setMinReportAge(
-      _minReportAge: number | string | BN
+    setReportDisallowPeriod(
+      _reportDisallowPeriodSeconds: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     stakingContract(): NonPayableTransactionObject<string>;
@@ -192,6 +231,14 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
+    RemoveChangeableParameter(
+      cb?: Callback<RemoveChangeableParameter>
+    ): EventEmitter;
+    RemoveChangeableParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeableParameter>
+    ): EventEmitter;
+
     ReportMissingConnectivity(
       cb?: Callback<ReportMissingConnectivity>
     ): EventEmitter;
@@ -206,6 +253,12 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       cb?: Callback<ReportReconnect>
     ): EventEmitter;
 
+    SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
+    SetChangeableParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeableParameter>
+    ): EventEmitter;
+
     SetEarlyEpochEndToleranceLevel(
       cb?: Callback<SetEarlyEpochEndToleranceLevel>
     ): EventEmitter;
@@ -214,10 +267,12 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       cb?: Callback<SetEarlyEpochEndToleranceLevel>
     ): EventEmitter;
 
-    SetMinReportAgeBlocks(cb?: Callback<SetMinReportAgeBlocks>): EventEmitter;
-    SetMinReportAgeBlocks(
+    SetReportDisallowPeriod(
+      cb?: Callback<SetReportDisallowPeriod>
+    ): EventEmitter;
+    SetReportDisallowPeriod(
       options?: EventOptions,
-      cb?: Callback<SetMinReportAgeBlocks>
+      cb?: Callback<SetReportDisallowPeriod>
     ): EventEmitter;
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
@@ -245,6 +300,16 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   ): void;
 
   once(
+    event: "RemoveChangeableParameter",
+    cb: Callback<RemoveChangeableParameter>
+  ): void;
+  once(
+    event: "RemoveChangeableParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeableParameter>
+  ): void;
+
+  once(
     event: "ReportMissingConnectivity",
     cb: Callback<ReportMissingConnectivity>
   ): void;
@@ -262,6 +327,16 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   ): void;
 
   once(
+    event: "SetChangeableParameter",
+    cb: Callback<SetChangeableParameter>
+  ): void;
+  once(
+    event: "SetChangeableParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeableParameter>
+  ): void;
+
+  once(
     event: "SetEarlyEpochEndToleranceLevel",
     cb: Callback<SetEarlyEpochEndToleranceLevel>
   ): void;
@@ -272,12 +347,12 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   ): void;
 
   once(
-    event: "SetMinReportAgeBlocks",
-    cb: Callback<SetMinReportAgeBlocks>
+    event: "SetReportDisallowPeriod",
+    cb: Callback<SetReportDisallowPeriod>
   ): void;
   once(
-    event: "SetMinReportAgeBlocks",
+    event: "SetReportDisallowPeriod",
     options: EventOptions,
-    cb: Callback<SetMinReportAgeBlocks>
+    cb: Callback<SetReportDisallowPeriod>
   ): void;
 }
