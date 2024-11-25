@@ -86,10 +86,6 @@ export interface TxPermissionHbbft extends BaseContract {
 
     addAllowedSender(_sender: string): NonPayableTransactionObject<void>;
 
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
-
     allowedSenders(): NonPayableTransactionObject<string[]>;
 
     allowedTxTypes(

@@ -16,7 +16,7 @@ export const networks = [
         },
         rpcUrls: {
             default: {
-                http: [import.meta.env.VITE_APP_RPC_URL || 'https://alpha3.uniq.domains/alpha4/rpc/'],
+                http: [import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:55100/'],
                 webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://alpha4.uniq.domains/ws'],
             },
         },
@@ -41,7 +41,7 @@ export const wagmiConfig = defaultWagmiConfig({
     chains: networks,
     metadata,
     transports: {
-        777018: http(import.meta.env.VITE_APP_RPC_URL || 'https://alpha3.uniq.domains/alpha4/rpc/')
+        777018: http(import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:55100/')
     },
     projectId,
     ssr: true,

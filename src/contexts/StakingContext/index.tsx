@@ -38,9 +38,9 @@ interface StakingContextProps {
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
-  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
-  createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
+  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {};
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
+  createPool: (publicKey: string, stakeAmount: BigNumber, nodeOperatorAddress: string, nodeOperatorShare: BigNumber) => Promise<boolean>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -322,7 +322,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.warn('Unexpected defaultBlock: ', web3.eth.defaultBlock);
     }
 
-    const globals = await contractsManager.aggregator?.methods.getGlobals().call({}, latestBlockNumber);
+    const globals = await contractsManager.aggregator?.methods.getGlobals().call();
 
     if (globals) {
       setKeyGenRound(parseInt(globals[2]));
@@ -587,7 +587,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
+  const createPool = async (publicKey: string, stakeAmount: BigNumber, nodeOperatorAddress: string, nodeOperatorShare: BigNumber): Promise<boolean> => {
     try {
       if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
 
@@ -612,7 +612,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         toast.warn("Insufficient candidate (pool owner) stake");
       } else {
         showLoader(true, "Creating pool 💎");
-        const receipt = await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
+        const receipt = await contractsManager.stContract.methods.addPool(minningAddress, nodeOperatorAddress, nodeOperatorShare.toString(), publicKey, ipAddress).send(txOpts);
         if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
         await addOrUpdatePool(userWallet.myAddr, receipt.blockNumber);
         showLoader(false, "");

@@ -68,23 +68,6 @@ export interface ValidatorSetHbbft extends BaseContract {
   ): ValidatorSetHbbft;
   clone(): ValidatorSetHbbft;
   methods: {
-    _unused2(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused3(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused4(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused5(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused6(
-      arg0: string,
-      arg1: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    _unused7(arg0: number | string | BN): NonPayableTransactionObject<string>;
-
-    _unused8(): NonPayableTransactionObject<string>;
-
     announceAvailability(
       _blockNumber: number | string | BN,
       _blockhash: string | number[]
@@ -137,10 +120,6 @@ export interface ValidatorSetHbbft extends BaseContract {
       ],
       _initialMiningAddresses: string[],
       _initialStakingAddresses: string[]
-    ): NonPayableTransactionObject<void>;
-
-    initializeV2(
-      _connectivityTracker: string
     ): NonPayableTransactionObject<void>;
 
     isFullHealth(): NonPayableTransactionObject<boolean>;

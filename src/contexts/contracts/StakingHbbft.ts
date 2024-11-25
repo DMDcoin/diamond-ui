@@ -119,6 +119,14 @@ export type SetDelegatorMinStake = ContractEventLog<{
   minStake: string;
   0: string;
 }>;
+export type SetNodeOperator = ContractEventLog<{
+  poolStakingAddress: string;
+  nodeOperatorAddress: string;
+  operatorShare: string;
+  0: string;
+  1: string;
+  2: string;
+}>;
 export type WithdrewStake = ContractEventLog<{
   fromPoolStakingAddress: string;
   staker: string;
@@ -140,17 +148,19 @@ export interface StakingHbbft extends BaseContract {
   methods: {
     MAX_CANDIDATES(): NonPayableTransactionObject<string>;
 
+    MAX_NODE_OPERATOR_SHARE_PERCENT(): NonPayableTransactionObject<string>;
+
+    PERCENT_DENOMINATOR(): NonPayableTransactionObject<string>;
+
     abandonedAndRemoved(arg0: string): NonPayableTransactionObject<boolean>;
 
     addPool(
       _miningAddress: string,
+      _nodeOperatorAddress: string,
+      _operatorShare: number | string | BN,
       _publicKey: string | number[],
       _ip: string | number[]
     ): PayableTransactionObject<void>;
-
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
 
     areStakeAndWithdrawAllowed(): NonPayableTransactionObject<boolean>;
 
@@ -295,6 +305,10 @@ export interface StakingHbbft extends BaseContract {
       2: string;
     }>;
 
+    poolNodeOperator(arg0: string): NonPayableTransactionObject<string>;
+
+    poolNodeOperatorShare(arg0: string): NonPayableTransactionObject<string>;
+
     poolToBeElectedIndex(arg0: string): NonPayableTransactionObject<string>;
 
     recoverAbandonedStakes(): NonPayableTransactionObject<void>;
@@ -328,6 +342,11 @@ export interface StakingHbbft extends BaseContract {
 
     setDelegatorMinStake(
       _minStake: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    setNodeOperator(
+      _operatorAddress: string,
+      _operatorShare: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setPoolInfo(
@@ -495,6 +514,12 @@ export interface StakingHbbft extends BaseContract {
       cb?: Callback<SetDelegatorMinStake>
     ): EventEmitter;
 
+    SetNodeOperator(cb?: Callback<SetNodeOperator>): EventEmitter;
+    SetNodeOperator(
+      options?: EventOptions,
+      cb?: Callback<SetNodeOperator>
+    ): EventEmitter;
+
     WithdrewStake(cb?: Callback<WithdrewStake>): EventEmitter;
     WithdrewStake(
       options?: EventOptions,
@@ -611,6 +636,13 @@ export interface StakingHbbft extends BaseContract {
     event: "SetDelegatorMinStake",
     options: EventOptions,
     cb: Callback<SetDelegatorMinStake>
+  ): void;
+
+  once(event: "SetNodeOperator", cb: Callback<SetNodeOperator>): void;
+  once(
+    event: "SetNodeOperator",
+    options: EventOptions,
+    cb: Callback<SetNodeOperator>
   ): void;
 
   once(event: "WithdrewStake", cb: Callback<WithdrewStake>): void;

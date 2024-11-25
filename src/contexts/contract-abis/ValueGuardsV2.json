@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "ValueGuards",
-  "sourceName": "contracts/lib/ValueGuards.sol",
+  "contractName": "ValueGuardsV2",
+  "sourceName": "contracts/ValueGuardsV2.sol",
   "abi": [
     {
       "inputs": [],
@@ -144,7 +144,7 @@
               "type": "uint256[]"
             }
           ],
-          "internalType": "struct ValueGuards.ParameterRange",
+          "internalType": "struct ValueGuardsV2.ParameterRange",
           "name": "",
           "type": "tuple"
         }
@@ -175,7 +175,7 @@
               "type": "uint256[]"
             }
           ],
-          "internalType": "struct ValueGuards.ParameterRange",
+          "internalType": "struct ValueGuardsV2.ParameterRange",
           "name": "",
           "type": "tuple"
         }
