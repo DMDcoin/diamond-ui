@@ -79,10 +79,6 @@ export interface BlockRewardHbbftMock extends BaseContract {
 
     addToReinsertPot(): PayableTransactionObject<void>;
 
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
-
     connectivityTracker(): NonPayableTransactionObject<string>;
 
     deltaPot(): NonPayableTransactionObject<string>;

@@ -1,4 +1,5 @@
-### Diamond UI - Unified Platform for DMD Operations
+# Diamond UI - Unified Platform for DMD Operations
+
 
 **Diamond UI** is a decentralized application designed to streamline operations, offering a comprehensive toolkit that promotes trust and stability in the DMD ecosystem.
 

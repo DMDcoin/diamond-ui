@@ -82,10 +82,6 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
   ): ConnectivityTrackerHbbft;
   clone(): ConnectivityTrackerHbbft;
   methods: {
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
-
     blockRewardContract(): NonPayableTransactionObject<string>;
 
     bonusScoreContract(): NonPayableTransactionObject<string>;

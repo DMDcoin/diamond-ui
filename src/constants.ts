@@ -1,4 +1,4 @@
 export const CURR_VERSION_INFO = {
-    version: "alpha4-0.1.9",
+    version: "alpha5-0.1",
     reset: true
 }
