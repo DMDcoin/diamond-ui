@@ -104,15 +104,15 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                    {/* <tr>
+                                                    <tr>
                                                         <td>Operator shared rewards</td>
-                                                        <td>20%</td>
+                                                        <td>{myPool.poolOperatorShare && BigNumber(myPool.poolOperatorShare).dividedBy(100).toString()} %</td>
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
                                                             <UpdatePoolOperatorModal buttonText="Update" pool={myPool} />
                                                             </div>
                                                         </td>
-                                                    </tr> */}
+                                                    </tr>
                                                 </>
                                             )}
                                                 <tr>
