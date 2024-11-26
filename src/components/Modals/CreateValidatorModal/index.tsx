@@ -66,7 +66,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
         toast.error("Invalid node operator address");
         return;
       }
-      if (nOperatorShare && nOperatorShare.isGreaterThan(0) && nOperatorShare.isLessThanOrEqualTo(20)) {
+      if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.isGreaterThan(20))) {
         toast.error("Node operator share must be between 0 and 20%");
         return;
       }
@@ -148,13 +148,13 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
                       type="number"
                       min={0}      // Minimum is 0%
                       max={20}     // Maximum is 20%
-                      step={0.001} // Allows increments of 0.001%
+                      step={0.01} // Allows increments of 0.01%
                       name="nodeOperatorShare"
                       className={styles.nodeOperatorShare}
-                      value={nodeOperatorShare ? (nodeOperatorShare.div(1000).toNumber().toString() || "") : ""}
+                      value={nodeOperatorShare ? (nodeOperatorShare.div(100).toNumber().toString() || "") : ""}
                       onChange={(e) => {
                         const percentage = parseFloat(e.target.value);
-                        const scaledValue = isNaN(percentage) ? null : new BigNumber(percentage * 1000);
+                        const scaledValue = isNaN(percentage) ? null : new BigNumber(percentage * 100);
                         setNodeOperatorShare(scaledValue);
                       }}
                       placeholder="Node operator share percentage"

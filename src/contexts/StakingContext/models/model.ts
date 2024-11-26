@@ -32,6 +32,8 @@ export class Pool {
   public orderedWithdrawAmount: BigNumber = new BigNumber(0);
   public orderedWithdrawUnlockEpoch: BigNumber = new BigNumber(0);
   public ownStake: BigNumber = new BigNumber(0);
+  public poolOperator: string = '';
+  public poolOperatorShare: BigNumber = new BigNumber(0);
 
   constructor(stakingAddress: string) {
     this.stakingAddress = stakingAddress;

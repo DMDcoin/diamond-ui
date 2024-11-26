@@ -92,3 +92,23 @@ input:focus {
   font-size: 14px;
   text-align: center;
 }
+
+.inputWrapper {
+  width: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+.nodeOperatorShare {
+  padding-right: 30px; /* Adjust for the percentage sign */
+}
+
+.percentageSign {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Prevent interaction */
+  font-size: 0.9em; /* Adjust size to match input */
+  color: #555; /* Optional styling */
+}

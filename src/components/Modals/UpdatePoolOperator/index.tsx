@@ -5,6 +5,7 @@ import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
+import { isValidAddress } from "../../../utils/common";
 
 interface ModalProps {
   buttonText: string;
@@ -13,11 +14,12 @@ interface ModalProps {
 
 const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const { stake, setPools } = useStakingContext();
-  const { web3, ensureWalletConnection, contractsManager } = useWeb3Context();
+  const modalRef = useRef<HTMLDivElement>(null);  
   const [poolOperator, setPoolOperator] = useState<string>("");
   const [poolOperatorShare, setPoolOperatorShare] = useState<BigNumber | null>(null);
+
+  const { ensureWalletConnection } = useWeb3Context();
+  const { updatePoolOperatorRewardsShare } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -47,17 +49,34 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
   }, [isOpen]);
 
   useEffect(() => {
-    contractsManager.stContract?.methods.poolNodeOperator(pool.stakingAddress).call().then((operator: string) => {
-      setPoolOperator(operator);
-    });
-    contractsManager.stContract?.methods.poolNodeOperatorShare(pool.stakingAddress).call().then((share: string) => {
-      setPoolOperatorShare(new BigNumber(share));
-    });
+    setPoolOperator(pool.poolOperator);
+    setPoolOperatorShare(pool.poolOperatorShare);
   }, [pool]);
 
   const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
+    if (!ensureWalletConnection()) return;
 
+    let nOperatorAddress = poolOperator;
+    let nOperatorShare = poolOperatorShare;    
+
+    if (nOperatorAddress.length && !isValidAddress(nOperatorAddress)) {
+      toast.error("Invalid node operator address");
+      return;
+    }
+
+    if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.dividedBy(100).isGreaterThan(20))) {
+      toast.error("Node operator share must be between 0 and 20%");
+      return;
+    }
+
+    try {
+      await updatePoolOperatorRewardsShare(pool, nOperatorAddress, nOperatorShare || new BigNumber(0));
+      closeModal();
+    } catch (err) {
+      console.log(err);
+      toast.error("Error in creating pool");
+    }
   }
 
   return (
@@ -85,20 +104,24 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
                 onChange={(e) => setPoolOperator(e.target.value)}
               />
 
-              <input
-                type="number"
-                min={0}      // Minimum is 0%
-                max={20}     // Maximum is 20%
-                step={0.001} // Allows increments of 0.001%
-                className={styles.formInput}
-                placeholder="Enter pool operator address"
-                value={poolOperatorShare ? (poolOperatorShare.div(1000).toNumber().toString() || "") : ""}
-                onChange={(e) => {
-                  const percentage = parseFloat(e.target.value);
-                  const scaledValue = isNaN(percentage) ? null : new BigNumber(percentage * 1000);
-                  setPoolOperatorShare(scaledValue);
-                }}
-              />
+              <div className={styles.inputWrapper}>
+                <input
+                  type="number"
+                  min={0}      // Minimum is 0%
+                  max={20}     // Maximum is 20%
+                  step={0.01} // Allows increments of 0.001%
+                  className={styles.nodeOperatorShare}
+                  placeholder="Enter pool operator address"
+                  value={poolOperatorShare ? (poolOperatorShare.div(100).toNumber().toString() || "") : ""}
+                  onChange={(e) => {
+                    const percentage = parseFloat(e.target.value);
+                    const scaledValue = isNaN(percentage) ? null : new BigNumber(percentage * 100);
+                    setPoolOperatorShare(scaledValue);
+                  }}
+                />
+
+                <span className={styles.percentageSign}>%</span>
+              </div>
 
               <button className={styles.formSubmit} type="submit">
                 Update
