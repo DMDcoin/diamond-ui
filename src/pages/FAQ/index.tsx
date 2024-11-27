@@ -271,6 +271,15 @@ const FAQ: React.FC<FAQProps> = () => {
                     </p>
                 </details>
 
+                <details>
+                    <summary>24. What is node operator share?</summary>
+                    <p>
+                        A configurable node operator share is a reward mechanism where a node owner delegates a share of their node owner rewards to a different node operator address. It’s designed for DMD Diamond coin holders who want to earn rewards by owning a node but don’t have the technical skills to operate it. A node owner gets an upfront 20% of each epoch reward because they own the node. From this, a percentage is shared with the node operator for their role. The node owner reward (20%) is configurable for each pool, allowing a portion of this share (0.01% - 20% (20% means 100% of the node owner reward)) to be forwarded.
+                    </p>
+                    <p>
+                        A node operator address can be set up during the pool creation step or anytime after the pool creation in the personal profile on the Diamond UI. It is editable once per epoch. One target address can be active at a time; setting a new one disables the old one.
+                    </p>
+                </details>
             </div>
         </section>
     );

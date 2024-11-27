@@ -35,6 +35,7 @@ interface StakingContextProps {
   fetchPoolScoreHistory: (pool: Pool) => {};
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
+  canUpdatePoolOperatorRewards: (pool: Pool) => Promise<boolean>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
@@ -834,7 +835,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const fetchPoolScoreHistory = async (pool: Pool): Promise<void> => {
-    console.log(pool.stakingAddress, pool.miningAddress)
     try {
       await contractsManager.bsContract?.getPastEvents('allEvents', {
         // filter: { miningAddress: pool.miningAddress }, // Filter by indexed parameter
@@ -849,6 +849,28 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.error('Error fetching events:', error);
     }
   };
+
+  const canUpdatePoolOperatorRewards = async (pool: Pool): Promise<boolean> => {
+    let canUpdate = false;
+    const currentBlock = await web3.eth.getBlockNumber();
+    const globals = await contractsManager.aggregator?.methods.getGlobals().call({}, currentBlock);
+
+    await contractsManager.stContract?.getPastEvents('SetNodeOperator',
+    {
+      filter: { poolStakingAddress: pool.stakingAddress, nodeOperatorAddress: pool.poolOperator },
+      fromBlock: Math.max(currentBlock - 100000, 1),
+      toBlock: 'latest'
+    },
+    async (err, events) => {
+      const latestEvent = events.reduce((max, current) => current.blockNumber > max.blockNumber ? current : max, events[0]);
+      if (globals && latestEvent.blockNumber >= parseInt(globals[8])) {
+        canUpdate = false;
+      } else {
+        canUpdate = true;
+      }
+    });
+    return canUpdate;
+  }
 
   const contextValue = {
     // state
@@ -881,6 +903,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     claimOrderedUnstake,
     fetchPoolScoreHistory,
     getWithdrawableAmounts,
+    canUpdatePoolOperatorRewards,
     initializeStakingDataAdapter,
     updatePoolOperatorRewardsShare
   };
