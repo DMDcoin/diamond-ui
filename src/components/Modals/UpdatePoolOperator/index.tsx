@@ -1,11 +1,11 @@
 import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
+import { isValidAddress } from "../../../utils/common";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
-import { isValidAddress } from "../../../utils/common";
 
 interface ModalProps {
   buttonText: string;
@@ -14,12 +14,13 @@ interface ModalProps {
 
 const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);  
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [canUpdate, setCanUpdate] = useState(false);
   const [poolOperator, setPoolOperator] = useState<string>("");
   const [poolOperatorShare, setPoolOperatorShare] = useState<BigNumber | null>(null);
 
   const { ensureWalletConnection } = useWeb3Context();
-  const { updatePoolOperatorRewardsShare } = useStakingContext();
+  const { updatePoolOperatorRewardsShare, canUpdatePoolOperatorRewards } = useStakingContext();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -48,10 +49,13 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
     };
   }, [isOpen]);
 
-  useEffect(() => {
+  const checks = () => {
     setPoolOperator(pool.poolOperator);
     setPoolOperatorShare(pool.poolOperatorShare);
-  }, [pool]);
+    canUpdatePoolOperatorRewards(pool).then((res) => {
+      setCanUpdate(res)
+    });
+  }
 
   const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
@@ -76,12 +80,13 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
     } catch (err) {
       console.log(err);
       toast.error("Error in creating pool");
+      closeModal();
     }
   }
 
   return (
     <>
-      <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
+      <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); checks(); }}>
         {buttonText}
       </button>
 
@@ -123,9 +128,17 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
                 <span className={styles.percentageSign}>%</span>
               </div>
 
-              <button className={styles.formSubmit} type="submit">
-                Update
-              </button>
+              {
+                !canUpdate ? (
+                  <p className={styles.stakeWarning}>
+                    You can update the pool operator rewards share only once per Epoch
+                  </p>
+                ) : (
+                  <button className={styles.formSubmit} type="submit">
+                    Update
+                  </button>
+                )
+              }
             </form>
           </div>
         </div>
