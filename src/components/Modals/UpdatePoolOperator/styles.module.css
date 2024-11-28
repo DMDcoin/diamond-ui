@@ -33,16 +33,19 @@
 }
 
 .form {
-  gap: 2rem;
+  gap: 1rem;
   display: flex;
   margin-top: 20px;
+  text-align: left;
   align-items: center;
   flex-direction: column;
   justify-content: center;
 }
 
-.form > span {
+.form>span {
   font-size: 14px;
+  margin-top: 10px;
+  align-self: flex-start;
 }
 
 label {
@@ -77,10 +80,17 @@ input:focus {
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  margin-top: 10px;
 }
 
 .formSubmit:hover {
   background-color: #0056b3;
+}
+
+.stakeWarning {
+  color: red;
+  font-size: 14px;
+  text-align: center;
 }
 
 .inputWrapper {
@@ -101,20 +111,4 @@ input:focus {
   pointer-events: none; /* Prevent interaction */
   font-size: 0.9em; /* Adjust size to match input */
   color: #555; /* Optional styling */
-}
-
-.checkboxWrapper {
-  gap: 0.5rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.checkboxWrapper  > * {
-  width: auto;
-}
-
-.checkboxWrapper > span {
-  font-size: 14px;
 }

@@ -35,12 +35,14 @@ interface StakingContextProps {
   fetchPoolScoreHistory: (pool: Pool) => {};
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
+  canUpdatePoolOperatorRewards: (pool: Pool) => Promise<boolean>;
   stake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   unstake: (pool: Pool, amount: BigNumber) => Promise<boolean>;
   removePool: (pool: Pool, amount: BigNumber) => Promise<boolean>;
-  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {}
-  createPool: (publicKey: string, stakeAmount: BigNumber) => Promise<boolean>;
+  addOrUpdatePool: (stakingAddr: string, blockNumber: number) => {};
   getWithdrawableAmounts: (pool: Pool) => Promise<{maxWithdrawAmount: BigNumber, maxWithdrawOrderAmount: BigNumber}>;
+  updatePoolOperatorRewardsShare: (pool: Pool, nodeOperatorAddress: string, nodeOperatorShare: BigNumber) => Promise<boolean>;
+  createPool: (publicKey: string, stakeAmount: BigNumber, nodeOperatorAddress: string, nodeOperatorShare: BigNumber) => Promise<boolean>;
 }
 
 const StakingContext = createContext<StakingContextProps | undefined>(undefined);
@@ -124,6 +126,12 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
+  const getNodeOperatorData = async (pool: Pool) => {
+    const nodeOperatorAddress = await contractsManager.stContract?.methods.poolNodeOperator(pool.stakingAddress).call();
+    const nodeOperatorShare = await contractsManager.stContract?.methods.poolNodeOperatorShare(pool.stakingAddress).call();
+    return { nodeOperatorAddress, nodeOperatorShare: new BigNumber(nodeOperatorShare || 0) };
+  }
+
   const updateStakeAmounts = async (poolsInp?: Pool[]) => {
     const poolsStakingAddresses = poolsInp ? poolsInp.map(p => p.stakingAddress) : pools.map(p => p.stakingAddress);
     const myAddr = userWallet.myAddr || '0x0000000000000000000000000000000000000000';
@@ -168,7 +176,14 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         }
       });
       
-      setMyPool(newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10**18))));
+      const myPool = newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10 ** 18)));
+      if (myPool) {
+        getNodeOperatorData(myPool).then((data) => {
+          myPool.poolOperator = data.nodeOperatorAddress;
+          myPool.poolOperatorShare = data.nodeOperatorShare;
+          setMyPool(myPool);
+        });
+      }
       return newPools;
     });
   }
@@ -587,7 +602,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
   }
 
-  const createPool = async (publicKey: string, stakeAmount: BigNumber): Promise<boolean> => {
+  const createPool = async (publicKey: string, stakeAmount: BigNumber, nodeOperatorAddress: string, nodeOperatorShare: BigNumber): Promise<boolean> => {
     try {
       if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
 
@@ -612,7 +627,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         toast.warn("Insufficient candidate (pool owner) stake");
       } else {
         showLoader(true, "Creating pool 💎");
-        const receipt = await contractsManager.stContract.methods.addPool(minningAddress, publicKey, ipAddress).send(txOpts);
+        const receipt = await contractsManager.stContract.methods.addPool(minningAddress, nodeOperatorAddress, nodeOperatorShare.toString(), publicKey, ipAddress).send(txOpts);
         if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
         await addOrUpdatePool(userWallet.myAddr, receipt.blockNumber);
         showLoader(false, "");
@@ -657,6 +672,35 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         handleErrorMsg(err, "Error in Removing Pool");
         return false;
       }
+    }
+  }
+
+  const updatePoolOperatorRewardsShare = async (pool: Pool, nodeOperatorAddress: string, nodeOperatorShare: BigNumber)=> {    
+    try {
+        let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
+        showLoader(true, "Updating pool rewards share 💎");
+        const receipt = await contractsManager.stContract?.methods.setNodeOperator(nodeOperatorAddress, nodeOperatorShare.toString()).send(txOpts);
+        if (!showHistoricBlock && receipt) setCurrentBlockNumber(receipt.blockNumber);
+        pool.poolOperator = nodeOperatorAddress;
+        pool.poolOperatorShare = nodeOperatorShare;
+        setPools(prevPools => {
+          let updatedPools = [...prevPools]
+          const poolIndex = updatedPools.findIndex(p => p.stakingAddress === pool.stakingAddress);
+          if (poolIndex !== -1) {
+            updatedPools[poolIndex] = pool;
+          } else {
+            updatedPools.push(pool);
+          }
+          updateStakeAmounts(updatedPools);
+          return updatedPools;
+        });
+        showLoader(false, "");
+        toast.success("Pool reward share updated successfully 💎");
+        return true;
+    } catch(err: any) {
+        showLoader(false, "");
+        handleErrorMsg(err, "Error in updating pool operator rewards share");
+        return false;
     }
   }
 
@@ -791,7 +835,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const fetchPoolScoreHistory = async (pool: Pool): Promise<void> => {
-    console.log(pool.stakingAddress, pool.miningAddress)
     try {
       await contractsManager.bsContract?.getPastEvents('allEvents', {
         // filter: { miningAddress: pool.miningAddress }, // Filter by indexed parameter
@@ -806,6 +849,28 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       console.error('Error fetching events:', error);
     }
   };
+
+  const canUpdatePoolOperatorRewards = async (pool: Pool): Promise<boolean> => {
+    let canUpdate = false;
+    const currentBlock = await web3.eth.getBlockNumber();
+    const globals = await contractsManager.aggregator?.methods.getGlobals().call({}, currentBlock);
+
+    await contractsManager.stContract?.getPastEvents('SetNodeOperator',
+    {
+      filter: { poolStakingAddress: pool.stakingAddress, nodeOperatorAddress: pool.poolOperator },
+      fromBlock: Math.max(currentBlock - 100000, 1),
+      toBlock: 'latest'
+    },
+    async (err, events) => {
+      const latestEvent = events.reduce((max, current) => current.blockNumber > max.blockNumber ? current : max, events[0]);
+      if (globals && latestEvent.blockNumber >= parseInt(globals[8])) {
+        canUpdate = false;
+      } else {
+        canUpdate = true;
+      }
+    });
+    return canUpdate;
+  }
 
   const contextValue = {
     // state
@@ -838,7 +903,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     claimOrderedUnstake,
     fetchPoolScoreHistory,
     getWithdrawableAmounts,
-    initializeStakingDataAdapter
+    canUpdatePoolOperatorRewards,
+    initializeStakingDataAdapter,
+    updatePoolOperatorRewardsShare
   };
 
   return (

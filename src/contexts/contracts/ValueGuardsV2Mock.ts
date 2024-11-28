@@ -52,13 +52,13 @@ export type SetValueB = ContractEventLog<{
   0: string;
 }>;
 
-export interface ValueGuardsMock extends BaseContract {
+export interface ValueGuardsV2Mock extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): ValueGuardsMock;
-  clone(): ValueGuardsMock;
+  ): ValueGuardsV2Mock;
+  clone(): ValueGuardsV2Mock;
   methods: {
     getAllowedParamsRange(
       _selector: string
