@@ -119,7 +119,6 @@ export class ContractManager {
     }
 
     const contractAddress = await this.getValidatorSetHbbft().methods.stakingContract().call();
-    
     const abi : any = JsonStakingHbbft.abi;
     const stakingContract : any = new this.web3.eth.Contract(abi, contractAddress);
     this.cachedStakingHbbft = stakingContract;

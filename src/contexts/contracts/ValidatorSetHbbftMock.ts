@@ -68,23 +68,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
   ): ValidatorSetHbbftMock;
   clone(): ValidatorSetHbbftMock;
   methods: {
-    _unused2(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused3(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused4(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused5(arg0: string): NonPayableTransactionObject<string>;
-
-    _unused6(
-      arg0: string,
-      arg1: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    _unused7(arg0: number | string | BN): NonPayableTransactionObject<string>;
-
-    _unused8(): NonPayableTransactionObject<string>;
-
     announceAvailability(
       _blockNumber: number | string | BN,
       _blockhash: string | number[]
@@ -147,10 +130,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       _initialStakingAddresses: string[]
     ): NonPayableTransactionObject<void>;
 
-    initializeV2(
-      _connectivityTracker: string
-    ): NonPayableTransactionObject<void>;
-
     isFullHealth(): NonPayableTransactionObject<boolean>;
 
     isPendingValidator(
@@ -200,8 +179,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     setConnectivityTracker(_address: string): NonPayableTransactionObject<void>;
-
-    setIsFullHealth(_healthy: boolean): NonPayableTransactionObject<void>;
 
     setKeyGenHistoryContract(
       _address: string

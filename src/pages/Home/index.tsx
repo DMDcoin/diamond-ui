@@ -18,6 +18,7 @@ import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
 import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
 import { useWalletConnectContext } from "../../contexts/WalletConnect";
+import UpdatePoolOperatorModal from "../../components/Modals/UpdatePoolOperator";
 
 interface HomeProps {}
 
@@ -103,6 +104,15 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                             </div>
                                                         </td>
                                                     </tr>
+                                                    <tr>
+                                                        <td>Operator shared rewards</td>
+                                                        <td>{myPool.poolOperatorShare && BigNumber(myPool.poolOperatorShare).dividedBy(100).toString()} %</td>
+                                                        <td>
+                                                            <div className={styles.loggedInBtns}>
+                                                            <UpdatePoolOperatorModal buttonText="Update" pool={myPool} />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 </>
                                             )}
                                                 <tr>
@@ -134,42 +144,54 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
-                        {myPool && myPool.delegators.length ? <h1>Delegates</h1> : "" }
-                        <table className={styles.styledTableFirst}>
-                            <thead>
-                            {
-                                myPool && myPool.delegators.length ? (
-                                    <>
-                                        <tr>
-                                            <td></td>
-                                            <td>Wallet</td>
-                                            <td>Delegated Stake</td>
-                                        </tr>
-                                    </>
-                                ) : myPool && (
-                                    <tr>
-                                        <td>No Delegations</td>
-                                    </tr>
-                                )
-                            }
-                            </thead>
-                            <tbody>
-                            {
-                                myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
-                                <tr key={i} className={styles.tableBodyRow}>
-                                    <td>
-                                        <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
-                                    </td>
-                                    <td>{delegator.address}</td>
-                                    <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
-                                </tr>
-                                )) : myPool && (
-                                    <tr>
-                                    </tr>
-                                )
-                            }
-                            </tbody>
-                        </table>
+                        {myPool && (
+                            <>
+                                <div className="comparison-row-main">
+                                    <h2 className="heading-3">Delegates</h2>
+                                </div>
+                                <table className={styles.styledTable}>
+                                    {
+                                    (() => {
+                                            return (
+                                                myPool && myPool.delegators.length ? (
+                                                    <>
+                                                        <thead>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Wallet</td>
+                                                                <td>Delegated Stake</td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {
+                                                            myPool && myPool.delegators.length ? myPool.delegators.map((delegator, i) => (
+                                                            <tr key={i} className={styles.tableBodyRow}>
+                                                                <td>
+                                                                    <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
+                                                                </td>
+                                                                <td>{delegator.address}</td>
+                                                                <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                            </tr>
+                                                            )) : myPool && (
+                                                                <tr>
+                                                                </tr>
+                                                            )
+                                                        }
+                                                        </tbody>
+                                                    </>
+                                                ) : (
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No Delegations</th>
+                                                        </tr>
+                                                    </thead>
+                                                )
+                                            )
+                                        })()
+                                    }
+                                </table>
+                            </>
+                        ) }
                     </div>
 
                     <div className={styles.heroContainer + " hero-container"}>
@@ -179,35 +201,50 @@ const Home: React.FC<HomeProps> = ({}) => {
                             </div>
                             <div className={styles.tableContainer}>
                                 <table className={styles.styledTable}>
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Wallet</th>
-                                            <th>Total Stake</th>
-                                            <th>My Stake</th>
-                                            <th>Voting Power</th>
-                                            <th>Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                        pools
-                                            .filter((p) => BigNumber(p.myStake).isGreaterThan(0))  // Sort pools by totalStake in descending order
-                                            .slice(0, 5)  // Get the top 5 pools
-                                            .map((pool, i) => (
-                                            <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
-                                                <td>
-                                                    <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
-                                                </td>
-                                                <td>{pool.stakingAddress}</td>
-                                                <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
-                                                <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
-                                                <td>{pool.votingPower.toString()}%</td>
-                                                <td>{pool.score}</td>
-                                            </tr>
-                                            ))
-                                        }
-                                    </tbody>
+                                    {
+                                        (() => {
+                                            const hasStakedOnValidators = pools.filter((p) => BigNumber(p.myStake).isGreaterThan(0)).slice(0, 5);
+                                            return hasStakedOnValidators.length ? (
+                                                <>
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>Wallet</th>
+                                                            <th>Total Stake</th>
+                                                            <th>My Stake</th>
+                                                            <th>Voting Power</th>
+                                                            <th>Score</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            pools
+                                                                .filter((p) => BigNumber(p.myStake).isGreaterThan(0))  // Sort pools by totalStake in descending order
+                                                                .slice(0, 5)  // Get the top 5 pools
+                                                                .map((pool, i) => (
+                                                                    <tr key={i} onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow}>
+                                                                        <td>
+                                                                            <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
+                                                                        </td>
+                                                                        <td>{pool.stakingAddress}</td>
+                                                                        <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
+                                                                        <td>{pool.votingPower.toString()}%</td>
+                                                                        <td>{pool.score}</td>
+                                                                    </tr>
+                                                                ))
+                                                        }
+                                                    </tbody>
+                                                </>
+                                            ) : (
+                                                <thead>
+                                                    <tr>
+                                                        <th>No stakes</th>
+                                                    </tr>
+                                                </thead>
+                                            );
+                                        })()
+                                    }
                                 </table>
                             </div>
                         </div>

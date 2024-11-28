@@ -52,10 +52,6 @@ export interface ValueGuards extends BaseContract {
   ): ValueGuards;
   clone(): ValueGuards;
   methods: {
-    allowedParameterRange(
-      arg0: string | number[]
-    ): NonPayableTransactionObject<string>;
-
     getAllowedParamsRange(
       _selector: string
     ): NonPayableTransactionObject<[string, string[]]>;
