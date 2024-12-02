@@ -66,7 +66,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
         toast.error("Invalid node operator address");
         return;
       }
-      if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.isGreaterThan(20))) {
+      if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.dividedBy(100).isGreaterThan(20))) {
         toast.error("Node operator share must be between 0 and 20%");
         return;
       }

@@ -183,6 +183,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
           myPool.poolOperatorShare = data.nodeOperatorShare;
           setMyPool(myPool);
         });
+      } else {
+        setMyPool(myPool);
       }
       return newPools;
     });
