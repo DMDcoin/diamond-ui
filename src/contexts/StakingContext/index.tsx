@@ -177,6 +177,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       });
       
       const myPool = newPools.find((p: Pool) => p.stakingAddress === userWallet.myAddr && BigNumber(p.ownStake).isGreaterThanOrEqualTo(BigNumber(10000).multipliedBy(10 ** 18)));
+
       if (myPool) {
         getNodeOperatorData(myPool).then((data) => {
           myPool.poolOperator = data.nodeOperatorAddress;
@@ -196,13 +197,20 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     setStakingInitialized(true);
   }
 
+  const getLatestBlockNumber = async () => {
+    const vsContractBlockNumber = await getLatestVsContractBlockNumber();
+    const stContractBlockNumber = await getLatestStContractBlockNumber();
+
+    return Math.max(vsContractBlockNumber, stContractBlockNumber) || await web3.eth.getBlockNumber();
+  }
+
   const getLatestVsContractBlockNumber = async () => {
     let allEvents: any[] = [];
     const eventsBatchSize = 100000;
     const currentBlock = await web3.eth.getBlockNumber();
   
     // Retrieve the last block number from localStorage
-    const storedBlockNumber = parseInt(localStorage.getItem('vsContractLatestBlockN') || '0', 10);
+    const storedBlockNumber = parseInt(localStorage.getItem('contractLatestBlockN') || '0', 10);
     const startBlock = isNaN(storedBlockNumber) ? 0 : storedBlockNumber;
   
     const promises: Promise<void>[] = [];
@@ -235,7 +243,51 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const latestBlockNumber = latestEvent?.blockNumber ?? currentBlock;
   
     // Store the latest block number in localStorage
-    localStorage.setItem('vsContractLatestBlockN', latestBlockNumber.toString());
+    localStorage.setItem('contractLatestBlockN', latestBlockNumber.toString());
+  
+    return latestBlockNumber;
+  }
+
+  const getLatestStContractBlockNumber = async () => {
+    let allEvents: any[] = [];
+    const eventsBatchSize = 100000;
+    const currentBlock = await web3.eth.getBlockNumber();
+  
+    // Retrieve the last block number from localStorage
+    const storedBlockNumber = parseInt(localStorage.getItem('contractLatestBlockN') || '0', 10);
+    const startBlock = isNaN(storedBlockNumber) ? 0 : storedBlockNumber;
+  
+    const promises: Promise<void>[] = [];
+  
+    for (let i = startBlock; i < currentBlock; i += eventsBatchSize) {
+      const start = i;
+      const end = Math.min(i + eventsBatchSize - 1, currentBlock);
+  
+      if (contractsManager.stContract) {
+        const promise = contractsManager.stContract.getPastEvents(
+          'allEvents',
+          {
+            fromBlock: start,
+            toBlock: end
+          }).then((events) => {
+            events.forEach(e => allEvents.push(e));
+          }).catch((error) => {
+            console.error(`Error fetching events from block ${start} to ${end}:`, error);
+          });
+  
+        promises.push(promise);
+      }
+    }
+  
+    await Promise.allSettled(promises);
+
+    const latestEvent = allEvents.reduce((maxEvent: any, event: any) => 
+      event.blockNumber > maxEvent.blockNumber ? event : maxEvent, allEvents[0]);
+
+    const latestBlockNumber = latestEvent?.blockNumber ?? currentBlock;
+  
+    // Store the latest block number in localStorage
+    localStorage.setItem('contractLatestBlockN', latestBlockNumber.toString());
   
     return latestBlockNumber;
   }
@@ -277,7 +329,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         return;
       }
 
-      const currentBlock = await getLatestVsContractBlockNumber() || await web3.eth.getBlockNumber();
+      const currentBlock = await getLatestBlockNumber();
       setCurrentBlockNumber(
         prevState => {
           if (currentBlock > prevState && !handlingNewBlock) {
@@ -326,7 +378,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     console.log("[INFO] Retrieving Global Values")
     const oldStakingEpoch = stakingEpoch;
 
-    const latestBlockNumber = await getLatestVsContractBlockNumber() || await web3.eth.getBlockNumber();
+    const latestBlockNumber = await getLatestBlockNumber();
     
     if (web3.eth.defaultBlock === undefined || web3.eth.defaultBlock === 'latest') {
       setCurrentBlockNumber(latestBlockNumber);
@@ -374,7 +426,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let toBeElectedPoolAddrs: Array<string> = [];
     let pendingValidatorAddrs: Array<string> = [];
 
-    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
+    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
       activePoolAddrs = poolsData[1]; // miningAddresses
@@ -384,11 +436,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     }
 
     activePoolAddrs = await Promise.all(
-      activePoolAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call({}, blockNumber))
+      activePoolAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
     );
 
     pendingValidatorAddrs = await Promise.all(
-      pendingValidatorAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call({}, blockNumber))
+      pendingValidatorAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
     );
 
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
@@ -492,7 +544,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
     pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
-    pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call({}, blockNumber));
+    pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call());
 
     return pool;
   }
@@ -538,7 +590,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let candidateStake = new BigNumber(0);
 
     try {
-      const delegationData = await contractsManager.aggregator?.methods.getDelegationsData(delegators.map(d => d.address), pool.stakingAddress).call(tx(), blockNumber);
+      const delegationData = await contractsManager.aggregator?.methods.getDelegationsData(delegators.map(d => d.address), pool.stakingAddress).call();
 
       if (delegationData) {
         delegationData[0].map((delegation: any, index: number) => {
@@ -577,7 +629,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let toBeElectedPoolAddrs: Array<string> = [];
     let pendingValidatorAddrs: Array<string> = [];
 
-    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call({}, blockNumber);
+    const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
       activePoolAddrs = poolsData[1];
@@ -585,7 +637,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       pendingValidatorAddrs = poolsData[4];
     }
 
-    const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call(tx(), blockNumber);
+    const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call();
 
     if (updatedData && updatedData.length > 0) {
       const updatedPoolData = await updatePool(pool, updatedData[0], activePoolAddrs, toBeElectedPoolAddrs, pendingValidatorAddrs, blockNumber);
