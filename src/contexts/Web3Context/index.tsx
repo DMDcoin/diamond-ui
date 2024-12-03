@@ -118,7 +118,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const CURRENT_APP_VERSION = CURR_VERSION_INFO.version;
     const SHOULD_RESET_CACHE = CURR_VERSION_INFO.reset;
     const storedAppVersion = localStorage.getItem('appVersion');
-  
+
     if (storedAppVersion !== CURRENT_APP_VERSION) {
       if (SHOULD_RESET_CACHE) {
         localStorage.clear();
