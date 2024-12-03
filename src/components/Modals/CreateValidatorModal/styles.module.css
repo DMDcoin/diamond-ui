@@ -118,3 +118,12 @@ input:focus {
 .checkboxWrapper > span {
   font-size: 14px;
 }
+
+span > a {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.checkboxWrapper > span:nth-child(1) {
+  font-weight: bold;
+}
