@@ -5,7 +5,8 @@ import { isValidAddress } from "../../../utils/common";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent, startTransition } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ModalProps {
   buttonText: string;
@@ -13,6 +14,7 @@ interface ModalProps {
 }
 
 const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [canUpdate, setCanUpdate] = useState(false);
@@ -97,6 +99,8 @@ const UpdatePoolOperatorModal: React.FC<ModalProps> = ({ buttonText, pool }) => 
               &times;
             </button>
             <h2>Update rewards share</h2>
+
+            <p>Please provide a node operator address to share the rewards and the %, which is forwarded to the address. Check out the <a onClick={() => { startTransition(() => { navigate('faqs') }) }}>FAQ section</a> to learn more.</p>
 
             <form className={styles.form} onSubmit={handleUpdate}>
               <input

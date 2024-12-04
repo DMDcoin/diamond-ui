@@ -105,7 +105,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Operator shared rewards</td>
+                                                        <td>Node Operator shared rewards</td>
                                                         <td>{myPool.poolOperatorShare && BigNumber(myPool.poolOperatorShare).dividedBy(100).toString()} %</td>
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
