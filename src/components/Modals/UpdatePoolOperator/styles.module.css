@@ -22,6 +22,10 @@
   border-radius: 8px;
 }
 
+.modalContent > p {
+  margin: 30px 0px;
+}
+
 .modalClose {
   position: absolute;
   top: 10px;
@@ -111,4 +115,9 @@ input:focus {
   pointer-events: none; /* Prevent interaction */
   font-size: 0.9em; /* Adjust size to match input */
   color: #555; /* Optional styling */
+}
+
+p > a {
+  cursor: pointer;
+  font-weight: bold;
 }

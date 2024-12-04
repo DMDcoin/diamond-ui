@@ -4,7 +4,7 @@ import styles from "./styles.module.css";
 import { useNavigate } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
 import { useStakingContext } from "../../../contexts/StakingContext";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent, startTransition } from "react";
 import { isValidAddress } from "../../../utils/common";
 
 interface ModalProps {
@@ -66,7 +66,7 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
         toast.error("Invalid node operator address");
         return;
       }
-      if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.isGreaterThan(20))) {
+      if (nOperatorShare && (nOperatorShare.isLessThan(0) || nOperatorShare.dividedBy(100).isGreaterThan(20))) {
         toast.error("Node operator share must be between 0 and 20%");
         return;
       }
@@ -131,6 +131,8 @@ const CreateValidatorModal: React.FC<ModalProps> = ({ buttonText }) => {
 
               {isDifferentNodeOperator && (
                 <>
+                  <span>Please provide a node operator address to share the rewards and the %, which is forwarded to the address. Check out the <a onClick={() => { startTransition(() => { navigate('faqs') }) }}>FAQ section</a> to learn more.</span>
+
                   <input
                     type="text"
                     minLength={42}
