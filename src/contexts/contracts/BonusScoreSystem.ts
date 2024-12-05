@@ -31,18 +31,6 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type SetConnectivityTrackerContract = ContractEventLog<{
-  _connectivityTracker: string;
-  0: string;
-}>;
-export type SetStakingContract = ContractEventLog<{
-  _staking: string;
-  0: string;
-}>;
-export type SetValidatorSetContract = ContractEventLog<{
-  _validatorSet: string;
-  0: string;
-}>;
 export type UpdateScoringFactor = ContractEventLog<{
   factor: string;
   value: string;
@@ -118,24 +106,9 @@ export interface BonusScoreSystem extends BaseContract {
       availableSince: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    setConnectivityTrackerContract(
-      _address: string
-    ): NonPayableTransactionObject<void>;
-
-    setStakingContract(_staking: string): NonPayableTransactionObject<void>;
-
-    setValidatorSetContract(
-      _validatorSet: string
-    ): NonPayableTransactionObject<void>;
-
     stakingHbbft(): NonPayableTransactionObject<string>;
 
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
-
-    updateScoringFactor(
-      factor: number | string | BN,
-      value: number | string | BN
-    ): NonPayableTransactionObject<void>;
 
     validatorSetHbbft(): NonPayableTransactionObject<string>;
   };
@@ -150,28 +123,6 @@ export interface BonusScoreSystem extends BaseContract {
     OwnershipTransferred(
       options?: EventOptions,
       cb?: Callback<OwnershipTransferred>
-    ): EventEmitter;
-
-    SetConnectivityTrackerContract(
-      cb?: Callback<SetConnectivityTrackerContract>
-    ): EventEmitter;
-    SetConnectivityTrackerContract(
-      options?: EventOptions,
-      cb?: Callback<SetConnectivityTrackerContract>
-    ): EventEmitter;
-
-    SetStakingContract(cb?: Callback<SetStakingContract>): EventEmitter;
-    SetStakingContract(
-      options?: EventOptions,
-      cb?: Callback<SetStakingContract>
-    ): EventEmitter;
-
-    SetValidatorSetContract(
-      cb?: Callback<SetValidatorSetContract>
-    ): EventEmitter;
-    SetValidatorSetContract(
-      options?: EventOptions,
-      cb?: Callback<SetValidatorSetContract>
     ): EventEmitter;
 
     UpdateScoringFactor(cb?: Callback<UpdateScoringFactor>): EventEmitter;
@@ -201,33 +152,6 @@ export interface BonusScoreSystem extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
-  ): void;
-
-  once(
-    event: "SetConnectivityTrackerContract",
-    cb: Callback<SetConnectivityTrackerContract>
-  ): void;
-  once(
-    event: "SetConnectivityTrackerContract",
-    options: EventOptions,
-    cb: Callback<SetConnectivityTrackerContract>
-  ): void;
-
-  once(event: "SetStakingContract", cb: Callback<SetStakingContract>): void;
-  once(
-    event: "SetStakingContract",
-    options: EventOptions,
-    cb: Callback<SetStakingContract>
-  ): void;
-
-  once(
-    event: "SetValidatorSetContract",
-    cb: Callback<SetValidatorSetContract>
-  ): void;
-  once(
-    event: "SetValidatorSetContract",
-    options: EventOptions,
-    cb: Callback<SetValidatorSetContract>
   ): void;
 
   once(event: "UpdateScoringFactor", cb: Callback<UpdateScoringFactor>): void;
