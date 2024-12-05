@@ -7,7 +7,7 @@ export const projectId = import.meta.env.VITE_APP_WC_PROJECT_ID;
 // Create wagmiConfig
 export const networks = [
     defineChain({
-        id: Number(import.meta.env.VITE_APP_CHAINID) || 777019,
+        id: Number(import.meta.env.VITE_APP_CHAINID) || 27272,
         name: "DMD Diamond",
         nativeCurrency: {
             name: "DMD",
@@ -16,14 +16,14 @@ export const networks = [
         },
         rpcUrls: {
             default: {
-                http: [import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:55100/'],
-                webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://alpha4.uniq.domains/ws'],
+                http: [import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/'],
+                webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://beta-rpc.bit.diamonds/ws'],
             },
         },
         blockExplorers: {
             default: {
                 name: "DMD Explorer",
-                url: import.meta.env.VITE_APP_EXPLORER_URL || "http://62.171.133.46:4400/",
+                url: import.meta.env.VITE_APP_EXPLORER_URL || "https://beta-explorer.bit.diamonds/",
             },
         },
     })
@@ -41,7 +41,7 @@ export const wagmiConfig = defaultWagmiConfig({
     chains: networks,
     metadata,
     transports: {
-        777019: http(import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:55100/')
+        27272: http(import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/')
     },
     projectId,
     ssr: true,
