@@ -905,25 +905,8 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   };
 
   const canUpdatePoolOperatorRewards = async (pool: Pool): Promise<boolean> => {
-    let canUpdate = false;
-    const currentBlock = await web3.eth.getBlockNumber();
-    const globals = await contractsManager.aggregator?.methods.getGlobals().call({}, currentBlock);
-
-    await contractsManager.stContract?.getPastEvents('SetNodeOperator',
-    {
-      filter: { poolStakingAddress: pool.stakingAddress, nodeOperatorAddress: pool.poolOperator },
-      fromBlock: Math.max(currentBlock - 100000, 1),
-      toBlock: 'latest'
-    },
-    async (err, events) => {
-      const latestEvent = events.reduce((max, current) => current.blockNumber > max.blockNumber ? current : max, events[0]);
-      if (globals && latestEvent.blockNumber >= parseInt(globals[8])) {
-        canUpdate = false;
-      } else {
-        canUpdate = true;
-      }
-    });
-    return canUpdate;
+    const lastUpdateEpoch = await contractsManager.stContract?.methods.poolNodeOperatorLastChangeEpoch(pool.stakingAddress).call();
+    return lastUpdateEpoch && Number(lastUpdateEpoch) < stakingEpoch ? true : false;
   }
 
   const contextValue = {
