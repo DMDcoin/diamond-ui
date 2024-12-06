@@ -336,6 +336,10 @@ export interface StakingHbbftMock extends BaseContract {
 
     poolNodeOperator(arg0: string): NonPayableTransactionObject<string>;
 
+    poolNodeOperatorLastChangeEpoch(
+      arg0: string
+    ): NonPayableTransactionObject<string>;
+
     poolNodeOperatorShare(arg0: string): NonPayableTransactionObject<string>;
 
     poolToBeElectedIndex(arg0: string): NonPayableTransactionObject<string>;
