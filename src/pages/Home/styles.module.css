@@ -74,6 +74,7 @@ h1 {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  cursor: pointer;
 }
 
 .infoContainer > div > p:first-of-type {
