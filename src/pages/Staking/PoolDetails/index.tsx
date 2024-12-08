@@ -11,6 +11,8 @@ import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import { timestampToDate, truncateAddress } from "../../../utils/common";
+import copy from "copy-to-clipboard";
+import { toast } from "react-toastify";
 
 interface PoolDetailsProps {}
 
@@ -60,6 +62,11 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
     setFilteredProposals(proposals || []);
   }
 
+  const copyData = (data: string) => {
+      copy(data);
+      toast.success("Copied to clipboard");
+  };
+
   return (
     <section className="section">
 
@@ -70,7 +77,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         {/* image address status */}
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
-          <p>{truncateAddress(poolAddress || "")}</p>
+          <p onClick={() => copyData(poolAddress || "")}>{truncateAddress(poolAddress || "")}</p>
           <p className={pool?.isActive || (pool?.isToBeElected || pool?.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
             {pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Valid" : "Invalid"}
           </p>

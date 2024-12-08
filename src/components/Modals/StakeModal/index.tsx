@@ -16,7 +16,7 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [stakeAmount, setStakeAmount] = useState(0);
   const { stake, setPools } = useStakingContext();
-  const { web3, ensureWalletConnection } = useWeb3Context();
+  const { updateWalletBalance, ensureWalletConnection, userWallet } = useWeb3Context();
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -50,6 +50,7 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     if (!ensureWalletConnection()) return;
 
     stake(pool, new BigNumber(stakeAmount)).then((success: boolean) => {
+      updateWalletBalance();
       closeModal();
     });
   }
@@ -69,10 +70,9 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <h2>Stake DMD</h2>
 
             <form className={styles.form} onSubmit={handleStake}>
-              <span>
-                Please enter the amount you want to stake
-              </span>
-
+                <span>
+                  Please enter the amount you want to stake (Available {userWallet.myBalance.dividedBy(10**18).toFixed(2)} DMD)
+                </span>
               <input
                 // min={0}
                 // max={pool.myStake.toNumber()}

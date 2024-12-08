@@ -21,16 +21,16 @@ const NavBar: React.FC<NavBarProps> = () => {
           <img onClick={() => {startTransition(() => {navigate('')})}} src={dmdLogoFull} loading="lazy" width="174" alt="" className="image-2" /></a>
             <nav role="navigation" className="nav-menu nav-responsive-active w-nav-menu">
               
+            <a href="https://bit.diamonds/" target="_blank" className="nav-link w-nav-link">Diamonds</a>
               <a href="https://beta-explorer.bit.diamonds/" target="_blank" className="nav-link w-nav-link">DMD Explorer</a>
               <a onClick={() => {startTransition(() => {navigate('staking')})}} className="nav-link w-nav-link">Validators</a>
 
               <div data-hover="false" data-delay="0" className="dropdown-2 w-dropdown">
                   <div className="dropdown-toggle-2 w-dropdown-toggle">
                     <div className="icon w-icon-dropdown-toggle"></div>
-                    <div className="text-block-12">DMD Ecosystem</div>
+                    <div className="text-block-12">3rd party projects</div>
                   </div>
                   <nav className="dropdown-list-2 w-dropdown-list">
-                    <a href="https://bit.diamonds/" target="_blank" className="nav-dropdown-link nav-link w-dropdown-link">Bit Diamonds</a>
                     <a href="https://uniq.directory/" target="_blank" className="nav-link w-dropdown-link">NFT Marketplace</a>
                     <a href="https://uniq.diamonds/" target="_blank" className="nav-link w-dropdown-link">uNiq Diamonds</a>
                     <a href="https://gladiators.diamonds/" target="_blank" className="nav-link w-dropdown-link">uNiq Gladiators</a>
