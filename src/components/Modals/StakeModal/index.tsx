@@ -17,9 +17,17 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [stakeAmount, setStakeAmount] = useState(0);
   const { stake, setPools } = useStakingContext();
   const { updateWalletBalance, ensureWalletConnection, userWallet } = useWeb3Context();
+  const [maxStakeAmount, setMaxStakeAmount] = useState(0);
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
+
+  useEffect(() => {
+    const maxUserBalance = userWallet.myBalance;
+    const maxPoolStake = BigNumber(50000 * 10 ** 18).minus(pool.totalStake);
+    const mStakeAmount = maxUserBalance.isGreaterThan(maxPoolStake) ? maxPoolStake : maxUserBalance;
+    setMaxStakeAmount(Number(mStakeAmount.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)));
+  }, [pool, userWallet.myAddr]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -71,11 +79,11 @@ const StakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
             <form className={styles.form} onSubmit={handleStake}>
                 <span>
-                  Please enter the amount you want to stake (Available {userWallet.myBalance.dividedBy(10**18).toFixed(2)} DMD)
+                  Please enter the amount you want to stake (Available {userWallet.myBalance.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD)
                 </span>
               <input
                 // min={0}
-                // max={pool.myStake.toNumber()}
+                max={maxStakeAmount}
                 type="number"
                 value={stakeAmount}
                 className={styles.formInput}

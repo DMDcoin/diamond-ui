@@ -43,7 +43,7 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ parameterName, 
         const current = BigNumber(state);
         const min = BigNumber(paramsRange[0]);
         const max = BigNumber(paramsRange[paramsRange.length - 1]);
-        return current.minus(min).dividedBy(max.minus(min)).multipliedBy(100).toFixed(2);
+        return current.minus(min).dividedBy(max.minus(min)).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN);
     };
 
     const getAdjustedLeft = () => {

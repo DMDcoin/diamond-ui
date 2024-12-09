@@ -220,7 +220,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) + " DMD" : (<div className={styles.loader}></div>)
+                                    BigNumber(pool.totalStake ?? 0) ? BigNumber(BigNumber(pool.totalStake ?? 0)).dividedBy(10**18).toFixed(4) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
                                     {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
@@ -233,7 +233,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                         <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
-                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && (
+                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && BigNumber(pool.totalStake ?? 0).isLessThan(BigNumber(50000).multipliedBy(10**18)) && (
                                                     <StakeModal buttonText="Stake" pool={pool} />
                                                 )
                                             }
