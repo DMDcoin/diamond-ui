@@ -674,7 +674,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       } else if (!areAddressesValidForCreatePool(userWallet.myAddr, minningAddress)) {
         toast.warn("Staking or mining key are or were already in use with a pool");
       } else if (BigNumber(txOpts.value).isGreaterThan(accBalance)) {
-        toast.warn(`Insufficient balance (${BigNumber(accBalance).dividedBy(10**18).toFixed(2)} DMD) for stake amount ${stakeAmount} DMD`);
+        toast.warn(`Insufficient balance (${BigNumber(accBalance).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD) for stake amount ${stakeAmount} DMD`);
       } else if (!canStakeOrWithdrawNow) {
         toast.warn("Outside staking window");
       } else if (BigNumber(txOpts.value).isLessThan(BigNumber(candidateMinStake.toString()).dividedBy(10**18))) {
@@ -827,7 +827,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr, value: stakeAmountWei };
 
     if (new BigNumber(stakeAmountWei).isGreaterThan(userWallet.myBalance)) {
-      toast.warn(`Insufficient balance ${BigNumber(userWallet.myBalance).dividedBy(10**18)} for selected amount ${BigNumber(stakeAmount).dividedBy(10**18).toFixed(2)}`);
+      toast.warn(`Insufficient balance ${BigNumber(userWallet.myBalance).dividedBy(10**18)} for selected amount ${BigNumber(stakeAmount).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)}`);
       return false;
     } else if (!canStakeOrWithdrawNow) {
       toast.warn("Outside staking/withdraw time window");

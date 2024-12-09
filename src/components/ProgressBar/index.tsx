@@ -13,7 +13,7 @@ const ProgressBar: React.FC<ProgressProps> = ({
   progress,
   bgColor,
 }) => {
-  const percentage = (Math.min(Math.max((progress - min) / (max - min), 0), 1) * 100).toFixed(2);
+  const percentage = (Math.min(Math.max((progress - min) / (max - min), 0), 1) * 100).toFixed(4, BigNumber.ROUND_DOWN);
 
   return (
     <div className={styles.progressContainer}>
