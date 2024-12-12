@@ -123,24 +123,28 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
 
     return (
         <div className={styles.sectionContainer + " sectionContainer"}>
-            <h1>
-                Validators
-                <span style={{ color: "black", fontWeight: "normal" }}>
-                    <Tooltip text="Total" width="60px" heading={pools.length.toString()} />
+            <div className={styles.stakingHeading}>
+                <h1>
+                    Validators
+                </h1>
+                <span>
+                    <span style={{ color: "black", fontWeight: "normal" }}>
+                        <Tooltip text="Total" width="60px" heading={pools.length.toString()} />
+                    </span>
+                    {" "}|
+                    <strong style={{ color: "green" }}>
+                        <Tooltip text="Active" width="60px" heading={pools.filter((p) => p.isActive).length.toString()} />
+                    </strong>
+                    {" "}|
+                    <span style={{ color: "green", fontWeight: "normal" }}>
+                        <Tooltip text="Valid" width="60px" heading={pools.filter((p) => p.isToBeElected && !p.isActive).length.toString()} />
+                    </span>
+                    {" "}|
+                    <span style={{ color: "red" }}>
+                        <Tooltip text="Invalid" width="60px" heading={pools.filter((p) => !p.isActive && !p.isToBeElected).length.toString()} />
+                    </span>
                 </span>
-                {" "}|
-                <span style={{ color: "green" }}>
-                    <Tooltip text="Active" width="60px" heading={pools.filter((p) => p.isActive).length.toString()} />
-                </span>
-                {" "}|
-                <span style={{ color: "green", fontWeight: "normal" }}>
-                    <Tooltip text="Valid" width="60px" heading={pools.filter((p) => p.isToBeElected && !p.isActive).length.toString()} />
-                </span>
-                {" "}|
-                <span style={{ color: "red" }}>
-                    <Tooltip text="Invalid" width="60px" heading={pools.filter((p) => !p.isActive && !p.isToBeElected).length.toString()} />
-                </span>
-            </h1>
+            </div>
 
             {/* Filter and Search */}
             <div className={styles.filterContainer}>
