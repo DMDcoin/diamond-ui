@@ -10,6 +10,7 @@ import { useWeb3Context } from "../../contexts/Web3Context";
 import { useStakingContext } from "../../contexts/StakingContext";
 import styles from "./styles.module.css";
 import Tooltip from "../Tooltip";
+import Navigation from "../Navigation";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -123,7 +124,29 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
 
     return (
         <div className={styles.sectionContainer + " sectionContainer"}>
-            <h1>Validators</h1>
+            <Navigation start="/" toPage="/" />
+            <div className={styles.stakingHeading}>
+                <h1>
+                    Validators
+                </h1>
+                <span>
+                    <span style={{ color: "black", fontWeight: "normal" }}>
+                        <Tooltip text="Total" width="60px" heading={pools.length.toString()} />
+                    </span>
+                    {" "}|
+                    <strong style={{ color: "green" }}>
+                        <Tooltip text="Active" width="60px" heading={pools.filter((p) => p.isActive).length.toString()} />
+                    </strong>
+                    {" "}|
+                    <span style={{ color: "green", fontWeight: "normal" }}>
+                        <Tooltip text="Valid" width="60px" heading={pools.filter((p) => p.isToBeElected && !p.isActive).length.toString()} />
+                    </span>
+                    {" "}|
+                    <span style={{ color: "red" }}>
+                        <Tooltip text="Invalid" width="60px" heading={pools.filter((p) => !p.isActive && !p.isToBeElected).length.toString()} />
+                    </span>
+                </span>
+            </div>
 
             {/* Filter and Search */}
             <div className={styles.filterContainer}>
@@ -198,12 +221,12 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 </td>
                                 <td className={pool?.isActive || (pool.isToBeElected || pool.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isActive === 'boolean'
-                                        ? pool.isActive ? "Active" : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
+                                        ? pool.isActive ? <strong>Active</strong> : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
                                 <td>{
-                                    pool.totalStake ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) + " DMD" : (<div className={styles.loader}></div>)
+                                    BigNumber(pool.totalStake ?? 0) ? BigNumber(BigNumber(pool.totalStake ?? 0)).dividedBy(10**18).toFixed(4) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
                                 <td>
                                     {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
@@ -216,7 +239,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                         <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
                                         <td>
                                             {
-                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && (
+                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && BigNumber(pool.totalStake ?? 0).isLessThan(BigNumber(50000).multipliedBy(10**18)) && (
                                                     <StakeModal buttonText="Stake" pool={pool} />
                                                 )
                                             }

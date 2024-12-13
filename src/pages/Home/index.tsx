@@ -20,6 +20,9 @@ import DaoPhaseBanner from "../../components/DaoPhaseBanner";
 import ScoreHistoryModal from "../../components/Modals/ScoreHistoryModal";
 import { useWalletConnectContext } from "../../contexts/WalletConnect";
 import UpdatePoolOperatorModal from "../../components/Modals/UpdatePoolOperator";
+import { useDaoContext } from "../../contexts/DaoContext";
+import copy from "copy-to-clipboard";
+import { toast } from "react-toastify";
 
 interface HomeProps {}
 
@@ -27,6 +30,7 @@ const Home: React.FC<HomeProps> = ({}) => {
   const navigate = useNavigate();
   const { userWallet } = useWeb3Context();
   const { isSyncingPools } = useStakingContext();
+  const { claimingContractBalance } = useDaoContext();
   const walletConnectContext = useWalletConnectContext();
 
   const {
@@ -45,6 +49,11 @@ const Home: React.FC<HomeProps> = ({}) => {
     myCandidateStake,
     claimOrderedUnstake } = useStakingContext();
 
+    const copyData = (data: string) => {
+        copy(data);
+        toast.success("Copied to clipboard");
+    };
+
   return (
     <>
 
@@ -61,7 +70,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                     }
                                     <div>
                                         <p>User</p>
-                                        <p>{truncateAddress(userWallet.myAddr)}</p>
+                                        <p onClick={() => copyData(userWallet.myAddr)}>{truncateAddress(userWallet.myAddr)}</p>
                                     </div>
                                     {
                                         myPool && (
@@ -80,11 +89,11 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <>
                                                     <tr>
                                                         <td>My stake</td>
-                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
                                                                 {
@@ -118,7 +127,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             )}
                                                 <tr>
                                                     <td>Staked on other candidate</td>
-                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                     <td>
                                                         <div className={styles.loggedInBtns}>
                                                             {
@@ -171,7 +180,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                     <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                                                                 </td>
                                                                 <td>{delegator.address}</td>
-                                                                <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
+                                                                <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                             </tr>
                                                             )) : myPool && (
                                                                 <tr>
@@ -228,8 +237,8 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                             <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                                                         </td>
                                                                         <td>{pool.stakingAddress}</td>
-                                                                        <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
-                                                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
+                                                                        <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
+                                                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : (<div className={styles.loader}></div>) } DMD</td>
                                                                         <td>{pool.votingPower.toString()}%</td>
                                                                         <td>{pool.score}</td>
                                                                     </tr>
@@ -354,12 +363,16 @@ const Home: React.FC<HomeProps> = ({}) => {
                       <div id="w-node-_1ea50c7a-12aa-dd36-b910-bd059d6bb452-55493c02">Min. Gas Fee</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b4e-55493c02" className="text-block-8">{Number(reinsertPot).toFixed(2)} DMD</div>
+                      <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b4e-55493c02" className="text-block-8">{BigNumber(reinsertPot).toFixed(4, BigNumber.ROUND_DOWN)} DMD</div>
                       <div id="w-node-fe9c7aba-1cf1-1294-965a-25d4541b0b50-55493c02">Reinsert Pot</div>
                   </div>
                   <div className="comparison-row">
-                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a6-55493c02" className="text-block-7">{Number(deltaPot).toFixed(2)} DMD</div>
+                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a6-55493c02" className="text-block-7">{BigNumber(deltaPot).toFixed(4, BigNumber.ROUND_DOWN)} DMD</div>
                       <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a8-55493c02">Delta Pot</div>
+                  </div>
+                  <div className="comparison-row">
+                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a6-55493c02" className="text-block-7">{claimingContractBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD</div>
+                      <div id="w-node-ffe6588c-15de-1720-8f19-a1a3639524a8-55493c02">Claiming Pot</div>
                   </div>
               </div>
           </div>
@@ -395,7 +408,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
                                             </td>
                                             <td>{pool.stakingAddress}</td>
-                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2)} DMD</td>
+                                            <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                             <td>{pool.votingPower.toString()}%</td>
                                             <td>{pool.score}</td>
                                         </tr>

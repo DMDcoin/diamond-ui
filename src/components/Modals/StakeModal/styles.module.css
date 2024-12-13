@@ -22,6 +22,10 @@
   border-radius: 8px;
 }
 
+.modalContent > h2 {
+  text-align: start;
+}
+
 .modalClose {
   position: absolute;
   top: 10px;

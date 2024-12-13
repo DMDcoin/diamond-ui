@@ -360,8 +360,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                           <Tooltip text="Exceeding difference between yes and no answers | required difference" />
                         </div>
                         <div>
-                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(2) : 0} DMD ({
-                            votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(2)
+                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
+                            votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
                           }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>

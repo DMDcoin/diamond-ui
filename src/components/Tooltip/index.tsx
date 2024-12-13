@@ -5,13 +5,15 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface TooltipProps {
     text: string;
+    width?: string;
+    heading?: string;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ text }) => {
+const Tooltip: React.FC<TooltipProps> = ({ text, width, heading }) => {
     return (
         <div className={styles.tooltipContainer}>
-            <FontAwesomeIcon icon={faInfoCircle} />
-            <div className={styles.tooltipContent}>
+            { heading ? heading : <FontAwesomeIcon icon={faInfoCircle} /> }
+            <div className={styles.tooltipContent} style={{minWidth: width}}>
                 {text}
             </div>
         </div>

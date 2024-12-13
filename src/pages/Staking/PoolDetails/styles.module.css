@@ -30,6 +30,10 @@ p {
   font-size: 20px;
 }
 
+.infoContainer > p:nth-child(2) {
+  cursor: pointer;
+}
+
 .statsContainer {
   width: 100%;
   display: flex;
