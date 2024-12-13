@@ -80,7 +80,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               <strong>Stake:</strong>{" "}
               <span>
                 {stakingContext.myPool
-                  ? stakingContext.myPool.totalStake.dividedBy(10 ** 18).toFixed(0)
+                  ? stakingContext.myPool.totalStake.dividedBy(10 ** 18).toFixed(4, BigNumber.ROUND_DOWN)
                   : 0}
                   {" "}
                   DMD
