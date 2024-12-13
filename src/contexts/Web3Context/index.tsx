@@ -64,8 +64,8 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const chainId = import.meta.env.VITE_APP_CHAINID || 777019;
-  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:55100/';
+  const chainId = import.meta.env.VITE_APP_CHAINID || 27272;
+  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/';
   const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
 
