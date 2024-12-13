@@ -10,6 +10,7 @@ import { useWeb3Context } from "../../contexts/Web3Context";
 import { useStakingContext } from "../../contexts/StakingContext";
 import styles from "./styles.module.css";
 import Tooltip from "../Tooltip";
+import Navigation from "../Navigation";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -123,6 +124,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
 
     return (
         <div className={styles.sectionContainer + " sectionContainer"}>
+            <Navigation start="/" toPage="/" />
             <div className={styles.stakingHeading}>
                 <h1>
                     Validators
@@ -219,7 +221,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 </td>
                                 <td className={pool?.isActive || (pool.isToBeElected || pool.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
                                     {typeof pool.isActive === 'boolean'
-                                        ? pool.isActive ? "Active" : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
+                                        ? pool.isActive ? <strong>Active</strong> : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
                                 <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>

@@ -560,6 +560,18 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const cachedPools = poolsCache[blockNumber] || [];
     const updatedCachedPools = [...cachedPools];
 
+    // Ensure only the 5 most recent block numbers are kept
+    const blockNumbers = Object.keys(poolsCache)
+        .map(Number) // Convert keys to numbers
+        .sort((a, b) => b - a); // Sort in descending order
+
+    if (blockNumbers.length > 5) {
+        const excessBlockNumbers = blockNumbers.slice(4);
+        excessBlockNumbers.forEach(blockNum => {
+            delete poolsCache[blockNum];
+        });
+    }
+
     pools.forEach(pool => {
       const cachedPoolIndex = updatedCachedPools.findIndex(p => p.stakingAddress === pool.stakingAddress);
 

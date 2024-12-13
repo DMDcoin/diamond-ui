@@ -89,11 +89,11 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                 <>
                                                     <tr>
                                                         <td>My stake</td>
-                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>{myTotalStake.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(0)} DMD</td>
+                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
                                                                 {
@@ -127,7 +127,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                             )}
                                                 <tr>
                                                     <td>Staked on other candidate</td>
-                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(0)} DMD</td>
+                                                    <td>{myCandidateStake.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                                                     <td>
                                                         <div className={styles.loggedInBtns}>
                                                             {
@@ -238,7 +238,7 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                                         </td>
                                                                         <td>{pool.stakingAddress}</td>
                                                                         <td>{BigNumber(pool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
-                                                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
+                                                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : (<div className={styles.loader}></div>) } DMD</td>
                                                                         <td>{pool.votingPower.toString()}%</td>
                                                                         <td>{pool.score}</td>
                                                                     </tr>
