@@ -5,9 +5,10 @@ import { HiArrowCircleRight, HiArrowCircleLeft } from "react-icons/hi";
 
 interface NavigationProps {
   start: string;
+  toPage?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ start }) => {
+const Navigation: React.FC<NavigationProps> = ({ start, toPage }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,7 +23,11 @@ const Navigation: React.FC<NavigationProps> = ({ start }) => {
   const goBack = () => {
     if (location.pathname !== start) {
       startTransition(() => {
-        navigate(-1);
+        if (toPage) {
+          navigate(toPage);
+        } else {
+          navigate(-1);
+        }
       });
     }
   };
