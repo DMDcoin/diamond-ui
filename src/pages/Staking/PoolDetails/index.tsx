@@ -11,6 +11,8 @@ import React, { startTransition, useEffect, useState } from "react";
 import { useStakingContext } from "../../../contexts/StakingContext";
 import { Pool } from "../../../contexts/StakingContext/models/model";
 import { timestampToDate, truncateAddress } from "../../../utils/common";
+import copy from "copy-to-clipboard";
+import { toast } from "react-toastify";
 
 interface PoolDetailsProps {}
 
@@ -60,6 +62,11 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
     setFilteredProposals(proposals || []);
   }
 
+  const copyData = (data: string) => {
+      copy(data);
+      toast.success("Copied to clipboard");
+  };
+
   return (
     <section className="section">
 
@@ -70,7 +77,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
         {/* image address status */}
         <div className={styles.infoContainer}>
           <Jazzicon diameter={40} seed={jsNumberForAddress(pool?.stakingAddress || '')} />
-          <p>{truncateAddress(poolAddress || "")}</p>
+          <p onClick={() => copyData(poolAddress || "")}>{truncateAddress(poolAddress || "")}</p>
           <p className={pool?.isActive || (pool?.isToBeElected || pool?.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
             {pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Valid" : "Invalid"}
           </p>
@@ -86,11 +93,11 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
             <tbody>
               <tr>
                 <td>Total Stake</td>
-                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Candidate Stake</td>
-                <td>{pool ? BigNumber(pool.ownStake).dividedBy(10**18).toFixed(2) : 0} DMD</td>
+                <td>{pool ? BigNumber(pool.ownStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD</td>
               </tr>
               <tr>
                 <td>Score</td>
@@ -110,7 +117,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegates</h1>
             {
-              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
+              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && pool.totalStake.isLessThan(BigNumber(50000).multipliedBy(10**18)) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
               pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
@@ -143,7 +150,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <Jazzicon diameter={40} seed={jsNumberForAddress(delegator.address)} />
                     </td>
                     <td>{delegator.address}</td>
-                    <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(2)} DMD</td>
+                    <td>{BigNumber(delegator.amount).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
                   </tr>
                 )) : (
                   <tr>

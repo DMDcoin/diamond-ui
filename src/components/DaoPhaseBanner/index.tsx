@@ -5,6 +5,7 @@ import { useWeb3Context } from "../../contexts/Web3Context";
 import { startTransition, useEffect, useState } from "react";
 import FinalizeProposalsWarn from "../Modals/FinalizeProposalsWarn";
 import { useStakingContext } from "../../contexts/StakingContext";
+import BigNumber from "bignumber.js";
 
 interface DaoProps {
   showDaoStats?: boolean;
@@ -51,7 +52,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
                 </div>
 
                 <div className="comparison-row">
-                  <div id="w-node-_92822878-c41a-30b0-3d9e-ff70e92725ec-55493c02" className="text-block-3">{daoContext.governancePotBalance.toFixed(2)} DMD</div>
+                  <div id="w-node-_92822878-c41a-30b0-3d9e-ff70e92725ec-55493c02" className="text-block-3">{daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD</div>
                   <div id="w-node-e5752c0d-27c5-1c42-e24d-fa9c23646ba9-55493c02">Governance Pot</div>
                 </div>
 
@@ -78,8 +79,8 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
             <p>
               <strong>Stake:</strong>{" "}
               <span>
-                {stakingContext.myTotalStake
-                  ? stakingContext.myTotalStake.dividedBy(10 ** 18).toFixed(0)
+                {stakingContext.myPool
+                  ? stakingContext.myPool.totalStake.dividedBy(10 ** 18).toFixed(4, BigNumber.ROUND_DOWN)
                   : 0}
                   {" "}
                   DMD
@@ -99,7 +100,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
             <p>
               <strong>Governance Pot:</strong>{" "}
               <span>
-                {daoContext.governancePotBalance.toFixed(2)} DMD
+                {daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD
               </span>
             </p>
           </div>

@@ -1,4 +1,4 @@
 export const CURR_VERSION_INFO = {
-    version: "openbeta-0.1",
+    version: "openbeta-1.1",
     reset: true
 }

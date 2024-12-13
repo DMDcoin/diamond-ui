@@ -50,6 +50,7 @@ interface Web3ContextProps {
   ensureWalletConnection: () => boolean;
   showLoader: (loading: boolean, loadingMsg: string) => void;
   getUpdatedBalance: () => Promise<BigNumber>;
+  updateWalletBalance: () => Promise<void>;
 }
 
 const Web3Context = createContext<Web3ContextProps | undefined>(undefined);
@@ -224,6 +225,13 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   }
 
+  const updateWalletBalance = async () => {
+    if (!userWallet || !web3) return;
+
+    const myBalance = new BigNumber(await web3.eth.getBalance(userWallet.myAddr));
+    setUserWallet({ ...userWallet, myBalance });
+  }
+
   const ensureWalletConnection = (): boolean => {
     if (!userWallet.myAddr) {
       toast.warn("Please connect your wallet first");
@@ -252,9 +260,10 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     setContractsManager,  // Set the new contractsManager state
 
     // other functions
-    ensureWalletConnection,
     showLoader,
-    getUpdatedBalance
+    getUpdatedBalance,
+    updateWalletBalance,
+    ensureWalletConnection
   };
 
   return (
