@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import StakeModal from "../../components/Modals/StakeModal";
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import p2bLogo from "../../assets/images/home/logo_p2pb2b.png";
+import xeggexLogo from "../../assets/images/home/logo_xegex.png";
 import bitmartLogo from "../../assets/images/home/logo_bitmart.png";
 import blockserveLogo from "../../assets/images/home/logo_blockserv.png";
 import RemoveValidatorModal from "../../components/Modals/RemoveValidatorModal";
@@ -419,9 +420,10 @@ const Home: React.FC<HomeProps> = ({}) => {
                         <h2 className="heading-3 heading-left">DMD Ecosystem Partners</h2>
                         <div className={styles.clientsWrapper + " clients-wrapper"}>
 
-                            <img src={p2bLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
-                            <img src={bitmartLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
-                            <img src={blockserveLogo} height="39" loading="lazy" alt="Arise Health logo" className="clients-image" />
+                            <img src={p2bLogo} height="39" loading="lazy" alt="p2b logo" className="clients-image" />
+                            <img src={bitmartLogo} height="39" loading="lazy" alt="bitmart logo" className="clients-image" />
+                            <img src={xeggexLogo} height="39" loading="lazy" alt="blockserve logo" className="clients-image" />
+                            <img src={blockserveLogo} height="39" loading="lazy" alt="blockserve logo" className="clients-image" />
                         </div>
                     </div>
                 </section>

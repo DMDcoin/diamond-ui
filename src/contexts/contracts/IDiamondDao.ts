@@ -145,6 +145,7 @@ export interface IDiamondDao extends BaseContract {
         string,
         string,
         string,
+        string,
         string
       ]
     >;

@@ -31,22 +31,6 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type SetBonusScoreContract = ContractEventLog<{
-  _address: string;
-  0: string;
-}>;
-export type SetConnectivityTrackerContract = ContractEventLog<{
-  _address: string;
-  0: string;
-}>;
-export type SetMaxValidators = ContractEventLog<{
-  _count: string;
-  0: string;
-}>;
-export type SetValidatorInactivityThreshold = ContractEventLog<{
-  _value: string;
-  0: string;
-}>;
 export type ValidatorAvailable = ContractEventLog<{
   validator: string;
   timestamp: string;
@@ -184,10 +168,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       _address: string
     ): NonPayableTransactionObject<void>;
 
-    setMaxValidators(
-      _maxValidators: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
     setRandomContract(_address: string): NonPayableTransactionObject<void>;
 
     setStakingAddress(
@@ -200,10 +180,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     setValidatorAvailableSince(
       _validator: string,
       _timestamp: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setValidatorInactivityThreshold(
-      _seconds: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setValidatorInternetAddress(
@@ -244,34 +220,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
-    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
-    SetBonusScoreContract(
-      options?: EventOptions,
-      cb?: Callback<SetBonusScoreContract>
-    ): EventEmitter;
-
-    SetConnectivityTrackerContract(
-      cb?: Callback<SetConnectivityTrackerContract>
-    ): EventEmitter;
-    SetConnectivityTrackerContract(
-      options?: EventOptions,
-      cb?: Callback<SetConnectivityTrackerContract>
-    ): EventEmitter;
-
-    SetMaxValidators(cb?: Callback<SetMaxValidators>): EventEmitter;
-    SetMaxValidators(
-      options?: EventOptions,
-      cb?: Callback<SetMaxValidators>
-    ): EventEmitter;
-
-    SetValidatorInactivityThreshold(
-      cb?: Callback<SetValidatorInactivityThreshold>
-    ): EventEmitter;
-    SetValidatorInactivityThreshold(
-      options?: EventOptions,
-      cb?: Callback<SetValidatorInactivityThreshold>
-    ): EventEmitter;
-
     ValidatorAvailable(cb?: Callback<ValidatorAvailable>): EventEmitter;
     ValidatorAvailable(
       options?: EventOptions,
@@ -299,43 +247,6 @@ export interface ValidatorSetHbbftMock extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
-  ): void;
-
-  once(
-    event: "SetBonusScoreContract",
-    cb: Callback<SetBonusScoreContract>
-  ): void;
-  once(
-    event: "SetBonusScoreContract",
-    options: EventOptions,
-    cb: Callback<SetBonusScoreContract>
-  ): void;
-
-  once(
-    event: "SetConnectivityTrackerContract",
-    cb: Callback<SetConnectivityTrackerContract>
-  ): void;
-  once(
-    event: "SetConnectivityTrackerContract",
-    options: EventOptions,
-    cb: Callback<SetConnectivityTrackerContract>
-  ): void;
-
-  once(event: "SetMaxValidators", cb: Callback<SetMaxValidators>): void;
-  once(
-    event: "SetMaxValidators",
-    options: EventOptions,
-    cb: Callback<SetMaxValidators>
-  ): void;
-
-  once(
-    event: "SetValidatorInactivityThreshold",
-    cb: Callback<SetValidatorInactivityThreshold>
-  ): void;
-  once(
-    event: "SetValidatorInactivityThreshold",
-    options: EventOptions,
-    cb: Callback<SetValidatorInactivityThreshold>
   ): void;
 
   once(event: "ValidatorAvailable", cb: Callback<ValidatorAvailable>): void;
