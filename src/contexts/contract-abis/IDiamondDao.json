@@ -575,6 +575,11 @@
               "type": "uint256"
             },
             {
+              "internalType": "uint256",
+              "name": "proposalFee",
+              "type": "uint256"
+            },
+            {
               "internalType": "enum ProposalType",
               "name": "proposalType",
               "type": "uint8"
