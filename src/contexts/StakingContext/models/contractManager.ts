@@ -229,7 +229,7 @@ export class ContractManager {
   }
 
   public async getHbbftAggregator(): Promise<HbbftAggregator> {
-    let contractAddress = '0x9990000000000000000000000000000000000000';
+    let contractAddress =  import.meta.env.VITE_APP_AGGREGAOTR_CONTRACT_ADDRESS || '0x9990000000000000000000000000000000000000';
 
     const abi: any = JsonHbbtAggregator.abi;
     const contract: any = new this.web3.eth.Contract(abi, contractAddress);

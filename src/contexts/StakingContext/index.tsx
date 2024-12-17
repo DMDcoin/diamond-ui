@@ -429,19 +429,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
-      activePoolAddrs = poolsData[1]; // miningAddresses
-      inactivePoolAddrs = poolsData[2]; // stakingAddresses
-      toBeElectedPoolAddrs = poolsData[3]; // stakingAddresses
-      pendingValidatorAddrs = poolsData[4]; // miningAddresses
+      activePoolAddrs = poolsData[4]; // stakingAddresses
+      inactivePoolAddrs = poolsData[1]; // stakingAddresses
+      toBeElectedPoolAddrs = poolsData[2]; // stakingAddresses
+      pendingValidatorAddrs = poolsData[6]; // stakingAddresses
     }
-
-    activePoolAddrs = await Promise.all(
-      activePoolAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
-    );
-
-    pendingValidatorAddrs = await Promise.all(
-      pendingValidatorAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
-    );
 
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
     const allPools = activePoolAddrs.concat(inactivePoolAddrs).concat(toBeElectedPoolAddrs).concat(pendingValidatorAddrs);
@@ -644,9 +636,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
-      activePoolAddrs = poolsData[1];
-      toBeElectedPoolAddrs = poolsData[3];
-      pendingValidatorAddrs = poolsData[4];
+      activePoolAddrs = poolsData[4];
+      toBeElectedPoolAddrs = poolsData[2];
+      pendingValidatorAddrs = poolsData[6];
     }
 
     const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call();
