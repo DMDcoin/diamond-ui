@@ -70,10 +70,25 @@ export interface HbbftAggregator extends BaseContract {
       ]
     >;
 
+    getNodeOperatorData(stakingAddress: string): NonPayableTransactionObject<{
+      0: string;
+      1: string;
+    }>;
+
     getPoolsData(
       _sAs: string[]
     ): NonPayableTransactionObject<
-      [string, string, string, string[], string, string][]
+      [
+        string,
+        string,
+        string,
+        string[],
+        string,
+        string,
+        boolean,
+        string,
+        string
+      ][]
     >;
 
     getStakingAddresses(
@@ -89,6 +104,14 @@ export interface HbbftAggregator extends BaseContract {
       _user: string,
       _pools: string[]
     ): NonPayableTransactionObject<[string, string, string][]>;
+
+    getWithdrawableAmounts(
+      poolStAddress: string,
+      user: string
+    ): NonPayableTransactionObject<{
+      0: string;
+      1: string;
+    }>;
 
     owner(): NonPayableTransactionObject<string>;
 

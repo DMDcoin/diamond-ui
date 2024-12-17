@@ -196,6 +196,11 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 the stability of the validator connection and misbehaviour reports from other validators" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
+                            <th className={getClassNamesFor('connectivity')} onClick={() => requestSort('connectivityReport')}>
+                                CR
+                                <Tooltip text="Connectivity record" />
+                                <FontAwesomeIcon icon={faSort} size="xs" />
+                            </th>
                             <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>
                                 {userWallet.myAddr ? (
                                     <>
@@ -234,6 +239,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                         : <div className={styles.loader}></div>}
                                 </td>
                                 <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
+                                <td style={{ color: pool.isFaultyValidator ? 'red' : (Number(pool.connectivityReport) > 0 ? 'orange' : 'inherit'), fontWeight: pool.isFaultyValidator ? 'bold' : 'normal' }}>
+                                    {pool.connectivityReport !== undefined && pool.connectivityReport !== null ? pool.connectivityReport : (<div className={styles.loader}></div>)}
+                                </td>
                                 {
                                     userWallet.myAddr ? <>
                                         <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
