@@ -21,6 +21,13 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type OwnershipTransferred = ContractEventLog<{
+  previousOwner: string;
+  newOwner: string;
+  0: string;
+  1: string;
+}>;
+
 export interface HbbftAggregator extends BaseContract {
   constructor(
     jsonInterface: any[],
@@ -29,10 +36,8 @@ export interface HbbftAggregator extends BaseContract {
   ): HbbftAggregator;
   clone(): HbbftAggregator;
   methods: {
-    br(): NonPayableTransactionObject<string>;
-
     getAllPools(): NonPayableTransactionObject<
-      [string[], string[], string[], string[], string[]]
+      [string[], string[], string[], string[], string[], string[], string[]]
     >;
 
     getDelegationsData(
@@ -71,6 +76,10 @@ export interface HbbftAggregator extends BaseContract {
       [string, string, string, string[], string, string][]
     >;
 
+    getStakingAddresses(
+      miningAddresses: string[]
+    ): NonPayableTransactionObject<string[]>;
+
     getUserOrderedWithdraws(
       _user: string,
       _pools: string[]
@@ -81,9 +90,9 @@ export interface HbbftAggregator extends BaseContract {
       _pools: string[]
     ): NonPayableTransactionObject<[string, string, string][]>;
 
-    kh(): NonPayableTransactionObject<string>;
-
     owner(): NonPayableTransactionObject<string>;
+
+    renounceOwnership(): NonPayableTransactionObject<void>;
 
     setBlockRewardContract(_br: string): NonPayableTransactionObject<void>;
 
@@ -95,13 +104,22 @@ export interface HbbftAggregator extends BaseContract {
 
     setValidatorsSetContract(_vs: string): NonPayableTransactionObject<void>;
 
-    st(): NonPayableTransactionObject<string>;
-
-    tp(): NonPayableTransactionObject<string>;
-
-    vs(): NonPayableTransactionObject<string>;
+    transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
   };
   events: {
+    OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
+    OwnershipTransferred(
+      options?: EventOptions,
+      cb?: Callback<OwnershipTransferred>
+    ): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
+  once(
+    event: "OwnershipTransferred",
+    options: EventOptions,
+    cb: Callback<OwnershipTransferred>
+  ): void;
 }

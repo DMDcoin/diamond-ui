@@ -129,3 +129,10 @@ body {
 w3m-modal {
   z-index: 1001;
 }
+
+button:disabled {
+  background-color: #cccccc; /* Gray background for disabled button */
+  color: #666666; /* Light gray text color */
+  cursor: not-allowed; /* Show 'not allowed' cursor */
+  opacity: 0.6; /* Optional: Make the button semi-transparent */
+}
