@@ -70,9 +70,16 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
     // Apply sorting if sortConfig is set
     if (sortConfig !== null) {
         poolsCopy.sort((a: any, b: any) => {
-            const keyA = sortConfig.key === 'myStake' ? parseFloat(a[sortConfig.key] || '0') : a[sortConfig.key];
-            const keyB = sortConfig.key === 'myStake' ? parseFloat(b[sortConfig.key] || '0') : b[sortConfig.key];
-
+            let keyA, keyB;
+    
+            if (sortConfig.key === 'myStake' || sortConfig.key === 'score') {
+                keyA = parseFloat(a[sortConfig.key] || '0');
+                keyB = parseFloat(b[sortConfig.key] || '0');
+            } else {
+                keyA = a[sortConfig.key];
+                keyB = b[sortConfig.key];
+            }
+    
             if (keyA < keyB) {
                 return sortConfig.direction === 'ascending' ? -1 : 1;
             }
@@ -81,7 +88,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
             }
             return 0;
         });
-    }
+    }    
 
     const pageCount = Math.ceil(poolsCopy.length / itemsPerPage);
     const offset = currentPage * itemsPerPage;
@@ -196,9 +203,9 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                 the stability of the validator connection and misbehaviour reports from other validators" />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
-                            <th className={getClassNamesFor('connectivity')} onClick={() => requestSort('connectivityReport')}>
+                            <th className={getClassNamesFor('connectivityReport')} onClick={() => requestSort('connectivityReport')}>
                                 CR
-                                <Tooltip text="Connectivity record" />
+                                <Tooltip text="Connectivity report value, based on how many other active validators did report bad connectivity towards that node." />
                                 <FontAwesomeIcon icon={faSort} size="xs" />
                             </th>
                             <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>
