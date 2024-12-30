@@ -11,6 +11,8 @@ import { useStakingContext } from "../../contexts/StakingContext";
 import styles from "./styles.module.css";
 import Tooltip from "../Tooltip";
 import Navigation from "../Navigation";
+import copy from "copy-to-clipboard";
+import { toast } from "react-toastify";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -45,6 +47,12 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
         setCurrentPage(0); // Reset to first page when starting a new search
+    };
+
+    const copyData = (e: React.MouseEvent<HTMLDivElement>, data: string, msg: string) => {
+        e.stopPropagation();
+        copy(data);
+        toast.success(msg);
     };
 
     // Apply filters and search
@@ -171,6 +179,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                     <option value="invalid">Invalid Candidates</option>
                     <option value="stakedOn">Candidates I've staked on</option>
                 </select>
+
+                <button disabled={true}>Filter columns</button>
             </div>
 
             {/* Table */}
@@ -236,7 +246,18 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                                         ? pool.isActive ? <strong>Active</strong> : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
                                         : (<div className={styles.loader}></div>)}
                                 </td>
-                                <td>{pool.stakingAddress ? pool.stakingAddress : (<div className={styles.loader}></div>)}</td>
+                                <td className={styles.addressesContainer}>
+                                    {pool.stakingAddress ? (
+                                        <>
+                                            <div onClick={(e) => copyData(e, pool.miningAddress, "Copied staking address")}>{pool.stakingAddress}</div>
+                                            {pool.miningAddress && (
+                                                <div onClick={(e) => copyData(e, pool.miningAddress, "Copied mining address")}>{pool.miningAddress}</div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className={styles.loader}></div>
+                                    )}
+                                </td>
                                 <td>{
                                     BigNumber(pool.totalStake ?? 0) ? BigNumber(BigNumber(pool.totalStake ?? 0)).dividedBy(10**18).toFixed(4) + " DMD" : (<div className={styles.loader}></div>)
                                 }</td>
