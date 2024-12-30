@@ -169,12 +169,17 @@ td .loader {
 
 .filterContainer {
   gap: 1rem;
+  width: 100%;
   display: flex;
   align-self: start;
   text-align: center;
   margin-bottom: 20px;
-  align-items: baseline;
-  justify-content: center;
+  align-items: center;
+}
+
+.filterContainer > input {
+  align-self: flex-start;
+  max-width: 260px;
 }
 
 .filterContainer label {
@@ -189,4 +194,24 @@ td .loader {
   background-color: #fff;
   outline: none;
   cursor: pointer;
+}
+
+.filterContainer > button {
+  margin-left: auto;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+.addressesContainer > div:hover {
+  font-weight: 500;
+}
+
+.addressesContainer > div:nth-child(2) {
+  color: gray;
+  font-size: 0.8em;
 }
