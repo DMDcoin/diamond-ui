@@ -1,0 +1,206 @@
+/* styles.module.css */
+.openBtn {
+  gap: .3rem;
+  display: flex;
+  align-items: center;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 100%;
+  padding: 20px;
+  max-width: 500px;
+  color: #0145b2;
+  background: #fff;
+  position: relative;
+  border-radius: 8px;
+}
+
+.modalContent>p {
+  margin: 20px 0px;
+  font-weight: bold;
+  text-align: start;
+}
+
+.modalClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+label {
+  margin-bottom: 15px;
+}
+
+label span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  color: grey;
+}
+
+.inputWrapper {
+  width: 100%;
+  position: relative;
+  display: inline-block;
+}
+
+.nodeOperatorShare {
+  padding-right: 30px;
+  /* Adjust for the percentage sign */
+}
+
+.percentageSign {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.9em;
+  color: #555;
+}
+
+span>a {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.columnSelectionContainer {
+  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+[draggable="true"] {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.selectedColumns {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  margin-top: 16px;
+  min-height: 42px;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  background-color: #eff2f5;
+}
+
+.selectedColumns > span {
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+  text-align: start;
+}
+
+ul.moveableItems {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+ul.moveableItems li {
+  list-style: none;
+  margin: 0;
+  border: 1px solid transparent;
+  padding: 5px 12px;
+  border-radius: 28px;
+  color: black;
+  cursor: move;
+  text-align: center; /* Align text in the center of each column */
+  transition: 0.3s;
+  line-height: 22px;
+  font-weight: 600;
+  font-size: 12px;
+  margin: 4px 4px 4px;
+  background-color: #fff;
+}
+
+ul.moveableItems li > span {
+  padding: 1px 4px;
+  background: #eff2f5;
+  border-radius: 8px;
+  margin: 0px 4px;
+}
+
+ul.moveableItems li > svg {
+  margin-left: 5px;
+  font-weight: 100;
+  color: rgb(196, 196, 196);
+}
+
+.coulmnSelected {
+  cursor: pointer !important;
+  color: #3861fb !important;
+  background: #e6f0ff !important;
+}
+
+.coulmnSelected > svg {
+  width: 13px;
+  height: 13px;
+  border-radius: 100px;
+  color: white !important;
+  background: #3861fb !important;
+}
+
+.coulmnNotSelected {
+  cursor: pointer !important;
+  background: #eff2f5 !important;
+}
+
+.modalFooter {
+  gap: .5rem;
+  display: flex;
+  margin-top: 32px;
+  justify-content: flex-end;
+}
+
+.modalFooter > button {
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+.modalFooter > button:nth-child(2) {
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px 16px;
+  background: #007bff;
+}
