@@ -13,6 +13,7 @@ import Tooltip from "../Tooltip";
 import Navigation from "../Navigation";
 import copy from "copy-to-clipboard";
 import { toast } from "react-toastify";
+import ColumnsFilterModal from "./ColumnsFilter";
 
 interface ValidatorsTableProps {
     itemsPerPage?: number;
@@ -180,7 +181,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                     <option value="stakedOn">Candidates I've staked on</option>
                 </select>
 
-                <button disabled={true}>Filter columns</button>
+                <ColumnsFilterModal buttonText="Columns" />
             </div>
 
             {/* Table */}

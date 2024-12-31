@@ -196,15 +196,8 @@ td .loader {
   cursor: pointer;
 }
 
-.filterContainer > button {
+.filterContainer > :last-child {
   margin-left: auto;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  outline: none;
-  cursor: pointer;
 }
 
 .addressesContainer > div:hover {
