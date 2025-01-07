@@ -103,6 +103,16 @@ span>a {
   margin-top: 1rem;
 }
 
+.dragging {
+  opacity: 0.5;
+  border: 2px dashed #007bff;
+}
+
+.drag-over {
+  border: 2px dashed #3861fb;
+  background-color: #f0f8ff;
+}
+
 [draggable="true"] {
   user-select: none;
   -moz-user-select: none;
@@ -164,6 +174,31 @@ ul.moveableItems li > svg {
   margin-left: 5px;
   font-weight: 100;
   color: rgb(196, 196, 196);
+}
+
+/* Highlight the item being dragged */
+ul.moveableItems li[draggable="true"]:active {
+  opacity: 0.6;
+  border: 2px dashed #007bff;
+  background-color: #e6f0ff;
+  transform: scale(1.05);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Highlight the drop area when an item is dragged over */
+ul.moveableItems li.drag-over {
+  border: 2px dashed #007bff;
+  background-color: #f0f8ff;
+  transition: background-color 0.2s ease, border 0.2s ease;
+}
+
+/* Add a pointer cursor to draggable items */
+ul.moveableItems li {
+  cursor: grab;
+}
+
+ul.moveableItems li:active {
+  cursor: grabbing;
 }
 
 .coulmnSelected {
