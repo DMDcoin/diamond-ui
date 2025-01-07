@@ -7,30 +7,31 @@ import { faColumns } from "@fortawesome/free-solid-svg-icons";
 
 interface ModalProps {
   buttonText: string;
+  tableFields: any[];
+  setTableFields: any;
+  defaultFields: any;
 }
 
-const ColumnsFilterModal: React.FC<ModalProps> = ({ buttonText }) => {
+const ColumnsFilterModal: React.FC<ModalProps> = ({ buttonText, tableFields, setTableFields, defaultFields }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const columnOptions = [
-    { key: "isActive", label: "Status" },
-    { key: "stakingAddress", label: "Wallet" },
-    { key: "totalStake", label: "Total Stake" },
-    { key: "votingPower", label: "Voting Power" },
-    { key: "score", label: "Score" },
-    { key: "connectivityReport", label: "CR" },
-    { key: "myStake", label: "My Stake" },
-  ];
+  const [tempSelectedColumns, setTempSelectedColumns] = useState<string[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(tableFields.filter((field) => field.label && field.updateAble).map((field) => field.label));
 
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  useEffect(() => {
+    setSelectedColumns(tableFields.filter((field) => field.label && field.updateAble && !field.hide).map((field) => field.label));
+  }, [tableFields]);
 
-  const openModal = () => setIsOpen(true);
+  const openModal = () => {
+    setTempSelectedColumns(selectedColumns);
+    setIsOpen(true);
+  };
   const closeModal = () => setIsOpen(false);
 
   const handleColumnClick = (label: string) => {
-    setSelectedColumns((prev) =>
+    setTempSelectedColumns((prev) =>
       prev.includes(label) ? prev.filter((column) => column !== label) : [...prev, label]
     );
   };
@@ -45,21 +46,85 @@ const ColumnsFilterModal: React.FC<ModalProps> = ({ buttonText }) => {
 
   const handleDragOver = (event: React.DragEvent<HTMLLIElement>) => {
     event.preventDefault();
+    const target = event.currentTarget;
+    target.classList.add(styles.dragOver); // Add the drag-over class
   };
 
   const handleDrop = (event: React.DragEvent<HTMLLIElement>, dropIndex: number) => {
     event.preventDefault();
+    const target = event.currentTarget;
+    target.classList.remove(styles.dragOver); // Remove the drag-over class
     if (draggedItemIndex === null || draggedItemIndex === dropIndex) return;
-
-    const updatedColumns = [...selectedColumns];
-    const [draggedItem] = updatedColumns.splice(draggedItemIndex, 1);
+  
+    const updatedColumns = [...tempSelectedColumns];
+    const draggedItem = updatedColumns[draggedItemIndex];
+    updatedColumns.splice(draggedItemIndex, 1);
     updatedColumns.splice(dropIndex, 0, draggedItem);
-
-    setSelectedColumns(updatedColumns);
+  
+    setTempSelectedColumns(updatedColumns);
     setDraggedItemIndex(null);
   };
 
-  const handleColumnsChange = () => {}
+  const handleDragLeave = (event: React.DragEvent<HTMLLIElement>) => {
+    const target = event.currentTarget;
+    target.classList.remove(styles.dragOver); // Remove the drag-over class
+  };
+
+  const handleTouchStart = (
+    event: React.TouchEvent<HTMLLIElement>,
+    index: number
+  ) => {
+    setDraggedItemIndex(index);
+  };
+  
+  const handleTouchMove = (event: React.TouchEvent<HTMLLIElement>) => {
+    event.preventDefault(); // Prevent scrolling while dragging
+  };
+  
+  const handleTouchEnd = (
+    event: React.TouchEvent<HTMLLIElement>,
+    dropIndex: number
+  ) => {
+    if (draggedItemIndex === null || draggedItemIndex === dropIndex) return;
+  
+    const updatedColumns = [...tempSelectedColumns];
+    const draggedItem = updatedColumns[draggedItemIndex];
+    updatedColumns.splice(draggedItemIndex, 1);
+    updatedColumns.splice(dropIndex, 0, draggedItem);
+  
+    setTempSelectedColumns(updatedColumns);
+    setDraggedItemIndex(null);
+  };
+
+  const handleColumnsChange = () => {
+    // Create a copy of the tableFields array
+    const updatedTableFields = [...tableFields];
+  
+    // Iterate over the tableFields array and update the hide property for updateable fields
+    updatedTableFields.forEach((field) => {
+      if (field.updateAble && field.label) {
+        field.hide = !tempSelectedColumns.includes(field.label);
+      }
+    });
+  
+    // Filter out the updateable fields and sort them based on the tempSelectedColumns order
+    const updateableFields = updatedTableFields.filter((field) => field.updateAble && field.label);
+    updateableFields.sort((a, b) => tempSelectedColumns.indexOf(a.label) - tempSelectedColumns.indexOf(b.label));
+  
+    // Merge the sorted updateable fields back into their original positions
+    let updateableIndex = 0;
+    const finalTableFields = updatedTableFields.map((field) => {
+      if (field.updateAble && field.label) {
+        return updateableFields[updateableIndex++];
+      }
+      return field;
+    });
+  
+    // Update the state with the final table fields
+    setTableFields(finalTableFields);
+    setSelectedColumns(tempSelectedColumns);
+    closeModal();
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -93,21 +158,24 @@ const ColumnsFilterModal: React.FC<ModalProps> = ({ buttonText }) => {
             <p>Add, delete and sort columns just how you need it</p>
 
             <div className={styles.selectedColumns}>
-              {selectedColumns.length === 0 ? (
+              {tempSelectedColumns.length === 0 ? (
               <span className={styles.alignStart}>Select columns to start</span>
               ) : (
               <ul id="items-list" className={styles.moveableItems}>
-                {selectedColumns.map((column, index) => (
+                {tempSelectedColumns.map((column, index) => (
                 <li
                   key={column}
-                  draggable
+                  draggable={tableFields.findIndex(field => field.label === column) !== -1}
                   onDragStart={(event) => handleDragStart(event, index)}
                   onDragOver={handleDragOver}
                   onDrop={(event) => handleDrop(event, index)}
+                  onTouchStart={(event) => handleTouchStart(event, index)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={(event) => handleTouchEnd(event, index)}
                 >
                   <span>{index + 1}</span>
                   {column}
-                  <FontAwesomeIcon icon={faBars} />
+                  {tableFields.findIndex(field => field.label === column) !== -1 && <FontAwesomeIcon icon={faBars} />}
                 </li>
                 ))}
               </ul>
@@ -116,23 +184,25 @@ const ColumnsFilterModal: React.FC<ModalProps> = ({ buttonText }) => {
 
             <div className={styles.columnSelectionContainer}>
               <ul className={styles.moveableItems}>
-              {columnOptions.map((option) => (
-                <li
-                  key={option.key}
-                  className={`${selectedColumns.includes(option.label) ? styles.coulmnSelected : styles.coulmnNotSelected}`}
-                  onClick={() => handleColumnClick(option.label)}
-                >
+                {defaultFields.map((option: any) => (
+                option.label && option.updateAble && (
+                  <li
+                    key={option.key}
+                    className={`${tempSelectedColumns.includes(option.label) ? styles.coulmnSelected : styles.coulmnNotSelected}`}
+                    onClick={() => handleColumnClick(option.label)}
+                  >
                   {option.label}
-                  {selectedColumns.includes(option.label) && (
-                  <FontAwesomeIcon icon={faRemove} />
-                )}
-                </li>
-              ))}
+                  {tempSelectedColumns.includes(option.label) && (
+                    <FontAwesomeIcon icon={faRemove} />
+                  )}
+                  </li>
+                )
+                ))}
               </ul>
             </div>
 
             <div className={styles.modalFooter}>
-              <button className="primaryBtn" onClick={closeModal}>Cancle</button>
+              <button className="primaryBtn" onClick={closeModal}>Cancel</button>
               <button className="primaryBtn" onClick={handleColumnsChange}>Apply Changes</button>
             </div>
 
