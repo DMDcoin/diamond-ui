@@ -14,11 +14,14 @@ import Navigation from "../Navigation";
 import copy from "copy-to-clipboard";
 import { toast } from "react-toastify";
 import ColumnsFilterModal from "./ColumnsFilter";
+import { truncateAddress } from "../../utils/common";
 
 let tableFieldsDefault = [
     { key: "jazzIcon", label: "", sortAble: false, updateAble: false, hide: false },
     { key: "isActive", label: "Status", sortAble: true, updateAble: true, hide: false },
-    { key: "stakingAddress", label: "Wallet", sortAble: false, updateAble: true, hide: false },
+    { key: "stakingAddress", label: "Wallet address", sortAble: false, updateAble: true, hide: false },
+    { key: "miningAddress", label: "Miner address", sortAble: false, updateAble: true, hide: true },
+    { key: "miningPublicKey", label: "Public Key", sortAble: false, updateAble: true, hide: true },
     { key: "totalStake", label: "Total Stake", sortAble: true, updateAble: true, hide: false },
     { key: "votingPower", label: "Voting Power", sortAble: true, updateAble: true, hide: false },
     { key: "score", label: "Score", sortAble: true, updateAble: true, hide: false },
@@ -220,11 +223,28 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                             <td key={colIndex} className={styles.addressesContainer + " " + styles.walletColumn}>
                                 {pool.stakingAddress ? (
                                     <>
-                                        <div onClick={(e) => copyData(e, pool.miningAddress, "Copied staking address")}>{pool.stakingAddress}</div>
-                                        {pool.miningAddress && (
-                                            <div onClick={(e) => copyData(e, pool.miningAddress, "Copied mining address")}>{pool.miningAddress}</div>
-                                        )}
+                                        <div onClick={(e) => copyData(e, pool.stakingAddress, "Copied staking address")}>{truncateAddress(pool.stakingAddress)}</div>
                                     </>
+                                ) : (
+                                    <div className={styles.loader}></div>
+                                )}
+                            </td>
+                        );
+                    } else if (column.key === 'miningAddress') {
+                        return (
+                            <td key={colIndex} className={styles.addressesContainer}>
+                                {pool.miningAddress ? (
+                                    <div onClick={(e) => copyData(e, pool.miningAddress, "Copied mining address")}>{truncateAddress(pool.miningAddress)}</div>
+                                ) : (
+                                    <div className={styles.loader}></div>
+                                )}
+                            </td>
+                        );
+                    } else if (column.key === 'miningPublicKey') {
+                        return (
+                            <td key={colIndex} className={styles.addressesContainer}>
+                                {pool.miningPublicKey ? (
+                                    <div onClick={(e) => copyData(e, pool.miningPublicKey, "Copied public key")}>{truncateAddress(pool.miningPublicKey)}</div>
                                 ) : (
                                     <div className={styles.loader}></div>
                                 )}
@@ -284,7 +304,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
                 })}
             </tr>
         ));
-    };    
+    };
+      
     
     const getTooltipText = (key: string) => {
         switch (key) {
@@ -353,121 +374,8 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
             <div className={styles.tableContainer}>
                 <table className={styles.styledTable}>
                     {renderHeaders()}
-                    {/* <thead>
-                        <tr>
-                            <th></th>
-                            <th className={getClassNamesFor('isActive')} onClick={() => requestSort('isActive')}>
-                                Status
-                                <Tooltip text="Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate who is flagged unavailable on the blockchain or has not enough stake" />
-                                <FontAwesomeIcon icon={faSort} size="xs" />
-                            </th>
-                            <th className={getClassNamesFor('stakingAddress') + " " + styles.walletColumnHeader}>
-                                Wallet
-                            </th>
-                            <th className={getClassNamesFor('totalStake')} onClick={() => requestSort('totalStake')}>
-                                Total Stake
-                                <Tooltip text="Total delegated DMD (self-staked DMD + delegates' stake)" />
-                                <FontAwesomeIcon icon={faSort} size="xs" />
-                            </th>
-                            <th className={getClassNamesFor('votingPower')} onClick={() => requestSort('votingPower')}>
-                                Voting Power
-                                <Tooltip text="Value that approximates a node’s influence in the DAO participation" />
-                                <FontAwesomeIcon icon={faSort} size="xs" />
-                            </th>
-                            <th className={getClassNamesFor('score')} onClick={() => requestSort('score')}>
-                                Score
-                                <Tooltip text="Combined score value, based on the results of generating the shared key,
-                                the stability of the validator connection and misbehaviour reports from other validators" />
-                                <FontAwesomeIcon icon={faSort} size="xs" />
-                            </th>
-                            <th className={getClassNamesFor('connectivityReport')} onClick={() => requestSort('connectivityReport')}>
-                                CR
-                                <Tooltip text="Connectivity report value, based on how many other active validators did report bad connectivity towards that node." />
-                                <FontAwesomeIcon icon={faSort} size="xs" />
-                            </th>
-                            <th className={getClassNamesFor('myStake')} onClick={() => requestSort('myStake')}>
-                                {userWallet.myAddr ? (
-                                    <>
-                                        My stake <FontAwesomeIcon icon={faSort} size="xs" />
-                                    </>
-                                ) : ""}
-                            </th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead> */}
                     <tbody>
                         {renderRows(currentItems)}
-                        {/* {currentItems.length <= 0 ? (
-                            <tr>
-                                <td colSpan={9} className={styles.noData}>
-                                    No validators found
-                                </td>
-                            </tr>
-                        ) : currentItems.map((pool, index) => (
-                            <tr onClick={() => navigate(`/staking/details/${pool.stakingAddress}`)} className={styles.tableBodyRow} key={index}>
-                                <td>
-                                    <Jazzicon diameter={40} seed={jsNumberForAddress(pool.stakingAddress)} />
-                                </td>
-                                <td className={pool?.isActive || (pool.isToBeElected || pool.isPendingValidator) ? styles.poolActive : styles.poolBanned}>
-                                    {typeof pool.isActive === 'boolean'
-                                        ? pool.isActive ? <strong>Active</strong> : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
-                                        : (<div className={styles.loader}></div>)}
-                                </td>
-                                <td className={styles.addressesContainer + " " + styles.walletColumn}>
-                                    {pool.stakingAddress ? (
-                                        <>
-                                            <div onClick={(e) => copyData(e, pool.miningAddress, "Copied staking address")}>{pool.stakingAddress}</div>
-                                            {pool.miningAddress && (
-                                                <div onClick={(e) => copyData(e, pool.miningAddress, "Copied mining address")}>{pool.miningAddress}</div>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <div className={styles.loader}></div>
-                                    )}
-                                </td>
-                                <td>{
-                                    BigNumber(pool.totalStake ?? 0) ? BigNumber(BigNumber(pool.totalStake ?? 0)).dividedBy(10**18).toFixed(4) + " DMD" : (<div className={styles.loader}></div>)
-                                }</td>
-                                <td>
-                                    {pool.votingPower && pool.votingPower.toString() !== 'NaN' && pool.votingPower.toString() !== 'Infinity'
-                                        ? `${pool.votingPower.toString()} %`
-                                        : <div className={styles.loader}></div>}
-                                </td>
-                                <td>{pool.score !== undefined && pool.score !== null ? pool.score : (<div className={styles.loader}></div>)}</td>
-                                <td style={{ color: pool.isFaultyValidator ? 'red' : (Number(pool.connectivityReport) > 0 ? 'orange' : 'inherit'), fontWeight: pool.isFaultyValidator ? 'bold' : 'normal' }}>
-                                    {pool.connectivityReport !== undefined && pool.connectivityReport !== null ? pool.connectivityReport : (<div className={styles.loader}></div>)}
-                                </td>
-                                {
-                                    userWallet.myAddr ? <>
-                                        <td>{userWallet.myAddr && BigNumber(pool.myStake) ? BigNumber(pool.myStake).dividedBy(10**18).toFixed(0) : (<div className={styles.loader}></div>) } DMD</td>
-                                        <td>
-                                            {
-                                                (pool.isActive || pool.isToBeElected || pool.isPendingValidator) && BigNumber(pool.totalStake ?? 0).isLessThan(BigNumber(50000).multipliedBy(10**18)) && (
-                                                    <StakeModal buttonText="Stake" pool={pool} />
-                                                )
-                                            }
-                                        </td>
-                                        <td>
-                                            { 
-                                                BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) ? (
-                                                    <button className="primaryBtn" onClick={(e) => {e.stopPropagation(); claimOrderedUnstake(pool)}}>Claim</button>
-                                                ) : (
-                                                    BigNumber(pool.myStake).isGreaterThan(0) && (
-                                                        <UnstakeModal buttonText="Unstake" pool={pool} />
-                                                    )
-                                                )
-                                            }
-                                        </td>
-                                    </> : <>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </>
-                                }
-                            </tr>
-                        ))
-                        } */}
                     </tbody>
                 </table>
             </div>
