@@ -305,7 +305,6 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
             </tr>
         ));
     };
-      
     
     const getTooltipText = (key: string) => {
         switch (key) {
@@ -318,7 +317,7 @@ const ValidatorsTable: React.FC<ValidatorsTableProps> = ({ itemsPerPage = 100 })
             case 'score':
                 return "Combined score value, based on the results of generating the shared key, the stability of the validator connection and misbehaviour reports from other validators";
             case 'connectivityReport':
-                return "Connectivity report value, based on how many other active validators did report bad connectivity towards that node.";
+                return "Connectivity report value, based on how many other active validators did report bad connectivity towards that node";
             default:
                 return "";
         }
