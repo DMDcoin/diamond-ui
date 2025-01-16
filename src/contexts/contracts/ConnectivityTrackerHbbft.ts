@@ -65,10 +65,6 @@ export type SetChangeableParameter = ContractEventLog<{
   1: string;
   2: string[];
 }>;
-export type SetEarlyEpochEndToleranceLevel = ContractEventLog<{
-  _level: string;
-  0: string;
-}>;
 export type SetReportDisallowPeriod = ContractEventLog<{
   _reportDisallowPeriodSeconds: string;
   0: string;
@@ -194,10 +190,6 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
-    setEarlyEpochEndToleranceLevel(
-      _level: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
     setReportDisallowPeriod(
       _reportDisallowPeriodSeconds: number | string | BN
     ): NonPayableTransactionObject<void>;
@@ -253,14 +245,6 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
     SetChangeableParameter(
       options?: EventOptions,
       cb?: Callback<SetChangeableParameter>
-    ): EventEmitter;
-
-    SetEarlyEpochEndToleranceLevel(
-      cb?: Callback<SetEarlyEpochEndToleranceLevel>
-    ): EventEmitter;
-    SetEarlyEpochEndToleranceLevel(
-      options?: EventOptions,
-      cb?: Callback<SetEarlyEpochEndToleranceLevel>
     ): EventEmitter;
 
     SetReportDisallowPeriod(
@@ -330,16 +314,6 @@ export interface ConnectivityTrackerHbbft extends BaseContract {
     event: "SetChangeableParameter",
     options: EventOptions,
     cb: Callback<SetChangeableParameter>
-  ): void;
-
-  once(
-    event: "SetEarlyEpochEndToleranceLevel",
-    cb: Callback<SetEarlyEpochEndToleranceLevel>
-  ): void;
-  once(
-    event: "SetEarlyEpochEndToleranceLevel",
-    options: EventOptions,
-    cb: Callback<SetEarlyEpochEndToleranceLevel>
   ): void;
 
   once(

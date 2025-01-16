@@ -38,6 +38,10 @@ export interface ReentrancyAttacker extends BaseContract {
 
     funcId(): NonPayableTransactionObject<string>;
 
+    setBonusScoreContract(
+      _bonusScoreSystem: string
+    ): NonPayableTransactionObject<void>;
+
     setFuncId(id: string | number[]): NonPayableTransactionObject<void>;
 
     stakingFixedEpochDuration(): NonPayableTransactionObject<string>;

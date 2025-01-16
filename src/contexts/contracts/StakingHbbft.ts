@@ -103,10 +103,6 @@ export type RestakeReward = ContractEventLog<{
   2: string;
   3: string;
 }>;
-export type SetBonusScoreContract = ContractEventLog<{
-  _address: string;
-  0: string;
-}>;
 export type SetChangeableParameter = ContractEventLog<{
   setter: string;
   getter: string;
@@ -340,10 +336,6 @@ export interface StakingHbbft extends BaseContract {
       params: (number | string | BN)[]
     ): NonPayableTransactionObject<void>;
 
-    setBonusScoreContract(
-      _bonusScoreContract: string
-    ): NonPayableTransactionObject<void>;
-
     setDelegatorMinStake(
       _minStake: number | string | BN
     ): NonPayableTransactionObject<void>;
@@ -361,14 +353,6 @@ export interface StakingHbbft extends BaseContract {
 
     setStakingEpochStartTime(
       _timestamp: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setStakingFixedEpochDuration(
-      _value: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
-    setStakingTransitionTimeframeLength(
-      _value: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     setValidatorInternetAddress(
@@ -500,12 +484,6 @@ export interface StakingHbbft extends BaseContract {
       cb?: Callback<RestakeReward>
     ): EventEmitter;
 
-    SetBonusScoreContract(cb?: Callback<SetBonusScoreContract>): EventEmitter;
-    SetBonusScoreContract(
-      options?: EventOptions,
-      cb?: Callback<SetBonusScoreContract>
-    ): EventEmitter;
-
     SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
     SetChangeableParameter(
       options?: EventOptions,
@@ -613,16 +591,6 @@ export interface StakingHbbft extends BaseContract {
     event: "RestakeReward",
     options: EventOptions,
     cb: Callback<RestakeReward>
-  ): void;
-
-  once(
-    event: "SetBonusScoreContract",
-    cb: Callback<SetBonusScoreContract>
-  ): void;
-  once(
-    event: "SetBonusScoreContract",
-    options: EventOptions,
-    cb: Callback<SetBonusScoreContract>
   ): void;
 
   once(
