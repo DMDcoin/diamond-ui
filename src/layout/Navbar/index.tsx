@@ -46,11 +46,11 @@ const NavBar: React.FC<NavBarProps> = () => {
                   </nav>
               </div>
                 
-              {web3Context.userWallet && web3Context.userWallet.myAddr ? (
-                <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
-              ) : (
-                <button onClick={() => walletConnectContext.appKit.open()} className="button w-button w-nav-link-button" disabled={isSyncingPools}>Connect</button>
-              )}
+                {web3Context.userWallet && web3Context.userWallet.myAddr ? (
+                  <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
+                  ) : (
+                    <button onClick={() => walletConnectContext.appKit.open()} disabled={isSyncingPools} className="button w-button w-nav-link-button">Connect</button>
+                )}
 
             </nav>
             <div className="menu-button w-nav-button">

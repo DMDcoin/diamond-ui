@@ -127,9 +127,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }
 
   const getNodeOperatorData = async (pool: Pool) => {
-    const nodeOperatorAddress = await contractsManager.stContract?.methods.poolNodeOperator(pool.stakingAddress).call();
-    const nodeOperatorShare = await contractsManager.stContract?.methods.poolNodeOperatorShare(pool.stakingAddress).call();
-    return { nodeOperatorAddress, nodeOperatorShare: new BigNumber(nodeOperatorShare || 0) };
+    const nodeOperatorData = await contractsManager.aggregator?.methods.getNodeOperatorData(pool.stakingAddress).call();
+    if (nodeOperatorData) {
+      return { nodeOperatorAddress: nodeOperatorData[0], nodeOperatorShare: new BigNumber(nodeOperatorData[1] || 0) };
+    }
+    return { nodeOperatorAddress: '0x0000000000000000000000000000000000000000', nodeOperatorShare: new BigNumber(0) };
   }
 
   const updateStakeAmounts = async (poolsInp?: Pool[]) => {
@@ -429,19 +431,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
-      activePoolAddrs = poolsData[1]; // miningAddresses
-      inactivePoolAddrs = poolsData[2]; // stakingAddresses
-      toBeElectedPoolAddrs = poolsData[3]; // stakingAddresses
-      pendingValidatorAddrs = poolsData[4]; // miningAddresses
+      activePoolAddrs = poolsData[4]; // stakingAddresses
+      inactivePoolAddrs = poolsData[1]; // stakingAddresses
+      toBeElectedPoolAddrs = poolsData[2]; // stakingAddresses
+      pendingValidatorAddrs = poolsData[6]; // stakingAddresses
     }
-
-    activePoolAddrs = await Promise.all(
-      activePoolAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
-    );
-
-    pendingValidatorAddrs = await Promise.all(
-      pendingValidatorAddrs.map(addr => contractsManager.vsContract?.methods.stakingByMiningAddress(addr).call())
-    );
 
     console.log(`[INFO] Syncing Active(${activePoolAddrs.length}) and Inactive(${inactivePoolAddrs.length}) pools...`);
     const allPools = activePoolAddrs.concat(inactivePoolAddrs).concat(toBeElectedPoolAddrs).concat(pendingValidatorAddrs);
@@ -544,8 +538,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     pool.isToBeElected = toBeElectedPoolAddrs.indexOf(stakingAddress) >= 0;
     pool.isPendingValidator = pendingValidatorAddrs.indexOf(pool.miningAddress) >= 0;
     pool.isMe = userWallet ? userWallet.myAddr === pool.stakingAddress : false;
-    pool.score = Number(await contractsManager.bsContract?.methods.getValidatorScore(pool.miningAddress).call());
-
+    pool.isFaultyValidator = updatedPoolData[6];
+    pool.score = updatedPoolData[7];
+    pool.connectivityReport = updatedPoolData[8];
     return pool;
   }
 
@@ -644,9 +639,9 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const poolsData = await contractsManager.aggregator?.methods.getAllPools().call();
 
     if (poolsData) {
-      activePoolAddrs = poolsData[1];
-      toBeElectedPoolAddrs = poolsData[3];
-      pendingValidatorAddrs = poolsData[4];
+      activePoolAddrs = poolsData[4];
+      toBeElectedPoolAddrs = poolsData[2];
+      pendingValidatorAddrs = poolsData[6];
     }
 
     const updatedData = await contractsManager.aggregator?.methods.getPoolsData([pool.stakingAddress]).call();
@@ -777,8 +772,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return { maxWithdrawAmount, maxWithdrawOrderAmount };
 
     try {
-      maxWithdrawAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawAllowed(pool.stakingAddress, userWallet.myAddr).call());
-      maxWithdrawOrderAmount = new BigNumber(await contractsManager.stContract.methods.maxWithdrawOrderAllowed(pool.stakingAddress, userWallet.myAddr).call());
+      const withdrawableAmounts = await contractsManager.aggregator?.methods.getWithdrawableAmounts(pool.stakingAddress, userWallet.myAddr).call();
+      if (withdrawableAmounts) {
+        maxWithdrawAmount = new BigNumber(withdrawableAmounts[0]);
+        maxWithdrawOrderAmount = new BigNumber(withdrawableAmounts[1]);
+      }
     } catch (error) {
       console.error("Couldn't fetch withdrawable amounts:", error);
     }

@@ -64,12 +64,46 @@
 .styledTable tbody tr {
   border-bottom: 1px solid rgba(245, 247, 250, 0);
   padding: 20px;
+  position: relative; /* Ensure hover effects work on the whole row */
 }
+
+.styledTable tbody tr:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
+}
+
 .styledTable img {
   border-radius: 50%;
   width: 50px;
   height: 50px;
   object-fit: cover;
+}
+
+.styledTable .walletColumn {
+  position: sticky;
+  left: 0;
+  background-color: white; /* Ensure the sticky column has a background */
+  z-index: 2; /* Keeps it on top of other columns */
+}
+
+.styledTable .walletColumnHeader {
+  position: sticky;
+  left: 0;
+  background-color: rgb(245, 247, 250); /* Same as header background */
+  z-index: 1; /* Keeps it behind the content in other columns */
+}
+
+/* For specific cell, e.g. for the wallet column */
+.styledTable td.walletColumn {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 2; /* Keep it on top of other columns */
+}
+
+/* Ensure the sticky Wallet column inherits the hover effect */
+.styledTable tbody tr:hover td.walletColumn {
+  background-color: #e6f2ff; /* Light blue */
 }
 
 /* Responsive styles */
@@ -169,12 +203,17 @@ td .loader {
 
 .filterContainer {
   gap: 1rem;
+  width: 100%;
   display: flex;
   align-self: start;
   text-align: center;
   margin-bottom: 20px;
-  align-items: baseline;
-  justify-content: center;
+  align-items: center;
+}
+
+.filterContainer > input {
+  align-self: flex-start;
+  max-width: 260px;
 }
 
 .filterContainer label {
@@ -189,4 +228,17 @@ td .loader {
   background-color: #fff;
   outline: none;
   cursor: pointer;
+}
+
+.filterContainer > :last-child {
+  margin-left: auto;
+}
+
+.addressesContainer > div:hover {
+  font-weight: 500;
+}
+
+.addressesContainer > div:nth-child(2) {
+  color: gray;
+  font-size: 0.8em;
 }
