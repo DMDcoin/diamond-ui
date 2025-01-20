@@ -78,7 +78,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const governancePot = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
     setGovernancePotBalance(BigNumber(governancePot).dividedBy(1e18));
 
-    const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS);
+    const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS || "0xe0E6787A55049A90aAa4335D0Ff14fAD26B8e88e");
     setClaimingContractBalance(BigNumber(claimingPot).dividedBy(1e18));
 
     subscribeToEvents();

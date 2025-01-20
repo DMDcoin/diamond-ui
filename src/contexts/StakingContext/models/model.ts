@@ -34,6 +34,8 @@ export class Pool {
   public ownStake: BigNumber = new BigNumber(0);
   public poolOperator: string = '';
   public poolOperatorShare: BigNumber = new BigNumber(0);
+  public connectivityReport: string = '';
+  public isFaultyValidator: boolean = false;
 
   constructor(stakingAddress: string) {
     this.stakingAddress = stakingAddress;
