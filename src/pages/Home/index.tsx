@@ -54,6 +54,27 @@ const Home: React.FC<HomeProps> = ({}) => {
         toast.success("Copied to clipboard");
     };
 
+    useEffect(() => {
+        // Scroll to top on mount
+        window.scrollTo(0, 0);
+
+        // Polyfill for <details> if not supported
+        if (!("open" in document.createElement("details"))) {
+            document.querySelectorAll("details").forEach((details) => {
+                const summary = details.querySelector("summary");
+                if (summary) {
+                    summary.addEventListener("click", () => {
+                        if (details.hasAttribute("open")) {
+                            details.removeAttribute("open");
+                        } else {
+                            details.setAttribute("open", "open");
+                        }
+                    });
+                }
+            });
+        }
+    }, []);
+
   return (
     <>
 
