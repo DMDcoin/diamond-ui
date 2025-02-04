@@ -194,7 +194,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           ...proposalDetails,
           values: proposalDetails?.[4],
           daoPhaseCount: proposalDetails?.[9] || "1",
-          proposalType: getProposalTypeString(proposalDetails?.[10] || "3"),
+          proposalType: getProposalTypeString(proposalDetails?.[11] || "3"),
         };
       }
 
