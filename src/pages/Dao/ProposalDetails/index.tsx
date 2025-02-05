@@ -356,18 +356,17 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                          <span>
+                            <span>
                             Positive Answers: ({
                               votingStats ? 
-                              Math.round(
-                                BigNumber(votingStats.total)
-                                  .dividedBy(totalDaoStake)
-                                  .multipliedBy(100)
-                                  .minus(BigNumber(votingStats.negative))
-                                  .toNumber()
-                              ) : 0
+                              BigNumber(votingStats.total)
+                              .dividedBy(totalDaoStake)
+                              .multipliedBy(100)
+                              .minus(BigNumber(votingStats.negative))
+                              .toFixed(4, BigNumber.ROUND_DOWN)
+                              : 0
                             }% exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
-                          </span>
+                            </span>
                           <Tooltip text="Total participation percentage minus negative votes | required difference" />
                         </div>
                         <div>
