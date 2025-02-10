@@ -209,11 +209,13 @@ td .loader {
   text-align: center;
   margin-bottom: 20px;
   align-items: center;
+  flex-wrap: wrap; /* Ensures the filter items wrap on smaller screens */
 }
 
 .filterContainer > input {
   align-self: flex-start;
   max-width: 260px;
+  width: 100%; /* Ensure the search input takes full width in mobile */
 }
 
 .filterContainer label {
@@ -232,6 +234,19 @@ td .loader {
 
 .filterContainer > :last-child {
   margin-left: auto;
+}
+
+/* Adjust layout for mobile screens */
+@media (max-width: 768px) {
+  .filterContainer > input {
+    max-width: 100%;
+  }
+
+  .filterContainer label {
+    margin-right: 0;
+    width: 100%;
+    text-align: center; /* Center the label on mobile */
+  }
 }
 
 .addressesContainer > div:hover {

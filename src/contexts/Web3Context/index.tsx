@@ -191,7 +191,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           await switchChain(wagmiConfig, { chainId: Number(chainId) });
           showLoader(false, "");
         } catch (err: any) {
-          if (err.code === 4001) {
+          if (err.code === 4001 || err.code === 4902) {
             showLoader(false, "");
             await connector.disconnect();
             disconnect();
