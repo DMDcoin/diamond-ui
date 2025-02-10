@@ -424,6 +424,7 @@ details {
   border-radius: 5px;
   transition: border-color 0.3s ease;
   background-color: white;
+  display: block;
 }
 
 details > summary {
@@ -433,11 +434,14 @@ details > summary {
   padding: 10px;
   border-radius: 5px;
   position: relative;
-  list-style-type: none;
+  list-style-type: none;  /* Remove the bullet points */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  user-select: none; /* Prevents text selection */
+  user-select: none;
+  padding-right: 40px;
+  text-align: left; /* Ensure text is aligned to the left */
+  flex-wrap: wrap; /* Allow text to wrap */
 }
 
 details > summary::marker {
@@ -447,7 +451,7 @@ details > summary::marker {
 details > summary::after {
   content: "+";
   position: absolute;
-  right: 20px;
+  right: 10px; /* Adjust the distance from the right */
   font-size: 1.5em;
   color: #007bff;
   transition: transform 0.3s ease;
@@ -473,6 +477,34 @@ details > p {
 
 details > ul > * {
   text-align: left;
+}
+
+/* Polyfill for <details> if not supported on iOS Safari */
+@supports not (details: open) {
+  .sectionContainer > details {
+      display: block;
+  }
+
+  .sectionContainer > details > summary {
+      cursor: pointer;
+  }
+
+  .sectionContainer > details[open] summary::after {
+      content: "-";
+      color: red;
+      transform: rotate(180deg);
+  }
+
+  .sectionContainer > details[open] summary {
+      color: #007bff;
+  }
+
+  .sectionContainer > details > p {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      user-select: text;
+  }
 }
 
 .heading3 {

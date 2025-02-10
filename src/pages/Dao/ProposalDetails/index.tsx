@@ -356,13 +356,25 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                          <span>Positive Answers: ({votingStats ? BigNumber(votingStats.positive).minus(votingStats.negative).isLessThan(0) ? '0.00' : Math.round(BigNumber(votingStats.positive).minus(votingStats.negative).toNumber()) : 0} % exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
-                          <Tooltip text="Exceeding difference between yes and no answers | required difference" />
+                            <span>
+                            Positive Answers: ({
+                              votingStats ? 
+                              BigNumber(votingStats.total)
+                              .dividedBy(totalDaoStake)
+                              .multipliedBy(100)
+                              .minus(BigNumber(votingStats.negative))
+                              .toFixed(4, BigNumber.ROUND_DOWN)
+                              : 0
+                            }% exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
+                            </span>
+                          <Tooltip text="Total participation percentage minus negative votes | required difference" />
                         </div>
                         <div>
-                          <span>Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
-                            votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
-                          }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)</span>
+                          <span>
+                            Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
+                              votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
+                            }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
+                          </span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
                         </div>
                       </div>
