@@ -136,13 +136,19 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    const threshold = proposalType === "Contract upgrade" ? 50 : 33;
-    const hasSufficientVotes = positive.minus(negative).isGreaterThan(threshold);
-    const hasRequiredParticipation = votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).isGreaterThan(threshold);
-    
+    // Convert threshold percentages to ether format (10^18)
+    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : 33;
+    const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
+  
+    // Check if positive votes exceed negative votes by the required threshold
+    const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
+  
+    // Check if the total participation meets the required threshold
+    const hasRequiredParticipation = votingStats?.total.isGreaterThanOrEqualTo(threshold);
+  
     return hasSufficientVotes && hasRequiredParticipation;
   };
-
+  
   const copyData = (data: string) => {
     copy(data);
     toast.success("Copied to clipboard");
@@ -350,23 +356,61 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                   (daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state)) && (
                     <>
                       <div className={styles.votingPhaseProgress}>
-                        <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.positive) : 0} bgColor="green" />
-                        <ProgressBar min={0} max={100} progress={votingStats ? Number(votingStats.negative) : 0} bgColor="red" />
+                        {/* Progress bar for positive votes */}
+                        <ProgressBar
+                          min={0}
+                          max={100}
+                          progress={
+                            votingStats
+                              ? BigNumber(votingStats.positive).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
+                              : 0
+                          }
+                          bgColor="green"
+                        />
+                        {/* Progress bar for negative votes */}
+                        <ProgressBar
+                          min={0}
+                          max={100}
+                          progress={
+                            votingStats
+                              ? BigNumber(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
+                              : 0
+                          }
+                          bgColor="red"
+                        />
                       </div>
 
                       <div className={styles.votingPhaseStats}>
                         <div>
-                            <span>
+                          <span>
                             Positive Answers: ({
-                              votingStats ? 
-                              BigNumber(votingStats.total)
-                              .dividedBy(totalDaoStake)
-                              .multipliedBy(100)
-                              .minus(BigNumber(votingStats.negative))
-                              .toFixed(4, BigNumber.ROUND_DOWN)
-                              : 0
-                            }% exceeding | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
-                            </span>
+                              votingStats ?
+                                (() => {
+                                  // Convert votingStats to BigNumber (assuming votingStats.positive and votingStats.negative are in ether units)
+                                  const stakeYes = votingStats.positive;
+                                  const stakeNo = votingStats.negative;
+                                  const totalStake = totalDaoStake;
+
+                                  // Calculate requiredExceeding based on proposalType
+                                  const requiredExceeding = proposal.proposalType === "Contract upgrade"
+                                    ? totalStake.multipliedBy(0.5) // 50% of totalDaoStake
+                                    : totalStake.multipliedBy(0.33); // 33% of totalDaoStake
+
+                                  // Check if stakeYes meets the condition
+                                  const isConditionMet = stakeYes.isGreaterThanOrEqualTo(stakeNo.plus(requiredExceeding));
+
+                                  // Calculate the percentage exceeding
+                                  const percentageExceeding = stakeYes
+                                    .minus(stakeNo)
+                                    .dividedBy(totalStake)
+                                    .multipliedBy(100)
+                                    .toFixed(4, BigNumber.ROUND_DOWN);
+
+                                  return `${percentageExceeding}% exceeding | ${proposal.proposalType === "Contract upgrade" ? "50%" : "33%"} required`;
+                                })()
+                              : "0% exceeding | N/A required"
+                            })
+                          </span>
                           <Tooltip text="Total participation percentage minus negative votes | required difference" />
                         </div>
                         <div>
