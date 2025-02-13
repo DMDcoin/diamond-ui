@@ -288,7 +288,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           let stakeNo = new BigNumber(0);
           let stakeYes = new BigNumber(0);
           let totalStake = new BigNumber(0);
-          let stakeAbstain = new BigNumber(0);
 
           const votingStats = await web3Context.contractsManager.daoContract.methods.countVotes(proposalId).call();
 
@@ -296,15 +295,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             stakeNo = new BigNumber(votingStats[3]);
             stakeYes = new BigNumber(votingStats[2]);
 
-            totalStake = stakeAbstain.plus(stakeNo).plus(stakeYes);
+            totalStake = stakeNo.plus(stakeYes);
           }
-
-          const positivePercentage = stakeYes.dividedBy(totalStake).multipliedBy(100);
-          const negativePercentage = stakeNo.dividedBy(totalStake).multipliedBy(100);
           
           stats = {
-            positive: positivePercentage.isNaN() ? new BigNumber(0) : positivePercentage,
-            negative: negativePercentage.isNaN() ? new BigNumber(0) : negativePercentage,
+            positive: stakeYes,
+            negative: stakeNo,
             total: totalStake
           };
 
