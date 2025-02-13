@@ -44,7 +44,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   async function filterProposals() {
     const filteredProposals = await Promise.all(
       activeProposals.map(async (proposal) => {
-        if (proposal.proposer === poolAddress && proposal.state == '0') {
+        if (proposal.proposer === poolAddress) {
           const myVote = await getMyVote(proposal.id);
           return { ...proposal, myVote: myVote.vote };
         } else if (proposal.state == '2') {
