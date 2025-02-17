@@ -297,6 +297,20 @@ const FAQ: React.FC<FAQProps> = () => {
                         A node operator address can be set up during the pool creation step or anytime after the pool creation in the personal profile on the Diamond UI. It is editable once per epoch. One target address can be active at a time; setting a new one disables the old one.
                     </p>
                 </details>
+
+                <details>
+                    <summary>25. What is Connectivity Report (CR)?</summary>
+                    
+                    <p>The Connectivity Report provides a metric for each node in the Validators list, indicating its network performance and connection stability. Display Rules:</p>
+
+                    <p>
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li>Displayed in black, indicating no reported issues.</li>
+                            <li>Displayed in <span style={{ color: 'orange' }}>orange</span>, signalling reported connectivity issues.</li>
+                            <li><strong>Faulty Validator:</strong> If a validator is flagged as faulty by a majority (two-thirds) of active validators, its value is displayed in bold <span style={{ color: 'red', fontWeight: 'bold' }}>red</span>.</li>
+                        </ul>
+                    </p>
+                </details>
             </div>
         </section>
     );
