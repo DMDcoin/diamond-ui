@@ -151,6 +151,12 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
             <form className={styles.form} onSubmit={handleWithdrawStake}>
 
+              {
+                true && (
+                  <span className={styles.zeroMargin}> Amount already ordered: {BigNumber.maximum(0, pool.orderedWithdrawAmount.dividedBy(10 ** 18)).toString()} DMD </span>
+                )
+              }
+
               {canBeUnstakedAmount.isZero() ? (
                 <span>
                   Amount you can order:{" "}
