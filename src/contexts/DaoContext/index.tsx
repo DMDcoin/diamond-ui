@@ -15,6 +15,7 @@ interface DaoContextProps {
   allDaoProposals: Proposal[];
   governancePotBalance: BigNumber;
   claimingContractBalance: BigNumber;
+  notEnoughGovernanceFunds: boolean;
 
   initialize: () => Promise<void>;
   setActiveProposals: (proposals: Proposal[]) => void;
@@ -40,7 +41,7 @@ const DaoContext = createContext<DaoContextProps | undefined>(undefined);
 
 const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const web3Context = useWeb3Context();
-
+  
   const [daoPhaseCount, setDaoPhaseCount] = useState("1");
   const [proposalFee, setProposalFee] = useState<string>('0');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
@@ -48,6 +49,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
+  const [notEnoughGovernanceFunds, setNotEnoughGovernanceFunds] = useState<boolean>(false);
   const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [claimingContractBalance, setClaimingContractBalance] = useState<BigNumber>(BigNumber('0'));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
@@ -598,6 +600,11 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
+  const getGovernanceFundsEnough = async () => {
+    const balance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    const openProposalsRequiredBalance = new BigNumber(proposalFee).multipliedBy(activeProposals.length);
+  }
+
   // TODO: Decode calldata of calls to our core contracts
   // const decodeCallData = (callData: string) => {
   //   const selector = callData.slice(0, 10);
@@ -615,6 +622,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     allDaoProposals,
     governancePotBalance,
     claimingContractBalance,
+    notEnoughGovernanceFunds,
 
     // functions
     initialize,

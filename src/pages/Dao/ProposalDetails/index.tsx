@@ -324,6 +324,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
             )
           }
 
+          {
+            daoContext.notEnoughGovernanceFunds && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please vote, finalize and execute carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
           {/* user is proposer and proposal is in created state */}
           {
             web3Context.userWallet.myAddr === proposal.proposer &&

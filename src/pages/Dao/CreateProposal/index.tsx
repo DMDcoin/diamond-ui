@@ -237,6 +237,14 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         </div>
 
         <form className={styles.propsalForm} onSubmit={createProposal}>
+
+          {
+            daoContext.notEnoughGovernanceFunds && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please create and vote carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
           <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
           <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
           <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>

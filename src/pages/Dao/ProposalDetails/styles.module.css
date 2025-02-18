@@ -388,3 +388,9 @@ input {
 .copyButton:hover {
   background-color: #0056b3;
 }
+
+.warningText {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
