@@ -1,10 +1,11 @@
 import BigNumber from "bignumber.js";
 import styles from "./styles.module.css";
+import { useStakingContext } from "../../contexts/StakingContext";
 
 interface ProgressProps {
   min: number;
   max: number;
-  progress: number;
+  progress: BigNumber;
   bgColor: string;
 }
 
@@ -14,7 +15,22 @@ const ProgressBar: React.FC<ProgressProps> = ({
   progress,
   bgColor,
 }) => {
-  const percentage = new BigNumber(Math.min(Math.max((progress - min) / (max - min), 0), 1) * 100).toFixed(4, BigNumber.ROUND_DOWN);
+  const { totalDaoStake } = useStakingContext();
+
+  const progressPercentage = progress
+    .dividedBy(totalDaoStake)
+    .multipliedBy(100)
+    .toNumber();
+  const percentage = new BigNumber(
+    Math.min(Math.max((progressPercentage - min) / (max - min), 0), 1) * 100
+  ).toFixed(4, BigNumber.ROUND_DOWN);
+
+  // Format the progress value with commas
+  const progressValue = progress.dividedBy(10 ** 18);
+  const progressValueFormatted = Number(progressValue.toFixed(4)).toLocaleString(
+    "en-US",
+    { minimumFractionDigits: 4, maximumFractionDigits: 4 }
+  );
 
   return (
     <div className={styles.progressContainer}>
@@ -24,9 +40,11 @@ const ProgressBar: React.FC<ProgressProps> = ({
           style={{ width: `${percentage}%`, backgroundColor: `${bgColor}` }}
         />
         <span 
-        className={styles.progressText}
-        style={{ left: `${percentage+1}%` }}
-        >{percentage}%</span>
+          className={styles.progressText}
+          style={{ left: `${parseFloat(percentage) + 1}%`, marginLeft: "2px" }}
+        >
+          {progressValueFormatted} ({percentage}%)
+        </span>
       </div>
     </div>
   );

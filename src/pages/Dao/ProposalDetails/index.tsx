@@ -370,8 +370,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                           max={100}
                           progress={
                             votingStats
-                              ? BigNumber(votingStats.positive).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
-                              : 0
+                              ? votingStats.positive
+                              : BigNumber(0)
                           }
                           bgColor="green"
                         />
@@ -381,8 +381,8 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                           max={100}
                           progress={
                             votingStats
-                              ? BigNumber(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
-                              : 0
+                              ? votingStats.negative
+                              : BigNumber(0)
                           }
                           bgColor="red"
                         />
@@ -404,15 +404,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                                     ? totalStake.multipliedBy(0.5) // 50% of totalDaoStake
                                     : totalStake.multipliedBy(0.33); // 33% of totalDaoStake
 
-                                  // Check if stakeYes meets the condition
-                                  const isConditionMet = stakeYes.isGreaterThanOrEqualTo(stakeNo.plus(requiredExceeding));
-
                                   // Calculate the percentage exceeding
-                                  const percentageExceeding = stakeYes
+                                  const rawPercentageExceeding = stakeYes
                                     .minus(stakeNo)
                                     .dividedBy(totalStake)
-                                    .multipliedBy(100)
-                                    .toFixed(4, BigNumber.ROUND_DOWN);
+                                    .multipliedBy(100);
+                                  const percentageExceeding = rawPercentageExceeding.isLessThan(0)
+                                    ? "0.0000"
+                                    : rawPercentageExceeding.toFixed(4, BigNumber.ROUND_DOWN);
 
                                   return `${percentageExceeding}% exceeding | ${proposal.proposalType === "Contract upgrade" ? "50%" : "33%"} required`;
                                 })()

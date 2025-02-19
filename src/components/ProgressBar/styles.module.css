@@ -32,5 +32,6 @@
     font-weight: 800;
     position: absolute;
     transform: translateY(-50%);
+    text-wrap-mode: nowrap;
   }
   
