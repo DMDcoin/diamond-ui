@@ -41,12 +41,7 @@ const DaoHome: React.FC<DaoProps> = () => {
         <div className={styles.daoInfoContainer}>
           <h1>Governance</h1>
 
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-
-          {/* <DaoPhaseBanner /> */}
+          <DaoPhaseBanner />
         </div>
 
         <div className={styles.allDaoProposals}>

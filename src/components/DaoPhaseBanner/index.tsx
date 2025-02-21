@@ -61,9 +61,63 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
             </div>
           </section>
         ) : (
-          <div className={styles.daoPhaseBanner}>
+          <div className={styles.boxContainer}>
             {daoContext.daoPhase?.phase === "1" && <div></div>}
-            <div>
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>DAO phase</p>
+              <p className={styles.boxDescriptionBig}>
+                {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                {daoContext.phaseEndTimer} till the end
+              </p>
+              <div className={styles.boxBtns}>
+                {daoContext.daoPhase?.phase === "1" ? (
+                  <p></p>
+                ) : unfinalizedProposalsExist ? (
+                  <FinalizeProposalsWarn buttonText="Create Proposal" />
+                ) : daoContext.daoPhase?.phase === "0" && (
+                  <button className="primaryBtn" onClick={() => { startTransition(() => { navigate("/dao/create") }) }}>Create Proposal</button>
+                )
+                }
+              </div>
+            </div>
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Voting power</p>
+              <p className={styles.boxDescriptionBig}>
+                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0} %
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                Pool stake: 10,000 DMD
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                Proposals created: 5
+              </p>
+            </div>
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Governance pot</p>
+              <p className={styles.boxDescriptionBig}>
+                11,000 DMD
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                0.01% sisnce 01.01.2024
+              </p>
+            </div>
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Historic proposals</p>
+              <p className={styles.boxDescriptionBig}>
+                86
+              </p>
+              <div className={styles.boxBtns}>
+                <button className="primaryBtn">See full list</button>
+              </div>
+            </div>
+
+            {/* <div>
               <h4>{daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}</h4>
               
               {daoContext.daoPhase?.phase === "1" ? (
@@ -102,7 +156,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               <span>
                 {daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD
               </span>
-            </p>
+            </p> */}
           </div>
         )
       }

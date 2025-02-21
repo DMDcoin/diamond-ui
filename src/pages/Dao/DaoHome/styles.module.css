@@ -2,16 +2,17 @@
   padding-top: 0px;
 }
 
-h2, span {
+h2,
+span {
   margin: 0px 0px 10px 0px;
   color: #0145b2;
 }
 
-.sectionContainer > * {
+.sectionContainer>* {
   width: 100%;
 }
 
-.sectionContainer > div {
+.sectionContainer>div {
   margin-bottom: 40px;
 }
 
@@ -44,12 +45,12 @@ h2, span {
   justify-content: space-between;
 }
 
-.daoInfoContainer > div {
+.daoInfoContainer>div {
   margin-top: 40px;
   background-color: white;
 }
 
-.daoInfoContainer > h1 {
+.daoInfoContainer>h1 {
   font-size: 48px;
   text-align: center;
 }
@@ -73,7 +74,7 @@ h2, span {
     flex-direction: column;
   }
 
-  .daoInfoContainer > div {
+  .daoInfoContainer>div {
     width: 100%;
   }
 }
