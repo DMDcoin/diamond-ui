@@ -17,6 +17,7 @@ const DaoHome: React.FC<DaoProps> = () => {
   
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'currentPhase' | 'actionsNeeded'>('currentPhase');
 
   useEffect(() => {
     try {
@@ -28,7 +29,6 @@ const DaoHome: React.FC<DaoProps> = () => {
   }, [web3Context.web3Initialized]);
 
   const handleDetailsClick = (proposalId: string) => {
-    // Navigate to the dynamic route with the proposalId parameter
     startTransition(() => {
       navigate(`/dao/details/${proposalId}`);
     });
@@ -40,30 +40,42 @@ const DaoHome: React.FC<DaoProps> = () => {
         
         <div className={styles.daoInfoContainer}>
           <h1>Governance</h1>
-
           <DaoPhaseBanner />
         </div>
 
         <div className={styles.allDaoProposals}>
-          {/* <h2>Active Proposals</h2> */}
+          <div className={styles.filterContainer}>
+            <input
+              type="text"
+              placeholder="Search "
+              className={styles.daoSearch}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
-            <div className={styles.filterContainer}>
-              <input
-                type="text"
-                placeholder="Search "
-                className={styles.daoSearch}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
+                <option value="">All</option>
+                <option value="myProposals">My proposals</option>
+            </select>
+          </div>
 
-              <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
-                  <option value="">All</option>
-                  <option value="myProposals">My proposals</option>
-              </select>
-            </div>
+          <div className={styles.tabNavigation}>
+            <button
+              className={activeTab === 'currentPhase' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('currentPhase')}
+            >
+              Proposals of the current DAO phase
+            </button>
+            <button
+              className={activeTab === 'actionsNeeded' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('actionsNeeded')}
+            >
+              Actions needed
+            </button>
+          </div>
 
           <div>
             <ProposalsTable
-              data={daoContext.activeProposals}
+              data={activeTab === 'currentPhase' ? daoContext.activeProposals : daoContext.allDaoProposals.filter(proposal => proposal.state === "3")}
               handleDetailsClick={handleDetailsClick}
               getStateString={daoContext.getStateString}
               searchQuery={searchQuery}

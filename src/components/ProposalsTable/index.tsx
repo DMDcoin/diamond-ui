@@ -36,7 +36,7 @@ const ProposalsTable = (props: TableProps) => {
 
   const defaultCoulmns = [
     'Date',
-    'Account',
+    'Created by',
     'Title',
     'Type',
     ...(columns.length > 0 ? columns : ['Status']),

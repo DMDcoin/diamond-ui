@@ -103,3 +103,38 @@ span {
   outline: none;
   cursor: pointer;
 }
+
+.tabNavigation {
+  gap: 1rem;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #0145b2;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.tab:hover {
+  background-color: #ddd;
+}
+
+.activeTab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #0145b2;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  border-bottom: 2px solid #0145b2;
+}
+
+.activeTab:hover {
+  background-color: #ddd;
+}

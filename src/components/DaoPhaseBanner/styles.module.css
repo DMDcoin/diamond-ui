@@ -38,7 +38,7 @@
   gap: 20px;
   display: grid;
   margin-top: 30px;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 @media (max-width: 1024px) {
@@ -51,7 +51,7 @@
 @media (max-width: 768px) {
   .boxContainer {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     overflow-x: auto;
     padding-bottom: 10px;
   }
@@ -64,6 +64,7 @@
 
 .block {
   gap: 1rem;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,26 +78,28 @@
 }
 
 .block > .boxHeading {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
   line-height: 1.25em;
 }
 
 .block > .boxDescription {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 }
 
 .block > .boxDescriptionBig {
-  font-size: 38px;
+  font-size: 24px;
   font-weight: 500;
+  text-align: center;
 }
 
 .block > .boxDescriptionSmall {
   gap: 0.5rem;
   display: flex;
-  font-size: 14px;
+  font-size: 12px;
+  text-align: center;
 }
 
 .block > .boxDescriptionSmall > .arrowGreen {
@@ -108,7 +111,7 @@
 }
 
 .block > .boxDescriptionSmallBold {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   text-align: center;
 }
@@ -234,4 +237,49 @@
   font-size: 18px;
   color: #0145b2;
   font-weight: bold;
+}
+
+/* Responsive Font Sizes */
+@media (max-width: 1024px) {
+  .block > .boxHeading {
+    font-size: 18px;
+  }
+  .block > .boxDescription {
+    font-size: 12px;
+  }
+  .block > .boxDescriptionBig {
+    font-size: 20px;
+  }
+  .block > .boxDescriptionSmall,
+  .block > .boxDescriptionSmallBold {
+    font-size: 10px;
+  }
+  .styledTable {
+    font-size: 16px;
+  }
+  .profileAddr {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .block > .boxHeading {
+    font-size: 16px;
+  }
+  .block > .boxDescription {
+    font-size: 10px;
+  }
+  .block > .boxDescriptionBig {
+    font-size: 18px;
+  }
+  .block > .boxDescriptionSmall,
+  .block > .boxDescriptionSmallBold {
+    font-size: 8px;
+  }
+  .styledTable {
+    font-size: 14px;
+  }
+  .profileAddr {
+    font-size: 14px;
+  }
 }
