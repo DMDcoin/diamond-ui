@@ -23,7 +23,7 @@ const DaoHome: React.FC<DaoProps> = () => {
     try {
       if (!daoContext.activeProposals.length && web3Context.web3Initialized) {
         web3Context.showLoader(true, "");
-        daoContext.getActiveProposals();
+        daoContext.getActiveProposals().then(() => {daoContext.getHistoricProposals();});
       }
     } catch(err) {}
   }, [web3Context.web3Initialized]);
@@ -83,12 +83,6 @@ const DaoHome: React.FC<DaoProps> = () => {
             />
           </div>
         </div>
-
-        <span
-          onClick={() => startTransition(() => navigate("/dao/historic"))}
-          className={styles.historicProposalsLink}>
-          Historic Proposals
-        </span>
       </div>
     </section>
   );

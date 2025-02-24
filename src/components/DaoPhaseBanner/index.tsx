@@ -121,7 +121,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
                 {daoContext.allDaoProposals.length}
               </p>
               <div className={styles.boxBtns}>
-                <button className="primaryBtn">See full list</button>
+                <button className="primaryBtn" onClick={() => startTransition(() => navigate("/dao/historic"))}>See full list</button>
               </div>
             </div>
           </div>
