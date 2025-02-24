@@ -138,8 +138,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>9. How can I unstake my DMD?</summary>
                     <p>
-                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node.
-                    </p>
+                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node.                    </p>
                     <p>
                         ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet.
                         If the validator is active or pending, the staker can only withdraw staked amount minus already ordered amount but no more than the amount staked during the current staking epoch.
@@ -149,7 +148,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>10. What does ordering DMD mean?</summary>
                     <p>
-                        Order flow takes place if some of the coins are not available to be unstaked at the moment, as they are part of the stake of the active validator or pending validator, who is preparing to become active in the next epoch (usually the status lasts for 5 minutes maximum). So firstly you need to unstake all available coins, Diamond UI tells you the amount. To order DMD you need to create a separate unstake request by clicking on ‘Unstake’ once again. In this case, as well, the amount to be ordered will be shown on the UI. Your ordered coins will be kept till you claim them as soon as the Epoch ends.
+                        To claim coins, please, click ‘Claim’ button near your stake amount in the validator candidates list. The button appears near your staked coins on the Epoch end and it means, that your previously ordered coins are ready to be unstaked.
                     </p>
                 </details>
 
@@ -210,8 +209,9 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>18. How the DAO voting is performed?</summary>
                     <p>
-                    There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The proposals of the current proposal + voting phase stay in the Active proposals list till the dao phase finishes. During a voting phase, proposals creation is not available, but every validator candidate can vote on the proposals from the Active list, except from the dismissed ones. Once the voting phase is finished, a new proposal phase starts.
+                        There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The proposals of the current proposal + voting phase stay in the Active proposals list till the dao phase finishes. During a voting phase, proposals creation is not available, but every validator candidate can vote on the proposals from the Active list, except from the dismissed ones. Once the voting phase is finished, a new proposal phase starts.
                     </p>
+                    <p>Full guides on how to create and vote on the proposals can be found <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO">here.</a></p>
                 </details>
 
                 <details>
