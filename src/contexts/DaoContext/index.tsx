@@ -33,7 +33,7 @@ interface DaoContextProps {
   getProposalDetails: (proposalId: string) => Promise<Proposal>;
   setProposalsState: (proposals: Proposal[]) => Promise<void>;
   getHistoricProposalsEvents: () => Promise<Array<string>>;
-  getMyVote: (proposalId: string) => Promise<Vote>;
+  getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   executeProposal: (proposalId: string) => Promise<string>;
 }
 
@@ -571,9 +571,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  const getMyVote = async (proposalId: string): Promise<Vote> => {
+  const getMyVote = async (proposalId: string, myAddr: string): Promise<Vote> => {
     return await web3Context.contractsManager.daoContract.methods
-      .votes(proposalId, web3Context.userWallet.myAddr)
+      .votes(proposalId, myAddr)
       .call();
   };
 

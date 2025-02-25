@@ -55,7 +55,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const getProposalDetails = useCallback(async (proposalId: string) => {
     if (web3Context.userWallet.myAddr) {
-      setMyVote(await daoContext.getMyVote(proposalId));
+      setMyVote(await daoContext.getMyVote(proposalId, web3Context.userWallet.myAddr));
     }
 
     const storedProposals = daoContext.getCachedProposals().filter((proposal: any) => proposal.id === proposalId);

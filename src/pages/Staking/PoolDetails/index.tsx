@@ -42,24 +42,25 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
   }, [poolAddress, pools, userWallet.myAddr]);
 
   async function filterProposals() {
-    const filteredProposals = await Promise.all(
+    const proposals = await Promise.all(
       activeProposals.map(async (proposal) => {
+        // Only process proposals where poolAddress is relevant
+        if (proposal.proposer !== poolAddress && proposal.state !== '2') return null;
+
+        const vote = poolAddress ? await getMyVote(proposal.id, poolAddress) : null;
+        // Only proceed if vote exists and vote.timestamp is greater than 0
+        if (!vote || +vote.timestamp <= 0) return null;
+
         if (proposal.proposer === poolAddress) {
-          const myVote = await getMyVote(proposal.id);
-          return { ...proposal, myVote: myVote.vote };
-        } else if (proposal.state == '2') {
-          const myVote = await getMyVote(proposal.id);
-          if (myVote && myVote.vote != '0') {
-            return { ...proposal, myVote: myVote.vote };
-          }
+          return { ...proposal, myVote: vote.vote };
+        } else if (vote.vote !== '0') {
+          return { ...proposal, myVote: vote.vote };
         }
         return null;
       })
     );
-  
-    // Remove null values
-    const proposals = filteredProposals.filter((proposal) => proposal !== null);
-    setFilteredProposals(proposals || []);
+
+    setFilteredProposals(proposals.filter((proposal) => proposal !== null));
   }
 
   const copyData = (data: string) => {
@@ -117,7 +118,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
           <div>
             <h1>Delegates</h1>
             {
-              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && pool.totalStake.isLessThan(BigNumber(50000).multipliedBy(10**18)) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
+              (pool?.isActive || pool?.isToBeElected || pool?.isPendingValidator) && BigNumber(pool.totalStake).isLessThan(BigNumber(50000).multipliedBy(10**18)) && userWallet.myAddr && (<StakeModal buttonText="Stake" pool={pool} />)
             }
             {
               pool && BigNumber(pool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(pool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
@@ -173,7 +174,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>Date</td>
                     <td>Proposal title</td>
                     <td>Proposal type</td>
-                    <td>Voting Result</td>
+                    <td>Vote</td>
                     <td></td>
                   </tr>
                 ) : (
