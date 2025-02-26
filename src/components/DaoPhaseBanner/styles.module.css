@@ -100,6 +100,7 @@
   display: flex;
   font-size: 12px;
   text-align: center;
+  align-items: center;
 }
 
 .block > .boxDescriptionSmall > .arrowGreen {

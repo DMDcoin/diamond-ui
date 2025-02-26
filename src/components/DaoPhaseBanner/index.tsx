@@ -6,7 +6,7 @@ import { startTransition, useEffect, useState } from "react";
 import FinalizeProposalsWarn from "../Modals/FinalizeProposalsWarn";
 import { useStakingContext } from "../../contexts/StakingContext";
 import BigNumber from "bignumber.js";
-import { faArrowUpLong } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDownLong, faArrowUpLong } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface DaoProps {
@@ -20,11 +20,22 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
   const stakingContext = useStakingContext();
 
   const [unfinalizedProposalsExist, setUnfinalizedProposalsExist] = useState<boolean>(true);
+  const [daoPotBalanceChange, setDaoPotBalanceChange] = useState<{
+    changePercentage: string,
+    direction: string,
+    blocks: number
+  }>({
+    changePercentage: "0",
+    direction: "positive",
+    blocks: 0
+  });
 
-  // TODO: get this from the contract
   useEffect(() => {
     web3Context.contractsManager.daoContract.methods.unfinalizedProposalsExist().call().then((res: boolean) => {
       setUnfinalizedProposalsExist(res);
+    });
+    daoContext.getDaoPotBalanceChange(100).then((res: any) => {
+      setDaoPotBalanceChange(res);
     });
   }, [daoContext.allDaoProposals, daoContext.daoPhaseCount]);
 
@@ -108,10 +119,15 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               <p className={styles.boxDescriptionBig}>
                 {daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD
               </p>
-              <p className={styles.boxDescriptionSmall}>
-              <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
-                0.01% since 01.01.2024
-              </p>
+                <p className={styles.boxDescriptionSmall}>
+                {daoPotBalanceChange.direction === "positive" ? (
+                  <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
+                ) : (
+                  <FontAwesomeIcon className={styles.arrowRed} icon={faArrowDownLong} />
+                )}{" "}
+                {daoPotBalanceChange.direction === "positive" ? "+" : "-"}
+                {daoPotBalanceChange.changePercentage}% since last {daoPotBalanceChange.blocks} blocks
+                </p>
               <p className={styles.boxDescriptionSmall}></p>
             </div>
 

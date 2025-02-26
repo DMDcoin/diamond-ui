@@ -35,6 +35,7 @@ interface DaoContextProps {
   getHistoricProposalsEvents: () => Promise<Array<string>>;
   getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   executeProposal: (proposalId: string) => Promise<string>;
+  getDaoPotBalanceChange: (blocksAgo: number) => Promise<{ changePercentage: string, direction: string }>;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
@@ -605,6 +606,23 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const openProposalsRequiredBalance = new BigNumber(proposalFee).multipliedBy(activeProposals.length);
   }
 
+  const getDaoPotBalanceChange = async (blocksAgo: number) => {
+    const currentBlockNumber = await web3Context.web3.eth.getBlockNumber();
+    const currentBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    
+    const pastBlockNumber = currentBlockNumber - blocksAgo;
+    const pastBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address, pastBlockNumber);
+    
+    const balanceChange = BigNumber(currentBalance).minus(BigNumber(pastBalance));
+    const percentageChange = balanceChange.dividedBy(BigNumber(pastBalance)).multipliedBy(100);
+    
+    return {
+      changePercentage: percentageChange.toFixed(2),
+      direction: percentageChange.isGreaterThanOrEqualTo(0) ? 'positive' : 'negative',
+      blocks: blocksAgo
+    };
+  }
+
   // TODO: Decode calldata of calls to our core contracts
   // const decodeCallData = (callData: string) => {
   //   const selector = callData.slice(0, 10);
@@ -642,7 +660,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getHistoricProposalsEvents,
     getMyVote,
     setActiveProposals,
-    executeProposal
+    executeProposal,
+    getDaoPotBalanceChange
   };
 
   return (
