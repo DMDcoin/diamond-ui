@@ -174,7 +174,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>Date</td>
                     <td>Proposal title</td>
                     <td>Proposal type</td>
-                    <td>Vote</td>
+                    <td>Voting</td>
                     <td></td>
                   </tr>
                 ) : (
@@ -191,7 +191,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>{timestampToDate(proposal.timestamp)}</td>
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
-                    <td>{proposal.myVote == "2" ? "Yes" : proposal.myVote == "1" ? "No" : "Not Voted"}</td>
+                    <td>{proposal.myVote == "2" ? "Voted For" : proposal.myVote == "1" ? "Voted Against" : "Not Voted"}</td>
                     <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
                   </tr>
                 ))

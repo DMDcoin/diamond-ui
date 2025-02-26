@@ -268,7 +268,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                   type="text"
                   value={field.amount}
                   onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
-                  placeholder="Payout Amount (optional)"
+                  placeholder="Payout Amount in DMD (optional)"
                   className={styles.formInput}
                 />
               </div>

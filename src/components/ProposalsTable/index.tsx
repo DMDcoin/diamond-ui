@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDaoContext } from '../../contexts/DaoContext';
 import { Proposal } from '../../contexts/DaoContext/types';
 import { useWeb3Context } from '../../contexts/Web3Context';
-import { timestampToDate } from '../../utils/common';
+import { timestampToDate, truncateAddress } from '../../utils/common';
 
 interface TableProps {
   data: any[];
@@ -110,7 +110,7 @@ const ProposalsTable = (props: TableProps) => {
                   </td>
                   <td>
                     {
-                      proposal.proposer || (<div className={styles.loader}></div>)
+                      truncateAddress(proposal.proposer) || (<div className={styles.loader}></div>)
                     }
                   </td>
                   <td>

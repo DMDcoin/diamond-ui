@@ -110,7 +110,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               </p>
               <p className={styles.boxDescriptionSmall}>
               <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
-                0.01% sisnce 01.01.2024
+                0.01% since 01.01.2024
               </p>
               <p className={styles.boxDescriptionSmall}></p>
             </div>
