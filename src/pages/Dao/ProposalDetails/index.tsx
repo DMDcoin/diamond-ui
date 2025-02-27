@@ -18,6 +18,7 @@ import Tooltip from "../../../components/Tooltip";
 import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionInfoWithAbi, timestampToDate } from "../../../utils/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import VotingStatus from "../../../components/VotingStatus";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -364,32 +365,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                   (daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state)) && (
                     <>
                       <div className={styles.votingPhaseProgress}>
-                        {/* Progress bar for positive votes */}
-                        <ProgressBar
-                          min={0}
-                          max={100}
-                          progress={
-                            votingStats
-                              ? votingStats.positive
-                              : BigNumber(0)
-                          }
-                          bgColor="green"
-                        />
-                        {/* Progress bar for negative votes */}
-                        <ProgressBar
-                          min={0}
-                          max={100}
-                          progress={
-                            votingStats
-                              ? votingStats.negative
-                              : BigNumber(0)
-                          }
-                          bgColor="red"
+                        <VotingStatus
+                          votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
+                          totalStake={totalDaoStake.toNumber()}
+                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : 33}
                         />
                       </div>
 
                       <div className={styles.votingPhaseStats}>
-                        <div>
+                        {/* <div>
                           <span>
                             Positive Answers: ({
                               votingStats ?
@@ -419,15 +403,15 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                             })
                           </span>
                           <Tooltip text="Total participation percentage minus negative votes | required difference" />
-                        </div>
-                        <div>
+                        </div> */}
+                        {/* <div>
                           <span>
                             Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
                               votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
                             }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
                           </span>
                           <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   )
