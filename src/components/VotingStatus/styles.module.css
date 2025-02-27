@@ -4,6 +4,7 @@
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    border-radius: 4px;
 }
 
 .votingBar {
@@ -13,13 +14,13 @@
 }
 
 .votingBar .noVotes {
-    background-color: #f44336;
+    background-color: #FF6F61;
     /* red */
     height: 100%;
 }
 
 .votingBar .yesVotes {
-    background-color: #4caf50;
+    background: #4caf50;
     /* green */
     height: 100%;
 }
@@ -29,7 +30,7 @@
     width: 4px;
     height: 60px;
     position: absolute;
-    background-color: yellow;
+    background-color: #FFC107;
     border: 0.5px solid black;
 }
 
@@ -46,6 +47,18 @@
     font-size: 0.9em;
     width: 100%;
     margin-top: 20px;
+}
+
+.legend > div {
+    gap: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.legend > div > div {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
 }
 
 .table {

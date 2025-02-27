@@ -166,6 +166,7 @@ h1, h2, h3, h4, p, span {
 }
 
 .votingPhaseProgress {
+  width: 100%;
   gap: 0.5rem;
   display: flex;
   min-width: 320px;

@@ -40,21 +40,15 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
           className={styles.thresholdMarker}
           style={{ left: `${thresholdPosition}%` }}
         ></div>
-        {/* <p
-          className={styles.markerLabel}
-          style={{ left: `${thresholdPosition.minus(6)}%` }}
-        >
-          Required ({requiredPercentage}%)
-        </p> */}
         <div className={styles.legend}>
           <div>
-            <span style={{ color: '#4CAF50' }}>■</span> Exceeding yes (Yes - No)
+            <div style={{ backgroundColor: '#4CAF50' }}></div> Exceeding yes (Yes - No)
           </div>
           <div>
-            <span style={{ color: '#f44336' }}>■</span> No Votes
+            <div style={{ backgroundColor: '#f44336' }}></div> No Votes
           </div>
           <div>
-            <span style={{ color: 'yellow' }}>■</span> Acceptance Threshold
+            <div style={{ backgroundColor: '#FFC107' }}></div> Acceptance Threshold
           </div>
         </div>
       </div>
@@ -76,14 +70,14 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
               <td>{BigNumber(votingStats.negative).dividedBy(10**18).toFixed(4)} DMD ({noPercentage.toFixed(4)}%)</td>
             </tr>
             <tr>
+              <td>Participation</td>
+              <td>{votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD ({BigNumber(votingStats.total).dividedBy(totalStake).multipliedBy(100).toFixed(4)}% | {requiredPercentage}% required)</td>
+            </tr>
+            <tr>
               <td>Exceeding Yes</td>
               <td>
                 {BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(10**18).toFixed(4)} DMD ({exceedingYesPercentage.toFixed(4)}% | {requiredPercentage}% required)
               </td>
-            </tr>
-            <tr>
-              <td>Participation</td>
-              <td>{votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD ({BigNumber(votingStats.total).dividedBy(totalStake).multipliedBy(100).toFixed(4)}% | {requiredPercentage}% required)</td>
             </tr>
           </tbody>
         </table>
