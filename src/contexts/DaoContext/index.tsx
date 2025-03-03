@@ -5,6 +5,7 @@ import { ContextProviderProps } from "../Web3Context/types";
 import { DaoPhase, Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
 import { timestampToDate } from '../../utils/common';
+import { useStakingContext } from '../StakingContext';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
   daoPhase: any,
@@ -198,6 +199,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           values: proposalDetails?.[4],
           daoPhaseCount: proposalDetails?.[9] || "1",
           proposalType: getProposalTypeString(proposalDetails?.[11] || "3"),
+
         };
       }
 
@@ -207,8 +209,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
     } catch (error) {}
 
+    const votingStats = await getProposalVotingStats(proposalId);
+    const totalDaoStake = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
+    updatedData['exceedingYes'] = BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
 
     return updatedData;
   }
@@ -233,7 +240,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       id: proposalId,
       timestamp: '',
       daoPhaseCount: '',
-      proposalType: ''
+      proposalType: '',
+      participation: '0',
+      exceedingYes: '0'
     };
   }
 
@@ -622,13 +631,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       blocks: blocksAgo
     };
   }
-
-  // TODO: Decode calldata of calls to our core contracts
-  // const decodeCallData = (callData: string) => {
-  //   const selector = callData.slice(0, 10);
-  //   const matchedFunction = abi.find((func: any) => func.signature === selector);
-  //   return matchedFunction;
-  // }
 
   const contextValue = {
     // states

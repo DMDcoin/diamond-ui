@@ -39,6 +39,9 @@ const ProposalsTable = (props: TableProps) => {
     'Created by',
     'Title',
     'Type',
+    'Participation',
+    'Exceeding Yes',
+    ...(web3Context.userWallet?.myAddr ? ['Voted'] : []),
     ...(columns.length > 0 ? columns : ['Status']),
     '',
     ''
@@ -118,10 +121,23 @@ const ProposalsTable = (props: TableProps) => {
                       proposal.title || (<div className={styles.loader}></div>)
                     }
                   </td>
+                  
                   <td>
                     {
                       proposal.proposalType || (<div className={styles.loader}></div>)
                     }
+                  </td>
+
+                  <td>
+                    {proposal.participation} %
+                  </td>
+
+                  <td>
+                    {proposal.exceedingYes} %
+                  </td>
+
+                  <td>
+                    No
                   </td>
 
                   {
@@ -148,8 +164,6 @@ const ProposalsTable = (props: TableProps) => {
                       <button className="primaryBtnHidden"></button>
                     )}
                   </td>
-
-                  <td></td>
                 </tr>
               );
             })}

@@ -125,7 +125,7 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
                 ) : (
                   <FontAwesomeIcon className={styles.arrowRed} icon={faArrowDownLong} />
                 )}{" "}
-                {daoPotBalanceChange.direction === "positive" ? "+" : "-"}
+                {daoPotBalanceChange.direction === "positive" ? "+" : ""}
                 {daoPotBalanceChange.changePercentage}% since last {daoPotBalanceChange.blocks} blocks
                 </p>
               <p className={styles.boxDescriptionSmall}></p>

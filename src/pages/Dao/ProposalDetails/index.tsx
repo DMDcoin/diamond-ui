@@ -371,48 +371,6 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                           requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : 33}
                         />
                       </div>
-
-                      <div className={styles.votingPhaseStats}>
-                        {/* <div>
-                          <span>
-                            Positive Answers: ({
-                              votingStats ?
-                                (() => {
-                                  // Convert votingStats to BigNumber (assuming votingStats.positive and votingStats.negative are in ether units)
-                                  const stakeYes = votingStats.positive;
-                                  const stakeNo = votingStats.negative;
-                                  const totalStake = totalDaoStake;
-
-                                  // Calculate requiredExceeding based on proposalType
-                                  const requiredExceeding = proposal.proposalType === "Contract upgrade"
-                                    ? totalStake.multipliedBy(0.5) // 50% of totalDaoStake
-                                    : totalStake.multipliedBy(0.33); // 33% of totalDaoStake
-
-                                  // Calculate the percentage exceeding
-                                  const rawPercentageExceeding = stakeYes
-                                    .minus(stakeNo)
-                                    .dividedBy(totalStake)
-                                    .multipliedBy(100);
-                                  const percentageExceeding = rawPercentageExceeding.isLessThan(0)
-                                    ? "0.0000"
-                                    : rawPercentageExceeding.toFixed(4, BigNumber.ROUND_DOWN);
-
-                                  return `${percentageExceeding}% exceeding | ${proposal.proposalType === "Contract upgrade" ? "50%" : "33%"} required`;
-                                })()
-                              : "0% exceeding | N/A required"
-                            })
-                          </span>
-                          <Tooltip text="Total participation percentage minus negative votes | required difference" />
-                        </div> */}
-                        {/* <div>
-                          <span>
-                            Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
-                              votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
-                            }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
-                          </span>
-                          <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
-                        </div> */}
-                      </div>
                     </>
                   )
                 }
