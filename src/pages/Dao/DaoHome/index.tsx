@@ -74,17 +74,17 @@ const DaoHome: React.FC<DaoProps> = () => {
           </div>
 
             <div>
-            <ProposalsTable
-              data={
-              activeTab === 'currentPhase'
-                ? daoContext.activeProposals.filter(proposal => proposal.state !== "3")
-                : daoContext.allDaoProposals.filter(proposal => proposal.state === "3")
-              }
-              handleDetailsClick={handleDetailsClick}
-              getStateString={daoContext.getStateString}
-              searchQuery={searchQuery}
-              filterQuery={filterQuery}
-            />
+              <ProposalsTable
+                data={
+                activeTab === 'currentPhase'
+                  ? daoContext.activeProposals.filter(proposal => proposal.state !== "3")
+                  : daoContext.allDaoProposals.filter(proposal => proposal.state === "3")
+                }
+                handleDetailsClick={handleDetailsClick}
+                getStateString={daoContext.getStateString}
+                searchQuery={searchQuery}
+                filterQuery={filterQuery}
+              />
             </div>
         </div>
       </div>

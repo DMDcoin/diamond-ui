@@ -5,6 +5,8 @@ import { useDaoContext } from '../../contexts/DaoContext';
 import { Proposal } from '../../contexts/DaoContext/types';
 import { useWeb3Context } from '../../contexts/Web3Context';
 import { timestampToDate, truncateAddress } from '../../utils/common';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface TableProps {
   data: any[];
@@ -85,6 +87,38 @@ const ProposalsTable = (props: TableProps) => {
     setCurrentPage(page);
   }
 
+  const getVoted = async (proposalId: string) => {
+    if (web3Context.userWallet.myAddr) {
+      const vote = await daoContext.getMyVote(proposalId, web3Context.userWallet.myAddr);
+      return Number(vote.timestamp) > 0;
+    }
+    return false;
+  }
+
+  const VoteStatus = ({ proposalId }: { proposalId: string }) => {
+    const [voted, setVoted] = useState<boolean | null>(null);
+    useEffect(() => {
+      let mounted = true;
+      getVoted(proposalId).then((result) => {
+        if (mounted) {
+          setVoted(result);
+        }
+      });
+      return () => {
+        mounted = false;
+      };
+    }, [proposalId]);
+  
+    if (voted === null) {
+      return <div className={styles.loader}></div>;
+    }
+    return voted ? <span>
+      <FontAwesomeIcon icon={faPlusCircle} />
+    </span> : <span>
+      <FontAwesomeIcon icon={faMinusCircle} />
+    </span>;
+  }
+
   return (
     <div className={styles.tableContainer}>
       <div>
@@ -116,7 +150,8 @@ const ProposalsTable = (props: TableProps) => {
                       truncateAddress(proposal.proposer) || (<div className={styles.loader}></div>)
                     }
                   </td>
-                  <td>
+
+                  <td className={styles.tableTitle}>
                     {
                       proposal.title || (<div className={styles.loader}></div>)
                     }
@@ -136,9 +171,13 @@ const ProposalsTable = (props: TableProps) => {
                     {proposal.exceedingYes} %
                   </td>
 
-                  <td>
-                    No
-                  </td>
+                  {
+                    web3Context.userWallet?.myAddr && (
+                      <td style={{ textAlign: 'center' }}>
+                        {<VoteStatus proposalId={proposal.id} />}
+                      </td>
+                    )
+                  }
 
                   {
                     defaultCoulmns.length > 0 && (
@@ -164,6 +203,8 @@ const ProposalsTable = (props: TableProps) => {
                       <button className="primaryBtnHidden"></button>
                     )}
                   </td>
+
+                  <td></td>
                 </tr>
               );
             })}

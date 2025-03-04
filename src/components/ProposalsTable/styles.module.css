@@ -100,3 +100,14 @@
   cursor: pointer;
   background-color: #e6f2ff; /* Light blue */
 }
+
+.tableTitle {
+  max-width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+td:nth-child(8) {
+  display: block !important;
+}
