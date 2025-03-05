@@ -13,7 +13,7 @@
 }
 
 .tableContainer > div:nth-child(1) {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 .tablePagination {
@@ -106,8 +106,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-td:nth-child(8) {
-  display: block !important;
 }
