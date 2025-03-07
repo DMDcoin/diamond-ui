@@ -7,11 +7,11 @@ h2, span {
   color: #0145b2;
 }
 
-.sectionContainer > * {
+.sectionContainer>* {
   width: 100%;
 }
 
-.sectionContainer > div {
+.sectionContainer>div {
   margin-bottom: 40px;
 }
 
@@ -44,12 +44,12 @@ h2, span {
   justify-content: space-between;
 }
 
-.daoInfoContainer > div {
+.daoInfoContainer>div {
   margin-top: 40px;
   background-color: white;
 }
 
-.daoInfoContainer > h1 {
+.daoInfoContainer>h1 {
   font-size: 48px;
   text-align: center;
 }
@@ -73,7 +73,7 @@ h2, span {
     flex-direction: column;
   }
 
-  .daoInfoContainer > div {
+  .daoInfoContainer>div {
     width: 100%;
   }
 }
@@ -101,4 +101,39 @@ h2, span {
   background-color: #fff;
   outline: none;
   cursor: pointer;
+}
+
+.tabNavigation {
+  gap: 1rem;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #0145b2;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.tab:hover {
+  background-color: #ddd;
+}
+
+.activeTab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: transparent;
+  color: #0145b2;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  border-bottom: 2px solid #0145b2;
+}
+
+.activeTab:hover {
+  background-color: #ddd;
 }

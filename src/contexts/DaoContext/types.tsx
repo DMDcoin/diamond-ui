@@ -13,6 +13,8 @@ export interface Proposal {
   timestamp: string;
   daoPhaseCount: string;
   proposalType: string;
+  participation: string;
+  exceedingYes: string;
 }
 
 export interface TotalVotingStats {

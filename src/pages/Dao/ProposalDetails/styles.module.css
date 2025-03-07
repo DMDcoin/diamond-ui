@@ -151,11 +151,11 @@ h1, h2, h3, h4, p, span {
 
 .votingPhaseContainer {
   gap: 1rem;
-  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  width: 55%; /* Desktop: 60-70% width */
 }
 
 .votingPhaseStats {
@@ -166,6 +166,7 @@ h1, h2, h3, h4, p, span {
 }
 
 .votingPhaseProgress {
+  width: 100%;
   gap: 0.5rem;
   display: flex;
   min-width: 320px;
@@ -270,6 +271,25 @@ h1, h2, h3, h4, p, span {
   font-weight: 700;
   flex-direction: column;
   overflow-x: auto;
+  width: 55%; /* Desktop: 60-70% width */
+}
+
+@media (max-width: 1024px) {
+  .cupDetailsContainer {
+    width: 70%; /* Tablet: 70-80% width */
+  }
+  .votingPhaseContainer {
+    width: 70%; /* Tablet: 70-80% width */
+  }
+}
+
+@media (max-width: 600px) {
+  .cupDetailsContainer {
+    width: 100%; /* Mobile: 100% width */
+  }
+  .votingPhaseContainer {
+    width: 100%; /* Mobile: 100% width */
+  }
 }
 
 .cupDetailsContainer > div {
@@ -387,4 +407,10 @@ input {
 
 .copyButton:hover {
   background-color: #0056b3;
+}
+
+.warningText {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
 }

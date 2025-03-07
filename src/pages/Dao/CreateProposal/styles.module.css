@@ -137,3 +137,9 @@ form button .disabled {
   align-items: center;
   justify-content: center;
 }
+
+.warningText {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}

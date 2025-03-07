@@ -5,6 +5,7 @@ import { ContextProviderProps } from "../Web3Context/types";
 import { DaoPhase, Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
 import { timestampToDate } from '../../utils/common';
+import { useStakingContext } from '../StakingContext';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
   daoPhase: any,
@@ -15,6 +16,7 @@ interface DaoContextProps {
   allDaoProposals: Proposal[];
   governancePotBalance: BigNumber;
   claimingContractBalance: BigNumber;
+  notEnoughGovernanceFunds: boolean;
 
   initialize: () => Promise<void>;
   setActiveProposals: (proposals: Proposal[]) => void;
@@ -32,15 +34,16 @@ interface DaoContextProps {
   getProposalDetails: (proposalId: string) => Promise<Proposal>;
   setProposalsState: (proposals: Proposal[]) => Promise<void>;
   getHistoricProposalsEvents: () => Promise<Array<string>>;
-  getMyVote: (proposalId: string) => Promise<Vote>;
+  getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   executeProposal: (proposalId: string) => Promise<string>;
+  getDaoPotBalanceChange: (blocksAgo: number) => Promise<{ changePercentage: string, direction: string }>;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
 
 const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const web3Context = useWeb3Context();
-
+  
   const [daoPhaseCount, setDaoPhaseCount] = useState("1");
   const [proposalFee, setProposalFee] = useState<string>('0');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
@@ -48,6 +51,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
+  const [notEnoughGovernanceFunds, setNotEnoughGovernanceFunds] = useState<boolean>(false);
   const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [claimingContractBalance, setClaimingContractBalance] = useState<BigNumber>(BigNumber('0'));
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
@@ -195,6 +199,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           values: proposalDetails?.[4],
           daoPhaseCount: proposalDetails?.[9] || "1",
           proposalType: getProposalTypeString(proposalDetails?.[11] || "3"),
+
         };
       }
 
@@ -204,8 +209,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       }
     } catch (error) {}
 
+    const votingStats = await getProposalVotingStats(proposalId);
+    const totalDaoStake = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
+    updatedData['exceedingYes'] = BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
 
     return updatedData;
   }
@@ -230,7 +240,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       id: proposalId,
       timestamp: '',
       daoPhaseCount: '',
-      proposalType: ''
+      proposalType: '',
+      participation: '0',
+      exceedingYes: '0'
     };
   }
 
@@ -569,9 +581,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  const getMyVote = async (proposalId: string): Promise<Vote> => {
+  const getMyVote = async (proposalId: string, myAddr: string): Promise<Vote> => {
     return await web3Context.contractsManager.daoContract.methods
-      .votes(proposalId, web3Context.userWallet.myAddr)
+      .votes(proposalId, myAddr)
       .call();
   };
 
@@ -598,12 +610,27 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  // TODO: Decode calldata of calls to our core contracts
-  // const decodeCallData = (callData: string) => {
-  //   const selector = callData.slice(0, 10);
-  //   const matchedFunction = abi.find((func: any) => func.signature === selector);
-  //   return matchedFunction;
-  // }
+  const getGovernanceFundsEnough = async () => {
+    const balance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    const openProposalsRequiredBalance = new BigNumber(proposalFee).multipliedBy(activeProposals.length);
+  }
+
+  const getDaoPotBalanceChange = async (blocksAgo: number) => {
+    const currentBlockNumber = await web3Context.web3.eth.getBlockNumber();
+    const currentBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    
+    const pastBlockNumber = currentBlockNumber - blocksAgo;
+    const pastBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address, pastBlockNumber);
+    
+    const balanceChange = BigNumber(currentBalance).minus(BigNumber(pastBalance));
+    const percentageChange = balanceChange.dividedBy(BigNumber(pastBalance)).multipliedBy(100);
+    
+    return {
+      changePercentage: percentageChange.toFixed(2),
+      direction: percentageChange.isGreaterThanOrEqualTo(0) ? 'positive' : 'negative',
+      blocks: blocksAgo
+    };
+  }
 
   const contextValue = {
     // states
@@ -615,6 +642,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     allDaoProposals,
     governancePotBalance,
     claimingContractBalance,
+    notEnoughGovernanceFunds,
 
     // functions
     initialize,
@@ -634,7 +662,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getHistoricProposalsEvents,
     getMyVote,
     setActiveProposals,
-    executeProposal
+    executeProposal,
+    getDaoPotBalanceChange
   };
 
   return (

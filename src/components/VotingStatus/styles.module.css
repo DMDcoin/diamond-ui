@@ -1,0 +1,75 @@
+.votingBarContainer {
+    position: relative;
+    height: 40px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.votingBar {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.votingBar .noVotes {
+    background-color: #FF6F61;
+    /* red */
+    height: 100%;
+}
+
+.votingBar .yesVotes {
+    background: #4caf50;
+    /* green */
+    height: 100%;
+}
+
+.thresholdMarker {
+    top: -12px;
+    width: 4px;
+    height: 60px;
+    position: absolute;
+    background-color: #FFC107;
+    border: 0.5px solid black;
+}
+
+.markerLabel {
+    top: -30px;
+    font-size: 12px;
+    position: absolute;
+    white-space: nowrap;
+}
+
+.legend {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.legend > div {
+    gap: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.legend > div > div {
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+}
+
+.table {
+    width: 100%;
+    margin-top: 50px;
+}
+
+.table td {
+    text-align: left;
+}
+
+.table td:last-child {
+    text-align: right;
+}

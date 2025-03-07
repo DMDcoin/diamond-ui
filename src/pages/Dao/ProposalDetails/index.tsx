@@ -18,6 +18,7 @@ import Tooltip from "../../../components/Tooltip";
 import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionInfoWithAbi, timestampToDate } from "../../../utils/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import VotingStatus from "../../../components/VotingStatus";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
 interface ProposalDetailsProps {}
@@ -55,7 +56,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const getProposalDetails = useCallback(async (proposalId: string) => {
     if (web3Context.userWallet.myAddr) {
-      setMyVote(await daoContext.getMyVote(proposalId));
+      setMyVote(await daoContext.getMyVote(proposalId, web3Context.userWallet.myAddr));
     }
 
     const storedProposals = daoContext.getCachedProposals().filter((proposal: any) => proposal.id === proposalId);
@@ -137,7 +138,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
     // Convert threshold percentages to ether format (10^18)
-    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : 33;
+    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : (100/3);
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
   
     // Check if positive votes exceed negative votes by the required threshold
@@ -324,6 +325,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
             )
           }
 
+          {
+            daoContext.notEnoughGovernanceFunds && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please vote, finalize and execute carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
           {/* user is proposer and proposal is in created state */}
           {
             web3Context.userWallet.myAddr === proposal.proposer &&
@@ -356,71 +365,11 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                   (daoContext.daoPhase?.phase !== '0' || ['3', '4', '5', '6'].includes(proposal.state)) && (
                     <>
                       <div className={styles.votingPhaseProgress}>
-                        {/* Progress bar for positive votes */}
-                        <ProgressBar
-                          min={0}
-                          max={100}
-                          progress={
-                            votingStats
-                              ? BigNumber(votingStats.positive).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
-                              : 0
-                          }
-                          bgColor="green"
+                        <VotingStatus
+                          votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
+                          totalStake={totalDaoStake.toNumber()}
+                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : (100/3)}
                         />
-                        {/* Progress bar for negative votes */}
-                        <ProgressBar
-                          min={0}
-                          max={100}
-                          progress={
-                            votingStats
-                              ? BigNumber(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toNumber()
-                              : 0
-                          }
-                          bgColor="red"
-                        />
-                      </div>
-
-                      <div className={styles.votingPhaseStats}>
-                        <div>
-                          <span>
-                            Positive Answers: ({
-                              votingStats ?
-                                (() => {
-                                  // Convert votingStats to BigNumber (assuming votingStats.positive and votingStats.negative are in ether units)
-                                  const stakeYes = votingStats.positive;
-                                  const stakeNo = votingStats.negative;
-                                  const totalStake = totalDaoStake;
-
-                                  // Calculate requiredExceeding based on proposalType
-                                  const requiredExceeding = proposal.proposalType === "Contract upgrade"
-                                    ? totalStake.multipliedBy(0.5) // 50% of totalDaoStake
-                                    : totalStake.multipliedBy(0.33); // 33% of totalDaoStake
-
-                                  // Check if stakeYes meets the condition
-                                  const isConditionMet = stakeYes.isGreaterThanOrEqualTo(stakeNo.plus(requiredExceeding));
-
-                                  // Calculate the percentage exceeding
-                                  const percentageExceeding = stakeYes
-                                    .minus(stakeNo)
-                                    .dividedBy(totalStake)
-                                    .multipliedBy(100)
-                                    .toFixed(4, BigNumber.ROUND_DOWN);
-
-                                  return `${percentageExceeding}% exceeding | ${proposal.proposalType === "Contract upgrade" ? "50%" : "33%"} required`;
-                                })()
-                              : "0% exceeding | N/A required"
-                            })
-                          </span>
-                          <Tooltip text="Total participation percentage minus negative votes | required difference" />
-                        </div>
-                        <div>
-                          <span>
-                            Participation: {votingStats ? votingStats.total.dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN) : 0} DMD ({
-                              votingStats && totalDaoStake && votingStats?.total.dividedBy(totalDaoStake).multipliedBy(100).toFixed(4, BigNumber.ROUND_DOWN)
-                            }% | {proposal.proposalType == "Contract upgrade" ? "50%" : "33%"} required)
-                          </span>
-                          <Tooltip text="Actual % of total dao weight who participated in the voting | required % of participation" />
-                        </div>
                       </div>
                     </>
                   )

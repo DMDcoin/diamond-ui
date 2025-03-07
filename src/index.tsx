@@ -19,11 +19,13 @@ const AppContextProvider: React.FC<AppContextProviderProps> = ({
   return (
     <WalletConnectContextProvider>
       <Web3ContextProvider>
+      <StakingContextProvider>
         <DaoContextProvider>
-          <StakingContextProvider>
+          
             {children}
-          </StakingContextProvider>
+          
         </DaoContextProvider>
+        </StakingContextProvider>
       </Web3ContextProvider>
     </WalletConnectContextProvider>
   );

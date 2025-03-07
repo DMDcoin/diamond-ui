@@ -138,7 +138,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>9. How can I unstake my DMD?</summary>
                     <p>
-                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node.
+                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node. 
                     </p>
                     <p>
                         ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet.
@@ -210,30 +210,31 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>18. How the DAO voting is performed?</summary>
                     <p>
-                    There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The proposals of the current proposal + voting phase stay in the Active proposals list till the dao phase finishes. During a voting phase, proposals creation is not available, but every validator candidate can vote on the proposals from the Active list, except from the dismissed ones. Once the voting phase is finished, a new proposal phase starts.
+                        There are 2 main voting phases in the DMD DAO: proposal phase and voting phase. Each phase lasts 14 days. Voting phase starts straight after the proposal phase is finished. During the proposal phase, DMD holders can create votings shared within the community. The proposals of the current proposal + voting phase stay in the Active proposals list till the dao phase finishes. During a voting phase, proposals creation is not available, but every validator candidate can vote on the proposals from the Active list, except from the dismissed ones. Once the voting phase is finished, a new proposal phase starts.
                     </p>
+                    <p>Full guides on how to create and vote on the proposals can be found <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO">here.</a></p>
                 </details>
 
                 <details>
                     <summary>19. Which proposal types exist?</summary>
-                    <p>There are 3 proposal types supported by the DMD DAO community:</p>
+                    <p>There are 3 proposal types supported by the DMD DAO community: open proposal, ecosystem parameters’ changes, and contact upgrade.</p>
                     <ol style={{ listStyleType: 'decimal' }}>
                         <li>
                             <strong>Open Proposal:</strong>
                             <p>
-                                The open proposal invites members of the decentralized autonomous organization to contribute their ideas and expertise towards a common goal. The proposal aims to foster collaboration and innovation within the DAO community by encouraging members to share their thoughts, suggestions, and feedback on various projects and initiatives. Open proposal can include one or several transactions that are executed in the event that the proposal is accepted. Open proposal requires 33% of total DAO weight participation and 33% of exceeding yes votes.
+                                The open proposal invites members of the decentralized autonomous organization to contribute their ideas and expertise towards a common goal. The proposal aims to foster collaboration and innovation within the DAO community by encouraging members to share their thoughts, suggestions, and feedback on various projects and initiatives. Open proposal can include one or several transactions that are executed in the event that the proposal is accepted. Open proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
                             </p>
                         </li>
                         <li>
                             <strong>Ecosystem Parameters' Change Proposal:</strong>
                             <p>
-                                The proposal type where members can propose, discuss, and vote on changes to the parameters that govern the DMD ecosystem. This proposal aims to enable members to suggest modifications to key parameters such as gas price, proposal fee, minimum block wait time, maximum block wait time (heartbeat), and other elements that impact the functioning of the DMD ecosystem. Ecosystem parameters’ change proposal requires 33% of total DAO weight participation and 33% of exceeding yes votes.
+                                The proposal type where members can propose, discuss, and vote on changes to the parameters that govern the DMD ecosystem. This proposal aims to enable members to suggest modifications to key parameters such as gas price, proposal fee, minimum block wait time, maximum block wait time (heartbeat) and other elements that impact the functioning of the DMD ecosystem. Ecosystem parameters’ change proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
                             </p>
                         </li>
                         <li>
                             <strong>Contract Upgrade Proposal:</strong>
                             <p>
-                                The proposal can engage in discussions about potential upgrades, share technical expertise, and propose changes to enhance the functionality, security, and efficiency of the smart contracts. By submitting proposals and participating in transparent voting processes, members can collectively decide on which upgrades should be implemented and ensure that the DMD's smart contracts remain up-to-date and aligned with the evolving needs of the community. Contract upgrade proposal can include one or several transactions which are executed in the event that the proposal is accepted. Contract upgrade proposal requires 50% of total DAO weight participation and 50% of exceeding yes votes.
+                                The proposal can engage in discussions about potential upgrades, share technical expertise, and propose changes to enhance the functionality, security, and efficiency of the smart contracts. By submitting proposals and participating in transparent voting processes, members can collectively decide on which upgrades should be implemented and ensure that the DMD's smart contracts remain up-to-date and aligned with the evolving needs of the community. Contract upgrade proposal can include one or several transactions which are executed in the event that the proposal is accepted. Contract upgrade proposal requires 1/2 of total DAO weight participation and 1/2 of exceeding yes votes. 
                             </p>
                         </li>
                     </ol>
@@ -249,19 +250,19 @@ const FAQ: React.FC<FAQProps> = () => {
                             <li>Exceeding Yes answers %</li>
                             <li>Participation %</li>
                         </ul>
-                        Every validator candidate has his own Voting power (%). It depends on the weight of his stake inside the whole DAO DMD possession. It means that for every decision it is possible to calculate the % of total DAO weight, who answered ‘yes’ and the % of total DAO weight, who answered ‘no’. The difference between the % is the ‘Exceeding Yes answers’. For every proposal type, we have a minimum required Exceeding Yes answers value, which is mandatory to be reached so that the proposal is accepted:
+                            Every validator candidate has his own Voting power(%). It depends on the weight of his stake inside the whole DAO DMD possession. It means that for every decision it is possible to calculate the % of total DAO weight, who answered ‘yes’ and the % of total DAO weight, who answered ‘no’. The difference between the % is the ‘Exceeding Yes answers’. For every proposal type, we have a minimum required Exceeding Yes answers value, which is mandatory to be reached so that the proposal is accepted:
                         <ul>
-                            <li>Open proposal - 33%</li>
-                            <li>Ecosystem parameters' change - 33%</li>
-                            <li>Contract upgrade - 50%</li>
+                            <li>Open proposal - ⅓ of total DMD possession</li>
+                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
+                            <li>Contract upgrade - 1/2 of total DMD possession</li>
                         </ul>
-                        In regard to participation %, it means that there is a mandatory % of participants for every proposal, which needs to be reached so that the proposal can be accepted. It is based on the Voting weight (%) of every particular validator candidate. The % depends on the proposal type as well:
+                            In regard to participation %, it means that there is a mandatory % of participants for every proposal, which needs to be reached so that the proposal can be accepted. It is based on the Voting weight(%) of every particular validator candidate. The % depends on the proposal type as well:
                         <ul>
-                            <li>Open proposal - 33%</li>
-                            <li>Ecosystem parameters' change - 33%</li>
-                            <li>Contract upgrade - 50%</li>
+                            <li>Open proposal - ⅓ of total DMD possession</li>
+                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
+                            <li>Contract upgrade - 1/2 of total DMD possession</li>
                         </ul>
-                        If the two conditions are accomplished when the Voting phase is finished, the decision is considered accepted, after that it requires finalization.
+                        If the two conditions are accomplished when the Voting phase is finished, the decision is considered as accepted, after that it requires finalization.
                         If not - the decision is not accepted by the community, but it still needs to be finalized.
                         Example of calculations are <a href="https://github.com/DMDcoin/whitepaper/wiki/G.-Decentralized-Autonomous-Organization#g24-voting-process">here</a>
                     </p>
@@ -295,6 +296,20 @@ const FAQ: React.FC<FAQProps> = () => {
                     </p>
                     <p>
                         A node operator address can be set up during the pool creation step or anytime after the pool creation in the personal profile on the Diamond UI. It is editable once per epoch. One target address can be active at a time; setting a new one disables the old one.
+                    </p>
+                </details>
+
+                <details>
+                    <summary>25. What is Connectivity Report (CR)?</summary>
+                    
+                    <p>The Connectivity Report provides a metric for each node in the Validators list, indicating its network performance and connection stability. Display Rules:</p>
+
+                    <p>
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li>Displayed in black, indicating no reported issues.</li>
+                            <li>Displayed in <span style={{ color: 'orange' }}>orange</span>, signalling reported connectivity issues.</li>
+                            <li><strong>Faulty Validator:</strong> If a validator is flagged as faulty by a majority (two-thirds) of active validators, its value is displayed in bold <span style={{ color: 'red', fontWeight: 'bold' }}>red</span>.</li>
+                        </ul>
                     </p>
                 </details>
             </div>
