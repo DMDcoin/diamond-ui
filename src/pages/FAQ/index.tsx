@@ -138,7 +138,8 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>9. How can I unstake my DMD?</summary>
                     <p>
-                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node.                    </p>
+                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node. 
+                    </p>
                     <p>
                         ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet.
                         If the validator is active or pending, the staker can only withdraw staked amount minus already ordered amount but no more than the amount staked during the current staking epoch.
@@ -148,7 +149,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>10. What does ordering DMD mean?</summary>
                     <p>
-                        To claim coins, please, click ‘Claim’ button near your stake amount in the validator candidates list. The button appears near your staked coins on the Epoch end and it means, that your previously ordered coins are ready to be unstaked.
+                        Order flow takes place if some of the coins are not available to be unstaked at the moment, as they are part of the stake of the active validator or pending validator, who is preparing to become active in the next epoch (usually the status lasts for 5 minutes maximum). So firstly you need to unstake all available coins, Diamond UI tells you the amount. To order DMD you need to create a separate unstake request by clicking on ‘Unstake’ once again. In this case, as well, the amount to be ordered will be shown on the UI. Your ordered coins will be kept till you claim them as soon as the Epoch ends.
                     </p>
                 </details>
 
@@ -216,24 +217,24 @@ const FAQ: React.FC<FAQProps> = () => {
 
                 <details>
                     <summary>19. Which proposal types exist?</summary>
-                    <p>There are 3 proposal types supported by the DMD DAO community:</p>
+                    <p>There are 3 proposal types supported by the DMD DAO community: open proposal, ecosystem parameters’ changes, and contact upgrade.</p>
                     <ol style={{ listStyleType: 'decimal' }}>
                         <li>
                             <strong>Open Proposal:</strong>
                             <p>
-                                The open proposal invites members of the decentralized autonomous organization to contribute their ideas and expertise towards a common goal. The proposal aims to foster collaboration and innovation within the DAO community by encouraging members to share their thoughts, suggestions, and feedback on various projects and initiatives. Open proposal can include one or several transactions that are executed in the event that the proposal is accepted. Open proposal requires 33% of total DAO weight participation and 33% of exceeding yes votes.
+                                The open proposal invites members of the decentralized autonomous organization to contribute their ideas and expertise towards a common goal. The proposal aims to foster collaboration and innovation within the DAO community by encouraging members to share their thoughts, suggestions, and feedback on various projects and initiatives. Open proposal can include one or several transactions that are executed in the event that the proposal is accepted. Open proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
                             </p>
                         </li>
                         <li>
                             <strong>Ecosystem Parameters' Change Proposal:</strong>
                             <p>
-                                The proposal type where members can propose, discuss, and vote on changes to the parameters that govern the DMD ecosystem. This proposal aims to enable members to suggest modifications to key parameters such as gas price, proposal fee, minimum block wait time, maximum block wait time (heartbeat), and other elements that impact the functioning of the DMD ecosystem. Ecosystem parameters’ change proposal requires 33% of total DAO weight participation and 33% of exceeding yes votes.
+                                The proposal type where members can propose, discuss, and vote on changes to the parameters that govern the DMD ecosystem. This proposal aims to enable members to suggest modifications to key parameters such as gas price, proposal fee, minimum block wait time, maximum block wait time (heartbeat) and other elements that impact the functioning of the DMD ecosystem. Ecosystem parameters’ change proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
                             </p>
                         </li>
                         <li>
                             <strong>Contract Upgrade Proposal:</strong>
                             <p>
-                                The proposal can engage in discussions about potential upgrades, share technical expertise, and propose changes to enhance the functionality, security, and efficiency of the smart contracts. By submitting proposals and participating in transparent voting processes, members can collectively decide on which upgrades should be implemented and ensure that the DMD's smart contracts remain up-to-date and aligned with the evolving needs of the community. Contract upgrade proposal can include one or several transactions which are executed in the event that the proposal is accepted. Contract upgrade proposal requires 50% of total DAO weight participation and 50% of exceeding yes votes.
+                                The proposal can engage in discussions about potential upgrades, share technical expertise, and propose changes to enhance the functionality, security, and efficiency of the smart contracts. By submitting proposals and participating in transparent voting processes, members can collectively decide on which upgrades should be implemented and ensure that the DMD's smart contracts remain up-to-date and aligned with the evolving needs of the community. Contract upgrade proposal can include one or several transactions which are executed in the event that the proposal is accepted. Contract upgrade proposal requires 1/2 of total DAO weight participation and 1/2 of exceeding yes votes. 
                             </p>
                         </li>
                     </ol>
@@ -249,19 +250,19 @@ const FAQ: React.FC<FAQProps> = () => {
                             <li>Exceeding Yes answers %</li>
                             <li>Participation %</li>
                         </ul>
-                        Every validator candidate has his own Voting power (%). It depends on the weight of his stake inside the whole DAO DMD possession. It means that for every decision it is possible to calculate the % of total DAO weight, who answered ‘yes’ and the % of total DAO weight, who answered ‘no’. The difference between the % is the ‘Exceeding Yes answers’. For every proposal type, we have a minimum required Exceeding Yes answers value, which is mandatory to be reached so that the proposal is accepted:
+                            Every validator candidate has his own Voting power(%). It depends on the weight of his stake inside the whole DAO DMD possession. It means that for every decision it is possible to calculate the % of total DAO weight, who answered ‘yes’ and the % of total DAO weight, who answered ‘no’. The difference between the % is the ‘Exceeding Yes answers’. For every proposal type, we have a minimum required Exceeding Yes answers value, which is mandatory to be reached so that the proposal is accepted:
                         <ul>
-                            <li>Open proposal - 33%</li>
-                            <li>Ecosystem parameters' change - 33%</li>
-                            <li>Contract upgrade - 50%</li>
+                            <li>Open proposal - ⅓ of total DMD possession</li>
+                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
+                            <li>Contract upgrade - 1/2 of total DMD possession</li>
                         </ul>
-                        In regard to participation %, it means that there is a mandatory % of participants for every proposal, which needs to be reached so that the proposal can be accepted. It is based on the Voting weight (%) of every particular validator candidate. The % depends on the proposal type as well:
+                            In regard to participation %, it means that there is a mandatory % of participants for every proposal, which needs to be reached so that the proposal can be accepted. It is based on the Voting weight(%) of every particular validator candidate. The % depends on the proposal type as well:
                         <ul>
-                            <li>Open proposal - 33%</li>
-                            <li>Ecosystem parameters' change - 33%</li>
-                            <li>Contract upgrade - 50%</li>
+                            <li>Open proposal - ⅓ of total DMD possession</li>
+                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
+                            <li>Contract upgrade - 1/2 of total DMD possession</li>
                         </ul>
-                        If the two conditions are accomplished when the Voting phase is finished, the decision is considered accepted, after that it requires finalization.
+                        If the two conditions are accomplished when the Voting phase is finished, the decision is considered as accepted, after that it requires finalization.
                         If not - the decision is not accepted by the community, but it still needs to be finalized.
                         Example of calculations are <a href="https://github.com/DMDcoin/whitepaper/wiki/G.-Decentralized-Autonomous-Organization#g24-voting-process">here</a>
                     </p>

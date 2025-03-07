@@ -138,7 +138,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
     // Convert threshold percentages to ether format (10^18)
-    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : 33;
+    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : (100/3);
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
   
     // Check if positive votes exceed negative votes by the required threshold
@@ -368,7 +368,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
                           totalStake={totalDaoStake.toNumber()}
-                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : 33}
+                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : (100/3)}
                         />
                       </div>
                     </>
