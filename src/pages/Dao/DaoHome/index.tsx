@@ -70,7 +70,7 @@ const DaoHome: React.FC<DaoProps> = () => {
               onClick={() => setActiveTab('actionsNeeded')}
             >
               Actions needed
-                {daoContext.allDaoProposals.filter(proposal => proposal.state === "3").length < 1 && (
+                {daoContext.allDaoProposals.filter(proposal => proposal.state === "3").length > 0 && (
                 <span className={styles.actionsNeededBadge}>
                   {daoContext.allDaoProposals.filter(proposal => proposal.state === "3").length}
                 </span>
