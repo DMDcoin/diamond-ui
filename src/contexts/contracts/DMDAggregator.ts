@@ -28,16 +28,68 @@ export type OwnershipTransferred = ContractEventLog<{
   1: string;
 }>;
 
-export interface HbbftAggregator extends BaseContract {
+export interface DMDAggregator extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): HbbftAggregator;
-  clone(): HbbftAggregator;
+  ): DMDAggregator;
+  clone(): DMDAggregator;
   methods: {
+    getActiveProposals(): NonPayableTransactionObject<
+      [
+        [
+          string,
+          string,
+          string,
+          string[],
+          string[],
+          string[],
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        ],
+        string[],
+        [string, string, string, string],
+        string,
+        string
+      ][]
+    >;
+
     getAllPools(): NonPayableTransactionObject<
       [string[], string[], string[], string[], string[], string[], string[]]
+    >;
+
+    getDaoGlobals(): NonPayableTransactionObject<
+      [string, [string, string, string, string], string, string]
+    >;
+
+    getDaoPhaseProposals(
+      daoPhase: number | string | BN
+    ): NonPayableTransactionObject<
+      [
+        [
+          string,
+          string,
+          string,
+          string[],
+          string[],
+          string[],
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        ],
+        string[],
+        [string, string, string, string],
+        string,
+        string
+      ][]
     >;
 
     getDelegationsData(
@@ -70,6 +122,29 @@ export interface HbbftAggregator extends BaseContract {
       ]
     >;
 
+    getHistoricProposals(): NonPayableTransactionObject<
+      [
+        [
+          string,
+          string,
+          string,
+          string[],
+          string[],
+          string[],
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        ],
+        string[],
+        [string, string, string, string],
+        string,
+        string
+      ][]
+    >;
+
     getNodeOperatorData(stakingAddress: string): NonPayableTransactionObject<{
       0: string;
       1: string;
@@ -86,6 +161,56 @@ export interface HbbftAggregator extends BaseContract {
         string,
         string,
         boolean,
+        string,
+        string
+      ][]
+    >;
+
+    getProposalDetails(
+      proposalId: number | string | BN
+    ): NonPayableTransactionObject<
+      [
+        [
+          string,
+          string,
+          string,
+          string[],
+          string[],
+          string[],
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        ],
+        string[],
+        [string, string, string, string],
+        string,
+        string
+      ]
+    >;
+
+    getProposalsDetails(
+      proposalIds: (number | string | BN)[]
+    ): NonPayableTransactionObject<
+      [
+        [
+          string,
+          string,
+          string,
+          string[],
+          string[],
+          string[],
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        ],
+        string[],
+        [string, string, string, string],
         string,
         string
       ][]
