@@ -41,7 +41,7 @@ export const wagmiConfig = defaultWagmiConfig({
     chains: networks,
     metadata,
     transports: {
-        27272: http(import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/')
+        [Number(import.meta.env.VITE_APP_CHAINID) || 27272]: http(import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/')
     },
     projectId,
     ssr: true,

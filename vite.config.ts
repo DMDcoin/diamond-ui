@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
 
     return {
-        base: '/',
+        base: './',
         plugins: [react(), commonjs(), nodePolyfills()],
         test: {
             globals: true,

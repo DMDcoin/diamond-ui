@@ -18,7 +18,7 @@ import {
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
-  HbbftAggregator,
+  DMDAggregator,
   StakingHbbft,
   TxPermissionHbbft,
   ValidatorSetHbbft,
@@ -35,7 +35,7 @@ interface ContractsState {
   crContract?: CertifierHbbft;
   tpContract?: TxPermissionHbbft;
   ctContract?: ConnectivityTrackerHbbft;
-  aggregator?: HbbftAggregator;
+  aggregator?: DMDAggregator;
   bsContract?: BonusScoreSystem
 }
 
@@ -158,7 +158,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         contractManager.getContractPermission(),
         contractManager.getRewardHbbft(),
         contractManager.getConnectivityTracker(),
-        contractManager.getHbbftAggregator(),
+        contractManager.getDMDAggregator(),
         contractManager.getBonusScoreSystem()
       ]);
     

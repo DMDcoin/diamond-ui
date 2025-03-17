@@ -228,7 +228,7 @@ export class ContractManager {
     return contract;
   }
 
-  public async getHbbftAggregator(): Promise<DMDAggregator> {
+  public async getDMDAggregator(): Promise<DMDAggregator> {
     let contractAddress =  import.meta.env.VITE_APP_AGGREGAOTR_CONTRACT_ADDRESS || '0x9990000000000000000000000000000000000000';
 
     const abi: any = JsonHbbtAggregator.abi;
