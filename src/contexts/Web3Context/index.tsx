@@ -66,7 +66,13 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   // Initialize Web3 with CustomHttpProvider
   const chainId = import.meta.env.VITE_APP_CHAINID || 27272;
-  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/';
+  /**
+   * The URL is determined using the following precedence:
+   * 1. The value stored under the "rpcUrl" key in localStorage.
+   * 2. The environment variable "VITE_APP_RPC_URL" defined via import.meta.env.
+   * 3. A default URL ("https://beta-rpc.bit.diamonds/") if neither of the above is available.
+   */
+  const rpcUrl = localStorage.getItem("rpcUrl") || import.meta.env.VITE_APP_RPC_URL || "https://beta-rpc.bit.diamonds/";
   const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
 
