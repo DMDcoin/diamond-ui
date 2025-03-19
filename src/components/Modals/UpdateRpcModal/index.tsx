@@ -1,22 +1,36 @@
-import BigNumber from "bignumber.js";
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
-import { useWeb3Context } from "../../../contexts/Web3Context";
-import { useStakingContext } from "../../../contexts/StakingContext";
-import { Pool } from "../../../contexts/StakingContext/models/model";
 import React, { useState, useEffect, useRef, FormEvent } from "react";
 
 interface ModalProps {
     buttonText: string;
-    pool: Pool;
 }
 
-const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
+const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText }) => {
     const [isOpen, setIsOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
+    const [rpc, setRpc] = useState<string>(localStorage.getItem("rpcUrl") || "");
 
     const openModal = () => setIsOpen(true);
     const closeModal = () => setIsOpen(false);
+
+    const updateRpc = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // Validate the RPC URL
+        try {
+            new URL(rpc);
+        } catch (error) {
+            toast.error("Provided RPC is invalid");
+            return;
+        }
+        localStorage.setItem("rpcUrl", rpc);
+        toast.success("RPC updated successfully");
+        toast.success("Page will reload in 5 seconds");
+        closeModal();
+        setTimeout(() => {
+            window.location.reload();
+        }, 5000);
+    };
 
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
@@ -42,7 +56,6 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
         };
     }, [isOpen]);
 
-
     return (
         <>
             <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
@@ -57,15 +70,17 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                         </button>
                         <h2>Change RPC</h2>
 
-                        <form className={styles.form} onSubmit={e => e.preventDefault()}>
+                        <form className={styles.form} onSubmit={updateRpc}>
                             <span>
                                 Provide your own RPC
                             </span>
 
                             <input
-                                type="number"
+                                type="text"
                                 className={styles.formInput}
                                 placeholder="Enter your RPC"
+                                value={rpc}
+                                onChange={(e) => setRpc(e.target.value)}
                             />
 
                             <button className={styles.formSubmit} type="submit">
