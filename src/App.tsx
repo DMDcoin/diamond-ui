@@ -3,7 +3,7 @@ import Footer from "./layout/Footer";
 import NotFound from "./pages/NotFound";
 import Loader from "./components/Loader";
 import React, { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Home = lazy(() => import("./pages/Home"));
@@ -22,20 +22,20 @@ const App: React.FC<AppProps> = () => {
 
     const onMouseMove = (e: MouseEvent) => {
       if (!circle) return;
-      
+
       // Calculate the center coordinates of the circle
       let centerX = e.clientX - (circle.offsetWidth / 2) + window.scrollX;
       let centerY = e.clientY - (circle.offsetHeight / 2) + window.scrollY;
-      
+
       // Get the viewport dimensions
       const extraPadding = 20;
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
-      
+
       // Constrain the circle's position within the viewport
       centerX = Math.max(window.scrollX, Math.min(centerX, window.scrollX + viewportWidth - circle.offsetWidth - extraPadding));
       centerY = Math.max(window.scrollY, Math.min(centerY, window.scrollY + viewportHeight - circle.offsetHeight - extraPadding));
-      
+
       // Update the position of the circle based on the center coordinates
       circle.style.left = centerX + 'px';
       circle.style.top = centerY + 'px';
@@ -47,10 +47,10 @@ const App: React.FC<AppProps> = () => {
     return () => {
       document.removeEventListener('mousemove', onMouseMove);
     };
-  }, []); 
+  }, []);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <NavBar />
 
       <div className="body-bg"></div>
@@ -66,15 +66,15 @@ const App: React.FC<AppProps> = () => {
           <Route path="dao/create" element={<CreateProposal />} />
           <Route path="dao/historic" element={<HistoricProposals />} />
           <Route path="dao/details/:proposalId" element={<ProposalDetails />} />
-          
+
           <Route path="staking/" element={<Pools />} />
           <Route path="staking/details/:poolAddress" element={<PoolDetails />} />
-          
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <Footer />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
