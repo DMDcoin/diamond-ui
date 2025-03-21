@@ -24,8 +24,6 @@ export default function generateHtmlPlugin(): Plugin {
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <title>DMD Diamond</title>
-    <link rel="manifest" href="./manifest.json" />
-
     <link rel="stylesheet" href="./style.css" />
     <link rel="stylesheet" href="./custom.css" />
     <link rel="stylesheet" href="./webflow.css" />

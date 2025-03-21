@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         base: './',
-        plugins: [react(), commonjs(), nodePolyfills()],
+        plugins: [react(), commonjs(), nodePolyfills(), generateHtmlPlugin()],
         test: {
             globals: true,
             environment: 'jsdom',
