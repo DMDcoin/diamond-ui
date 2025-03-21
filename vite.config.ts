@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
 
     return {
-        base: '/',
-        plugins: [react(), commonjs(), nodePolyfills(), generateHtmlPlugin()],
+        base: './',
+        plugins: [react(), commonjs(), nodePolyfills()],
         test: {
             globals: true,
             environment: 'jsdom',
