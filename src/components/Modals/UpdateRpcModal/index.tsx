@@ -1,12 +1,16 @@
 import { toast } from "react-toastify";
 import styles from "./styles.module.css";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, FormEvent, startTransition } from "react";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 
 interface ModalProps {
     buttonText: string;
+    icon: React.ReactNode;
 }
 
-const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText }) => {
+const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, icon }) => {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const [rpc, setRpc] = useState<string>(localStorage.getItem("rpcUrl") || "");
@@ -16,6 +20,13 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText }) => {
 
     const updateRpc = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const currentRpc = localStorage.getItem("rpcUrl") || "";
+        if (rpc === currentRpc) {
+            toast.info("Provided RPC is same as already set");
+            return;
+        }
+
         // Validate the RPC URL
         try {
             new URL(rpc);
@@ -24,10 +35,10 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText }) => {
             return;
         }
         localStorage.setItem("rpcUrl", rpc);
-        toast.success("RPC updated successfully");
-        toast.success("Page will reload in 5 seconds");
+        toast.success("RPC updated successfully, reloading...");
         closeModal();
         setTimeout(() => {
+            startTransition(() => { navigate('') });
             window.location.reload();
         }, 5000);
     };
@@ -58,9 +69,9 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText }) => {
 
     return (
         <>
-            <button className="primaryBtn" onClick={(e) => { e.stopPropagation(); openModal(); }}>
-                {buttonText}
-            </button>
+            <div style={{ color: "#0145b2", gap: "6px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); openModal(); }}>
+                {icon} {buttonText}
+            </div>
 
             {isOpen && (
                 <div onClick={(e) => e.stopPropagation()} className={styles.modalOverlay}>
