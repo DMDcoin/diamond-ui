@@ -83,7 +83,7 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, icon }) => {
 
                         <form className={styles.form} onSubmit={updateRpc}>
                             <span>
-                                Provide your own RPC
+                                You are connected to <strong>{localStorage.getItem("rpcUrl") || import.meta.env.VITE_APP_RPC_URL || "https://beta-rpc.bit.diamonds/"}</strong>
                             </span>
 
                             <input
