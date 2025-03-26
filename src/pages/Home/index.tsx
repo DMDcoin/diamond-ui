@@ -114,17 +114,20 @@ const Home: React.FC<HomeProps> = ({}) => {
                                                     </tr>
                                                     <tr>
                                                         <td>Node stake <span>Voting power {myPool ? myPool.votingPower.toString() : 0}%</span></td>
-                                                        <td>{BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD</td>
+                                                        <td style={{ verticalAlign: 'top' }}>
+                                                            {BigNumber(myPool.totalStake).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD
+                                                        </td>
                                                         <td>
                                                             <div className={styles.loggedInBtns}>
                                                                 {
                                                                     myPool && (
                                                                         <>
                                                                             <StakeModal buttonText="Stake" pool={myPool} />
-                                                                            <UnstakeModal buttonText="Unstake" pool={myPool} />
                                                                             {
-                                                                                myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr && (
-                                                                                    <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> )
+                                                                                myPool && BigNumber(myPool.orderedWithdrawAmount).isGreaterThan(0) && BigNumber(myPool.orderedWithdrawUnlockEpoch).isLessThanOrEqualTo(stakingEpoch) && userWallet.myAddr ? (
+                                                                                    <button className="primaryBtn" onClick={() => claimOrderedUnstake(myPool)}>Claim</button> ) : (
+                                                                                        <UnstakeModal buttonText="Unstake" pool={myPool} />
+                                                                                    )
                                                                             }
                                                                             {
                                                                                 myPool && !myPool.isActive && <RemoveValidatorModal buttonText="Remove pool" pool={myPool} />
