@@ -190,6 +190,20 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       let provider = await connector.getProvider();
       provider = new Web3(provider);
 
+      const isCoinbaseWallet = connector.name === 'Coinbase Wallet' || 
+      (provider.isCoinbaseWallet) || 
+      (provider.providerInfo && provider.providerInfo.type === 'coinbasewallet');
+
+      // Check if it's specifically a Coinbase Smart Wallet (keys.coinbase.com)
+      const isCoinbaseSmartWallet = isCoinbaseWallet && provider.currentProvider.connectionType !== "extension_connection_type";
+
+      if (isCoinbaseSmartWallet) {
+        showLoader(false, "");
+        await connector.disconnect();
+        disconnect();
+        return toast.warn("Coinbase Smart Wallet is not supported. Please use the Coinbase Wallet extension or app.");
+      }
+
       // Check if the user is on the correct network, if not switch to the desired network
       if (await provider.eth.getChainId() !== Number(chainId)) {
         try {
