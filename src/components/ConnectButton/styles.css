@@ -1,0 +1,41 @@
+/* ConnectButton styles */
+.connect-button {
+  min-width: 140px;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.connect-button:hover {
+  opacity: 0.9;
+}
+
+.connect-button.loading {
+  cursor: wait;
+  opacity: 0.8;
+  animation: pulse 1.5s infinite;
+}
+
+.connect-button.coinbase-wallet {
+  border: 1px solid #0052ff; /* Coinbase blue border */
+  background-color: rgba(0, 82, 255, 0.05);
+  position: relative;
+}
+
+.connect-button.coinbase-wallet:hover {
+  background-color: rgba(0, 82, 255, 0.1);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.6;
+  }
+} 

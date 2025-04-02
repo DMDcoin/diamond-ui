@@ -201,7 +201,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         showLoader(false, "");
         await connector.disconnect();
         disconnect();
-        return toast.warn("Coinbase Smart Wallet is not supported. Please use the Coinbase Wallet extension or app.");
+        return toast.warn("Smart Wallet is not supported. Please use the Coinbase Wallet extension.");
       }
 
       // Check if the user is on the correct network, if not switch to the desired network
