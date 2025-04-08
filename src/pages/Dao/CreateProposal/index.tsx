@@ -42,6 +42,12 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     { contractAddress: "", contractCalldata: "" }
   ]);
 
+  // New state for low majority contract
+  const [lowMajorityContractAddress, setLowMajorityContractAddress] = useState<string>("");
+  const [lowMajorityContractBalance, setLowMajorityContractBalance] = useState<BigNumber>(BigNumber('0'));
+  const [totalRequestedAmount, setTotalRequestedAmount] = useState<BigNumber>(BigNumber('0'));
+  const [isLowMajorityEligible, setIsLowMajorityEligible] = useState<boolean>(true);
+
   useEffect(() => {
     if (epcValue === "0") {
       getEpcContractValue(epcContractName, epcMethodName).then((val) => {
@@ -49,7 +55,20 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         loadEpcData(epcContractName, epcMethodName);
       });
     }
-  });
+
+    // Fetch low majority contract address from env
+    const lowMajorityAddress = import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "";
+    setLowMajorityContractAddress(lowMajorityAddress);
+
+    // Fetch low majority contract balance
+    if (lowMajorityAddress) {
+      web3Context.web3.eth.getBalance(lowMajorityAddress)
+        .then(balance => {
+          setLowMajorityContractBalance(BigNumber(balance).dividedBy(1e18));
+        })
+        .catch(err => console.error("Error fetching low majority balance:", err));
+    }
+  }, []);
 
   useEffect(() => {
     if (epcMethodName === "Create proposal fee") {
@@ -67,11 +86,29 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     }
   }, [epcMethodName]);
 
+  // Calculate total requested amount and check if eligible for low majority
+  useEffect(() => {
+    let total = BigNumber(0);
+    openProposalFields.forEach(field => {
+      if (field.amount && !isNaN(Number(field.amount))) {
+        total = total.plus(BigNumber(field.amount));
+      }
+    });
+    
+    setTotalRequestedAmount(total);
+    setIsLowMajorityEligible(total.isLessThanOrEqualTo(lowMajorityContractBalance));
+  }, [openProposalFields, lowMajorityContractBalance]);
+
   const handleAddOpenProposalField = () => {
     setOpenProposalFields([...openProposalFields, { target: "", amount: "" }]);
   }
 
   const handleRemoveOpenProposalField = (index: number) => {
+    // Don't remove the only field in Low Majority Fill mode
+    if (proposalType === "low-majority-fill" && openProposalFields.length <= 1) {
+      return;
+    }
+    
     const newFields = [...openProposalFields];
     newFields.splice(index, 1);
     setOpenProposalFields(newFields);
@@ -97,6 +134,12 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     const newFields: any = [...contractUpgradeFields];
     newFields[index][fieldName] = value;
     setContractUpgradeFields(newFields);
+  }
+
+  const switchToLowMajorityFill = () => {
+    setProposalType("low-majority-fill");
+    // Pre-fill with low majority contract address and clear any additional transactions
+    setOpenProposalFields([{ target: lowMajorityContractAddress, amount: "" }]);
   }
 
   const getContractByName = (name: string) => {
@@ -128,7 +171,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     let calldatas: string[] = [];
 
     try {
-      if (proposalType === 'open') {
+      if (proposalType === 'open' || proposalType === 'low-majority-fill') {
         if (!openProposalFields.some(item => item.target !== "" || item.amount !== "")) {
           targets = ['0x0000000000000000000000000000000000000000'];
           values = ["0"];
@@ -229,9 +272,27 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
         <div className={styles.proposalTypeContainer}>
           <label htmlFor="proposalType">Please choose a proposal type you want to create:</label>
-          <select className={styles.proposalType} name="proposalType" id="proposalType" value={proposalType} onChange={(e) => setProposalType(e.target.value)}>
+          <select 
+            className={styles.proposalType} 
+            name="proposalType" 
+            id="proposalType" 
+            value={proposalType} 
+            onChange={(e) => {
+              const newType = e.target.value;
+              setProposalType(newType);
+              
+              // Reset fields based on the selected proposal type
+              if (newType === "low-majority-fill") {
+                setOpenProposalFields([{ target: lowMajorityContractAddress, amount: "" }]);
+              } else if (newType === "open" && proposalType === "low-majority-fill") {
+                // When switching from low-majority-fill to open, reset to an empty field
+                setOpenProposalFields([{ target: "", amount: "" }]);
+              }
+            }}
+          >
             <option value="open">Open Proposal</option>
             <option value="contract-upgrade">Contract upgrade</option>
+            {lowMajorityContractAddress && <option value="low-majority-fill">Low Majority Balance Fill</option>}
             <option value="ecosystem-parameter-change">Ecosystem parameter change</option>
           </select>
         </div>
@@ -245,11 +306,51 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
               </p>
             )
           }
+
+          {/* Balance information for Open Proposal or Low Majority Fill */}
+          {(proposalType === "open" || proposalType === "low-majority-fill") && (
+            <div className={styles.balanceInfoContainer}>
+              <div className={styles.balanceInfo}>
+                <h4>Available Balances:</h4>
+                <p><strong>Governance Pot Balance:</strong> {daoContext.governancePotBalance.toFixed(4)} DMD</p>
+                <p><strong>Low Majority Contract Balance:</strong> {lowMajorityContractBalance.toFixed(4)} DMD</p>
+              </div>
+              
+              {proposalType === "open" && lowMajorityContractAddress && (
+                <div className={styles.infoBox}>
+                  <p>
+                    {isLowMajorityEligible ? (
+                      <>Your requested amount is eligible for a <strong>Low Majority</strong> proposal. This requires only ⅓ participation and a majority of Yes votes to pass.</>
+                    ) : (
+                      <>Your requested amount exceeds the Low Majority Contract balance. This proposal will require ½ participation and a majority of Yes votes to pass.</>
+                    )}
+                  </p>
+                  {isLowMajorityEligible && (
+                    <button 
+                      type="button"
+                      className={styles.switchButton}
+                      onClick={switchToLowMajorityFill}
+                    >
+                      Switch to Low Majority Fill Proposal
+                    </button>
+                  )}
+                </div>
+              )}
+              
+              {proposalType === "low-majority-fill" && (
+                <div className={styles.infoBox}>
+                  <p>A Low Majority Fill proposal sends funds to the Low Majority Contract, allowing future proposals to use the Low Majority voting rule (⅓ participation, majority Yes).</p>
+                  <p>This proposal requires ½ participation and a majority of Yes votes to pass.</p>
+                </div>
+              )}
+            </div>
+          )}
+
           <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
           <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
           <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>
 
-          {proposalType === "open" && (
+          {(proposalType === "open" || proposalType === "low-majority-fill") && (
             openProposalFields.map((field, index) => (
               <div key={index}>
                   <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveOpenProposalField(index)}}>
@@ -263,6 +364,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                   onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
                   placeholder="Payout Address (optional)"
                   className={styles.formInput}
+                  disabled={proposalType === "low-majority-fill" && index === 0}
                 />
                 <input
                   type="text"
@@ -275,6 +377,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             ))
           )}
 
+          {/* Only show Add Transaction button for Open proposals, not for Low Majority Fill */}
           {proposalType === "open" && (
             <span className={styles.addRemoveTransaction} onClick={handleAddOpenProposalField}>
               Add Transaction
