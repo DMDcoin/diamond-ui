@@ -56,7 +56,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       });
     }
 
-    // Fetch low majority contract address from env
     const lowMajorityAddress = import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "";
     setLowMajorityContractAddress(lowMajorityAddress);
 
@@ -320,9 +319,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                 <div className={styles.infoBox}>
                   <p>
                     {isLowMajorityEligible ? (
-                      <>Your requested amount is eligible for a <strong>Low Majority</strong> proposal. This requires only ⅓ participation and a majority of Yes votes to pass.</>
+                      <>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</>
                     ) : (
-                      <>Your requested amount exceeds the Low Majority Contract balance. This proposal will require ½ participation and a majority of Yes votes to pass.</>
+                      <>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</>
                     )}
                   </p>
                   {isLowMajorityEligible && (
@@ -339,8 +338,9 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
               
               {proposalType === "low-majority-fill" && (
                 <div className={styles.infoBox}>
-                  <p>A Low Majority Fill proposal sends funds to the Low Majority Contract, allowing future proposals to use the Low Majority voting rule (⅓ participation, majority Yes).</p>
-                  <p>This proposal requires ½ participation and a majority of Yes votes to pass.</p>
+                  <p>
+                    This proposal sends funds to the Low Majority Contract, enabling future proposals within its balance to pass with the lower voting threshold (⅓ participation, ⅓ exceeding Yes votes). It requires ½ participation and at least ½ exceeding Yes votes to pass.
+                  </p>
                 </div>
               )}
             </div>
