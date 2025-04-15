@@ -306,75 +306,76 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
             )
           }
 
-          {/* Balance information for Open Proposal or Low Majority Fill */}
-          {(proposalType === "open" || proposalType === "low-majority-fill") && (
-            <div className={styles.balanceInfoContainer}>
-              <div className={styles.balanceInfo}>
-                <h4>Available Balances:</h4>
-                <p><strong>Governance Pot Balance:</strong> {daoContext.governancePotBalance.toFixed(4)} DMD</p>
-                <p><strong>Low Majority Contract Balance:</strong> {lowMajorityContractBalance.toFixed(4)} DMD</p>
-              </div>
-              
-              {proposalType === "open" && lowMajorityContractAddress && (
-                <div className={styles.infoBox}>
-                  <p>
-                    {isLowMajorityEligible ? (
-                      <>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</>
-                    ) : (
-                      <>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</>
-                    )}
-                  </p>
-                  {isLowMajorityEligible && (
-                    <button 
-                      type="button"
-                      className={styles.switchButton}
-                      onClick={switchToLowMajorityFill}
-                    >
-                      Switch to Low Majority Fill Proposal
-                    </button>
-                  )}
-                </div>
-              )}
-              
-              {proposalType === "low-majority-fill" && (
-                <div className={styles.infoBox}>
-                  <p>
-                    This proposal sends funds to the Low Majority Contract, enabling future proposals within its balance to pass with the lower voting threshold (⅓ participation, ⅓ exceeding Yes votes). It requires ½ participation and at least ½ exceeding Yes votes to pass.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
           <input type="text" className={styles.formInput} value={title} onChange={e => setTitle(e.target.value)} placeholder="Proposal Title" required/>
           <input type="text" className={styles.formInput} value={description} onChange={e => setDescription(e.target.value)} placeholder="Proposal Description" required/>
           <input type="text" className={styles.formInput} value={discussionUrl} onChange={e => setDiscussionUrl(e.target.value)} placeholder="Discussion URL (optional)"/>
 
           {(proposalType === "open" || proposalType === "low-majority-fill") && (
-            openProposalFields.map((field, index) => (
-              <div key={index}>
-                  <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveOpenProposalField(index)}}>
-                  Transaction {index + 1}
-                    {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
-                  </span>
+            <>
+              <div className={styles.balanceInfoContainer}>
+                <div className={styles.balanceInfo}>
+                  <h4>Available Balances:</h4>
+                  <p><strong>Governance Pot Balance:</strong> {daoContext.governancePotBalance.toFixed(4)} DMD</p>
+                  <p><strong>Low Majority Contract Balance:</strong> {lowMajorityContractBalance.toFixed(4)} DMD</p>
+                </div>
                 
-                <input
-                  type="text"
-                  value={field.target}
-                  onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
-                  placeholder="Payout Address (optional)"
-                  className={styles.formInput}
-                  disabled={proposalType === "low-majority-fill" && index === 0}
-                />
-                <input
-                  type="text"
-                  value={field.amount}
-                  onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
-                  placeholder="Payout Amount in DMD (optional)"
-                  className={styles.formInput}
-                />
+                {proposalType === "open" && lowMajorityContractAddress && (
+                  <div className={styles.infoBox}>
+                    <p>
+                      {isLowMajorityEligible ? (
+                        <>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</>
+                      ) : (
+                        <>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</>
+                      )}
+                    </p>
+                    {isLowMajorityEligible && (
+                      <button 
+                        type="button"
+                        className={styles.switchButton}
+                        onClick={switchToLowMajorityFill}
+                      >
+                        Switch to Low Majority Fill Proposal
+                      </button>
+                    )}
+                  </div>
+                )}
+                
+                {proposalType === "low-majority-fill" && (
+                  <div className={styles.infoBox}>
+                    <p>
+                      This proposal sends funds to the Low Majority Contract, enabling future proposals within its balance to pass with the lower voting threshold (⅓ participation, ⅓ exceeding Yes votes). It requires ½ participation and at least ½ exceeding Yes votes to pass.
+                    </p>
+                  </div>
+                )}
               </div>
-            ))
+
+              {
+                openProposalFields.map((field, index) => (
+                  <div key={index}>
+                      <span className={styles.addRemoveTransaction} onClick={() => {index !== 0 && handleRemoveOpenProposalField(index)}}>
+                      Transaction {index + 1}
+                        {index !== 0 && (<HiMiniMinusCircle size={20} color="red" />)}
+                      </span>
+                    
+                    <input
+                      type="text"
+                      value={field.target}
+                      onChange={(e) => handleOpenProposalFieldInputChange(index, "target", e.target.value)}
+                      placeholder="Payout Address (optional)"
+                      className={styles.formInput}
+                      disabled={proposalType === "low-majority-fill" && index === 0}
+                    />
+                    <input
+                      type="text"
+                      value={field.amount}
+                      onChange={(e) => handleOpenProposalFieldInputChange(index, "amount", e.target.value)}
+                      placeholder="Payout Amount in DMD (optional)"
+                      className={styles.formInput}
+                    />
+                  </div>
+                ))
+              }
+            </>
           )}
 
           {/* Only show Add Transaction button for Open proposals, not for Low Majority Fill */}
