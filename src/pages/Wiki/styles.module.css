@@ -1,0 +1,327 @@
+/* Main container styles */
+.sectionContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.heroSection {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 20px 0;
+    background: linear-gradient(135deg, rgba(1, 69, 178, 0.05) 0%, rgba(14, 68, 178, 0.1) 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(1, 69, 178, 0.1);
+}
+
+.mainTitle {
+    color: #0145b2;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 10px 0px 20px 0px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 auto;
+}
+
+/* Key features grid */
+.keyFeatures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.featureCard {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid #f0f0f0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.featureCard:hover {
+    border-color: #0145b2;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(1, 69, 178, 0.1);
+}
+
+.featureCard h3 {
+    color: #0145b2;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+}
+
+.featureCard p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Content wrapper */
+.contentWrapper {
+    width: 100%;
+}
+
+.content {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+}
+
+/* Section styles */
+.section {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.section h2 {
+    color: #0145b2;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #0145b2, #0e44b2);
+    border-radius: 2px;
+}
+
+.subsection {
+    margin-bottom: 30px;
+}
+
+.subsection h3 {
+    color: #0145b2;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.section p {
+    color: #444;
+    line-height: 1.7;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Features list */
+.featuresList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.featureItem {
+    padding: 25px;
+    background: #f8f9ff;
+    border-radius: 8px;
+    border-left: 4px solid #0145b2;
+    transition: all 0.3s ease;
+}
+
+.featureItem:hover {
+    background: #f0f4ff;
+    transform: translateX(5px);
+}
+
+.featureItem h4 {
+    color: #0145b2;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+}
+
+.featureItem p {
+    color: #555;
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Usage list */
+.usageList {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.usageList li {
+    color: #444;
+    line-height: 1.7;
+    font-size: 16px;
+    margin-bottom: 12px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.usageList li::before {
+    content: '◆';
+    color: #0145b2;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.usageList a {
+    color: #0145b2;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.usageList a:hover {
+    color: #0e44b2;
+    text-decoration: underline;
+}
+
+/* Team grid */
+.teamGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.teamMember {
+    background: #f8f9ff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e8eeff;
+}
+
+.teamMember h4 {
+    color: #0145b2;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.teamMember p {
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* References list */
+.referencesList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.referencesList a {
+    color: #0145b2;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 10px 15px;
+    background: #f8f9ff;
+    border-radius: 6px;
+    border: 1px solid #e8eeff;
+    transition: all 0.3s ease;
+}
+
+.referencesList a:hover {
+    background: #e8eeff;
+    color: #0e44b2;
+    transform: translateX(5px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .sectionContainer {
+        padding: 20px 15px;
+    }
+    
+    .mainTitle {
+        font-size: 36px;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+    }
+    
+    .content {
+        padding: 25px 20px;
+    }
+    
+    .keyFeatures {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+    
+    .featureCard {
+        padding: 20px 15px;
+    }
+    
+    .featureCard h3 {
+        font-size: 20px;
+    }
+    
+    .section h2 {
+        font-size: 24px;
+    }
+    
+    .featuresList {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .teamGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mainTitle {
+        font-size: 28px;
+    }
+    
+    .keyFeatures {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .featureCard h3 {
+        font-size: 18px;
+    }
+    
+    .featureCard p {
+        font-size: 12px;
+    }
+}

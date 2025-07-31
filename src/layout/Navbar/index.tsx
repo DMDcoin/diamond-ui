@@ -23,6 +23,8 @@ const NavBar: React.FC<NavBarProps> = () => {
 
               <a onClick={() => {startTransition(() => {navigate('staking')})}} className="nav-link w-nav-link">Validators</a>
 
+              <a onClick={() => {startTransition(() => {navigate('wiki')})}} className="nav-link w-nav-link">Wiki</a>
+
               <div data-hover="false" data-delay="0" className="dropdown-2 w-dropdown">
                   <div className="dropdown-toggle-2 w-dropdown-toggle">
                     <div className="icon w-icon-dropdown-toggle"></div>
