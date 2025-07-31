@@ -40,16 +40,23 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>2. Who Is A Validator?</summary>
                     <p>
-                        Blockchain validators or validator candidates are responsible for verifying and adding transactions to the blockchain. Users delegate their coins, or stake, to a validator. Validators receive 20% rewards from each Epoch they participate in as active validators, as a Validator operator reward. The rest of the Validator rewards (80%) are distributed proportionally based on the staked coins on that validator.
+                        Blockchain validators (or validator candidates) are responsible for verifying transactions and adding them to the blockchain. Users can delegate their coins (stake) to a validator to support their participation in the network.
+                    </p>
+                    <p>
+                        Validators earn rewards for their work during each Epoch:
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li>20% of the rewards are paid directly to the validator as an operator reward.</li>
+                            <li>The remaining 80% of the rewards are distributed proportionally to all stakers on that validator, including the validator's own stake. This means validator operators earn twice: once from the upfront 20% and again from their share of the 80% pool based on their staked coins.</li>
+                        </ul>
                     </p>
                     <p>
                         <strong>Validator candidates require:</strong>
                         <ul style={{ listStyleType: 'disc' }}>
-                            <li>Full node installation of the DMDv4 chain on a Linux server with the DMD version of Open Ethereum, which includes the DMDv4 extensions (HBBFT/POSDAO) and proper configuration.</li>
-                            <li>Internet with a Static IP address and reliable 24/7 uptime.</li>
-                            <li>Minimum collateral of 10,000 DMD (from validator candidate owner), with a maximum of 50,000 DMD staked on one validator candidate (combined from the owner and others who stake on top of the node).</li>
-                            <li>Link to the address of the node that performs the work.</li>
-                            <li>Validator candidate registration and collateral locking through the POSDAO dApp.</li>
+                            <li>Full node installation of the DMDv4 chain on a Linux server with the DMD version of Open Ethereum which include the DMDv4 extensions including HBBFT/POSDAO and the proper configuration</li>
+                            <li>Internet with Static IP address and a reliable 24/7 uptime.</li>
+                            <li>Minimum collateral of 10,000 DMD (from validator candidate owner), maximum 50,000 DMD can be staked on one validator candidate (combined from the owner and others who stake on top of his node).</li>
+                            <li>Link to address of the node that delivers the work.</li>
+                            <li>The validator candidate registration and collateral locking through the POSDAO dApp.</li>
                         </ul>
                     </p>
                     <p>
@@ -57,31 +64,42 @@ const FAQ: React.FC<FAQProps> = () => {
                     </p>
                 </details>
 
-                <details>
+                                <details>
                     <summary>3. How do I participate in Staking?</summary>
                     <p>
-                        <ol>
-                            <li><strong>Acquire DMD Tokens:</strong><br />
-                                You can buy DMD tokens from supported cryptocurrency exchanges.
-                            </li>
-                            <br />
-                            <li><strong>Choose a Staking Method:</strong><br />
-                                You can choose from multiple staking options:
-                                <ul style={{ listStyleType: 'disc' }}>
-                                    <li><strong>Stake as a Validator:</strong> This requires running a full node and actively participating in network operations. It’s more technical and requires at least 10,000 DMD. As a node operator, you also earn 20% of the validator rewards in addition to rewards proportional to your coin holdings.</li>
-                                    <li><strong>Delegate to a Validator:</strong> If running a full node is not feasible, you can delegate your DMD to an existing validator. This is easier and still earns you rewards proportional to your coin holdings.</li>
-                                </ul>
-                            </li>
-                            <br />
-                            <li><strong>Start Staking:</strong><br />
-                                <ul style={{ listStyleType: 'disc' }}>
-                                    <li><strong>Access the Staking Interface:</strong> You can connect to our user-friendly interface with your wallet.</li>
-                                    <li><strong>Choose a Validator (if delegating):</strong> Research and choose a reliable validator to delegate your DMD. Look for validators with a good track record and solid reputation.</li>
-                                    <li><strong>Set the Amount:</strong> Decide how much DMD you want to stake or delegate.</li>
-                                    <li><strong>Confirm and Stake:</strong> Once you’ve chosen your validator and set the amount, confirm the transaction to start staking.</li>
-                                </ul>
-                            </li>
-                        </ol>
+                        <strong>1. Acquire DMD Tokens</strong><br />
+                        You can buy DMD tokens from supported cryptocurrency exchanges.
+                    </p>
+                    <p>
+                        <strong>2. Choose a Staking Method</strong><br />
+                        You can choose from multiple staking options:
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li><strong>Stake as a Validator:</strong> This requires running a full node and actively participating in network operations. It's more technical and requires at least 10000 DMD. But it also provides you with at least 20% of the validator rewards for being a node operator. Additionally, you earn rewards proportional to your coin holdings.</li>
+                            <li><strong>Delegate to a Validator:</strong> If running a full node is not feasible, you can delegate your DMD to an existing validator. This is easier and still earns you rewards proportional to your coin holdings.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        <strong>3. Start Staking</strong>
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li><strong>Access the Staking Interface:</strong> You can connect to our user-friendly interface with your wallet.</li>
+                            <li><strong>Choose a Validator (if delegating):</strong> If you're delegating, research and choose a reliable validator to delegate your DMD. Look for validators with a good track record and a solid reputation.</li>
+                            <li><strong>Set the Amount:</strong> Decide how much DMD you want to stake or delegate.</li>
+                            <li><strong>Confirm and Stake:</strong> Once you've chosen your validator and set the amount, confirm the transaction to start staking.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        <strong>4. Monitor Your Stake</strong>
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li><strong>Track Rewards:</strong> After staking, you can monitor your rewards through your stake increase at the Epoch end.</li>
+                            <li><strong>Auto-restake:</strong> Every Epoch end all claimable rewards are accredited to the staked balance of the validator and his delegates. It means that there is no additional entity for reward storage, but your rewards are added to the stake and can be further unstaked if needed.</li>
+                            <li><strong>Unstake if Necessary:</strong> If you want to stop staking, you can usually unstake your DMD, but there are some exceptions, when you can't unstake coins immediately so that you need to order them.</li>
+                        </ul>
+                    </p>
+                    <p>
+                        <strong>5. Order Your Rewards</strong>
+                        <ul style={{ listStyleType: 'disc' }}>
+                            <li><strong>Order coins:</strong> Order flow takes place if some of the coins are not available to be unstaked at the moment, as they are part of the stake of the active validator. You need to order them after the available coins are withdrawn.</li>
+                        </ul>
                     </p>
                 </details>
 
@@ -107,8 +125,15 @@ const FAQ: React.FC<FAQProps> = () => {
 
                 <details>
                     <summary>6. What about rewards from staking?</summary>
-                    <p>The rewards per epoch cycle (12 hours) are always 1/6000 of all coins in delta pot and reinsert pot combined. Upfront, the DAO Governance share is taken (10%). The rest of the epoch rewards are split between all validators of the actual active set, and then once again between the participants (coin owners) on each validator. So if there are 25 validators in the active set, each validator gets 1/25 of this epoch rewards. Before this validator reward is split between coin owners on that validator proportional, a 20% share of rewards is removed and accounted to the node operator (validator owner) for the effort to set up and maintain the validator node. </p>
-                    <p>More calculation examples <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/D.-The-DMD-Diamond-Blockchain's-Solutions#d62-validators">here</a></p>
+                    <p>Each Epoch cycle (12 hours) distributes rewards equal to 1/6000 of all coins in the Delta Pot and Reinsert Pot combined.</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li><strong>Step 1:</strong> A 10% share of the total Epoch rewards is first allocated to the DAO Governance pot.</li>
+                        <li><strong>Step 2:</strong> The remaining rewards are split equally among all validators in the active set. For example, if there are 25 active validators, each validator receives 1/25 of the adjusted Epoch rewards.</li>
+                        <li><strong>Step 3:</strong> From each validator's share, an upfront 20% is allocated directly to the node operator (validator owner) as compensation for setting up and maintaining the validator node.</li>
+                        <li><strong>Step 4:</strong> The remaining 80% is then distributed proportionally among all coin holders staked on that validator, including the validator's own stake. This means validator owners earn both the 20% operator share and their proportional share of the 80% pool.</li>
+                    </ul>
+                    <p>If an Epoch is shorter than 12 hours, rewards are reduced proportionally. Longer Epochs do not increase rewards.</p>
+                    <p>More calculation examples <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/D.-The-DMD-Diamond-Blockchain's-Solutions#d625-validator-reward">here</a></p>
                 </details>
 
                 <details>
@@ -119,29 +144,26 @@ const FAQ: React.FC<FAQProps> = () => {
                 </details>
 
                 <details>
-                    <summary>8. How can I delegate my coins?</summary>
+                    <summary>8. How I can delegate my coins?</summary>
                     <p>
-                        To delegate tokens to your desired validator, follow these steps:
+                        To delegate tokens to your desired validator, click the 'Stake' button near the validator you wish to delegate on the Validator candidates list page. You can also delegate from the Validator candidate detailed page.
                     </p>
-                    <ol style={{ listStyleType: 'decimal' }}>
-                        <li>Click the ‘Stake’ button near the validator you wish to delegate on the Validator candidates list page. You can also delegate from the Validator candidate detailed page.</li>
-                        <li>A form will appear, showing the validator and a field to enter the amount to lock in staking mode. Enter the amount of tokens you wish to lock.</li>
-                        <li>Please note that the minimum required amount for delegation is 100 DMD.</li>
-                        <li>A wallet popup will appear, asking for approval for the transaction. Click ‘Approve’ to finalize the lock in staking mode.</li>
-                        <li>After the transaction is completed, a popup will indicate that the tokens were successfully locked. Click ‘Done’ to continue.</li>
-                        <li>Your tokens are now delegated to the selected validator. You can see the delegated amount next to the validator in the validator list.</li>
-                        <li>If you choose the active validator to stake on top, the coins locked will become active and earn rewards for you in the next Epoch only.</li>
-                    </ol>
+                    <p>
+                        A form will appear, showing the validator and a field to enter the amount to lock in staking mode. Enter the amount of tokens you wish to lock and click 'Stake'. Please note, that the minimum required amount for delegation is 100 DMD. A wallet popup will appear, asking for approval for the transaction. Click 'Approve' to finalize the lock in staking mode. After the transaction is completed, a popup will indicate that the tokens were successfully locked. Click 'Done' to continue.
+                    </p>
+                    <p>
+                        Your tokens are now delegated to the selected validator. You can now see the delegated amount next to the validator in the validator list. If you choose the active validator to stake on top, the coins locked will become active and earn rewards for you in the next Epoch only.
+                    </p>
                 </details>
-
-
-                <details>
+                                <details>
                     <summary>9. How can I unstake my DMD?</summary>
                     <p>
-                        If you want to remove your coins from a validator, you can use the ‘Unstake’ button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only be removing the node. 
+                        If you want to remove your coins from a validator, you can use the 'Unstake' button on the Validator list or detailed page. Once you click on it, a pop-up will show up asking you which amount you would like to unstake. The flow is applicable to the validator candidate stake as well, when you want to withdraw rewards, the only limitation is that the minimum required stake amount (10000 DMD) is not available to be touched, you can return coins back only by removing the node.
                     </p>
                     <p>
-                        ‘Unstake’ button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the ‘Unstake’ button and approve the transaction in your wallet.
+                        'Unstake' button triggers the calculation of DMD you are able to unstake at the moment and the amount, which can be ordered. You need to unstake available coins first to proceed with the order flow. Click on the 'Unstake' button and approve the transaction in your wallet.
+                    </p>
+                    <p>
                         If the validator is active or pending, the staker can only withdraw staked amount minus already ordered amount but no more than the amount staked during the current staking epoch.
                     </p>
                 </details>
@@ -196,7 +218,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>16. What advantages does it offer to delegates compared to managing a node independently?</summary>
                     <p>
-                        The advantage for running an own node is that you earn 20% of validator rewards upfront before the rest of rewards are split proportional between coin owners on validator. The disadvantage is that you have to set up and maintain a complex linux node software and make sure it's 24/7 well reachable so you, as validator, get a good score and are more often part of an active set.  The advantage for delegates is that you can take part even with below validator minimum stake of 10000 DMD just with at least 100 DMD. Other advantage for delegate if u see the validator you did delegate isn't perfectly maintained, you can just switch to another validator.
+                        The advantage for running an own node is that you earn 20% of validator rewards upfront before the rest of rewards are split proportional between coin owners on validator. The disadvantage is that you have to set up and maintain a complex linux node software and make sure it's 24/7 well reachable so you, as validator, get a good score and are more often part of an active set. The advantage for delegates is that you can take part even with below validator minimum stake of 10000 DMD just with at least 100 DMD. Other advantage for delegate if you see the validator you did delegate isn't perfectly maintained, you can just switch to another validator.
                     </p>
                 </details>
 
@@ -216,7 +238,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 </details>
 
                 <details>
-                    <summary>19. Which proposal types exist?</summary>
+                    <summary>19. Which proposal types exist in the DMD DAO?</summary>
                     <p>There are 3 proposal types supported by the DMD DAO community: open proposal, ecosystem parameters’ changes, and contact upgrade.</p>
                     <ol style={{ listStyleType: 'decimal' }}>
                         <li>
@@ -240,38 +262,37 @@ const FAQ: React.FC<FAQProps> = () => {
                     </ol>
                 </details>
 
-                <details>
-                    <summary>20. How the voting process is organized and how the results are calculated?</summary>
+                                <details>
+                    <summary>20. How is the voting process organized, and how are results calculated?</summary>
                     <p>
-                        The voting starts as soon as the Voting phase starts straight after the Proposal phase. The voting process is available only for validator candidates. The other community members participate in the voting process indirectly by staking on top of a validator candidate, who makes the right decisions from their perspective.
-                        There are 2 options available for voting: to vote for the decision or against it. It is possible to change the decision during the Voting phase.
-                        The voting results are calculated based on 2 main indexes:
-                        <ul>
-                            <li>Exceeding Yes answers %</li>
-                            <li>Participation %</li>
-                        </ul>
-                            Every validator candidate has his own Voting power(%). It depends on the weight of his stake inside the whole DAO DMD possession. It means that for every decision it is possible to calculate the % of total DAO weight, who answered ‘yes’ and the % of total DAO weight, who answered ‘no’. The difference between the % is the ‘Exceeding Yes answers’. For every proposal type, we have a minimum required Exceeding Yes answers value, which is mandatory to be reached so that the proposal is accepted:
-                        <ul>
-                            <li>Open proposal - ⅓ of total DMD possession</li>
-                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
-                            <li>Contract upgrade - 1/2 of total DMD possession</li>
-                        </ul>
-                            In regard to participation %, it means that there is a mandatory % of participants for every proposal, which needs to be reached so that the proposal can be accepted. It is based on the Voting weight(%) of every particular validator candidate. The % depends on the proposal type as well:
-                        <ul>
-                            <li>Open proposal - ⅓ of total DMD possession</li>
-                            <li>Ecosystem parameters' change - ⅓ of total DMD possession</li>
-                            <li>Contract upgrade - 1/2 of total DMD possession</li>
-                        </ul>
-                        If the two conditions are accomplished when the Voting phase is finished, the decision is considered as accepted, after that it requires finalization.
-                        If not - the decision is not accepted by the community, but it still needs to be finalized.
-                        Example of calculations are <a href="https://github.com/DMDcoin/whitepaper/wiki/G.-Decentralized-Autonomous-Organization#g24-voting-process">here</a>
+                        The voting process begins immediately after the Proposal Phase ends and is only open to validator candidates. Community members participate indirectly by staking their coins on validators, who vote on their behalf.
                     </p>
+                    <p><strong>Voting process:</strong></p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Validators can vote "Yes" or "No" on a proposal and can change their vote at any time during the Voting Phase.</li>
+                        <li>Voting power is proportional to each validator's stake relative to the total DAO DMD supply.</li>
+                    </ul>
+                    <p><strong>Result calculation:</strong></p>
+                    <p>Two conditions must be met for a proposal to pass:</p>
+                    <p>1. Participation Threshold (% of total DAO weight):</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Open Proposal: 1/3</li>
+                        <li>Ecosystem Parameter Change: 1/3</li>
+                        <li>Contract Upgrade: 1/2</li>
+                    </ul>
+                    <p>2. Exceeding Yes Votes (% of total DAO weight):</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Open Proposal: 1/3</li>
+                        <li>Ecosystem Parameter Change: 1/3</li>
+                        <li>Contract Upgrade: 1/2</li>
+                    </ul>
+                    <p>If both conditions are met by the end of the Voting Phase, the proposal is accepted and moves to finalization. If not, the proposal is rejected but still finalized on-chain to complete the process. For detailed examples of voting calculations, see <a href="https://github.com/DMDcoin/whitepaper/wiki/G.-Decentralized-Autonomous-Organization#g24-voting-process" target="_blank">here</a></p>
                 </details>
 
                 <details>
                     <summary>21. Can I change my decision regarding the proposal?</summary>
                     <p>
-                        Every validator candidate can change the decision on the voting he has previously participated in. It can be possible if the discussion about the topic changes direction and the vote needs to be changed according to the new ideas or facts. The decision can only be changed to the opposite, not dismissed. Delegates should monitor their validator voting behavior and to switch to a validator that doesn't change his opinion at the last minute. We encourage validators to make decisions early and stick with them, in order to attract further delegates who search for predictable voting results. Validators are encouraged to vote early in order to display their opinion by voting for an option in a proposal. Delegates are encouraged to stake their funds on active validators that vote according to their preference.
+                        Every validator candidate can change the decision on the voting he has previously participated in. It can be possible if the discussion about the topic changes direction and the vote needs to be changed according to the new ideas or facts. The decision can only be changed to the opposite, not dismissed. Delegates should monitor their validator voting behavior and switch to a validator that doesn't change his opinion at the last minute. We encourage validators to make decisions early and stick with them in order to attract further delegates who search for predictable voting results. Validators are encouraged to vote early in order to display their opinion by voting for an option in a proposal. Delegates are encouraged to stake their funds on active validators that vote according to their preference.
                     </p>
                 </details>
 
@@ -285,7 +306,7 @@ const FAQ: React.FC<FAQProps> = () => {
                 <details>
                     <summary>23. What is proposal execution?</summary>
                     <p>
-                        Every accepted proposal needs to be executed so that the decision taken is exercised. Execution can be made during the new DAO phase (following the phase, when the proposal was created and finalized), and it is possible to create new proposals and vote on them in parallel. So there is a timeframe of 28 days for the proposal execution (the period of the next proposal+voting phase). Once the period is over, the proposals can not be executed. Contract upgrades can be finalized as all other proposals, but the execution must be done by the person, who proposed it.
+                        Every accepted proposal needs to be executed so that the decision taken is exercised. Execution can be made during the new DAO phase (following the phase, when the proposal was created), and it is possible to create new proposals and vote on them in parallel. So there is a timeframe of 28 days for the proposal execution (the period of the next proposal+voting phase). Once the period is over, the proposals can not be executed. Contract upgrades can be finalized as all other proposals, but the execution must be done by the person, who proposed it.
                     </p>
                 </details>
 
