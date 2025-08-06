@@ -237,29 +237,39 @@ const FAQ: React.FC<FAQProps> = () => {
                     <p>Full guides on how to create and vote on the proposals can be found <a target="_blank" href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO">here.</a></p>
                 </details>
 
-                <details>
+                                <details>
                     <summary>19. Which proposal types exist in the DMD DAO?</summary>
-                    <p>There are 3 proposal types supported by the DMD DAO community: open proposal, ecosystem parameters’ changes, and contact upgrade.</p>
-                    <ol style={{ listStyleType: 'decimal' }}>
-                        <li>
-                            <strong>Open Proposal:</strong>
-                            <p>
-                                The open proposal invites members of the decentralized autonomous organization to contribute their ideas and expertise towards a common goal. The proposal aims to foster collaboration and innovation within the DAO community by encouraging members to share their thoughts, suggestions, and feedback on various projects and initiatives. Open proposal can include one or several transactions that are executed in the event that the proposal is accepted. Open proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
-                            </p>
-                        </li>
-                        <li>
-                            <strong>Ecosystem Parameters' Change Proposal:</strong>
-                            <p>
-                                The proposal type where members can propose, discuss, and vote on changes to the parameters that govern the DMD ecosystem. This proposal aims to enable members to suggest modifications to key parameters such as gas price, proposal fee, minimum block wait time, maximum block wait time (heartbeat) and other elements that impact the functioning of the DMD ecosystem. Ecosystem parameters’ change proposal requires 1/3 of total DAO weight participation and 1/3 of exceeding yes votes.
-                            </p>
-                        </li>
-                        <li>
-                            <strong>Contract Upgrade Proposal:</strong>
-                            <p>
-                                The proposal can engage in discussions about potential upgrades, share technical expertise, and propose changes to enhance the functionality, security, and efficiency of the smart contracts. By submitting proposals and participating in transparent voting processes, members can collectively decide on which upgrades should be implemented and ensure that the DMD's smart contracts remain up-to-date and aligned with the evolving needs of the community. Contract upgrade proposal can include one or several transactions which are executed in the event that the proposal is accepted. Contract upgrade proposal requires 1/2 of total DAO weight participation and 1/2 of exceeding yes votes. 
-                            </p>
-                        </li>
-                    </ol>
+                    <p>The DMD DAO supports three main proposal types, each designed for different purposes and requiring different approval thresholds:</p>
+                    
+                    <p><strong>Open Proposal</strong></p>
+                    <p>Open Proposals enable DAO members to share ideas, request funding, and collaborate on initiatives. They encourage community participation by allowing members to suggest projects or actions and optionally request funds to be sent to Externally Owned Accounts (EOAs).</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Approval threshold:</li>
+                        <ul style={{ listStyleType: 'disc', marginLeft: '20px' }}>
+                            <li>Participation: At least 1/3 of total DAO weight</li>
+                            <li>Votes: At least 1/3 "yes" votes exceeding "no" votes</li>
+                        </ul>
+                    </ul>
+                    
+                    <p><strong>Ecosystem Parameter Change Proposal</strong></p>
+                    <p>This proposal type allows members to suggest changes to key parameters governing the DMD ecosystem, such as gas price, proposal fees, block time limits, and more. Changes are limited to predefined ranges for security and stability.</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Approval threshold:</li>
+                        <ul style={{ listStyleType: 'disc', marginLeft: '20px' }}>
+                            <li>Participation: At least 1/3 of total DAO weight</li>
+                            <li>Votes: At least 1/3 "yes" votes exceeding "no" votes</li>
+                        </ul>
+                    </ul>
+                    
+                    <p><strong>Contract Upgrade Proposal</strong></p>
+                    <p>Used for upgrading smart contracts managed by the DAO. These proposals often involve technical changes, security improvements, or adjustments to support new features. "Low Majority Fill" proposals (for topping up the Low Majority Contract) are a subtype of Contract Upgrade proposals.</p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>Approval threshold:</li>
+                        <ul style={{ listStyleType: 'disc', marginLeft: '20px' }}>
+                            <li>Participation: At least 1/2 of total DAO weight</li>
+                            <li>Votes: At least 1/2 "yes" votes exceeding "no" votes</li>
+                        </ul>
+                    </ul>
                 </details>
 
                                 <details>
@@ -310,10 +320,10 @@ const FAQ: React.FC<FAQProps> = () => {
                     </p>
                 </details>
 
-                <details>
+                                <details>
                     <summary>24. What is node operator share?</summary>
                     <p>
-                        A configurable node operator share is a reward mechanism where a node owner delegates a share of their node owner rewards to a different node operator address. It’s designed for DMD Diamond coin holders who want to earn rewards by owning a node but don’t have the technical skills to operate it. A node owner gets an upfront 20% of each epoch reward because they own the node. From this, a percentage is shared with the node operator for their role. The node owner reward (20%) is configurable for each pool, allowing a portion of this share (0.01% - 20% (20% means 100% of the node owner reward)) to be forwarded.
+                        A configurable node operator share is a reward mechanism where a node owner delegates a share of their node owner rewards to a different node operator address. It's designed for DMD Diamond coin holders who want to earn rewards by owning a node but don't have the technical skills to operate it. A node owner gets an upfront 20% of each epoch reward because they own the node. From this, a percentage is shared with the node operator for their role. The node owner reward (20%) is configurable for each pool, allowing a portion of this share (0.01% - 20% (20% means 100% of the node owner reward)) to be forwarded.
                     </p>
                     <p>
                         A node operator address can be set up during the pool creation step or anytime after the pool creation in the personal profile on the Diamond UI. It is editable once per epoch. One target address can be active at a time; setting a new one disables the old one.
@@ -322,16 +332,15 @@ const FAQ: React.FC<FAQProps> = () => {
 
                 <details>
                     <summary>25. What is Connectivity Report (CR)?</summary>
-                    
-                    <p>The Connectivity Report provides a metric for each node in the Validators list, indicating its network performance and connection stability. Display Rules:</p>
-
                     <p>
-                        <ul style={{ listStyleType: 'disc' }}>
-                            <li>Displayed in black, indicating no reported issues.</li>
-                            <li>Displayed in <span style={{ color: 'orange' }}>orange</span>, signalling reported connectivity issues.</li>
-                            <li><strong>Faulty Validator:</strong> If a validator is flagged as faulty by a majority (two-thirds) of active validators, its value is displayed in bold <span style={{ color: 'red', fontWeight: 'bold' }}>red</span>.</li>
-                        </ul>
+                        The Connectivity Report provides a metric for each node in the Validators list, indicating its network performance and connection stability.
                     </p>
+                    <p><strong>Display Rules:</strong></p>
+                    <ul style={{ listStyleType: 'disc' }}>
+                        <li>0: Displayed in black, indicating no reported issues.</li>
+                        <li>&gt;0: Displayed in orange, signalling reported connectivity issues.</li>
+                        <li><strong>Faulty Validator:</strong> If a validator is flagged as faulty by a majority (two-thirds) of active validators, its value is displayed in bold red.</li>
+                    </ul>
                 </details>
             </div>
         </section>
