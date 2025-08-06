@@ -99,29 +99,6 @@ const Wiki: React.FC<WikiProps> = () => {
                         </section>
 
                         <section className={styles.section}>
-                            <h2>Ecosystem and Development</h2>
-                            <p>
-                                DMD Diamond is a community-driven project with no corporate backing, led by enthusiasts focused on financial freedom and decentralization. Key contributors include:
-                            </p>
-                            <ul className={styles.usageList}>
-                                <li><strong>Aleksander Mesor</strong>: CEO with over seven years of leadership, focusing on operations and community engagement.</li>
-                                <li><strong>Helmut Siedl</strong>: Blockchain visionary providing technical guidance and mentoring.</li>
-                                <li><strong>David</strong>: Software developer with 15 years of experience.</li>
-                                <li><strong>Thomas</strong>: Technical expert in blockchain implementation.</li>
-                            </ul>
-                            <p>
-                                In June 2025, DMD Diamond launched a <strong>grant program</strong> to fund dApp and tool development, offering up to $5,000 for projects in DeFi, GameFi, and NFTs, with a grand prize of a validator node for outstanding contributions. The program aims to expand the ecosystem and foster innovation.
-                            </p>
-                        </section>
-
-                        <section className={styles.section}>
-                            <h2>Wallet and Security</h2>
-                            <p>
-                                The <strong>Diamond Wallet</strong> is an open-source software allowing users to manage DMD balances, stake coins, and participate in governance. It supports IPv4 and TOR for enhanced connectivity and privacy. For maximum security, cold wallets are recommended for storing large amounts of DMD.
-                            </p>
-                        </section>
-
-                        <section className={styles.section}>
                             <h2>Mainnet and Beta Testing</h2>
                             <p>
                                 The DMD v4 mainnet is slated for launch by the end of 2025, following an open beta phase that began on December 9, 2024\. The beta invites developers and enthusiasts to test features like instant block finality and EVM compatibility, with community feedback shaping the final release.
