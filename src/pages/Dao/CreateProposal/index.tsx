@@ -312,7 +312,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
 
           {(proposalType === "open" || proposalType === "low-majority-fill") && (
             <>
-              <div className={styles.balanceInfoContainer}>
+              <div className={`${styles.balanceInfoContainer} ${proposalType === "open" && !isLowMajorityEligible ? styles.exceedsBalanceContainer : ''}`}>
                 <div className={styles.balanceInfo}>
                   <h4>Available Balances:</h4>
                   <p><strong>Governance Pot Balance:</strong> {daoContext.governancePotBalance.toFixed(4)} DMD</p>
@@ -320,7 +320,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                 </div>
                 
                 {proposalType === "open" && lowMajorityContractAddress && (
-                  <div className={styles.infoBox}>
+                  <div className={isLowMajorityEligible ? styles.infoBox : styles.warningBox}>
                     <p>
                       {isLowMajorityEligible ? (
                         <>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</>
@@ -328,10 +328,10 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                         <>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</>
                       )}
                     </p>
-                    {isLowMajorityEligible && (
+                    {!isLowMajorityEligible && (
                       <button 
                         type="button"
-                        className={styles.switchButton}
+                        className={styles.fillContractButton}
                         onClick={switchToLowMajorityFill}
                       >
                         Switch to Low Majority Fill Proposal
