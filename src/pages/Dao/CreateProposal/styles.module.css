@@ -147,7 +147,7 @@ form button .disabled {
 /* Warning box for when amount exceeds Low Majority contract balance */
 .warningBox {
   background-color: #fff2f2;
-  border: 2px solid #ff6b6b;
+  border: 1px solid #ff6b6b;
   border-radius: 6px;
   padding: 12px;
   margin-top: 12px;
@@ -163,7 +163,6 @@ form button .disabled {
 
 /* Red highlighting for the entire container when amount exceeds balance */
 .exceedsBalanceContainer {
-  border: 2px solid #ff6b6b !important;
   background-color: #fff8f8 !important;
 }
 
@@ -190,14 +189,11 @@ form button .disabled {
 
 /* New styles for Low Majority Contract UI */
 .balanceInfoContainer {
+  gap: 0rem !important;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 16px;
   background-color: #f9f9f9;
-}
-
-.balanceInfo {
-  margin-bottom: 16px;
 }
 
 .balanceInfo h4 {

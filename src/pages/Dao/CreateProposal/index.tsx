@@ -325,7 +325,10 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
                       {isLowMajorityEligible ? (
                         <>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</>
                       ) : (
-                        <>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</>
+                        <>
+                          <p>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</p>
+                          <>To proceed with the lower participation and “Yes” vote threshold, add funds to the Low Majority Contract by creating a Low Majority Balance Fill proposal. Click the button below to start.</>
+                        </>
                       )}
                     </p>
                     {!isLowMajorityEligible && (
