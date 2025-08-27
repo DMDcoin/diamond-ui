@@ -25,7 +25,7 @@ interface DaoContextProps {
   getStateString: (stateValue: string) => string;
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
-  createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string>;
+  createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string, lowMajorityContractBalance?: BigNumber) => Promise<string>;
   getProposalTimestamp: (proposalId: string) => Promise<number>;
   timestampToDate: (timestamp: string) => string;
   getHistoricProposals: () => Promise<void>;
@@ -98,9 +98,23 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   }
 
-  const getProposalTypeString = (proposalType: string) => {
+  const getProposalTypeString = (proposalType: string, proposal?: any) => {
     switch (proposalType) {
       case '0':
+        // For open proposals, determine if it's Low or High Majority based on requested amount
+        if (proposal && proposal.values && proposal.values.length > 0) {
+          const totalRequestedAmount = proposal.values.reduce((sum: BigNumber, value: string) => {
+            return sum.plus(BigNumber(value).dividedBy(1e18));
+          }, BigNumber(0));
+          
+          const lowMajorityThreshold = BigNumber(1000);
+          
+          if (totalRequestedAmount.isGreaterThan(lowMajorityThreshold)) {
+            return 'High Majority';
+          } else {
+            return 'Low Majority';
+          }
+        }
         return 'Open';
       case '1':
         return 'Contract upgrade';
@@ -198,7 +212,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           ...proposalDetails,
           values: proposalDetails?.[4],
           daoPhaseCount: proposalDetails?.[9] || "1",
-          proposalType: getProposalTypeString(proposalDetails?.[11] || "3"),
+          proposalType: getProposalTypeString(proposalDetails?.[11] || "3", { values: proposalDetails?.[4] }),
         };
       }
 
@@ -329,7 +343,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return await web3Context.contractsManager.daoContract.methods.proposalExists(proposalId).call();
   }
 
-  const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => {
+  const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string, lowMajorityContractBalance?: BigNumber) => {
     return new Promise<string>(async (resolve, reject) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
@@ -337,13 +351,28 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
         try {
           web3Context.showLoader(true, "Creating proposal 💎");
+          
+          // Determine majority type for open proposals
+          let majority = 0; // Defaults to Low (0)
+          if (type === 'open') {
+            const totalRequestedAmount = values.reduce((sum, value) => {
+              return sum.plus(BigNumber(value).dividedBy(1e18));
+            }, BigNumber(0));
+            
+            // If amount exceeds Low Majority Contract balance, use High Majority (1)
+            if (lowMajorityContractBalance && totalRequestedAmount.isGreaterThan(lowMajorityContractBalance)) {
+              majority = 1; // High
+            }
+          }
+
           await web3Context.contractsManager.daoContract.methods.propose(
             targets,
             values,
             callDatas,
             title,
             description,
-            discussionUrl
+            discussionUrl,
+            majority
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
           const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
             targets, values, callDatas, description

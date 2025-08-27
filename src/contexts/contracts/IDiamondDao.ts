@@ -167,7 +167,8 @@ export interface IDiamondDao extends BaseContract {
       calldatas: (string | number[])[],
       title: string,
       description: string,
-      discussionUrl: string
+      discussionUrl: string,
+      majority: number | string | BN
     ): PayableTransactionObject<void>;
 
     vote(

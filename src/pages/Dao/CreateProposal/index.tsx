@@ -56,7 +56,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       });
     }
 
-    const lowMajorityAddress = import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "";
+    const lowMajorityAddress = import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "0xf30214ee3Be547E2E5AaaF9B9b6bea26f1Beca37";
     setLowMajorityContractAddress(lowMajorityAddress);
 
     // Fetch low majority contract balance
@@ -226,7 +226,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       return toast.error(err.message);
     }
 
-    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description)
+    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description, lowMajorityContractBalance)
     .then((proposalId) => {
       daoContext.getActiveProposals().then(async () => {
         if (proposalId) {

@@ -137,8 +137,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    // Convert threshold percentages to ether format (10^18)
-    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : (100/3);
+    let thresholdPercentage = 100/3; // Default for Low Majority and EPC
+    
+    if (proposalType === "Contract upgrade" || proposalType === "High Majority") {
+      thresholdPercentage = 50;
+    }
+    
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
   
     // Check if positive votes exceed negative votes by the required threshold
@@ -210,7 +214,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* open proposals */}
           {
-            proposal.proposalType === "Open" &&
+            (proposal.proposalType === "Open" || proposal.proposalType === "Low Majority" || proposal.proposalType === "High Majority") &&
             proposal.targets?.length > 0 && // Ensure targets array is not empty
             proposal.targets.some((target: string) => target !== "0x0000000000000000000000000000000000000000") &&
             (
@@ -368,7 +372,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
                           totalStake={totalDaoStake.toNumber()}
-                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : (100/3)}
+                          requiredPercentage={proposal.proposalType === "Contract upgrade" || proposal.proposalType === "High Majority" ? 50 : (100/3)}
                         />
                       </div>
                     </>
