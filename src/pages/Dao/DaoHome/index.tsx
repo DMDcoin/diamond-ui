@@ -38,6 +38,20 @@ const DaoHome: React.FC<DaoProps> = () => {
     <section className="section">
       <div className={styles.sectionContainer + " sectionContainer"}>
         
+        <div className={styles.governanceInfoSection}>
+          <p className={styles.governanceInfoText}>
+            For detailed information on how to create and vote on proposals, please visit our{' '}
+            <a 
+              href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={styles.governanceInfoLink}
+            >
+              comprehensive guide
+            </a>.
+          </p>
+        </div>
+
         <div className={styles.daoInfoContainer}>
           <h1>Governance</h1>
           <DaoPhaseBanner />
