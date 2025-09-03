@@ -16,6 +16,8 @@ interface DaoContextProps {
   allDaoProposals: Proposal[];
   governancePotBalance: BigNumber;
   claimingContractBalance: BigNumber;
+  lowMajorityContractBalance: BigNumber;
+  lowMajorityContractAddress: string;
   notEnoughGovernanceFunds: boolean;
 
   initialize: () => Promise<void>;
@@ -25,7 +27,7 @@ interface DaoContextProps {
   getStateString: (stateValue: string) => string;
   castVote: (proposalId: number, vote: number, reason: string) => Promise<void>;
   getProposalVotingStats: (proposalId: string) => Promise<TotalVotingStats>;
-  createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string, lowMajorityContractBalance?: BigNumber) => Promise<string>;
+  createProposal: (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => Promise<string>;
   getProposalTimestamp: (proposalId: string) => Promise<number>;
   timestampToDate: (timestamp: string) => string;
   getHistoricProposals: () => Promise<void>;
@@ -54,6 +56,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [notEnoughGovernanceFunds, setNotEnoughGovernanceFunds] = useState<boolean>(false);
   const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [claimingContractBalance, setClaimingContractBalance] = useState<BigNumber>(BigNumber('0'));
+  const [lowMajorityContractBalance, setLowMajorityContractBalance] = useState<BigNumber>(BigNumber('0'));
+  const [lowMajorityContractAddress, setLowMajorityContractAddress] = useState<string>(import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "0xf30214ee3Be547E2E5AaaF9B9b6bea26f1Beca37");
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
@@ -62,6 +66,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       initialize();
     }
   }, [web3Context.userWallet, web3Context.web3Initialized]);
+
+  // Refresh proposal types when lowMajorityContractBalance is loaded
+  useEffect(() => {
+    if (daoInitialized && !lowMajorityContractBalance.isEqualTo(0) && activeProposals.length > 0) {
+      getActiveProposals();
+    }
+  }, [lowMajorityContractBalance, daoInitialized]);
 
   const initialize = async () => {
     if (daoInitialized) return;
@@ -85,6 +96,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS || "0xe0E6787A55049A90aAa4335D0Ff14fAD26B8e88e");
     setClaimingContractBalance(BigNumber(claimingPot).dividedBy(1e18));
 
+    const lowMajorityPot = await web3Context.web3.eth.getBalance(lowMajorityContractAddress);
+    setLowMajorityContractBalance(BigNumber(lowMajorityPot).dividedBy(1e18));
+
     subscribeToEvents();
   }
 
@@ -98,21 +112,33 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   }
 
+  const determineMajorityType = (targets: string[], values: string[]): 'Low Majority' | 'High Majority' => {
+    // Special case: If payout address is the low majority contract, always classify as Low Majority
+    if (targets && targets.some((target: string) =>
+      target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+      return 'Low Majority';
+    }
+
+    // Otherwise, determine based on total requested amount
+    const totalRequestedAmount = values.reduce((sum: BigNumber, value: string) => {
+      return sum.plus(BigNumber(value).dividedBy(1e18));
+    }, BigNumber(0));
+    
+    if (totalRequestedAmount.isGreaterThan(lowMajorityContractBalance)) {
+      return 'High Majority';
+    } else {
+      return 'Low Majority';
+    }
+  }
+
   const getProposalTypeString = (proposalType: string, proposal?: any) => {
     switch (proposalType) {
       case '0':
-        // For open proposals, determine if it's Low or High Majority based on requested amount
         if (proposal && proposal.values && proposal.values.length > 0) {
-          const totalRequestedAmount = proposal.values.reduce((sum: BigNumber, value: string) => {
-            return sum.plus(BigNumber(value).dividedBy(1e18));
-          }, BigNumber(0));
-          
-          const lowMajorityThreshold = BigNumber(1000);
-          
-          if (totalRequestedAmount.isGreaterThan(lowMajorityThreshold)) {
-            return 'High Majority';
-          } else {
-            return 'Low Majority';
+          const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
+
+          if (hasPayouts) {
+            return determineMajorityType(proposal.targets, proposal.values);
           }
         }
         return 'Open';
@@ -121,6 +147,14 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       case '2':
         return 'Ecosystem Parameter Change';
       default:
+        // If proposalType is not recognized, try to infer from the data
+        if (proposal && proposal.values && proposal.values.length > 0) {
+          const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
+          
+          if (hasPayouts) {
+            return determineMajorityType(proposal.targets, proposal.values);
+          }
+        }
         return 'Unknown';
     }
   }
@@ -212,7 +246,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           ...proposalDetails,
           values: proposalDetails?.[4],
           daoPhaseCount: proposalDetails?.[9] || "1",
-          proposalType: getProposalTypeString(proposalDetails?.[11] || "3", { values: proposalDetails?.[4] }),
+          proposalType: getProposalTypeString(proposalDetails?.[11] || "3", { values: proposalDetails?.[4], targets: proposalDetails?.[3] }),
         };
       }
 
@@ -343,7 +377,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return await web3Context.contractsManager.daoContract.methods.proposalExists(proposalId).call();
   }
 
-  const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string, lowMajorityContractBalance?: BigNumber) => {
+  const createProposal = async (type: string, title: string, discussionUrl: string, targets: string[], values: string[], callDatas: string[], description: string) => {
     return new Promise<string>(async (resolve, reject) => {
         if (daoPhase.phase !== "0") return toast.warn("Cannot propose in voting phase");        
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
@@ -355,14 +389,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           // Determine majority type for open proposals
           let majority = 0; // Defaults to Low (0)
           if (type === 'open') {
-            const totalRequestedAmount = values.reduce((sum, value) => {
-              return sum.plus(BigNumber(value).dividedBy(1e18));
-            }, BigNumber(0));
-            
-            // If amount exceeds Low Majority Contract balance, use High Majority (1)
-            if (lowMajorityContractBalance && totalRequestedAmount.isGreaterThan(lowMajorityContractBalance)) {
-              majority = 1; // High
-            }
+            const majorityType = determineMajorityType(targets, values);
+            majority = majorityType === 'High Majority' ? 1 : 0;
           }
 
           await web3Context.contractsManager.daoContract.methods.propose(
@@ -383,7 +411,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         } catch(err: any) {
           console.log(err);
           web3Context.showLoader(false, "");
-          console.log(err)
           handleErrorMsg(err, "Proposal creation failed");
           reject("");
         }
@@ -670,6 +697,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     allDaoProposals,
     governancePotBalance,
     claimingContractBalance,
+    lowMajorityContractBalance,
+    lowMajorityContractAddress,
     notEnoughGovernanceFunds,
 
     // functions

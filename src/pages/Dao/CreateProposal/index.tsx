@@ -42,11 +42,10 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     { contractAddress: "", contractCalldata: "" }
   ]);
 
-  // New state for low majority contract
-  const [lowMajorityContractAddress, setLowMajorityContractAddress] = useState<string>("");
-  const [lowMajorityContractBalance, setLowMajorityContractBalance] = useState<BigNumber>(BigNumber('0'));
   const [totalRequestedAmount, setTotalRequestedAmount] = useState<BigNumber>(BigNumber('0'));
   const [isLowMajorityEligible, setIsLowMajorityEligible] = useState<boolean>(true);
+
+  const { lowMajorityContractBalance, lowMajorityContractAddress } = daoContext;
 
   useEffect(() => {
     if (epcValue === "0") {
@@ -54,18 +53,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         setEpcValue(val);
         loadEpcData(epcContractName, epcMethodName);
       });
-    }
-
-    const lowMajorityAddress = import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "0xf30214ee3Be547E2E5AaaF9B9b6bea26f1Beca37";
-    setLowMajorityContractAddress(lowMajorityAddress);
-
-    // Fetch low majority contract balance
-    if (lowMajorityAddress) {
-      web3Context.web3.eth.getBalance(lowMajorityAddress)
-        .then(balance => {
-          setLowMajorityContractBalance(BigNumber(balance).dividedBy(1e18));
-        })
-        .catch(err => console.error("Error fetching low majority balance:", err));
     }
   }, []);
 
@@ -226,7 +213,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
       return toast.error(err.message);
     }
 
-    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description, lowMajorityContractBalance)
+    await daoContext.createProposal(proposalType, title, discussionUrl, targets, values, calldatas, description)
     .then((proposalId) => {
       daoContext.getActiveProposals().then(async () => {
         if (proposalId) {
