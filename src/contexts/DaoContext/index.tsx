@@ -134,13 +134,22 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const getProposalTypeString = (proposalType: string, proposal?: any) => {
     switch (proposalType) {
       case '0':
+        // Check if target address equals the low majority contract address first
+        if (proposal && proposal.targets && proposal.targets.some((target: string) =>
+          target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+          return 'Contract Fill';
+        }
+
+        // Then check for open proposals with payout amounts
         if (proposal && proposal.values && proposal.values.length > 0) {
           const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
 
           if (hasPayouts) {
-            return determineMajorityType(proposal.targets, proposal.values);
+            return 'Open payout';
           }
         }
+        
+        // Default to 'Open' for proposals without payouts
         return 'Open';
       case '1':
         return 'Contract upgrade';
@@ -148,13 +157,22 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         return 'Ecosystem Parameter Change';
       default:
         // If proposalType is not recognized, try to infer from the data
+        // Check if target address equals the low majority contract address first
+        if (proposal && proposal.targets && proposal.targets.some((target: string) =>
+          target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+          return 'Contract Fill';
+        }
+
+        // Then check for proposals with payout amounts
         if (proposal && proposal.values && proposal.values.length > 0) {
           const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
           
           if (hasPayouts) {
-            return determineMajorityType(proposal.targets, proposal.values);
+            return 'Open payout';
           }
         }
+        
+        // Default fallback
         return 'Unknown';
     }
   }
