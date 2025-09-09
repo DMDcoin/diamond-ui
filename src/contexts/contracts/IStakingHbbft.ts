@@ -31,6 +31,8 @@ export interface IStakingHbbft extends BaseContract {
   methods: {
     MAX_CANDIDATES(): NonPayableTransactionObject<string>;
 
+    actualEpochEndTime(): NonPayableTransactionObject<string>;
+
     getPoolPublicKey(_poolAddress: string): NonPayableTransactionObject<string>;
 
     getPoolValidatorStakeAmount(
@@ -54,6 +56,10 @@ export interface IStakingHbbft extends BaseContract {
     isPoolActive(arg0: string): NonPayableTransactionObject<boolean>;
 
     isPoolValid(arg0: string): NonPayableTransactionObject<boolean>;
+
+    notifiyEarlyEpochEnd(
+      timestamp: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     notifyAvailability(
       _stakingAddress: string

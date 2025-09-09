@@ -169,6 +169,11 @@ export interface TxPermissionHbbftMock extends BaseContract {
       _address: string
     ): NonPayableTransactionObject<void>;
 
+    testGetSliceUInt256(
+      begin: number | string | BN,
+      data: string | number[]
+    ): NonPayableTransactionObject<string>;
+
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
     validatorSetContract(): NonPayableTransactionObject<string>;

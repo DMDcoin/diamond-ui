@@ -21,17 +21,17 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface ReentrancyAttackerLowMajority extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
+  ): ReentrancyAttackerLowMajority;
+  clone(): ReentrancyAttackerLowMajority;
   methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
+    calls(): NonPayableTransactionObject<string>;
 
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
+    getBalance(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

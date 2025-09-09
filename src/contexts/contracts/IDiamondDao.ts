@@ -21,6 +21,16 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type ChangeVote = ContractEventLog<{
+  voter: string;
+  proposalId: string;
+  vote: string;
+  reason: string;
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+}>;
 export type ProposalCanceled = ContractEventLog<{
   proposer: string;
   proposalId: string;
@@ -183,6 +193,9 @@ export interface IDiamondDao extends BaseContract {
     ): NonPayableTransactionObject<void>;
   };
   events: {
+    ChangeVote(cb?: Callback<ChangeVote>): EventEmitter;
+    ChangeVote(options?: EventOptions, cb?: Callback<ChangeVote>): EventEmitter;
+
     ProposalCanceled(cb?: Callback<ProposalCanceled>): EventEmitter;
     ProposalCanceled(
       options?: EventOptions,
@@ -244,6 +257,13 @@ export interface IDiamondDao extends BaseContract {
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "ChangeVote", cb: Callback<ChangeVote>): void;
+  once(
+    event: "ChangeVote",
+    options: EventOptions,
+    cb: Callback<ChangeVote>
+  ): void;
 
   once(event: "ProposalCanceled", cb: Callback<ProposalCanceled>): void;
   once(

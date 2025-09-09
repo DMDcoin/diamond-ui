@@ -65,8 +65,6 @@ export interface BlockRewardHbbft extends BaseContract {
 
     addToDeltaPot(): PayableTransactionObject<void>;
 
-    addToReinsertPot(): PayableTransactionObject<void>;
-
     connectivityTracker(): NonPayableTransactionObject<string>;
 
     deltaPot(): NonPayableTransactionObject<string>;

@@ -21,17 +21,30 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface IDiamondDaoLowMajority extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
+  ): IDiamondDaoLowMajority;
+  clone(): IDiamondDaoLowMajority;
   methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
+    execute(
+      proposalId: number | string | BN,
+      targets: string[],
+      values: (number | string | BN)[],
+      calldatas: (string | number[])[]
+    ): NonPayableTransactionObject<void>;
 
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
+    quorumReached(
+      result: [
+        number | string | BN,
+        number | string | BN,
+        number | string | BN,
+        number | string | BN
+      ],
+      totalStakedAmount: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

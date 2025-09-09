@@ -21,18 +21,14 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface Secp256k1Utils extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
-  methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
-
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
-  };
+  ): Secp256k1Utils;
+  clone(): Secp256k1Utils;
+  methods: {};
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };

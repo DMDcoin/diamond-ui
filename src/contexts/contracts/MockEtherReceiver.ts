@@ -21,17 +21,17 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface MockEtherReceiver extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
+  ): MockEtherReceiver;
+  clone(): MockEtherReceiver;
   methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
+    allowReceive(): NonPayableTransactionObject<boolean>;
 
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
+    toggleReceive(allow: boolean): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

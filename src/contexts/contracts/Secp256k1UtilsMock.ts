@@ -21,17 +21,21 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface Secp256k1UtilsMock extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
+  ): Secp256k1UtilsMock;
+  clone(): Secp256k1UtilsMock;
   methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
+    computeAddress(
+      publicKey: string | number[]
+    ): NonPayableTransactionObject<string>;
 
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
+    isValidPublicKey(
+      publicKey: string | number[]
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

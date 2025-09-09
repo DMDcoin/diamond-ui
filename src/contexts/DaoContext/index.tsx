@@ -279,7 +279,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
-    updatedData['exceedingYes'] = BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
     updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
 
     return updatedData;
@@ -457,16 +457,27 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const castVote = async (proposalId: number, vote: number, reason: string) => {
     return new Promise<void>(async (resolve, reject) => {
       if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
-      
+            
       web3Context.showLoader(true, `Casting vote 💎`);
       try {
-        if (reason.length > 0) {
-          await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+        // Check if user has already voted by checking their current vote
+        const existingVote = await getMyVote(proposalId.toString(), web3Context.userWallet.myAddr);
+        const hasAlreadyVoted = Number(existingVote.timestamp) > 0;
+        
+        if (hasAlreadyVoted) {
+          // User has already voted - use changeVote method
+          await web3Context.contractsManager.daoContract.methods.changeVote(proposalId, vote, reason || "").send({from: web3Context.userWallet.myAddr});
         } else {
-          await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          // User hasn't voted yet - choose between vote and voteWithReason
+          if (reason.length > 0) {
+            await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+          } else {
+            await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          }
         }
+        
         web3Context.showLoader(false, "");
-        toast.success(`Vote Casted 💎`);
+        toast.success(`Vote ${hasAlreadyVoted ? 'Changed' : 'Casted'} 💎`);
         resolve();
       } catch(err: any) {
         console.log(err);

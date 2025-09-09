@@ -17,7 +17,7 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
   // Calculate percentages
   const yesPercentage = BigNumber(votingStats.positive).dividedBy(totalStake).multipliedBy(100);
   const noPercentage = BigNumber(votingStats.negative).dividedBy(totalStake).multipliedBy(100);
-  const exceedingYesPercentage = votingStats.positive.minus(votingStats.negative).dividedBy(totalStake).multipliedBy(100);
+  const exceedingYesPercentage = BigNumber.max(0, votingStats.positive.minus(votingStats.negative).dividedBy(totalStake).multipliedBy(100));
 
   // Calculate the position of the threshold marker
   const thresholdPosition = noPercentage.plus(requiredPercentage);
@@ -76,7 +76,7 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
             <tr>
               <td>Exceeding Yes</td>
               <td>
-                {BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(10**18).toFixed(4)} DMD ({exceedingYesPercentage.toFixed(4)}% | {requiredPercentage}% required)
+                {BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(10**18).toFixed(4)} DMD ({exceedingYesPercentage.toFixed(4)}% | {requiredPercentage}% required)
               </td>
             </tr>
           </tbody>

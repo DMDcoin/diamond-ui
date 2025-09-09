@@ -21,17 +21,33 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export interface IBlockRewardHbbft extends BaseContract {
+export interface MockQuorumCalculator extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IBlockRewardHbbft;
-  clone(): IBlockRewardHbbft;
+  ): MockQuorumCalculator;
+  clone(): MockQuorumCalculator;
   methods: {
-    getGovernanceAddress(): NonPayableTransactionObject<string>;
+    highMajorityQuorum(
+      vs: [
+        number | string | BN,
+        number | string | BN,
+        number | string | BN,
+        number | string | BN
+      ],
+      totalStakedAmount: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
 
-    notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;
+    lowMajorityQuorum(
+      vs: [
+        number | string | BN,
+        number | string | BN,
+        number | string | BN,
+        number | string | BN
+      ],
+      totalStakedAmount: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

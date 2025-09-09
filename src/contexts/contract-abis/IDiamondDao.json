@@ -6,6 +6,22 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "AlreadyVoted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes",
           "name": "funcSelector",
           "type": "bytes"
@@ -20,50 +36,13 @@
       "type": "error"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "funcSelector",
-          "type": "bytes4"
-        },
-        {
-          "internalType": "address",
-          "name": "targetContract",
-          "type": "address"
-        }
-      ],
-      "name": "FunctionUpgradeNotAllowed",
-      "type": "error"
-    },
-    {
       "inputs": [],
       "name": "InsufficientFunds",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "InvalidArgument",
-      "type": "error"
-    },
-    {
-      "inputs": [],
       "name": "InvalidStartTimestamp",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "currentVal",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "newVal",
-          "type": "uint256"
-        }
-      ],
-      "name": "InvalidUpgradeValue",
       "type": "error"
     },
     {
@@ -80,16 +59,27 @@
         },
         {
           "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "NoVoteFound",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
           "name": "caller",
           "type": "address"
         }
       ],
       "name": "NotProposer",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "OnlyGovernance",
       "type": "error"
     },
     {
@@ -144,6 +134,27 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "vote",
+          "type": "address"
+        },
+        {
+          "internalType": "enum Vote",
+          "name": "_vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "SameVote",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "from",
           "type": "address"
@@ -193,6 +204,37 @@
       "inputs": [],
       "name": "UnfinalizedProposalsExist",
       "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "enum Vote",
+          "name": "vote",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "ChangeVote",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -303,7 +345,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bool",
           "name": "allowed",
           "type": "bool"
@@ -334,7 +376,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "uint256",
           "name": "fee",
           "type": "uint256"
@@ -347,13 +389,13 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "address",
           "name": "contractAddress",
           "type": "address"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bool",
           "name": "isCore",
           "type": "bool"
@@ -378,7 +420,7 @@
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "enum Vote",
           "name": "vote",
           "type": "uint8"
@@ -403,7 +445,7 @@
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "enum Vote",
           "name": "vote",
           "type": "uint8"
@@ -422,19 +464,19 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "enum Phase",
           "name": "phase",
           "type": "uint8"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "uint256",
           "name": "start",
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "uint256",
           "name": "end",
           "type": "uint256"
@@ -459,7 +501,7 @@
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "internalType": "bool",
           "name": "accepted",
           "type": "bool"
@@ -677,6 +719,11 @@
           "internalType": "string",
           "name": "discussionUrl",
           "type": "string"
+        },
+        {
+          "internalType": "enum OpenProposalMajority",
+          "name": "majority",
+          "type": "uint8"
         }
       ],
       "name": "propose",

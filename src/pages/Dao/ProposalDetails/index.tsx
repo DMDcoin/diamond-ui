@@ -4,7 +4,6 @@ import styles from "./styles.module.css";
 
 import { toast } from "react-toastify";
 import Navigation from "../../../components/Navigation";
-import ProgressBar from "../../../components/ProgressBar";
 import { useDaoContext } from "../../../contexts/DaoContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useWeb3Context } from "../../../contexts/Web3Context";
@@ -86,7 +85,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
     if (proposal) {
       setProposal(proposal);
       daoContext.setProposalsState([proposal]);
-      daoContext.getProposalVotingStats(proposal.id).then((res) => {        
+      daoContext.getProposalVotingStats(proposal.id).then((res) => {
         setVotingStats(res);
       });
       setProposalState(daoContext.getStateString(proposal.state));
@@ -383,14 +382,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                   myPool && proposal.state === '2' && (
                     <div className={styles.votingPhaseButtons}>
                       {
-                        myVote.vote !== '0' && (
+                        Number(myVote.timestamp) > 0 && (
                           <div>
-                            {myVote.vote === '1' && (
+                            {myVote.vote === '0' && (
                               <div className={styles.alreadyVotedBtns}>
                                 <p>You have already voted against the proposal, do you want to change your decision?</p>
                               </div>
                             )}
-                            {myVote.vote === '2' && (
+                            {myVote.vote === '1' && (
                               <div className={styles.alreadyVotedBtns}>
                                 <p>You have already voted for the proposal, do you want to change your decision?</p>
                               </div>
@@ -408,20 +407,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       }
 
                       <div>
-                        {myVote.vote === '0' && (
+                        {Number(myVote.timestamp) <= 0 && (
                           <>
-                            <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                            <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For <FaRegThumbsUp /></button>
+                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(0)}>Vote Against <FaRegThumbsDown /></button>
                           </>
                         )}
-                        {myVote.vote === '1' && (
+                        {Number(myVote.timestamp) > 0 && myVote.vote === '0' && (
                           <div className={styles.alreadyVotedBtns}>
-                            <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                            <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For <FaRegThumbsUp /></button>
                           </div>
                         )}
-                        {myVote.vote === '2' && (
+                        {Number(myVote.timestamp) > 0 && myVote.vote === '1' && (
                           <div className={styles.alreadyVotedBtns}>
-                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(0)}>Vote Against <FaRegThumbsDown /></button>
                           </div>
                         )}
                       </div>
@@ -441,14 +440,14 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                 }
 
               {
-                proposal.state == "3" && myVote.vote !== '0' && (
+                proposal.state == "3" && Number(myVote.timestamp) > 0 && (
                   <div>
-                    {myVote.vote === '1' && (
+                    {myVote.vote === '0' && (
                       <div className={styles.alreadyVotedBtns}>
                         <p>You have voted against the proposal</p>
                       </div>
                     )}
-                    {myVote.vote === '2' && (
+                    {myVote.vote === '1' && (
                       <div className={styles.alreadyVotedBtns}>
                         <p>You have voted for the proposal</p>
                       </div>
