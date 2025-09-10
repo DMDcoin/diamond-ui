@@ -53,7 +53,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
 
         if (proposal.proposer === poolAddress) {
           return { ...proposal, myVote: vote.vote };
-        } else if (Number(vote.timestamp) > 0) {
+        } else if (vote.vote !== '0') {
           return { ...proposal, myVote: vote.vote };
         }
         return null;
@@ -191,7 +191,7 @@ const PoolDetails: React.FC<PoolDetailsProps> = ({}) => {
                     <td>{timestampToDate(proposal.timestamp)}</td>
                     <td>{proposal.title}</td>
                     <td>{proposal.proposalType}</td>
-                    <td>{proposal.myVote == "1" ? "Voted For" : proposal.myVote == "0" ? "Voted Against" : "Not Voted"}</td>
+                    <td>{proposal.myVote == "2" ? "Voted For" : proposal.myVote == "1" ? "Voted Against" : "Not Voted"}</td>
                     <td><button onClick={() => startTransition(() => {navigate(`/dao/details/${proposal.id}`)})} className="primaryBtn">Details</button></td>
                   </tr>
                 ))

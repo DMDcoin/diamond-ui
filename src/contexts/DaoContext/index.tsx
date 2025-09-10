@@ -39,6 +39,7 @@ interface DaoContextProps {
   getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   executeProposal: (proposalId: string) => Promise<string>;
   getDaoPotBalanceChange: (blocksAgo: number) => Promise<{ changePercentage: string, direction: string }>;
+  getProposalThreshold: (proposalType: string, proposal?: any) => number;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
@@ -112,19 +113,86 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   }
 
-  const determineMajorityType = (targets: string[], values: string[]): 'Low Majority' | 'High Majority' => {
-    // Special case: If payout address is the low majority contract, always classify as Low Majority
-    if (targets && targets.some((target: string) =>
-      target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
-      return 'Low Majority';
+  const classifyProposal = (proposalData: any) => {
+    const { 
+      type, 
+      targets, 
+      values, 
+      proposalType 
+    } = proposalData;
+
+    // Convert string proposal type to internal type for classification
+    let internalType = 'OPEN_PROPOSAL';
+    if (proposalType === '1' || type === 'contract-upgrade') {
+      internalType = 'CONTRACT_UPGRADE';
+    } else if (proposalType === '2' || type === 'ecosystem-parameter-change') {
+      internalType = 'ECOSYSTEM_PARAMETER_CHANGE';
     }
 
-    // Otherwise, determine based on total requested amount
-    const totalRequestedAmount = values.reduce((sum: BigNumber, value: string) => {
-      return sum.plus(BigNumber(value).dividedBy(1e18));
-    }, BigNumber(0));
+    if (internalType === 'OPEN_PROPOSAL') {
+      // Contract Fill Detection
+      if (targets && targets.some((target: string) =>
+        target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+        return {
+          type: 'OPEN_PROPOSAL',
+          subType: 'CONTRACT_FILL',
+          displayName: 'Contract Fill',
+          threshold: 0.50
+        };
+      }
+      
+      // Calculate total requested amount for regular open proposals
+      const totalRequestedAmount = values ? values.reduce((sum: BigNumber, value: string) => {
+        return sum.plus(BigNumber(value || '0').dividedBy(1e18));
+      }, BigNumber(0)) : BigNumber(0);
+      
+      // Regular Open Proposal Classification
+      const isHighMajority = totalRequestedAmount.isGreaterThan(lowMajorityContractBalance);
+      const displayName = totalRequestedAmount.isGreaterThan(0) ? 'Open Payout' : 'Open';
+      
+      return {
+        type: 'OPEN_PROPOSAL',
+        subType: isHighMajority ? 'HIGH_MAJORITY' : 'LOW_MAJORITY',
+        displayName: displayName,
+        threshold: isHighMajority ? 0.50 : 0.33
+      };
+    }
     
-    if (totalRequestedAmount.isGreaterThan(lowMajorityContractBalance)) {
+    // Other proposal types
+    if (internalType === 'CONTRACT_UPGRADE') {
+      return {
+        type: 'CONTRACT_UPGRADE',
+        displayName: 'Contract Upgrade',
+        threshold: 0.50
+      };
+    }
+    
+    if (internalType === 'ECOSYSTEM_PARAMETER_CHANGE') {
+      return {
+        type: 'ECOSYSTEM_PARAMETER_CHANGE',
+        displayName: 'Ecosystem Parameter Change',
+        threshold: 0.33
+      };
+    }
+    
+    // Fallback
+    return {
+      type: internalType,
+      displayName: 'Unknown',
+      threshold: 0.33
+    };
+  }
+
+  const determineMajorityType = (targets: string[], values: string[]): 'Low Majority' | 'High Majority' => {
+    const classification = classifyProposal({ 
+      type: 'OPEN_PROPOSAL', 
+      targets, 
+      values, 
+      proposalType: '0' 
+    });
+    
+    // For proposal creation, Contract Fill should be treated as High Majority
+    if (classification.subType === 'CONTRACT_FILL' || classification.subType === 'HIGH_MAJORITY') {
       return 'High Majority';
     } else {
       return 'Low Majority';
@@ -132,49 +200,29 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   }
 
   const getProposalTypeString = (proposalType: string, proposal?: any) => {
-    switch (proposalType) {
-      case '0':
-        // Check if target address equals the low majority contract address first
-        if (proposal && proposal.targets && proposal.targets.some((target: string) =>
-          target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
-          return 'Contract Fill';
-        }
+    const classification = classifyProposal({
+      type: proposalType === '0' ? 'OPEN_PROPOSAL' : 
+            proposalType === '1' ? 'CONTRACT_UPGRADE' :
+            proposalType === '2' ? 'ECOSYSTEM_PARAMETER_CHANGE' : 'OPEN_PROPOSAL',
+      targets: proposal?.targets || [],
+      values: proposal?.values || [],
+      proposalType: proposalType
+    });
+    
+    return classification.displayName;
+  }
 
-        // Then check for open proposals with payout amounts
-        if (proposal && proposal.values && proposal.values.length > 0) {
-          const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
-
-          if (hasPayouts) {
-            return 'Open payout';
-          }
-        }
-        
-        // Default to 'Open' for proposals without payouts
-        return 'Open';
-      case '1':
-        return 'Contract upgrade';
-      case '2':
-        return 'Ecosystem Parameter Change';
-      default:
-        // If proposalType is not recognized, try to infer from the data
-        // Check if target address equals the low majority contract address first
-        if (proposal && proposal.targets && proposal.targets.some((target: string) =>
-          target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
-          return 'Contract Fill';
-        }
-
-        // Then check for proposals with payout amounts
-        if (proposal && proposal.values && proposal.values.length > 0) {
-          const hasPayouts = proposal.values.some((value: string) => BigNumber(value).isGreaterThan(0));
-          
-          if (hasPayouts) {
-            return 'Open payout';
-          }
-        }
-        
-        // Default fallback
-        return 'Unknown';
-    }
+  const getProposalThreshold = (proposalType: string, proposal?: any): number => {
+    const classification = classifyProposal({
+      type: proposalType === '0' ? 'OPEN_PROPOSAL' : 
+            proposalType === '1' ? 'CONTRACT_UPGRADE' :
+            proposalType === '2' ? 'ECOSYSTEM_PARAMETER_CHANGE' : 'OPEN_PROPOSAL',
+      targets: proposal?.targets || [],
+      values: proposal?.values || [],
+      proposalType: proposalType
+    });
+    
+    return classification.threshold * 100; // Return as percentage
   }
 
   const getStateString = (stateValue: string) => {
@@ -279,7 +327,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
-    updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    updatedData['exceedingYes'] = BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
     updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
 
     return updatedData;
@@ -457,27 +505,16 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const castVote = async (proposalId: number, vote: number, reason: string) => {
     return new Promise<void>(async (resolve, reject) => {
       if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
-            
+      
       web3Context.showLoader(true, `Casting vote 💎`);
       try {
-        // Check if user has already voted by checking their current vote
-        const existingVote = await getMyVote(proposalId.toString(), web3Context.userWallet.myAddr);
-        const hasAlreadyVoted = Number(existingVote.timestamp) > 0;
-        
-        if (hasAlreadyVoted) {
-          // User has already voted - use changeVote method
-          await web3Context.contractsManager.daoContract.methods.changeVote(proposalId, vote, reason || "").send({from: web3Context.userWallet.myAddr});
+        if (reason.length > 0) {
+          await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
         } else {
-          // User hasn't voted yet - choose between vote and voteWithReason
-          if (reason.length > 0) {
-            await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
-          } else {
-            await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
-          }
+          await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
         }
-        
         web3Context.showLoader(false, "");
-        toast.success(`Vote ${hasAlreadyVoted ? 'Changed' : 'Casted'} 💎`);
+        toast.success(`Vote Casted 💎`);
         resolve();
       } catch(err: any) {
         console.log(err);
@@ -749,7 +786,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getMyVote,
     setActiveProposals,
     executeProposal,
-    getDaoPotBalanceChange
+    getDaoPotBalanceChange,
+    getProposalThreshold
   };
 
   return (
