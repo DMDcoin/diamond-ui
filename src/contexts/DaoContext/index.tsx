@@ -327,7 +327,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     updatedData["id"] = proposalId;
     updatedData["votes"] = proposalVotes;
-    updatedData['exceedingYes'] = BigNumber(votingStats.positive).minus(votingStats.negative).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
     updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
 
     return updatedData;
