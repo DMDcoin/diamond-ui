@@ -508,13 +508,25 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       
       web3Context.showLoader(true, `Casting vote 💎`);
       try {
-        if (reason.length > 0) {
-          await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+        // Check if user has already voted on this proposal
+        const existingVote = await getMyVote(proposalId.toString(), web3Context.userWallet.myAddr);
+        const hasVotedBefore = existingVote && existingVote.vote && existingVote.vote !== '0';
+        
+        if (hasVotedBefore) {
+          // User has voted before - use changeVote function
+          await web3Context.contractsManager.daoContract.methods.changeVote(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+          toast.success(`Vote Changed 💎`);
         } else {
-          await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          // First-time voting - use vote or voteWithReason
+          if (reason.length > 0) {
+            await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+          } else {
+            await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          }
+          toast.success(`Vote Casted 💎`);
         }
+        
         web3Context.showLoader(false, "");
-        toast.success(`Vote Casted 💎`);
         resolve();
       } catch(err: any) {
         console.log(err);

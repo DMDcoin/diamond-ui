@@ -370,7 +370,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                 }
 
                 {
-                  myPool && proposal.state === '2' && (
+                  myPool && (proposal.state === '2' || (daoContext.daoPhase?.phase === '1' && proposal.state === '0')) && (
                     <div className={styles.votingPhaseButtons}>
                       {
                         (myVote.vote === '0' || myVote.vote === '1') && Number(myVote.timestamp) > 0 && (
