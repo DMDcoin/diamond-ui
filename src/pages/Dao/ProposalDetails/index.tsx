@@ -137,7 +137,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    const thresholdPercentage = daoContext.getProposalThreshold(proposal.state, proposal);
+    // Use the new threshold calculation from DaoContext
+    const thresholdPercentage = daoContext.getProposalThreshold(proposal.proposalType, proposal);
+    
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
     const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
     const hasRequiredParticipation = votingStats?.total.isGreaterThanOrEqualTo(threshold);
@@ -360,7 +362,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
                           totalStake={totalDaoStake.toNumber()}
-                          requiredPercentage={daoContext.getProposalThreshold(proposal.state, proposal)}
+                          requiredPercentage={daoContext.getProposalThreshold(proposal.proposalType, proposal)}
                         />
                       </div>
                     </>
