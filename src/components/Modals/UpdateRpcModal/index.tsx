@@ -83,7 +83,7 @@ const UpdateRpcModal: React.FC<ModalProps> = ({ buttonText, icon }) => {
 
                         <form className={styles.form} onSubmit={updateRpc}>
                             <span>
-                                You are connected to <strong>{localStorage.getItem("rpcUrl") || import.meta.env.VITE_APP_RPC_URL || "https://beta-rpc.bit.diamonds/"}</strong>
+                                You are connected to <strong>{localStorage.getItem("rpcUrl") || import.meta.env.VITE_APP_RPC_URL || "http://62.171.133.46:64100/"}</strong>
                             </span>
 
                             <input

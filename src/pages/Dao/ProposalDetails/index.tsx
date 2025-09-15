@@ -137,8 +137,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    // Use the new threshold calculation from DaoContext
-    const thresholdPercentage = daoContext.getProposalThreshold(proposal.proposalType, proposal);
+    const thresholdPercentage = daoContext.getProposalThreshold(proposalType);
     
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
     const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
@@ -208,6 +207,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {/* open proposals */}
           {
             (proposal.proposalType === "Open" || proposal.proposalType === "Open Payout" || proposal.proposalType === "Contract Fill" || 
+             proposal.proposalType === "Open Low Majority" || proposal.proposalType === "Open High Majority" ||
              proposal.proposalType === "Low Majority" || proposal.proposalType === "High Majority") &&
             (
               <div className={styles.payoutDetailsContainer}>
@@ -362,7 +362,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
                           totalStake={totalDaoStake.toNumber()}
-                          requiredPercentage={daoContext.getProposalThreshold(proposal.proposalType, proposal)}
+                          requiredPercentage={daoContext.getProposalThreshold(proposal.rawProposalType)}
                         />
                       </div>
                     </>
@@ -425,7 +425,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {
             proposal.state == "3" && proposal.proposalType && votingStats && votingStats.positive && votingStats.negative && (
               <span className={styles.finalizedProposalContainer}>
-                {proposalAccepted(proposal.proposalType, BigNumber(votingStats.positive), BigNumber(votingStats.negative)) ? 
+                {proposalAccepted(proposal.rawProposalType, BigNumber(votingStats.positive), BigNumber(votingStats.negative)) ? 
                   "Proposal was approved by the community" : 
                   "Proposal was not approved by the community"
                 }
