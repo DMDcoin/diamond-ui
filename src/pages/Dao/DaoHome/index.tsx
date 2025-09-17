@@ -38,6 +38,20 @@ const DaoHome: React.FC<DaoProps> = () => {
     <section className="section">
       <div className={styles.sectionContainer + " sectionContainer"}>
         
+        <div className={styles.governanceInfoSection}>
+          <p className={styles.governanceInfoText}>
+            For detailed information on how to create and vote on proposals, please visit our{' '}
+            <a 
+              href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={styles.governanceInfoLink}
+            >
+              comprehensive guide
+            </a>.
+          </p>
+        </div>
+
         <div className={styles.daoInfoContainer}>
           <h1>Governance</h1>
           <DaoPhaseBanner />
@@ -70,9 +84,15 @@ const DaoHome: React.FC<DaoProps> = () => {
               onClick={() => setActiveTab('actionsNeeded')}
             >
               Actions needed
-                {daoContext.allDaoProposals.filter(proposal => proposal.state === "3").length > 0 && (
+                {daoContext.allDaoProposals.filter(proposal => 
+                  proposal.state === "3" || 
+                  (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                ).length > 0 && (
                 <span className={styles.actionsNeededBadge}>
-                  {daoContext.allDaoProposals.filter(proposal => proposal.state === "3").length}
+                  {daoContext.allDaoProposals.filter(proposal => 
+                    proposal.state === "3" || 
+                    (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                  ).length}
                 </span>
                 )}
             </button>
@@ -83,7 +103,10 @@ const DaoHome: React.FC<DaoProps> = () => {
                 data={
                 activeTab === 'currentPhase'
                   ? daoContext.activeProposals.filter(proposal => proposal.state !== "3")
-                  : daoContext.allDaoProposals.filter(proposal => proposal.state === "3")
+                  : daoContext.allDaoProposals.filter(proposal => 
+                      proposal.state === "3" || 
+                      (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                    )
                 }
                 handleDetailsClick={handleDetailsClick}
                 getStateString={daoContext.getStateString}

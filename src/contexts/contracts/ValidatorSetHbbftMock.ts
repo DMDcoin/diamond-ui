@@ -52,6 +52,8 @@ export interface ValidatorSetHbbftMock extends BaseContract {
   ): ValidatorSetHbbftMock;
   clone(): ValidatorSetHbbftMock;
   methods: {
+    addPendingValidator(_mining: string): NonPayableTransactionObject<void>;
+
     announceAvailability(
       _blockNumber: number | string | BN,
       _blockhash: string | number[]

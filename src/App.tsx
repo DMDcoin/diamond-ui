@@ -6,6 +6,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 
 const FAQ = lazy(() => import("./pages/FAQ"));
+const Wiki = lazy(() => import("./pages/Wiki"));
 const Home = lazy(() => import("./pages/Home"));
 const DaoHome = lazy(() => import("./pages/Dao/DaoHome"));
 const Pools = lazy(() => import("./pages/Staking/Pools"));
@@ -61,6 +62,7 @@ const App: React.FC<AppProps> = () => {
           <Route index element={<Home />} />
 
           <Route path="faqs" element={<FAQ />} />
+          <Route path="wiki" element={<Wiki />} />
 
           <Route path="dao" element={<DaoHome />} />
           <Route path="dao/create" element={<CreateProposal />} />

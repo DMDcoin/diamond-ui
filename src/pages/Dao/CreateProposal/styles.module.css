@@ -143,3 +143,103 @@ form button .disabled {
   font-size: 14px;
   margin-top: 5px;
 }
+
+/* Warning box for when amount exceeds Low Majority contract balance */
+.warningBox {
+  background-color: #fff2f2;
+  border: 1px solid #ff6b6b;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.warningBox p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #d63031;
+  font-weight: 500;
+}
+
+/* Red highlighting for the entire container when amount exceeds balance */
+.exceedsBalanceContainer {
+  background-color: #fff8f8 !important;
+}
+
+.exceedsBalanceContainer .balanceInfo h4 {
+  color: #d63031;
+}
+
+/* Button for filling the contract */
+.fillContractButton {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s;
+}
+
+.fillContractButton:hover {
+  background-color: #e74c3c;
+}
+
+/* New styles for Low Majority Contract UI */
+.balanceInfoContainer {
+  gap: 0rem !important;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f9f9f9;
+}
+
+.balanceInfo h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #333;
+}
+
+.balanceInfo p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.infoBox {
+  background-color: #e8f4fd;
+  border: 1px solid #b6dfff;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.infoBox p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #0058a3;
+}
+
+.switchButton {
+  background-color: #0145b2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s;
+}
+
+.switchButton:hover {
+  background-color: #013180;
+}
+
+.switchButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(1, 69, 178, 0.3);
+}

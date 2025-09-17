@@ -31,6 +31,22 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type RemoveChangeableParameter = ContractEventLog<{
+  funcSelector: string;
+  0: string;
+}>;
+export type SetChangeableParameter = ContractEventLog<{
+  setter: string;
+  getter: string;
+  params: string[];
+  0: string;
+  1: string;
+  2: string[];
+}>;
+export type SetStandByFactor = ContractEventLog<{
+  standByFactor: string;
+  0: string;
+}>;
 export type UpdateScoringFactor = ContractEventLog<{
   factor: string;
   value: string;
@@ -60,13 +76,19 @@ export interface BonusScoreSystem extends BaseContract {
 
     DEFAULT_NO_STAND_BY_FACTOR(): NonPayableTransactionObject<string>;
 
-    DEFAULT_STAND_BY_FACTOR(): NonPayableTransactionObject<string>;
-
     MAX_SCORE(): NonPayableTransactionObject<string>;
 
     MIN_SCORE(): NonPayableTransactionObject<string>;
 
     connectivityTracker(): NonPayableTransactionObject<string>;
+
+    getAllowedParamsRange(
+      _selector: string
+    ): NonPayableTransactionObject<[string, string[]]>;
+
+    getAllowedParamsRangeWithSelector(
+      _selector: string | number[]
+    ): NonPayableTransactionObject<[string, string[]]>;
 
     getScoringFactorValue(
       factor: number | string | BN
@@ -85,6 +107,11 @@ export interface BonusScoreSystem extends BaseContract {
       _stakingHbbft: string
     ): NonPayableTransactionObject<void>;
 
+    isWithinAllowedRange(
+      funcSelector: string | number[],
+      newVal: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
     owner(): NonPayableTransactionObject<string>;
 
     penaliseBadPerformance(
@@ -99,6 +126,10 @@ export interface BonusScoreSystem extends BaseContract {
       unavailableSince: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    removeAllowedChangeableParameter(
+      funcSelector: string | number[]
+    ): NonPayableTransactionObject<void>;
+
     renounceOwnership(): NonPayableTransactionObject<void>;
 
     rewardStandBy(
@@ -106,7 +137,19 @@ export interface BonusScoreSystem extends BaseContract {
       availableSince: number | string | BN
     ): NonPayableTransactionObject<void>;
 
+    setAllowedChangeableParameter(
+      setter: string | number[],
+      getter: string | number[],
+      params: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
+    setStandByFactor(
+      _standByFactor: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
     stakingHbbft(): NonPayableTransactionObject<string>;
+
+    standByFactor(): NonPayableTransactionObject<string>;
 
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
@@ -123,6 +166,26 @@ export interface BonusScoreSystem extends BaseContract {
     OwnershipTransferred(
       options?: EventOptions,
       cb?: Callback<OwnershipTransferred>
+    ): EventEmitter;
+
+    RemoveChangeableParameter(
+      cb?: Callback<RemoveChangeableParameter>
+    ): EventEmitter;
+    RemoveChangeableParameter(
+      options?: EventOptions,
+      cb?: Callback<RemoveChangeableParameter>
+    ): EventEmitter;
+
+    SetChangeableParameter(cb?: Callback<SetChangeableParameter>): EventEmitter;
+    SetChangeableParameter(
+      options?: EventOptions,
+      cb?: Callback<SetChangeableParameter>
+    ): EventEmitter;
+
+    SetStandByFactor(cb?: Callback<SetStandByFactor>): EventEmitter;
+    SetStandByFactor(
+      options?: EventOptions,
+      cb?: Callback<SetStandByFactor>
     ): EventEmitter;
 
     UpdateScoringFactor(cb?: Callback<UpdateScoringFactor>): EventEmitter;
@@ -152,6 +215,33 @@ export interface BonusScoreSystem extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
+  ): void;
+
+  once(
+    event: "RemoveChangeableParameter",
+    cb: Callback<RemoveChangeableParameter>
+  ): void;
+  once(
+    event: "RemoveChangeableParameter",
+    options: EventOptions,
+    cb: Callback<RemoveChangeableParameter>
+  ): void;
+
+  once(
+    event: "SetChangeableParameter",
+    cb: Callback<SetChangeableParameter>
+  ): void;
+  once(
+    event: "SetChangeableParameter",
+    options: EventOptions,
+    cb: Callback<SetChangeableParameter>
+  ): void;
+
+  once(event: "SetStandByFactor", cb: Callback<SetStandByFactor>): void;
+  once(
+    event: "SetStandByFactor",
+    options: EventOptions,
+    cb: Callback<SetStandByFactor>
   ): void;
 
   once(event: "UpdateScoringFactor", cb: Callback<UpdateScoringFactor>): void;

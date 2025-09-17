@@ -29,8 +29,6 @@ export interface IBlockRewardHbbft extends BaseContract {
   ): IBlockRewardHbbft;
   clone(): IBlockRewardHbbft;
   methods: {
-    addToReinsertPot(): PayableTransactionObject<void>;
-
     getGovernanceAddress(): NonPayableTransactionObject<string>;
 
     notifyEarlyEpochEnd(): NonPayableTransactionObject<void>;

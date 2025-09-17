@@ -465,6 +465,75 @@ const Home: React.FC<HomeProps> = ({}) => {
                     </div>
                 </section>
 
+                <section className={styles.teamSection + " features-section"}>
+                    <div className="container-8">
+                        <h2 className="heading-3 heading-left">Meet Our Team</h2>
+                        <div className="w-layout-blockcontainer container w-container">
+                            <ul className={styles.teamList}>
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Aleksander Mesor</span>
+                                        <span className={styles.teamMemberTitle}>The Mentor</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        Leading the Diamond DMD Foundation for more than 7 years, Aleksander brings unmatched dedication and passion to the project, as well as experience in operations, leadership, and communications.
+                                    </p>
+                                </li>
+                                
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Helmut Siedl</span>
+                                        <span className={styles.teamMemberTitle}>The Visionary</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        Leading the vision and research on the mechanics and technology of the coin, Helmut brings impeccable attention to detail and deep research skills for assessing and adopting the best technology for the DMD project. Helmut has been deeply involved in the blockchain space for more than 7 years and is a co-founder of the lab10 and a founder of Blockserv Blockchain Services, leading technology initiatives that create a freer society.
+                                    </p>
+                                </li>
+                                
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Thomas Haller</span>
+                                        <span className={styles.teamMemberTitle}>The Lead Developer</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        Bringing deep experience in software development and blockchain, Thomas provides technical guidance for the implementation of the DMD technology.
+                                    </p>
+                                </li>
+                                
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Dieter Biernat</span>
+                                        <span className={styles.teamMemberTitle}>The Website Expert</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        In charge of the blockchain's website and online-marketing.
+                                    </p>
+                                </li>
+                                
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Braineeq</span>
+                                        <span className={styles.teamMemberTitle}>Social Media, Community Interactions, and Content Creator</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        Braineeq brings many years of experience in content writing and community management in the blockchain ecosystem, hence blowing the trumpet of the DMD diamond blockchain and its use cases to the whole world.
+                                    </p>
+                                </li>
+                                
+                                <li className={styles.teamMember}>
+                                    <div className={styles.teamMemberHeader}>
+                                        <span className={styles.teamMemberName}>Dr. David Forstenlechner</span>
+                                        <span className={styles.teamMemberTitle}>The HBBFT Protocol Expert</span>
+                                    </div>
+                                    <p className={styles.teamMemberDescription}>
+                                        David brings more than 15 years of software development experience to the project as a contributor.
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
                 <section className={styles.featuresSection + " features-section"}>
                     <h2 className={styles.heading3 + " heading-3"}>Become DMD Chain Participant</h2>
 

@@ -137,14 +137,10 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   }
 
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
-    // Convert threshold percentages to ether format (10^18)
-    const thresholdPercentage = proposalType === "Contract upgrade" ? 50 : (100/3);
+    const thresholdPercentage = daoContext.getProposalThreshold(proposalType);
+    
     const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
-  
-    // Check if positive votes exceed negative votes by the required threshold
     const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
-  
-    // Check if the total participation meets the required threshold
     const hasRequiredParticipation = votingStats?.total.isGreaterThanOrEqualTo(threshold);
   
     return hasSufficientVotes && hasRequiredParticipation;
@@ -210,25 +206,23 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* open proposals */}
           {
-            proposal.proposalType === "Open" &&
-            proposal.targets?.length > 0 && // Ensure targets array is not empty
-            proposal.targets.some((target: string) => target !== "0x0000000000000000000000000000000000000000") &&
+            (proposal.proposalType === "Open" || proposal.proposalType === "Open Payout" || proposal.proposalType === "Contract Fill" || 
+             proposal.proposalType === "Open Low Majority" || proposal.proposalType === "Open High Majority" ||
+             proposal.proposalType === "Low Majority" || proposal.proposalType === "High Majority") &&
             (
               <div className={styles.payoutDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
-                    target !== '0x0000000000000000000000000000000000000000' && (
-                      <div key={i}>
-                        <div>
-                          <span>Payout Address</span>
-                          <span>{proposal.targets[i]}</span>
-                        </div>
-                        <div>
-                          <span>Payout Amount</span>
-                          <span>{(new BigNumber(proposal.values[i]).dividedBy(10**18)).toString()} DMD</span>
-                        </div>
+                    <div key={i}>
+                      <div>
+                        <span>{proposal.proposalType === "Contract Fill" ? "Target Address" : "Payout Address"}</span>
+                        <span>{target || "0x0000000000000000000000000000000000000000"}</span>
                       </div>
-                    )
+                      <div>
+                        <span>{proposal.proposalType === "Contract Fill" ? "Requested Amount" : "Payout Amount"}</span>
+                        <span>{proposal.values && proposal.values[i] ? (new BigNumber(proposal.values[i]).dividedBy(10**18)).toString() : "0"} DMD</span>
+                      </div>
+                    </div>
                   ))
                 }
               </div>
@@ -266,7 +260,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
           {/* contract upgrade */}
           {
-            proposal.proposalType === "Contract upgrade" && (
+            proposal.proposalType === "Contract Upgrade" && (
               <div className={styles.cupDetailsContainer}>
                 {
                   proposal.targets?.map((target: any, i: number) => (
@@ -368,7 +362,7 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
                           totalStake={totalDaoStake.toNumber()}
-                          requiredPercentage={proposal.proposalType === "Contract upgrade" ? 50 : (100/3)}
+                          requiredPercentage={daoContext.getProposalThreshold(proposal.rawProposalType)}
                         />
                       </div>
                     </>
@@ -376,17 +370,17 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                 }
 
                 {
-                  myPool && proposal.state === '2' && (
+                  myPool && (proposal.state === '2' || (daoContext.daoPhase?.phase === '1' && proposal.state === '0')) && (
                     <div className={styles.votingPhaseButtons}>
                       {
-                        myVote.vote !== '0' && (
+                        (myVote.vote === '0' || myVote.vote === '1') && Number(myVote.timestamp) > 0 && (
                           <div>
-                            {myVote.vote === '1' && (
+                            {myVote.vote === '0' && (
                               <div className={styles.alreadyVotedBtns}>
                                 <p>You have already voted against the proposal, do you want to change your decision?</p>
                               </div>
                             )}
-                            {myVote.vote === '2' && (
+                            {myVote.vote === '1' && (
                               <div className={styles.alreadyVotedBtns}>
                                 <p>You have already voted for the proposal, do you want to change your decision?</p>
                               </div>
@@ -404,20 +398,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       }
 
                       <div>
-                        {myVote.vote === '0' && (
+                        {Number(myVote.timestamp) === 0 && (
                           <>
-                            <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
-                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                            <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For <FaRegThumbsUp /></button>
+                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(0)}>Vote Against <FaRegThumbsDown /></button>
                           </>
                         )}
-                        {myVote.vote === '1' && (
+                        {myVote.vote === '0' && Number(myVote.timestamp) > 0 && (
                           <div className={styles.alreadyVotedBtns}>
-                            <button className={styles.voteForBtn} onClick={() => handleCastVote(2)}>Vote For <FaRegThumbsUp /></button>
+                            <button className={styles.voteForBtn} onClick={() => handleCastVote(1)}>Vote For <FaRegThumbsUp /></button>
                           </div>
                         )}
-                        {myVote.vote === '2' && (
+                        {myVote.vote === '1' && Number(myVote.timestamp) > 0 && (
                           <div className={styles.alreadyVotedBtns}>
-                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(1)}>Vote Against <FaRegThumbsDown /></button>
+                            <button className={styles.voteAgainstBtn} onClick={() => handleCastVote(0)}>Vote Against <FaRegThumbsDown /></button>
                           </div>
                         )}
                       </div>
@@ -431,20 +425,20 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           {
             proposal.state == "3" && proposal.proposalType && votingStats && votingStats.positive && votingStats.negative && (
               <span className={styles.finalizedProposalContainer}>
-                {proposalAccepted(proposal.proposalType, BigNumber(votingStats.positive), BigNumber(votingStats.negative)) ? 
+                {proposalAccepted(proposal.rawProposalType, BigNumber(votingStats.positive), BigNumber(votingStats.negative)) ? 
                   "Proposal was approved by the community" : 
                   "Proposal was not approved by the community"
                 }
 
               {
-                proposal.state == "3" && myVote.vote !== '0' && (
+                proposal.state == "3" && Number(myVote.timestamp) > 0 && (
                   <div>
-                    {myVote.vote === '1' && (
+                    {myVote.vote === '0' && (
                       <div className={styles.alreadyVotedBtns}>
                         <p>You have voted against the proposal</p>
                       </div>
                     )}
-                    {myVote.vote === '2' && (
+                    {myVote.vote === '1' && (
                       <div className={styles.alreadyVotedBtns}>
                         <p>You have voted for the proposal</p>
                       </div>
