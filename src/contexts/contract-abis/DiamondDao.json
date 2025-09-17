@@ -52,6 +52,11 @@
     },
     {
       "inputs": [],
+      "name": "GetterCallFailed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "InsufficientFunds",
       "type": "error"
     },
@@ -100,6 +105,38 @@
         }
       ],
       "name": "NoVoteFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotInitializing",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "caller",
+          "type": "address"
+        }
+      ],
+      "name": "NotProposer",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_newVal",
+          "type": "uint256"
+        }
+      ],
+      "name": "NewValueOutOfRange",
       "type": "error"
     },
     {

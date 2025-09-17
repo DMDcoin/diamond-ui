@@ -95,5 +95,6 @@
   },
   "overrides": {
     "typescript": "^5.4.5"
-  }
+  },
+  "proxy": "https://alpha3.uniq.domains/rpc"
 }
