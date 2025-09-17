@@ -456,7 +456,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         } catch(err: any) {
           console.log(err);
           web3Context.showLoader(false, "");
-          console.log(err)
           handleErrorMsg(err, "Proposal creation failed");
           reject("");
         }

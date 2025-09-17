@@ -85,22 +85,6 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
     setIsLowMajorityEligible(total.isLessThanOrEqualTo(lowMajorityContractBalance));
   }, [openProposalFields, lowMajorityContractBalance]);
 
-  useEffect(() => {
-    if (epcMethodName === "Create proposal fee") {
-      setEpcMethodDescription("Fee required to create a governance proposal.");
-    } else if (epcMethodName === "Delegator Min. Stake") {
-      setEpcMethodDescription("Minimum stake required for a delegator to participate.");
-    } else if (epcMethodName === "Minimum Gas Price") {
-      setEpcMethodDescription("The lowest gas price allowed for transactions.");
-    } else if (epcMethodName === "Block Gas Limit") {
-      setEpcMethodDescription("Maximum gas allowed per block.");
-    } else if (epcMethodName === "Governance Pot Share Nominator") {
-      setEpcMethodDescription("The portion of the governance pot allocated to rewards.");
-    } else if (epcMethodName === "Report Disallow Period") {
-      setEpcMethodDescription("Timeframe during which a node announces maintenance to avoid penalties.");
-    }
-  }, [epcMethodName]);
-
   const handleAddOpenProposalField = () => {
     setOpenProposalFields([...openProposalFields, { target: "", amount: "" }]);
   }
