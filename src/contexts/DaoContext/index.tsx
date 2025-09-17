@@ -482,6 +482,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   };
 
   const castVote = async (proposalId: number, vote: number, reason: string) => {
+    console.log("[INFO] Casting vote", proposalId, vote, reason);
     return new Promise<void>(async (resolve, reject) => {
       if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
       
@@ -489,8 +490,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       try {
         // Check if user has already voted on this proposal
         const existingVote = await getMyVote(proposalId.toString(), web3Context.userWallet.myAddr);
-        const hasVotedBefore = existingVote && existingVote.vote !== undefined && existingVote.vote !== null;
-        
+        const hasVotedBefore = Number(existingVote.timestamp) > 0;
+
         if (hasVotedBefore) {
           // User has voted before - use changeVote function
           await web3Context.contractsManager.daoContract.methods.changeVote(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
