@@ -1,0 +1,51 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MockEtherReceiver",
+  "sourceName": "contracts/mocks/MockEtherReceiver.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "ReceiveDisabled",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "allowReceive",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "allow",
+          "type": "bool"
+        }
+      ],
+      "name": "toggleReceive",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b506000805460ff1916600117905561010a8061002c6000396000f3fe608060405260043610602a5760003560e01c806355de84c514605757806397d5ef6414608357600080fd5b3660525760005460ff1660505760405163d655ba8960e01b815260040160405180910390fd5b005b600080fd5b348015606257600080fd5b50600054606f9060ff1681565b604051901515815260200160405180910390f35b348015608e57600080fd5b506050609a36600460ad565b6000805460ff1916911515919091179055565b60006020828403121560be57600080fd5b8135801515811460cd57600080fd5b939250505056fea2646970667358221220bb5f8841093df0bdc84a9efbc76dcdb9da0739e3b92495bbeb41a19fd17d0e1064736f6c63430008190033",
+  "deployedBytecode": "0x608060405260043610602a5760003560e01c806355de84c514605757806397d5ef6414608357600080fd5b3660525760005460ff1660505760405163d655ba8960e01b815260040160405180910390fd5b005b600080fd5b348015606257600080fd5b50600054606f9060ff1681565b604051901515815260200160405180910390f35b348015608e57600080fd5b506050609a36600460ad565b6000805460ff1916911515919091179055565b60006020828403121560be57600080fd5b8135801515811460cd57600080fd5b939250505056fea2646970667358221220bb5f8841093df0bdc84a9efbc76dcdb9da0739e3b92495bbeb41a19fd17d0e1064736f6c63430008190033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

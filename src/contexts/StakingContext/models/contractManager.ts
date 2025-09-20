@@ -24,11 +24,11 @@ import JsonRandomHbbft  from '../../contract-abis/RandomHbbft.json';
 import { BonusScoreSystem } from '../../contracts';
 import JsonBonusScoreSystem from '../../contract-abis/BonusScoreSystem.json';
 
-import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao, HbbftAggregator } from '../../contracts';
+import { CertifierHbbft, ConnectivityTrackerHbbft, DiamondDao, DMDAggregator } from '../../contracts';
 import JsonDiamonDao  from '../../contract-abis/DiamondDao.json';
 import JsonCertifierHbbft from '../../contract-abis/CertifierHbbft.json';
 import JsonConnectivityTrackerHbbft from '../../contract-abis/ConnectivityTrackerHbbft.json';
-import JsonHbbtAggregator from '../../contract-abis/HbbftAggregator.json';
+import JsonHbbtAggregator from '../../contract-abis/DMDAggregator.json';
 
 import BigNumber from 'bignumber.js';
 import { BlockType } from '../types/contracts';
@@ -228,7 +228,7 @@ export class ContractManager {
     return contract;
   }
 
-  public async getHbbftAggregator(): Promise<HbbftAggregator> {
+  public async getDMDAggregator(): Promise<DMDAggregator> {
     let contractAddress =  import.meta.env.VITE_APP_AGGREGAOTR_CONTRACT_ADDRESS || '0x9990000000000000000000000000000000000000';
 
     const abi: any = JsonHbbtAggregator.abi;

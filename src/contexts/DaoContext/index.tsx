@@ -5,6 +5,7 @@ import { ContextProviderProps } from "../Web3Context/types";
 import { DaoPhase, Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
 import { timestampToDate } from '../../utils/common';
+import { useStakingContext } from '../StakingContext';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
   daoPhase: any,
@@ -15,6 +16,9 @@ interface DaoContextProps {
   allDaoProposals: Proposal[];
   governancePotBalance: BigNumber;
   claimingContractBalance: BigNumber;
+  lowMajorityContractBalance: BigNumber;
+  lowMajorityContractAddress: string;
+  notEnoughGovernanceFunds: boolean;
 
   initialize: () => Promise<void>;
   setActiveProposals: (proposals: Proposal[]) => void;
@@ -32,15 +36,17 @@ interface DaoContextProps {
   getProposalDetails: (proposalId: string) => Promise<Proposal>;
   setProposalsState: (proposals: Proposal[]) => Promise<void>;
   getHistoricProposalsEvents: () => Promise<Array<string>>;
-  getMyVote: (proposalId: string) => Promise<Vote>;
+  getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   executeProposal: (proposalId: string) => Promise<string>;
+  getDaoPotBalanceChange: (blocksAgo: number) => Promise<{ changePercentage: string, direction: string }>;
+  getProposalThreshold: (proposalType: string, proposal?: any) => number;
 }
 
 const DaoContext = createContext<DaoContextProps | undefined>(undefined);
 
 const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const web3Context = useWeb3Context();
-
+  
   const [daoPhaseCount, setDaoPhaseCount] = useState("1");
   const [proposalFee, setProposalFee] = useState<string>('0');
   const [events, setEvents] = useState<NodeJS.Timeout | null>(null);
@@ -48,8 +54,11 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [daoInitialized, setDaoInitialized] = useState<boolean>(false);
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
+  const [notEnoughGovernanceFunds, setNotEnoughGovernanceFunds] = useState<boolean>(false);
   const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [claimingContractBalance, setClaimingContractBalance] = useState<BigNumber>(BigNumber('0'));
+  const [lowMajorityContractBalance, setLowMajorityContractBalance] = useState<BigNumber>(BigNumber('0'));
+  const [lowMajorityContractAddress, setLowMajorityContractAddress] = useState<string>(import.meta.env.VITE_APP_LOW_MAJORITY_CONTRACT_ADDRESS || "0xf30214ee3Be547E2E5AaaF9B9b6bea26f1Beca37");
   const [daoPhase, setDaoPhase] = useState<DaoPhase>({ daoEpoch: '', end: '', phase: '', start: '' });
 
   useEffect(() => {
@@ -58,6 +67,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       initialize();
     }
   }, [web3Context.userWallet, web3Context.web3Initialized]);
+
+  // Refresh proposal types when lowMajorityContractBalance is loaded
+  useEffect(() => {
+    if (daoInitialized && !lowMajorityContractBalance.isEqualTo(0) && activeProposals.length > 0) {
+      getActiveProposals();
+    }
+  }, [lowMajorityContractBalance, daoInitialized]);
 
   const initialize = async () => {
     if (daoInitialized) return;
@@ -81,6 +97,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS || "0xe0E6787A55049A90aAa4335D0Ff14fAD26B8e88e");
     setClaimingContractBalance(BigNumber(claimingPot).dividedBy(1e18));
 
+    const lowMajorityPot = await web3Context.web3.eth.getBalance(lowMajorityContractAddress);
+    setLowMajorityContractBalance(BigNumber(lowMajorityPot).dividedBy(1e18));
+
     subscribeToEvents();
   }
 
@@ -94,17 +113,91 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     }
   }
 
-  const getProposalTypeString = (proposalType: string) => {
-    switch (proposalType) {
+  const getProposalTypeFromContract = (contractProposalType: string) => {
+    switch (contractProposalType) {
       case '0':
-        return 'Open';
+        return {
+          type: 'OPEN_LOW_MAJORITY',
+          displayName: 'Open Low Majority',
+          threshold: 0.33
+        };
       case '1':
-        return 'Contract upgrade';
+        return {
+          type: 'CONTRACT_UPGRADE',
+          displayName: 'Contract Upgrade',
+          threshold: 0.50
+        };
       case '2':
-        return 'Ecosystem Parameter Change';
+        return {
+          type: 'ECOSYSTEM_PARAMETER_CHANGE',
+          displayName: 'Ecosystem Parameter Change',
+          threshold: 0.33
+        };
+      case '3':
+        return {
+          type: 'OPEN_HIGH_MAJORITY',
+          displayName: 'Open High Majority',
+          threshold: 0.50
+        };
       default:
-        return 'Unknown';
+        return {
+          type: 'UNKNOWN',
+          displayName: 'Unknown',
+          threshold: 0.33
+        };
     }
+  }
+
+  const determineMajorityType = (targets: string[], values: string[]): 'Low Majority' | 'High Majority' => {
+    // Check if it's a contract fill (targeting low majority contract)
+    if (targets.some((target: string) =>
+      target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+      return 'High Majority';
+    }
+    
+    // Calculate total requested amount for regular open proposals
+    const totalRequestedAmount = values ? values.reduce((sum: BigNumber, value: string) => {
+      return sum.plus(BigNumber(value || '0').dividedBy(1e18));
+    }, BigNumber(0)) : BigNumber(0);
+    
+    // Check if amount exceeds low majority contract balance
+    const isHighMajority = totalRequestedAmount.isGreaterThan(lowMajorityContractBalance);
+    
+    return isHighMajority ? 'High Majority' : 'Low Majority';
+  }
+
+  const getProposalTypeString = (contractProposalType: string, proposal?: any) => {
+    const contractType = getProposalTypeFromContract(contractProposalType);
+    
+    // For Open proposals, we might want to add additional context
+    if (contractType.type === 'OPEN_LOW_MAJORITY' || contractType.type === 'OPEN_HIGH_MAJORITY') {
+      const values = proposal?.values || [];
+      const targets = proposal?.targets || [];
+      
+      // Check if it's a contract fill (targeting low majority contract)
+      if (targets.some((target: string) =>
+        target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) {
+        return 'Contract Fill';
+      }
+      
+      // Check if it involves payout
+      const totalRequestedAmount = values.reduce((sum: BigNumber, value: string) => {
+        return sum.plus(BigNumber(value || '0').dividedBy(1e18));
+      }, BigNumber(0));
+      
+      if (totalRequestedAmount.isGreaterThan(0)) {
+        return 'Open Payout';
+      }
+      
+      return 'Open';
+    }
+    
+    return contractType.displayName;
+  }
+
+  const getProposalThreshold = (contractProposalType: string): number => {
+    const contractType = getProposalTypeFromContract(contractProposalType);
+    return contractType.threshold * 100; // Return as percentage
   }
 
   const getStateString = (stateValue: string) => {
@@ -176,7 +269,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return cachedProposals;
   }
 
-  const getProposalDetails = async (proposalId: string) => {
+  const getProposalDetails = async (proposalId: string): Promise<Proposal> => {
     // Retrieve allDaoProposals from localStorage
     let updatedData: Proposal | undefined = getCachedProposals().find((proposal) => proposal.id === proposalId);
     let proposalDetails;
@@ -187,27 +280,34 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     if (!updatedData) updatedData = initializeProposal(proposalId);
 
     try {
-      if (updatedData && (!updatedData.proposer || !['1', '5', '6'].includes(updatedData.state))) {
-        proposalDetails = await web3Context.contractsManager.daoContract.methods.getProposal(proposalId).call();
-        updatedData = {
-          ...updatedData,
-          ...proposalDetails,
-          values: proposalDetails?.[4],
-          daoPhaseCount: proposalDetails?.[9] || "1",
-          proposalType: getProposalTypeString(proposalDetails?.[11] || "3"),
-        };
-      }
-
-      if (updatedData && !updatedData.timestamp) {
+    if (updatedData && (!updatedData.proposer || !['1', '5', '6'].includes(updatedData.state))) {
+      proposalDetails = await web3Context.contractsManager.daoContract.methods.getProposal(proposalId).call();
+      const rawType = proposalDetails?.[11] || "3";
+      updatedData = {
+        ...updatedData,
+        ...proposalDetails,
+        values: proposalDetails?.[4],
+        daoPhaseCount: proposalDetails?.[9] || "1",
+        rawProposalType: rawType,
+        proposalType: getProposalTypeString(rawType, { values: proposalDetails?.[4], targets: proposalDetails?.[3] }),
+      };
+      } if (updatedData && !updatedData.timestamp) {
         proposalTimestamp = await getProposalTimestamp(proposalId);
         updatedData.timestamp = proposalTimestamp.toString();
       }
     } catch (error) {}
 
-    updatedData["id"] = proposalId;
-    updatedData["votes"] = proposalVotes;
+    const votingStats = await getProposalVotingStats(proposalId);
+    const totalDaoStake = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
 
-    return updatedData;
+    if (updatedData) {
+      updatedData["id"] = proposalId;
+      updatedData["votes"] = proposalVotes;
+      updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+      updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+    }
+
+    return updatedData || initializeProposal(proposalId);
   }
 
   const initializeProposal = (
@@ -230,7 +330,10 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       id: proposalId,
       timestamp: '',
       daoPhaseCount: '',
-      proposalType: ''
+      rawProposalType: '',
+      proposalType: '',
+      participation: '0',
+      exceedingYes: '0'
     };
   }
 
@@ -288,7 +391,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           let stakeNo = new BigNumber(0);
           let stakeYes = new BigNumber(0);
           let totalStake = new BigNumber(0);
-          let stakeAbstain = new BigNumber(0);
 
           const votingStats = await web3Context.contractsManager.daoContract.methods.countVotes(proposalId).call();
 
@@ -296,15 +398,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             stakeNo = new BigNumber(votingStats[3]);
             stakeYes = new BigNumber(votingStats[2]);
 
-            totalStake = stakeAbstain.plus(stakeNo).plus(stakeYes);
+            totalStake = stakeNo.plus(stakeYes);
           }
-
-          const positivePercentage = stakeYes.dividedBy(totalStake).multipliedBy(100);
-          const negativePercentage = stakeNo.dividedBy(totalStake).multipliedBy(100);
           
           stats = {
-            positive: positivePercentage.isNaN() ? new BigNumber(0) : positivePercentage,
-            negative: negativePercentage.isNaN() ? new BigNumber(0) : negativePercentage,
+            positive: stakeYes,
+            negative: stakeNo,
             total: totalStake
           };
 
@@ -330,13 +429,23 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
         try {
           web3Context.showLoader(true, "Creating proposal 💎");
+          
+          let proposalTypeEnum = 0;
+          if (type === 'open') {
+            const majorityType = determineMajorityType(targets, values);
+            proposalTypeEnum = majorityType === 'High Majority' ? 1 : 0;
+          } else if (type === 'low-majority-fill') {
+            proposalTypeEnum = 1;
+          }
+
           await web3Context.contractsManager.daoContract.methods.propose(
             targets,
             values,
             callDatas,
             title,
             description,
-            discussionUrl
+            discussionUrl,
+            proposalTypeEnum
           ).send({from: web3Context.userWallet.myAddr, value: proposalFee});
           const proposalId = await web3Context.contractsManager.daoContract.methods.hashProposal(
             targets, values, callDatas, description
@@ -347,7 +456,6 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         } catch(err: any) {
           console.log(err);
           web3Context.showLoader(false, "");
-          console.log(err)
           handleErrorMsg(err, "Proposal creation failed");
           reject("");
         }
@@ -374,18 +482,31 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   };
 
   const castVote = async (proposalId: number, vote: number, reason: string) => {
+    console.log("[INFO] Casting vote", proposalId, vote, reason);
     return new Promise<void>(async (resolve, reject) => {
       if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
       
       web3Context.showLoader(true, `Casting vote 💎`);
       try {
-        if (reason.length > 0) {
-          await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+        // Check if user has already voted on this proposal
+        const existingVote = await getMyVote(proposalId.toString(), web3Context.userWallet.myAddr);
+        const hasVotedBefore = Number(existingVote.timestamp) > 0;
+
+        if (hasVotedBefore) {
+          // User has voted before - use changeVote function
+          await web3Context.contractsManager.daoContract.methods.changeVote(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+          toast.success(`Vote Changed 💎`);
         } else {
-          await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          // First-time voting - use vote or voteWithReason
+          if (reason.length > 0) {
+            await web3Context.contractsManager.daoContract.methods.voteWithReason(proposalId, vote, reason).send({from: web3Context.userWallet.myAddr});
+          } else {
+            await web3Context.contractsManager.daoContract.methods.vote(proposalId, vote).send({from: web3Context.userWallet.myAddr});
+          }
+          toast.success(`Vote Casted 💎`);
         }
+        
         web3Context.showLoader(false, "");
-        toast.success(`Vote Casted 💎`);
         resolve();
       } catch(err: any) {
         console.log(err);
@@ -573,9 +694,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  const getMyVote = async (proposalId: string): Promise<Vote> => {
+  const getMyVote = async (proposalId: string, myAddr: string): Promise<Vote> => {
     return await web3Context.contractsManager.daoContract.methods
-      .votes(proposalId, web3Context.userWallet.myAddr)
+      .votes(proposalId, myAddr)
       .call();
   };
 
@@ -583,7 +704,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return new Promise<string>(async (resolve, reject) => {
         if (!web3Context.ensureWalletConnection()) return resolve("");
         let proposalDetails = await getProposalDetails(proposalId);
-        if (proposalDetails.proposalType == 'Contract upgrade' &&  proposalDetails.proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
+        if (proposalDetails.proposalType == 'Contract Upgrade' &&  proposalDetails.proposer !== web3Context.userWallet.myAddr) return toast.warn("Only proposer can execute the proposal");
 
         web3Context.showLoader(true, "Executing proposal 💎");
         try {
@@ -602,12 +723,27 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  // TODO: Decode calldata of calls to our core contracts
-  // const decodeCallData = (callData: string) => {
-  //   const selector = callData.slice(0, 10);
-  //   const matchedFunction = abi.find((func: any) => func.signature === selector);
-  //   return matchedFunction;
-  // }
+  const getGovernanceFundsEnough = async () => {
+    const balance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    const openProposalsRequiredBalance = new BigNumber(proposalFee).multipliedBy(activeProposals.length);
+  }
+
+  const getDaoPotBalanceChange = async (blocksAgo: number) => {
+    const currentBlockNumber = await web3Context.web3.eth.getBlockNumber();
+    const currentBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    
+    const pastBlockNumber = currentBlockNumber - blocksAgo;
+    const pastBalance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address, pastBlockNumber);
+    
+    const balanceChange = BigNumber(currentBalance).minus(BigNumber(pastBalance));
+    const percentageChange = balanceChange.dividedBy(BigNumber(pastBalance)).multipliedBy(100);
+    
+    return {
+      changePercentage: percentageChange.toFixed(2),
+      direction: percentageChange.isGreaterThanOrEqualTo(0) ? 'positive' : 'negative',
+      blocks: blocksAgo
+    };
+  }
 
   const contextValue = {
     // states
@@ -619,6 +755,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     allDaoProposals,
     governancePotBalance,
     claimingContractBalance,
+    lowMajorityContractBalance,
+    lowMajorityContractAddress,
+    notEnoughGovernanceFunds,
 
     // functions
     initialize,
@@ -638,7 +777,9 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     getHistoricProposalsEvents,
     getMyVote,
     setActiveProposals,
-    executeProposal
+    executeProposal,
+    getDaoPotBalanceChange,
+    getProposalThreshold
   };
 
   return (

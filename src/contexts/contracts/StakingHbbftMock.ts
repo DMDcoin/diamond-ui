@@ -150,6 +150,8 @@ export interface StakingHbbftMock extends BaseContract {
 
     abandonedAndRemoved(arg0: string): NonPayableTransactionObject<boolean>;
 
+    actualEpochEndTime(): NonPayableTransactionObject<string>;
+
     addBalance(): PayableTransactionObject<void>;
 
     addPool(
@@ -187,6 +189,10 @@ export interface StakingHbbftMock extends BaseContract {
     currentKeyGenExtraTimeWindow(): NonPayableTransactionObject<string>;
 
     delegatorMinStake(): NonPayableTransactionObject<string>;
+
+    earlyEpochEndTime(): NonPayableTransactionObject<string>;
+
+    earlyEpochEndTriggerTime(): NonPayableTransactionObject<string>;
 
     getAllowedParamsRange(
       _selector: string
@@ -280,6 +286,10 @@ export interface StakingHbbftMock extends BaseContract {
       _fromPoolStakingAddress: string,
       _toPoolStakingAddress: string,
       _amount: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    notifiyEarlyEpochEnd(
+      timestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     notifyAvailability(
@@ -464,6 +474,8 @@ export interface StakingHbbftMock extends BaseContract {
       mining: string,
       validatorScore: number | string | BN
     ): NonPayableTransactionObject<void>;
+
+    updateStakingTransitionTimeframeLength(): NonPayableTransactionObject<void>;
 
     validatorSetContract(): NonPayableTransactionObject<string>;
 

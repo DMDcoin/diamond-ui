@@ -6,6 +6,8 @@ import { startTransition, useEffect, useState } from "react";
 import FinalizeProposalsWarn from "../Modals/FinalizeProposalsWarn";
 import { useStakingContext } from "../../contexts/StakingContext";
 import BigNumber from "bignumber.js";
+import { faArrowDownLong, faArrowUpLong } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface DaoProps {
   showDaoStats?: boolean;
@@ -18,11 +20,22 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
   const stakingContext = useStakingContext();
 
   const [unfinalizedProposalsExist, setUnfinalizedProposalsExist] = useState<boolean>(true);
+  const [daoPotBalanceChange, setDaoPotBalanceChange] = useState<{
+    changePercentage: string,
+    direction: string,
+    blocks: number
+  }>({
+    changePercentage: "0",
+    direction: "positive",
+    blocks: 0
+  });
 
-  // TODO: get this from the contract
   useEffect(() => {
     web3Context.contractsManager.daoContract.methods.unfinalizedProposalsExist().call().then((res: boolean) => {
       setUnfinalizedProposalsExist(res);
+    });
+    daoContext.getDaoPotBalanceChange(100).then((res: any) => {
+      setDaoPotBalanceChange(res);
     });
   }, [daoContext.allDaoProposals, daoContext.daoPhaseCount]);
 
@@ -61,48 +74,72 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
             </div>
           </section>
         ) : (
-          <div className={styles.daoPhaseBanner}>
+          <div className={styles.boxContainer}>
             {daoContext.daoPhase?.phase === "1" && <div></div>}
-            <div>
-              <h4>{daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}</h4>
-              
-              {daoContext.daoPhase?.phase === "1" ? (
-                <p></p>
-              ) : unfinalizedProposalsExist ? (
-                <FinalizeProposalsWarn buttonText="Create Proposal" />
-              ) : daoContext.daoPhase?.phase === "0" && (
-                <button className="primaryBtn" onClick={() => { startTransition(() => { navigate("/dao/create") }) }}>Create Proposal</button>
-              )
-              }
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>DAO phase</p>
+              <p className={styles.boxDescriptionBig}>
+                {daoContext.daoPhase?.phase === "0" ? "Proposal" : "Voting"} Phase {daoContext.daoPhaseCount}
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                {daoContext.phaseEndTimer} till the end
+              </p>
+              <div className={styles.boxBtns}>
+                {daoContext.daoPhase?.phase === "1" ? (
+                  <p></p>
+                ) : unfinalizedProposalsExist ? (
+                  <FinalizeProposalsWarn buttonText="Create Proposal" />
+                ) : daoContext.daoPhase?.phase === "0" && (
+                  <button className="primaryBtn" onClick={() => { startTransition(() => { navigate("/dao/create") }) }}>Create Proposal</button>
+                )
+                }
+              </div>
             </div>
-            
-            <p>
-              <strong>Stake:</strong>{" "}
-              <span>
-                {stakingContext.myPool
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Voting power</p>
+              <p className={styles.boxDescriptionBig}>
+                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0} %
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                Pool stake: {stakingContext.myPool
                   ? stakingContext.myPool.totalStake.dividedBy(10 ** 18).toFixed(4, BigNumber.ROUND_DOWN)
                   : 0}
                   {" "}
                   DMD
-              </span>
-            </p>
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                Proposals created: {daoContext.allDaoProposals.filter((proposal) => proposal.proposer === web3Context.userWallet.myAddr).length}
+              </p>
+            </div>
 
-            <p>
-              <strong>Voting power:</strong>{" "}
-              <span>
-                {stakingContext.myPool ? stakingContext.myPool.votingPower.toString() : 0}
-                %
-              </span>
-            </p>
-
-            <p><strong>Timer:</strong> {daoContext.phaseEndTimer} till the end</p>
-
-            <p>
-              <strong>Governance Pot:</strong>{" "}
-              <span>
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Governance pot</p>
+              <p className={styles.boxDescriptionBig}>
                 {daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD
-              </span>
-            </p>
+              </p>
+                <p className={styles.boxDescriptionSmall}>
+                {daoPotBalanceChange.direction === "positive" ? (
+                  <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
+                ) : (
+                  <FontAwesomeIcon className={styles.arrowRed} icon={faArrowDownLong} />
+                )}{" "}
+                {daoPotBalanceChange.direction === "positive" ? "+" : ""}
+                {daoPotBalanceChange.changePercentage}% since last {daoPotBalanceChange.blocks} blocks
+                </p>
+              <p className={styles.boxDescriptionSmall}></p>
+            </div>
+
+            <div className={styles.block}>
+              <p className={styles.boxHeading}>Historic proposals</p>
+              <p className={styles.boxDescriptionBig}>
+                {daoContext.allDaoProposals.length}
+              </p>
+              <div className={styles.boxBtns}>
+                <button className="primaryBtn" onClick={() => startTransition(() => navigate("/dao/historic"))}>See full list</button>
+              </div>
+            </div>
           </div>
         )
       }

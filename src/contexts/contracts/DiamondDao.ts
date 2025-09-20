@@ -21,6 +21,16 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type ChangeVote = ContractEventLog<{
+  voter: string;
+  proposalId: string;
+  vote: string;
+  reason: string;
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+}>;
 export type Initialized = ContractEventLog<{
   version: string;
   0: string;
@@ -149,6 +159,12 @@ export interface DiamondDao extends BaseContract {
       reason: string
     ): NonPayableTransactionObject<void>;
 
+    changeVote(
+      proposalId: number | string | BN,
+      _vote: number | string | BN,
+      reason: string
+    ): NonPayableTransactionObject<void>;
+
     countVotes(
       proposalId: number | string | BN
     ): NonPayableTransactionObject<[string, string, string, string]>;
@@ -164,6 +180,10 @@ export interface DiamondDao extends BaseContract {
       arg1: string
     ): NonPayableTransactionObject<string>;
 
+    daoEpochTotalStakeSnapshot(
+      arg0: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
     daoPhase(): NonPayableTransactionObject<{
       start: string;
       end: string;
@@ -176,6 +196,11 @@ export interface DiamondDao extends BaseContract {
     }>;
 
     daoPhaseCount(): NonPayableTransactionObject<string>;
+
+    daoPhaseProposals(
+      arg0: number | string | BN,
+      arg1: number | string | BN
+    ): NonPayableTransactionObject<string>;
 
     execute(
       proposalId: number | string | BN
@@ -232,12 +257,19 @@ export interface DiamondDao extends BaseContract {
     ): NonPayableTransactionObject<string>;
 
     initialize(
+      _contractOwner: string,
       _validatorSet: string,
       _stakingHbbft: string,
       _reinsertPot: string,
       _txPermission: string,
+      _lowMajorityDao: string,
       _createProposalFee: number | string | BN,
       _startTimestamp: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    initializeV2(
+      _contractOwner: string,
+      _lowMajorityDao: string
     ): NonPayableTransactionObject<void>;
 
     isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
@@ -248,6 +280,8 @@ export interface DiamondDao extends BaseContract {
     ): NonPayableTransactionObject<boolean>;
 
     lastDaoPhaseCount(): NonPayableTransactionObject<string>;
+
+    lowMajorityDao(): NonPayableTransactionObject<string>;
 
     owner(): NonPayableTransactionObject<string>;
 
@@ -282,10 +316,12 @@ export interface DiamondDao extends BaseContract {
       calldatas: (string | number[])[],
       title: string,
       description: string,
-      discussionUrl: string
+      discussionUrl: string,
+      majority: number | string | BN
     ): PayableTransactionObject<void>;
 
     quorumReached(
+      proposalId: number | string | BN,
       _type: number | string | BN,
       result: [
         number | string | BN,
@@ -376,6 +412,9 @@ export interface DiamondDao extends BaseContract {
     }>;
   };
   events: {
+    ChangeVote(cb?: Callback<ChangeVote>): EventEmitter;
+    ChangeVote(options?: EventOptions, cb?: Callback<ChangeVote>): EventEmitter;
+
     Initialized(cb?: Callback<Initialized>): EventEmitter;
     Initialized(
       options?: EventOptions,
@@ -463,6 +502,13 @@ export interface DiamondDao extends BaseContract {
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "ChangeVote", cb: Callback<ChangeVote>): void;
+  once(
+    event: "ChangeVote",
+    options: EventOptions,
+    cb: Callback<ChangeVote>
+  ): void;
 
   once(event: "Initialized", cb: Callback<Initialized>): void;
   once(

@@ -1,0 +1,103 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MockQuorumCalculator",
+  "sourceName": "contracts/mocks/MockQuorumCalculator.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "countYes",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "countNo",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stakeYes",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stakeNo",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct VotingResult",
+          "name": "vs",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "highMajorityQuorum",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "countYes",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "countNo",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stakeYes",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stakeNo",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct VotingResult",
+          "name": "vs",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalStakedAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "lowMajorityQuorum",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b506102118061001f6000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063212787e41461003b5780638ba0ef5914610062575b600080fd5b61004e610049366004610107565b610075565b604051901515815260200160405180910390f35b61004e610070366004610107565b61008a565b60006100818383610096565b90505b92915050565b600061008183836100dc565b6000806100a48360026101b1565b905080846060015160066100b891906101b1565b6100c291906101c8565b60408501516100d29060066101b1565b1015949350505050565b6000806100a48360036101b1565b803567ffffffffffffffff8116811461010257600080fd5b919050565b60008082840360a081121561011b57600080fd5b608081121561012957600080fd5b506040516080810181811067ffffffffffffffff8211171561015b57634e487b7160e01b600052604160045260246000fd5b604052610167846100ea565b8152610175602085016100ea565b602082015260408481013590820152606080850135908201529460809093013593505050565b634e487b7160e01b600052601160045260246000fd5b80820281158282048414176100845761008461019b565b808201808211156100845761008461019b56fea2646970667358221220a49c2504cde7ee114d62229505f973a23e5ac3ad275604088a9d1d02044c515264736f6c63430008190033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063212787e41461003b5780638ba0ef5914610062575b600080fd5b61004e610049366004610107565b610075565b604051901515815260200160405180910390f35b61004e610070366004610107565b61008a565b60006100818383610096565b90505b92915050565b600061008183836100dc565b6000806100a48360026101b1565b905080846060015160066100b891906101b1565b6100c291906101c8565b60408501516100d29060066101b1565b1015949350505050565b6000806100a48360036101b1565b803567ffffffffffffffff8116811461010257600080fd5b919050565b60008082840360a081121561011b57600080fd5b608081121561012957600080fd5b506040516080810181811067ffffffffffffffff8211171561015b57634e487b7160e01b600052604160045260246000fd5b604052610167846100ea565b8152610175602085016100ea565b602082015260408481013590820152606080850135908201529460809093013593505050565b634e487b7160e01b600052601160045260246000fd5b80820281158282048414176100845761008461019b565b808201808211156100845761008461019b56fea2646970667358221220a49c2504cde7ee114d62229505f973a23e5ac3ad275604088a9d1d02044c515264736f6c63430008190033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

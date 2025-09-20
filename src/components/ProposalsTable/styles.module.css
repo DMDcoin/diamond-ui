@@ -13,7 +13,7 @@
 }
 
 .tableContainer > div:nth-child(1) {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 .tablePagination {
@@ -99,4 +99,11 @@
 .tableBodyRow:hover {
   cursor: pointer;
   background-color: #e6f2ff; /* Light blue */
+}
+
+.tableTitle {
+  max-width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

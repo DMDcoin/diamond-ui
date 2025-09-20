@@ -18,7 +18,7 @@ import {
   CertifierHbbft,
   ConnectivityTrackerHbbft,
   DiamondDao,
-  HbbftAggregator,
+  DMDAggregator,
   StakingHbbft,
   TxPermissionHbbft,
   ValidatorSetHbbft,
@@ -35,7 +35,7 @@ interface ContractsState {
   crContract?: CertifierHbbft;
   tpContract?: TxPermissionHbbft;
   ctContract?: ConnectivityTrackerHbbft;
-  aggregator?: HbbftAggregator;
+  aggregator?: DMDAggregator;
   bsContract?: BonusScoreSystem
 }
 
@@ -66,7 +66,13 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
   // Initialize Web3 with CustomHttpProvider
   const chainId = import.meta.env.VITE_APP_CHAINID || 27272;
-  const rpcUrl = import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/';
+  /**
+   * The URL is determined using the following precedence:
+   * 1. The value stored under the "rpcUrl" key in localStorage.
+   * 2. The environment variable "VITE_APP_RPC_URL" defined via import.meta.env.
+   * 3. A default URL ("http://62.171.133.46:64100/") if neither of the above is available.
+   */
+  const rpcUrl = localStorage.getItem("rpcUrl") || import.meta.env.VITE_APP_RPC_URL || "http://62.171.133.46:64100/";
   const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
 
@@ -158,7 +164,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
         contractManager.getContractPermission(),
         contractManager.getRewardHbbft(),
         contractManager.getConnectivityTracker(),
-        contractManager.getHbbftAggregator(),
+        contractManager.getDMDAggregator(),
         contractManager.getBonusScoreSystem()
       ]);
     
@@ -183,6 +189,20 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     try {
       let provider = await connector.getProvider();
       provider = new Web3(provider);
+
+      const isCoinbaseWallet = connector.name === 'Coinbase Wallet' || 
+      (provider.isCoinbaseWallet) || 
+      (provider.providerInfo && provider.providerInfo.type === 'coinbasewallet');
+
+      // Check if it's specifically a Coinbase Smart Wallet (keys.coinbase.com)
+      const isCoinbaseSmartWallet = isCoinbaseWallet && provider.currentProvider.connectionType !== "extension_connection_type";
+
+      if (isCoinbaseSmartWallet) {
+        showLoader(false, "");
+        await connector.disconnect();
+        disconnect();
+        return toast.warn("Smart Wallet is not supported. Please use the Coinbase Wallet extension.");
+      }
 
       // Check if the user is on the correct network, if not switch to the desired network
       if (await provider.eth.getChainId() !== Number(chainId)) {

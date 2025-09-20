@@ -1,7 +1,9 @@
-import React, { startTransition } from "react";
 import styles from "./styles.module.css";
+import React, { startTransition } from "react";
 import { useNavigate } from "react-router-dom";
+import { faCodeBranch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import UpdateRpcModal from "../../components/Modals/UpdateRpcModal";
 import { faXTwitter, faFacebookF, faSlack, faTelegram, faDiscord, faReddit, faBitcoin } from '@fortawesome/free-brands-svg-icons';
 
 interface FooterProps {}
@@ -25,7 +27,7 @@ const Footer: React.FC<FooterProps> = ({}) => {
                 <a target="_blank" href="https://bit.diamonds/privacy-policy/" className={styles.titleSmall + " title-small"}>privacy Policy</a>
                 <a onClick={() => {startTransition(() => {navigate('faqs')})}} className={styles.titleSmall + " title-small"}>FAQ</a>
             </div>
-            <div className="footer-copyright-center">Copyright © 2024 DMD Diamond</div>
+              <UpdateRpcModal icon={<FontAwesomeIcon icon={faCodeBranch} color="#0145b2" size="lg" />} buttonText="Update RPC" />
         </div>
     </section>
   );

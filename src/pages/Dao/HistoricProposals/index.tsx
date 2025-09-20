@@ -26,23 +26,23 @@ const HistoricProposals = () => {
     });
   };
 
-  useEffect(() => {
-    if (!fetching) {
-      web3Context.showLoader(true, "Fetching historic proposals");
-      daoContext.getHistoricProposals();
-      setFetching(true);
-    } else {
-      const totalProposals = daoContext.allDaoProposals.length;
-      totalProposals > 0 && web3Context.showLoader(false, "");
-      const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.state !== '').length;
-      const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
-      if (indexingPercentage === 100) {
-        setIndexingStatus(null);
-      } else {
-        setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
-      }
-    }
-  }, [daoContext.allDaoProposals]);
+  // useEffect(() => {
+  //   if (!fetching) {
+  //     web3Context.showLoader(true, "Fetching historic proposals");
+  //     daoContext.getHistoricProposals();
+  //     setFetching(true);
+  //   } else {
+  //     const totalProposals = daoContext.allDaoProposals.length;
+  //     totalProposals > 0 && web3Context.showLoader(false, "");
+  //     const totalFetched = daoContext.allDaoProposals.filter((proposal: Proposal) => proposal.state !== '').length;
+  //     const indexingPercentage = Math.round((totalFetched / totalProposals) * 100);
+  //     if (indexingPercentage === 100) {
+  //       setIndexingStatus(null);
+  //     } else {
+  //       setIndexingStatus(`Indexing: ${indexingPercentage}% complete`);
+  //     }
+  //   }
+  // }, [daoContext.allDaoProposals]);
 
   return (
     <section className="section">

@@ -31,6 +31,14 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type SetCurrentSeed = ContractEventLog<{
+  blockNum: string;
+  seed: string;
+  healthy: boolean;
+  0: string;
+  1: string;
+  2: boolean;
+}>;
 
 export interface RandomHbbft extends BaseContract {
   constructor(
@@ -90,6 +98,12 @@ export interface RandomHbbft extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
+    SetCurrentSeed(cb?: Callback<SetCurrentSeed>): EventEmitter;
+    SetCurrentSeed(
+      options?: EventOptions,
+      cb?: Callback<SetCurrentSeed>
+    ): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
@@ -105,5 +119,12 @@ export interface RandomHbbft extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
+  ): void;
+
+  once(event: "SetCurrentSeed", cb: Callback<SetCurrentSeed>): void;
+  once(
+    event: "SetCurrentSeed",
+    options: EventOptions,
+    cb: Callback<SetCurrentSeed>
   ): void;
 }

@@ -30,5 +30,257 @@
 }
 
 .statisticsTable {
-  padding: 0px;
+  padding: 0px !important;
+}
+
+/* Reworked dao homepage styling */
+.boxContainer {
+  gap: 20px;
+  display: grid;
+  margin-top: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+@media (max-width: 1024px) {
+  .boxContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* On small screens, switch to a horizontal scrolling row */
+@media (max-width: 768px) {
+  .boxContainer {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+}
+
+/* Hide empty grid cells (e.g., the empty <div></div>) */
+.boxContainer > div:empty {
+  display: none;
+}
+
+.block {
+  gap: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(1, 69, 178, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+}
+
+.block > .boxHeading {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.25em;
+}
+
+.block > .boxDescription {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.block > .boxDescriptionBig {
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.block > .boxDescriptionSmall {
+  gap: 0.5rem;
+  display: flex;
+  font-size: 12px;
+  text-align: center;
+  align-items: center;
+}
+
+.block > .boxDescriptionSmall > .arrowGreen {
+  color: green;
+}
+
+.block > .boxDescriptionSmall > .arrowRed {
+  color: red;
+}
+
+.block > .boxDescriptionSmallBold {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.block > .boxBtns {
+  gap: 1rem;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+
+.block > .boxBtns > div {
+  gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block > .boxBtns > div > * {
+  width: 100%;
+}
+
+.block:hover {
+  /* transform: perspective(1000px) rotateY(5deg) rotateX(5deg); */
+  box-shadow: 0 8px 16px rgba(1, 69, 178, 0.4);
+}
+
+.block h2 {
+  margin-top: 0;
+}
+
+.block p {
+  margin: 5px 0;
+}
+
+.block .value {
+  font-weight: bold;
+}
+
+.blockLarge {
+  grid-row: span 2;
+}
+
+.heroSection {
+  width: 100%;
+  padding-bottom: 0px;
+}
+
+.tableContainer {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  flex-direction: column;
+  background-color: #ffffff;
+  justify-content: space-between;
+}
+
+.styledTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+  background-color: white;
+}
+
+.styledTable th {
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.styledTable th > svg {
+  top: 50%;
+  left: auto;
+  margin-left: 10px;
+  position: absolute;
+  pointer-events: none;
+  transform: translateY(-60%);
+}
+
+.styledTable thead tr {
+  /* background-color: rgb(245, 247, 250); */
+  color: #0145b2;
+  text-align: left;
+  height: 80px;
+  font-weight: bold;
+}
+
+.styledTable th,
+.styledTable td {
+  padding: 12px 15px;
+}
+
+.styledTable tbody tr {
+  border-bottom: 1px solid rgba(245, 247, 250, 0);
+}
+
+.styledTable img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.tableBodyRow:hover {
+  cursor: pointer;
+  background-color: #e6f2ff; /* Light blue */
+}
+
+.topValidatorsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.topValidatorsContainer > a {
+  margin-top: 2rem;
+  align-self: center;
+}
+
+.profileAddr {
+  font-size: 18px;
+  color: #0145b2;
+  font-weight: bold;
+}
+
+/* Responsive Font Sizes */
+@media (max-width: 1024px) {
+  .block > .boxHeading {
+    font-size: 18px;
+  }
+  .block > .boxDescription {
+    font-size: 12px;
+  }
+  .block > .boxDescriptionBig {
+    font-size: 20px;
+  }
+  .block > .boxDescriptionSmall,
+  .block > .boxDescriptionSmallBold {
+    font-size: 10px;
+  }
+  .styledTable {
+    font-size: 16px;
+  }
+  .profileAddr {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .block > .boxHeading {
+    font-size: 16px;
+  }
+  .block > .boxDescription {
+    font-size: 10px;
+  }
+  .block > .boxDescriptionBig {
+    font-size: 18px;
+  }
+  .block > .boxDescriptionSmall,
+  .block > .boxDescriptionSmallBold {
+    font-size: 8px;
+  }
+  .styledTable {
+    font-size: 14px;
+  }
+  .profileAddr {
+    font-size: 14px;
+  }
 }

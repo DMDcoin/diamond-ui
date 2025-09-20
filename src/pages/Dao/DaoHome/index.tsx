@@ -17,18 +17,18 @@ const DaoHome: React.FC<DaoProps> = () => {
   
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'currentPhase' | 'actionsNeeded'>('currentPhase');
 
   useEffect(() => {
     try {
       if (!daoContext.activeProposals.length && web3Context.web3Initialized) {
         web3Context.showLoader(true, "");
-        daoContext.getActiveProposals();
+        daoContext.getActiveProposals().then(() => {daoContext.getHistoricProposals();});
       }
     } catch(err) {}
   }, [web3Context.web3Initialized]);
 
   const handleDetailsClick = (proposalId: string) => {
-    // Navigate to the dynamic route with the proposalId parameter
     startTransition(() => {
       navigate(`/dao/details/${proposalId}`);
     });
@@ -38,45 +38,83 @@ const DaoHome: React.FC<DaoProps> = () => {
     <section className="section">
       <div className={styles.sectionContainer + " sectionContainer"}>
         
+        <div className={styles.governanceInfoSection}>
+          <p className={styles.governanceInfoText}>
+            For detailed information on how to create and vote on proposals, please visit our{' '}
+            <a 
+              href="https://github.com/DMDcoin/whitepaper/wiki/Q.-How-to-create-and-vote-on-the-proposals-in-DMD-DAO" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={styles.governanceInfoLink}
+            >
+              comprehensive guide
+            </a>.
+          </p>
+        </div>
+
         <div className={styles.daoInfoContainer}>
           <h1>Governance</h1>
-
           <DaoPhaseBanner />
         </div>
 
         <div className={styles.allDaoProposals}>
-          <h2>Active Proposals</h2>
-
-            <div className={styles.filterContainer}>
-              <input
-                type="text"
-                placeholder="Search "
-                className={styles.daoSearch}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-
-              <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
-                  <option value="">All</option>
-                  <option value="myProposals">My proposals</option>
-              </select>
-            </div>
-
-          <div>
-            <ProposalsTable
-              data={daoContext.activeProposals}
-              handleDetailsClick={handleDetailsClick}
-              getStateString={daoContext.getStateString}
-              searchQuery={searchQuery}
-              filterQuery={filterQuery}
+          <div className={styles.filterContainer}>
+            <input
+              type="text"
+              placeholder="Search "
+              className={styles.daoSearch}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-        </div>
 
-        <span
-          onClick={() => startTransition(() => navigate("/dao/historic"))}
-          className={styles.historicProposalsLink}>
-          Historic Proposals
-        </span>
+            <select id="filter" value={filterQuery} onChange={e => setFilterQuery(e.target.value)}>
+                <option value="">All</option>
+                <option value="myProposals">My proposals</option>
+            </select>
+          </div>
+
+          <div className={styles.tabNavigation}>
+            <button
+              className={activeTab === 'currentPhase' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('currentPhase')}
+            >
+              Proposals of the current DAO phase
+            </button>
+            <button
+              className={activeTab === 'actionsNeeded' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('actionsNeeded')}
+            >
+              Actions needed
+                {daoContext.allDaoProposals.filter(proposal => 
+                  proposal.state === "3" || 
+                  (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                ).length > 0 && (
+                <span className={styles.actionsNeededBadge}>
+                  {daoContext.allDaoProposals.filter(proposal => 
+                    proposal.state === "3" || 
+                    (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                  ).length}
+                </span>
+                )}
+            </button>
+          </div>
+
+            <div>
+              <ProposalsTable
+                data={
+                activeTab === 'currentPhase'
+                  ? daoContext.activeProposals.filter(proposal => proposal.state !== "3")
+                  : daoContext.allDaoProposals.filter(proposal => 
+                      proposal.state === "3" || 
+                      (proposal.state === "4" && daoContext.daoPhase.daoEpoch == Number(proposal.daoPhaseCount) + 1)
+                    )
+                }
+                handleDetailsClick={handleDetailsClick}
+                getStateString={daoContext.getStateString}
+                searchQuery={searchQuery}
+                filterQuery={filterQuery}
+              />
+            </div>
+        </div>
       </div>
     </section>
   );

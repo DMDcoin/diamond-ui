@@ -93,13 +93,13 @@ export interface KeyGenHistory extends BaseContract {
     validatorSetContract(): NonPayableTransactionObject<string>;
 
     writeAcks(
-      _upcommingEpoch: number | string | BN,
+      _upcomingEpoch: number | string | BN,
       _roundCounter: number | string | BN,
       _acks: (string | number[])[]
     ): NonPayableTransactionObject<void>;
 
     writePart(
-      _upcommingEpoch: number | string | BN,
+      _upcomingEpoch: number | string | BN,
       _roundCounter: number | string | BN,
       _part: string | number[]
     ): NonPayableTransactionObject<void>;

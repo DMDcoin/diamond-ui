@@ -16,7 +16,7 @@ export const networks = [
         },
         rpcUrls: {
             default: {
-                http: [import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/'],
+                http: [import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:64100/'],
                 webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://beta-rpc.bit.diamonds/ws'],
             },
         },
@@ -41,7 +41,7 @@ export const wagmiConfig = defaultWagmiConfig({
     chains: networks,
     metadata,
     transports: {
-        27272: http(import.meta.env.VITE_APP_RPC_URL || 'https://beta-rpc.bit.diamonds/')
+        [Number(import.meta.env.VITE_APP_CHAINID) || 27272]: http(import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:64100/')
     },
     projectId,
     ssr: true,

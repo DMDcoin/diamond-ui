@@ -17,6 +17,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "actualEpochEndTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -159,6 +172,19 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "notifiyEarlyEpochEnd",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {

@@ -186,6 +186,12 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 !canBeUnstakedAmount.isZero() && (<span>Amount you can order: {ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake).dividedBy(10 ** 18)).toString() : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18)).toString()} DMD</span>)
               }
 
+              {pool.orderedWithdrawAmount.isGreaterThan(0) && (
+                <span className={styles.zeroMargin}>
+                  Amount already ordered: {pool.orderedWithdrawAmount.dividedBy(10 ** 18).toString()} DMD
+                </span>
+              )}
+
               {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
                 canBeOrderedAmount.isGreaterThan(0) ? (
                   <p className={styles.unstakeWarning}>
