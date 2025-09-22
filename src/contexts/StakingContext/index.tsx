@@ -915,8 +915,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   };
 
   const canUpdatePoolOperatorRewards = async (pool: Pool): Promise<boolean> => {
-    const lastUpdateEpoch = await contractsManager.stContract?.methods.poolNodeOperatorLastChangeEpoch(pool.stakingAddress).call();
-    return lastUpdateEpoch && Number(lastUpdateEpoch) < stakingEpoch ? true : false;
+      const lastUpdateEpoch = await contractsManager.stContract?.methods.poolNodeOperatorLastChangeEpoch(pool.stakingAddress).call();
+      
+      const lastEpoch = Number(lastUpdateEpoch);
+      
+      return lastEpoch === 0 || lastEpoch !== stakingEpoch;
   }
 
   const contextValue = {

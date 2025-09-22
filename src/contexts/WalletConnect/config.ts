@@ -7,7 +7,7 @@ export const projectId = import.meta.env.VITE_APP_WC_PROJECT_ID;
 // Create wagmiConfig
 export const networks = [
     defineChain({
-        id: Number(import.meta.env.VITE_APP_CHAINID) || 27272,
+        id: Number(import.meta.env.VITE_APP_CHAINID) || 37373,
         name: "DMD Diamond",
         nativeCurrency: {
             name: "DMD",
@@ -41,7 +41,7 @@ export const wagmiConfig = defaultWagmiConfig({
     chains: networks,
     metadata,
     transports: {
-        [Number(import.meta.env.VITE_APP_CHAINID) || 27272]: http(import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:64100/')
+        [Number(import.meta.env.VITE_APP_CHAINID) || 37373]: http(import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:64100/')
     },
     projectId,
     ssr: true,
