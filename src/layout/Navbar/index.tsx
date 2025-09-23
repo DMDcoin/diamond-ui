@@ -30,7 +30,7 @@ const NavBar: React.FC<NavBarProps> = () => {
                   </div>
                   <nav className="dropdown-list-2 w-dropdown-list">
                     <a href="https://bit.diamonds/" target="_blank" className="nav-link w-dropdown-link">bit.diamonds</a>
-                    <a href="https://beta-explorer.bit.diamonds/" target="_blank" className="nav-link w-dropdown-link">DMD Explorer</a>
+                    <a href={import.meta.env.VITE_APP_EXPLORER_URL || "http://62.171.133.46:4000/"} target="_blank" className="nav-link w-dropdown-link">DMD Explorer</a>
                   </nav>
               </div>
 

@@ -23,7 +23,7 @@ export const networks = [
         blockExplorers: {
             default: {
                 name: "DMD Explorer",
-                url: import.meta.env.VITE_APP_EXPLORER_URL || "https://beta-explorer.bit.diamonds/",
+                url: import.meta.env.VITE_APP_EXPLORER_URL || "http://62.171.133.46:4000/",
             },
         },
     })

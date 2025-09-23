@@ -91,7 +91,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     const phaseCount = await web3Context.contractsManager.daoContract.methods.daoPhaseCount().call();
     setDaoPhaseCount(phaseCount);
 
-    const governancePot = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
+    const governancePot =  await web3Context.contractsManager.daoContract.methods.governancePot().call();
     setGovernancePotBalance(BigNumber(governancePot).dividedBy(1e18));
 
     const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS || "0xe0E6787A55049A90aAa4335D0Ff14fAD26B8e88e");
