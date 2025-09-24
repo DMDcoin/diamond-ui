@@ -54,7 +54,7 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
       </div>
 
       {/* Table for displaying details */}
-      <p style={{ textAlign: 'center' }}>
+      <div className={styles.detailsTableContainer}>
         <table className={styles.table}>
           <tbody>
             <tr>
@@ -81,7 +81,7 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
             </tr>
           </tbody>
         </table>
-      </p>
+      </div>
     </div>
   );
 };
