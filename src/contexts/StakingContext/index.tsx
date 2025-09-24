@@ -33,6 +33,7 @@ interface StakingContextProps {
   
   initializeStakingDataAdapter: () => {};
   fetchPoolScoreHistory: (pool: Pool) => {};
+  retrieveGlobalValues: () => Promise<number>;
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   canUpdatePoolOperatorRewards: (pool: Pool) => Promise<boolean>;
@@ -951,6 +952,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
+    retrieveGlobalValues,
     fetchPoolScoreHistory,
     getWithdrawableAmounts,
     canUpdatePoolOperatorRewards,

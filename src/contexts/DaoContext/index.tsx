@@ -4,7 +4,7 @@ import { useWeb3Context } from "../Web3Context";
 import { ContextProviderProps } from "../Web3Context/types";
 import { DaoPhase, Proposal, TotalVotingStats, Vote } from "./types";
 import BigNumber from 'bignumber.js';
-import { timestampToDate } from '../../utils/common';
+import { getFunctionSelector, timestampToDate } from '../../utils/common';
 import { useStakingContext } from '../StakingContext';
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 interface DaoContextProps {
@@ -46,6 +46,7 @@ const DaoContext = createContext<DaoContextProps | undefined>(undefined);
 
 const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const web3Context = useWeb3Context();
+  const stakingContext = useStakingContext();
   
   const [daoPhaseCount, setDaoPhaseCount] = useState("1");
   const [proposalFee, setProposalFee] = useState<string>('0');
@@ -711,6 +712,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
           await web3Context.contractsManager.daoContract.methods.execute(proposalId).send({ from: web3Context.userWallet.myAddr });
           proposalDetails = await getProposalDetails(proposalId);
           await setProposalsState([proposalDetails]);
+          await postProposalExecutionUpdates(proposalId); // Update parameters if ECP
           web3Context.showLoader(false, "");
           toast.success("Proposal Executed 💎");
           resolve("success");
@@ -723,9 +725,79 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     });
   }
 
-  const getGovernanceFundsEnough = async () => {
-    const balance = await web3Context.web3.eth.getBalance(web3Context.contractsManager.daoContract.options.address);
-    const openProposalsRequiredBalance = new BigNumber(proposalFee).multipliedBy(activeProposals.length);
+  const decodeEcosystemParameterCalldata = (calldata: string) => {
+    try {
+      // Remove '0x' prefix and get function selector (first 4 bytes)
+      const functionSelector = calldata.slice(0, 10);
+
+      // Map of function selectors to their corresponding parameter update methods
+      const selectorToParameterMap: { [key: string]: { contractType: string, method: string, updateFunction: () => Promise<void> } } = {
+        [getFunctionSelector('setCreateProposalFee(uint256)')]: {
+          contractType: 'dao',
+          method: 'createProposalFee',
+          updateFunction: async () => {
+            const pFee = await web3Context.contractsManager.daoContract.methods.createProposalFee().call();
+            setProposalFee(pFee);
+            console.log(`[INFO] Updated createProposalFee to ${pFee}`);
+          }
+        },
+        [getFunctionSelector('setDelegatorMinStake(uint256)')]: {
+          contractType: 'staking',
+          method: 'delegatorMinStake',
+          updateFunction: async () => {
+            stakingContext.retrieveGlobalValues();
+            console.log(`[INFO] Updated delegatorMinStake`);
+          }
+        },
+      };
+
+      const parameterInfo = selectorToParameterMap[functionSelector];
+      if (parameterInfo) {
+        console.log(`[INFO] Detected ${parameterInfo.method} parameter change on ${parameterInfo.contractType} contract`);
+        return parameterInfo;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error decoding ecosystem parameter calldata:', error);
+      return null;
+    }
+  };
+
+  const postProposalExecutionUpdates = async (proposalId: string) => {
+    const proposalDetails = await getProposalDetails(proposalId);
+
+    if (proposalDetails.proposalType === 'Ecosystem Parameter Change') {
+      // Decode calldata to determine which specific parameter was changed
+      if (proposalDetails.calldatas && proposalDetails.calldatas.length > 0) {
+        const calldata = proposalDetails.calldatas[0];
+        
+        const parameterInfo = decodeEcosystemParameterCalldata(calldata);
+        
+        if (parameterInfo) {
+          try {
+            await parameterInfo.updateFunction();
+            console.log(`[INFO] Successfully updated ${parameterInfo.method}`);
+            return;
+          } catch (error) {
+            console.error(`Error updating ${parameterInfo.method}:`, error);
+          }
+        }
+      }
+    }
+
+    const pFee = await web3Context.contractsManager.daoContract.methods.createProposalFee().call();
+    setProposalFee(pFee);
+
+    // Refresh balances
+    const governancePot =  await web3Context.contractsManager.daoContract.methods.governancePot().call();
+    setGovernancePotBalance(BigNumber(governancePot).dividedBy(1e18));
+
+    const claimingPot = await web3Context.web3.eth.getBalance(import.meta.env.VITE_APP_CLAIMING_CONTRACT_ADDRESS || "0xe0E6787A55049A90aAa4335D0Ff14fAD26B8e88e");
+    setClaimingContractBalance(BigNumber(claimingPot).dividedBy(1e18));
+
+    const lowMajorityPot = await web3Context.web3.eth.getBalance(lowMajorityContractAddress);
+    setLowMajorityContractBalance(BigNumber(lowMajorityPot).dividedBy(1e18));
   }
 
   const getDaoPotBalanceChange = async (blocksAgo: number) => {
