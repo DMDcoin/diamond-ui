@@ -320,9 +320,19 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           }
 
           {
-            daoContext.notEnoughGovernanceFunds && (
+            // Show High Majority warning for high majority proposals
+            (proposal.rawProposalType === "3" && daoContext.notEnoughGovernanceFunds) && (
               <p className={styles.warningText}>
                 Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please vote, finalize and execute carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show Low Majority warning for low majority proposals
+            (proposal.rawProposalType === "0" && daoContext.notEnoughLowMajorityFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the low majority pot. Please vote carefully to ensure optimal fund allocation.
               </p>
             )
           }

@@ -19,6 +19,7 @@ interface DaoContextProps {
   lowMajorityContractBalance: BigNumber;
   lowMajorityContractAddress: string;
   notEnoughGovernanceFunds: boolean;
+  notEnoughLowMajorityFunds: boolean;
 
   initialize: () => Promise<void>;
   setActiveProposals: (proposals: Proposal[]) => void;
@@ -56,6 +57,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [activeProposals, setActiveProposals] = useState<Proposal[]>([]);
   const [allDaoProposals, setAllDaoProposals] = useState<Proposal[]>([]);
   const [notEnoughGovernanceFunds, setNotEnoughGovernanceFunds] = useState<boolean>(false);
+  const [notEnoughLowMajorityFunds, setNotEnoughLowMajorityFunds] = useState<boolean>(false);
   const [governancePotBalance, setGovernancePotBalance] = useState<BigNumber>(BigNumber('0'));
   const [claimingContractBalance, setClaimingContractBalance] = useState<BigNumber>(BigNumber('0'));
   const [lowMajorityContractBalance, setLowMajorityContractBalance] = useState<BigNumber>(BigNumber('0'));
@@ -75,6 +77,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       getActiveProposals();
     }
   }, [lowMajorityContractBalance, daoInitialized]);
+
+  // Recalculate warnings when balances change
+  useEffect(() => {
+    if (daoInitialized && activeProposals.length > 0) {
+      calculateFundingWarnings(activeProposals);
+    }
+  }, [governancePotBalance, lowMajorityContractBalance, activeProposals.length]);
 
   const initialize = async () => {
     if (daoInitialized) return;
@@ -378,6 +387,38 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       proposalDetails = activeProposalsCopy;
     }
     console.log("[INFO] All active proposals fetched and updated");
+    
+    // Calculate warning states after all proposals are loaded
+    calculateFundingWarnings(proposalDetails);
+  }
+
+  const calculateFundingWarnings = (proposals: Proposal[]) => {
+    let totalHighMajorityRequested = BigNumber(0);
+    let totalLowMajorityRequested = BigNumber(0);
+
+    proposals.forEach(proposal => {
+      // Only consider active/created proposals that have values (funding requests)
+      if (proposal.state === "0" && proposal.values && proposal.values.length > 0) {
+        // Calculate total requested amount
+        const proposalAmount = proposal.values.reduce((sum: BigNumber, value: string) => {
+          return sum.plus(BigNumber(value || '0').dividedBy(1e18));
+        }, BigNumber(0));
+
+        // Determine proposal majority
+        if (proposal.rawProposalType === "3") {// High Majority proposals
+          totalHighMajorityRequested = totalHighMajorityRequested.plus(proposalAmount);
+        } else if (proposal.rawProposalType === "0") { // Low Majority proposals 
+          totalLowMajorityRequested = totalLowMajorityRequested.plus(proposalAmount);
+        }
+      }
+    });
+
+    // Update warning flags
+    const highMajorityExceeds = totalHighMajorityRequested.isGreaterThan(governancePotBalance);
+    const lowMajorityExceeds = totalLowMajorityRequested.isGreaterThan(lowMajorityContractBalance);
+
+    setNotEnoughGovernanceFunds(highMajorityExceeds);
+    setNotEnoughLowMajorityFunds(lowMajorityExceeds);
   }
 
   const getProposalVotingStats = (proposalId: string): Promise<TotalVotingStats> => {
@@ -672,6 +713,12 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
 
     localStorage.setItem('allDaoProposals', JSON.stringify(updatedStoredProposals));
     setAllDaoProposals(updatedStoredProposals);
+    
+    // Update warning states when proposals are updated
+    const activeProposals = updatedStoredProposals.filter(p => 
+      Number(p.daoPhaseCount) === Number(daoPhaseCount) && p.state !== "1" // Not dismissed
+    );
+    calculateFundingWarnings(activeProposals);
   };
 
   const finalizeProposal = async (proposalId: string) => {
@@ -830,6 +877,7 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     lowMajorityContractBalance,
     lowMajorityContractAddress,
     notEnoughGovernanceFunds,
+    notEnoughLowMajorityFunds,
 
     // functions
     initialize,

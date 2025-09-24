@@ -286,7 +286,26 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         <form className={styles.propsalForm} onSubmit={createProposal}>
 
           {
-            daoContext.notEnoughGovernanceFunds && (
+            // Show High Majority warning for high majority proposals
+            (proposalType === "open" && !isLowMajorityEligible && daoContext.notEnoughGovernanceFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please create and vote carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show Low Majority warning for low majority proposals
+            (proposalType === "open" && isLowMajorityEligible && daoContext.notEnoughLowMajorityFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the low majority pot. Please vote carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show appropriate warnings for other proposal types
+            (proposalType !== "open" && daoContext.notEnoughGovernanceFunds) && (
               <p className={styles.warningText}>
                 Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please create and vote carefully to ensure optimal fund allocation.
               </p>
