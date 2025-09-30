@@ -16,14 +16,14 @@ export const networks = [
         },
         rpcUrls: {
             default: {
-                http: [import.meta.env.VITE_APP_RPC_URL || 'http://62.171.133.46:64100/'],
-                webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://beta-rpc.bit.diamonds/ws'],
+                http: [import.meta.env.VITE_APP_RPC_URL || 'https://testnet-rpc.bit.diamonds/'],
+                webSocket: [import.meta.env.VITE_APP_WS_URL || 'wss://testnet-rpc.bit.diamonds/ws'],
             },
         },
         blockExplorers: {
             default: {
                 name: "DMD Explorer",
-                url: import.meta.env.VITE_APP_EXPLORER_URL || "http://62.171.133.46:4000/",
+                url: import.meta.env.VITE_APP_EXPLORER_URL || "https://testnet-explorer.bit.diamonds/",
             },
         },
     })
