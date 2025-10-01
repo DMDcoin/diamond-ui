@@ -19,9 +19,6 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
   const noPercentage = BigNumber(votingStats.negative).dividedBy(totalStake).multipliedBy(100);
   const exceedingYesPercentage = BigNumber.max(0, votingStats.positive.minus(votingStats.negative).dividedBy(totalStake).multipliedBy(100));
 
-  // Calculate the position of the threshold marker
-  const thresholdPosition = noPercentage.plus(requiredPercentage);
-
   return (
     <div style={{ width: '100%' }}>
       {/* Voting Bar Container */}
@@ -38,7 +35,7 @@ const VotingStatus: React.FC<VotingStatusProps> = ({
         </div>
         <div
           className={styles.thresholdMarker}
-          style={{ left: `${thresholdPosition}%` }}
+          style={{ left: `${requiredPercentage}%` }}
         ></div>
         <div className={styles.legend}>
           <div>
