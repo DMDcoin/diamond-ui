@@ -16,6 +16,7 @@ export interface Proposal {
   proposalType: string;
   participation: string;
   exceedingYes: string;
+  totalStakeSnapshot: string;
 }
 
 export interface TotalVotingStats {

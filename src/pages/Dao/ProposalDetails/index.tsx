@@ -139,7 +139,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
     const thresholdPercentage = daoContext.getProposalThreshold(proposalType);
     
-    const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
+    // Use proposal's totalStakeSnapshot if available, otherwise fallback to totalDaoStake
+    const stakeForCalculation = (proposal?.totalStakeSnapshot && proposal.totalStakeSnapshot !== '0') 
+      ? proposal.totalStakeSnapshot 
+      : totalDaoStake;
+    
+    const threshold = BigNumber(stakeForCalculation).multipliedBy(thresholdPercentage).dividedBy(100);
     const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
     const hasRequiredParticipation = votingStats?.total.isGreaterThanOrEqualTo(threshold);
   
@@ -371,7 +376,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div className={styles.votingPhaseProgress}>
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
-                          totalStake={totalDaoStake.toNumber()}
+                          totalStake={Number((proposal?.totalStakeSnapshot && proposal.totalStakeSnapshot !== '0') 
+                            ? proposal.totalStakeSnapshot 
+                            : totalDaoStake)}
                           requiredPercentage={daoContext.getProposalThreshold(proposal.rawProposalType)}
                         />
                       </div>

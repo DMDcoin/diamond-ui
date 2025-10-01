@@ -279,6 +279,28 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     return cachedProposals;
   }
 
+  const updateProposalsWithSameEpochSnapshot = async (daoEpoch: string, snapshotValue: string) => {
+    try {
+      const storedProposals = getCachedProposals();
+      const proposalsToUpdate = storedProposals.filter(
+        proposal => proposal.daoPhaseCount === daoEpoch && 
+        (!proposal.totalStakeSnapshot || proposal.totalStakeSnapshot === "0")
+      );
+
+      if (proposalsToUpdate.length > 0) {
+        // Update totalStakeSnapshot for all proposals with the same daoEpoch
+        const updatedProposals = proposalsToUpdate.map(proposal => ({
+          ...proposal,
+          totalStakeSnapshot: snapshotValue
+        }));
+
+        await setProposalsState(updatedProposals);
+      }
+    } catch (error) {
+      console.error('Error updating proposals with same epoch snapshot:', error);
+    }
+  }
+
   const getProposalDetails = async (proposalId: string): Promise<Proposal> => {
     // Retrieve allDaoProposals from localStorage
     let updatedData: Proposal | undefined = getCachedProposals().find((proposal) => proposal.id === proposalId);
@@ -308,13 +330,47 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
     } catch (error) {}
 
     const votingStats = await getProposalVotingStats(proposalId);
-    const totalDaoStake = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+    
+    // Get or calculate totalStakeSnapshot
+    let totalStakeForCalculation = "0";
+    if (updatedData) {
+      // Check if we need to fetch/update the snapshot
+      if (!updatedData.totalStakeSnapshot || updatedData.totalStakeSnapshot === "0") {
+        try {
+          const daoEpoch = updatedData.daoPhaseCount || "1";
+          const snapshotValue = await web3Context.contractsManager.daoContract?.methods.daoEpochTotalStakeSnapshot(daoEpoch).call() || "0";
+          
+          if (snapshotValue !== "0") {
+            // Update this proposal with the snapshot
+            updatedData.totalStakeSnapshot = snapshotValue;
+            totalStakeForCalculation = snapshotValue;
+            
+            // Update all proposals with the same daoEpoch in localStorage
+            await updateProposalsWithSameEpochSnapshot(daoEpoch, snapshotValue);
+          } else {
+            // Fallback to current totalStake if snapshot not available
+            totalStakeForCalculation = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+            updatedData.totalStakeSnapshot = "0"; // Keep as 0 to indicate snapshot not yet available
+          }
+        } catch (error) {
+          // Fallback to current totalStake on error
+          totalStakeForCalculation = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+          updatedData.totalStakeSnapshot = "0";
+        }
+      } else {
+        // Use cached snapshot value
+        totalStakeForCalculation = updatedData.totalStakeSnapshot;
+      }
+    } else {
+      // For new proposals, use current totalStake
+      totalStakeForCalculation = await web3Context.contractsManager.stContract?.methods.totalStakedAmount().call() || "0";
+    }
 
     if (updatedData) {
       updatedData["id"] = proposalId;
       updatedData["votes"] = proposalVotes;
-      updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
-      updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalDaoStake).multipliedBy(100).toFixed(4)
+      updatedData['exceedingYes'] = BigNumber.max(0, BigNumber(votingStats.positive).minus(votingStats.negative)).dividedBy(totalStakeForCalculation).multipliedBy(100).toFixed(4)
+      updatedData['participation'] = BigNumber(votingStats.total).dividedBy(totalStakeForCalculation).multipliedBy(100).toFixed(4)
     }
 
     return updatedData || initializeProposal(proposalId);
@@ -343,7 +399,8 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
       rawProposalType: '',
       proposalType: '',
       participation: '0',
-      exceedingYes: '0'
+      exceedingYes: '0',
+      totalStakeSnapshot: '0'
     };
   }
 
