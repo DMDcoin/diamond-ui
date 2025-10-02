@@ -74,6 +74,9 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ parameterName, 
         if (parameterName === "Block Gas Limit") {
             return `${Number(value) / 10**6} mGas`;
         }
+        if (parameterName === "Standby Bonus") {
+            return value;
+        }
         return formatCryptoUnitValue(value);
     };
 

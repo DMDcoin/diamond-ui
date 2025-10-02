@@ -69,6 +69,8 @@ export const getParameterDescription = (parameterName: string): string => {
     return "The portion of the governance pot allocated to rewards.";
   } else if (parameterName === "setReportDisallowPeriod") {
     return "Timeframe during which a node announces maintenance to avoid penalties.";
+  } else if (parameterName === "setStandByFactor") {
+    return "Bonus score rewarded to validators that were available.";
   }
   return "";
 }

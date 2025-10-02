@@ -257,7 +257,21 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                 <div>
                   <span>Proposed value</span>
-                  <span>{formatCryptoUnitValue(extractValueFromCalldata(proposal.calldatas[0]))}</span>
+                  <span>
+                    {
+                      (() => {
+                        const { parameterName } = getFunctionInfoWithAbi(web3Context.contractsManager, proposal.targets[0], proposal.calldatas[0]);
+                        const rawValue = extractValueFromCalldata(proposal.calldatas[0]);
+                        
+                        // For Standby Bonus parameter - show raw value without units
+                        if (parameterName.includes("Stand by factor")) {
+                          return rawValue;
+                        }
+                        
+                        return formatCryptoUnitValue(rawValue);
+                      })()
+                    }
+                  </span>
                 </div>
               </div>
             )

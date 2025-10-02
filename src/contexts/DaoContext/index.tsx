@@ -853,6 +853,13 @@ const DaoContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
             console.log(`[INFO] Updated delegatorMinStake`);
           }
         },
+        [getFunctionSelector('setStandByFactor(uint256)')]: {
+          contractType: 'bonus-score-system',
+          method: 'standByFactor',
+          updateFunction: async () => {
+            console.log(`[INFO] Updated standByFactor`);
+          }
+        },
       };
 
       const parameterInfo = selectorToParameterMap[functionSelector];

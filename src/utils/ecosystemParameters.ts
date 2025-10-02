@@ -63,5 +63,14 @@ export const EcosystemParameters: EcosystemParameters = {
       params: [],
       value: undefined
     }
+  },
+
+  "Bonus Score System": {
+    "Standby Bonus": {
+      getter: "standByFactor()",
+      setter: "setStandByFactor(uint256)",
+      params: [],
+      value: undefined
+    }
   }
 };
