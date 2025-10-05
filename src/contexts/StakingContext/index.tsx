@@ -33,6 +33,7 @@ interface StakingContextProps {
   
   initializeStakingDataAdapter: () => {};
   fetchPoolScoreHistory: (pool: Pool) => {};
+  retrieveGlobalValues: () => Promise<number>;
   claimOrderedUnstake: (pool: Pool) => Promise<boolean>;
   setPools: React.Dispatch<React.SetStateAction<Pool[]>>;
   canUpdatePoolOperatorRewards: (pool: Pool) => Promise<boolean>;
@@ -915,8 +916,11 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   };
 
   const canUpdatePoolOperatorRewards = async (pool: Pool): Promise<boolean> => {
-    const lastUpdateEpoch = await contractsManager.stContract?.methods.poolNodeOperatorLastChangeEpoch(pool.stakingAddress).call();
-    return lastUpdateEpoch && Number(lastUpdateEpoch) < stakingEpoch ? true : false;
+      const lastUpdateEpoch = await contractsManager.stContract?.methods.poolNodeOperatorLastChangeEpoch(pool.stakingAddress).call();
+      
+      const lastEpoch = Number(lastUpdateEpoch);
+      
+      return lastEpoch === 0 || lastEpoch !== stakingEpoch;
   }
 
   const contextValue = {
@@ -948,6 +952,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     removePool,
     addOrUpdatePool,
     claimOrderedUnstake,
+    retrieveGlobalValues,
     fetchPoolScoreHistory,
     getWithdrawableAmounts,
     canUpdatePoolOperatorRewards,

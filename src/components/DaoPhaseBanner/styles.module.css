@@ -77,6 +77,10 @@
   transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
 }
 
+.block:nth-child(4) {
+  gap: 0.5rem;
+}
+
 .block > .boxHeading {
   font-size: 20px;
   font-weight: bold;

@@ -20,7 +20,7 @@ const Footer: React.FC<FooterProps> = ({}) => {
                   <a target="_blank" href="https://www.facebook.com/dmdcoin" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faFacebookF} color="#0145b2" size="lg" /></a>
                   <a target="_blank" href="https://t.me/DMDcoin" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faTelegram} color="#0145b2" size="lg" /></a>
                   <a target="_blank" href="https://app.slack.com/client/T04CRQNHG" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faSlack} color="#0145b2" size="lg" /></a>
-                  <a target="_blank" href="https://discord.com/invite/TStv6gm" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faDiscord} color="#0145b2" size="lg" /></a>
+                  <a target="_blank" href="https://discord.com/invite/MwqZ2CYcB4" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faDiscord} color="#0145b2" size="lg" /></a>
                   <a target="_blank" href="https://bitcointalk.org/index.php?topic=580725.msg6345777#msg6345777" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faBitcoin} color="#0145b2" size="lg" /></a>
                   <a target="_blank" href="https://www.reddit.com/r/dmd/" className="footer-social-link w-inline-block"><FontAwesomeIcon icon={faReddit} color="#0145b2" size="lg" /></a>
                 </div>

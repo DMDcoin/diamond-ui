@@ -65,7 +65,7 @@ const Web3ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
   const [web3Initialized, setWeb3Initialized] = useState<boolean>(false);
 
   // Initialize Web3 with CustomHttpProvider
-  const chainId = import.meta.env.VITE_APP_CHAINID || 27272;
+  const chainId = import.meta.env.VITE_APP_CHAINID || 37373;
   /**
    * The URL is determined using the following precedence:
    * 1. The value stored under the "rpcUrl" key in localStorage.

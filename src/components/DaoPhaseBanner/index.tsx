@@ -119,16 +119,18 @@ const DaoPhaseBanner: React.FC<DaoProps> = ({ showDaoStats }) => {
               <p className={styles.boxDescriptionBig}>
                 {daoContext.governancePotBalance.toFixed(4, BigNumber.ROUND_DOWN)} DMD
               </p>
-                <p className={styles.boxDescriptionSmall}>
-                {daoPotBalanceChange.direction === "positive" ? (
-                  <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
-                ) : (
-                  <FontAwesomeIcon className={styles.arrowRed} icon={faArrowDownLong} />
-                )}{" "}
-                {daoPotBalanceChange.direction === "positive" ? "+" : ""}
-                {daoPotBalanceChange.changePercentage}% since last {daoPotBalanceChange.blocks} blocks
-                </p>
-              <p className={styles.boxDescriptionSmall}></p>
+              <p className={styles.boxDescriptionSmall}>
+              {daoPotBalanceChange.direction === "positive" ? (
+                <FontAwesomeIcon className={styles.arrowGreen} icon={faArrowUpLong} />
+              ) : (
+                <FontAwesomeIcon className={styles.arrowRed} icon={faArrowDownLong} />
+              )}{" "}
+              {daoPotBalanceChange.direction === "positive" ? "+" : ""}
+              {daoPotBalanceChange.changePercentage}% since last {daoPotBalanceChange.blocks} blocks
+              </p>
+              <p className={styles.boxDescriptionSmall}>
+                Low majority pot: {daoContext.lowMajorityContractBalance?.toFixed(4, BigNumber.ROUND_DOWN) || 0} DMD
+              </p>
             </div>
 
             <div className={styles.block}>

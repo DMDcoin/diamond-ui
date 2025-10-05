@@ -13,6 +13,7 @@ export type { DaoMock } from "./DaoMock";
 export type { DiamondDao } from "./DiamondDao";
 export type { DiamondDaoLowMajority } from "./DiamondDaoLowMajority";
 export type { EtherReceiverMock } from "./EtherReceiverMock";
+export type { HbbftAggregator } from "./HbbftAggregator";
 export type { IBlockRewardHbbft } from "./IBlockRewardHbbft";
 export type { IBonusScoreSystem } from "./IBonusScoreSystem";
 export type { ICertifier } from "./ICertifier";

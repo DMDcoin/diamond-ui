@@ -267,10 +267,7 @@ export interface DiamondDao extends BaseContract {
       _startTimestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    initializeV2(
-      _contractOwner: string,
-      _lowMajorityDao: string
-    ): NonPayableTransactionObject<void>;
+    initializeV2(_lowMajorityDao: string): NonPayableTransactionObject<void>;
 
     isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
 

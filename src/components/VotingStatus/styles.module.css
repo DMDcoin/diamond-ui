@@ -73,3 +73,9 @@
 .table td:last-child {
     text-align: right;
 }
+
+.detailsTableContainer {
+    color: #0145b2;
+    text-align: center;
+    margin-bottom: 10px;
+}

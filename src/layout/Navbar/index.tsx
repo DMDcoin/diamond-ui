@@ -30,7 +30,7 @@ const NavBar: React.FC<NavBarProps> = () => {
                   </div>
                   <nav className="dropdown-list-2 w-dropdown-list">
                     <a href="https://bit.diamonds/" target="_blank" className="nav-link w-dropdown-link">bit.diamonds</a>
-                    <a href="https://beta-explorer.bit.diamonds/" target="_blank" className="nav-link w-dropdown-link">DMD Explorer</a>
+                    <a href={import.meta.env.VITE_APP_EXPLORER_URL || "https://testnet-explorer.bit.diamonds/"} target="_blank" className="nav-link w-dropdown-link">DMD Explorer</a>
                   </nav>
               </div>
 
@@ -45,9 +45,11 @@ const NavBar: React.FC<NavBarProps> = () => {
                     <a href="https://gladiators.diamonds/" target="_blank" className="nav-link w-dropdown-link">uNiq Gladiators</a>
                   </nav>
               </div>
-                
+
+              <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
+
                 {web3Context.userWallet && web3Context.userWallet.myAddr ? (
-                  <a onClick={() => {startTransition(() => {navigate('dao')})}} className="nav-link w-nav-link">DAO</a>
+                  <></>
                   ) : (
                     <button onClick={() => walletConnectContext.appKit.open()} disabled={isSyncingPools} className="button w-button w-nav-link-button">Connect</button>
                 )}

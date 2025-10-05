@@ -139,7 +139,12 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
   const proposalAccepted = (proposalType: string, positive: BigNumber, negative: BigNumber) => {
     const thresholdPercentage = daoContext.getProposalThreshold(proposalType);
     
-    const threshold = BigNumber(totalDaoStake).multipliedBy(thresholdPercentage).dividedBy(100);
+    // Use proposal's totalStakeSnapshot if available, otherwise fallback to totalDaoStake
+    const stakeForCalculation = (proposal?.totalStakeSnapshot && proposal.totalStakeSnapshot !== '0') 
+      ? proposal.totalStakeSnapshot 
+      : totalDaoStake;
+    
+    const threshold = BigNumber(stakeForCalculation).multipliedBy(thresholdPercentage).dividedBy(100);
     const hasSufficientVotes = positive.minus(negative).isGreaterThanOrEqualTo(threshold);
     const hasRequiredParticipation = votingStats?.total.isGreaterThanOrEqualTo(threshold);
   
@@ -252,7 +257,21 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
 
                 <div>
                   <span>Proposed value</span>
-                  <span>{formatCryptoUnitValue(extractValueFromCalldata(proposal.calldatas[0]))}</span>
+                  <span>
+                    {
+                      (() => {
+                        const { parameterName } = getFunctionInfoWithAbi(web3Context.contractsManager, proposal.targets[0], proposal.calldatas[0]);
+                        const rawValue = extractValueFromCalldata(proposal.calldatas[0]);
+                        
+                        // For Standby Bonus parameter - show raw value without units
+                        if (parameterName.includes("Stand by factor")) {
+                          return rawValue;
+                        }
+                        
+                        return formatCryptoUnitValue(rawValue);
+                      })()
+                    }
+                  </span>
                 </div>
               </div>
             )
@@ -320,9 +339,19 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
           }
 
           {
-            daoContext.notEnoughGovernanceFunds && (
+            // Show High Majority warning for high majority proposals
+            (proposal.rawProposalType === "3" && daoContext.notEnoughGovernanceFunds) && (
               <p className={styles.warningText}>
                 Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please vote, finalize and execute carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show Low Majority warning for low majority proposals
+            (proposal.rawProposalType === "0" && daoContext.notEnoughLowMajorityFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the low majority pot. Please vote carefully to ensure optimal fund allocation.
               </p>
             )
           }
@@ -361,7 +390,9 @@ const ProposalDetails: React.FC<ProposalDetailsProps> = () => {
                       <div className={styles.votingPhaseProgress}>
                         <VotingStatus
                           votingStats={votingStats ? votingStats : { positive: BigNumber(0), negative: BigNumber(0), total: BigNumber(0) }}
-                          totalStake={totalDaoStake.toNumber()}
+                          totalStake={Number((proposal?.totalStakeSnapshot && proposal.totalStakeSnapshot !== '0') 
+                            ? proposal.totalStakeSnapshot 
+                            : totalDaoStake)}
                           requiredPercentage={daoContext.getProposalThreshold(proposal.rawProposalType)}
                         />
                       </div>

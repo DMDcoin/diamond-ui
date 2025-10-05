@@ -48,13 +48,13 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const { lowMajorityContractBalance, lowMajorityContractAddress } = daoContext;
 
   useEffect(() => {
-    if (epcValue === "0") {
+    if (epcValue === "0" && web3Context.web3Initialized && web3Context.contractsManager) {
       getEpcContractValue(epcContractName, epcMethodName).then((val) => {
         setEpcValue(val);
         loadEpcData(epcContractName, epcMethodName);
       });
     }
-  }, []);
+  }, [web3Context.web3Initialized, web3Context.contractsManager]);
 
   useEffect(() => {
     if (epcMethodName === "Create proposal fee") {
@@ -144,6 +144,8 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         return web3Context.contractsManager.brContract;
       case "Connectivity Tracker":
         return web3Context.contractsManager.ctContract;
+      case "Bonus Score System":
+        return web3Context.contractsManager.bsContract;
       default:
         return web3Context.contractsManager.stContract;
     }
@@ -198,7 +200,7 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         const epcContractVal = await getEpcContractValue(contractName, methodName);
         if (new BigNumber(epcValue).isEqualTo(epcContractVal)) return toast.warn("Cannot propose the same value");
 
-        if (["Staking", "Block Reward", "Connectivity Tracker"].includes(epcContractName)
+        if (["Staking", "Block Reward", "Connectivity Tracker", "Bonus Score System"].includes(epcContractName)
         && new BigNumber(epcValue).isNaN()) throw new Error(`Invalid ${methodSetter} value`);
 
         const contract = getContractByName(epcContractName);
@@ -242,10 +244,23 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
   const loadEpcData = async (contractName: string, methodName: string) => {
     try {
       const contract = getContractByName(contractName);
-      const parameterData = await (contract?.methods as any)['getAllowedParamsRange'](EcosystemParameters[contractName][methodName].setter).call();
+      if (!contract) {
+        console.warn(`Contract not available for ${contractName}`);
+        setEpcParamRange(['0', '0']);
+        return;
+      }
+      
+      if (!(contract.methods as any).getAllowedParamsRange) {
+        console.warn(`getAllowedParamsRange method not available for ${contractName}`);
+        setEpcParamRange(['0', '0']);
+        return;
+      }
+      
+      const parameterData = await (contract.methods as any).getAllowedParamsRange(EcosystemParameters[contractName][methodName].setter).call();
       setEpcParamRange(parameterData.range.length ? parameterData.range : ['0', '0']);
     } catch(err) {
-      console.log(err)
+      console.log(err);
+      setEpcParamRange(['0', '0']);
     }
   }
 
@@ -286,7 +301,26 @@ const CreateProposal: React.FC<CreateProposalProps> = ({}) => {
         <form className={styles.propsalForm} onSubmit={createProposal}>
 
           {
-            daoContext.notEnoughGovernanceFunds && (
+            // Show High Majority warning for high majority proposals
+            (proposalType === "open" && !isLowMajorityEligible && daoContext.notEnoughGovernanceFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please create and vote carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show Low Majority warning for low majority proposals
+            (proposalType === "open" && isLowMajorityEligible && daoContext.notEnoughLowMajorityFunds) && (
+              <p className={styles.warningText}>
+                Warning: The total funding requested by active proposals exceeds the available balance in the low majority pot. Please vote carefully to ensure optimal fund allocation.
+              </p>
+            )
+          }
+
+          {
+            // Show appropriate warnings for other proposal types
+            (proposalType !== "open" && daoContext.notEnoughGovernanceFunds) && (
               <p className={styles.warningText}>
                 Warning: The total funding requested by active proposals exceeds the available balance in the governance pot. Please create and vote carefully to ensure optimal fund allocation.
               </p>
