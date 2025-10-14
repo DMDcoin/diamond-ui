@@ -57,12 +57,12 @@ export interface IStakingHbbft extends BaseContract {
 
     isPoolValid(arg0: string): NonPayableTransactionObject<boolean>;
 
-    notifiyEarlyEpochEnd(
-      timestamp: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
     notifyAvailability(
       _stakingAddress: string
+    ): NonPayableTransactionObject<void>;
+
+    notifyEarlyEpochEnd(
+      timestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     notifyKeyGenFailed(): NonPayableTransactionObject<void>;

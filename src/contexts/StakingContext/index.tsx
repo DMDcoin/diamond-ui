@@ -120,7 +120,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   }, [web3Initialized]);
 
   const handleErrorMsg = (err: Error, alternateMsg: string) => {
-    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid"))) {
+    if (err.message && !err.message.includes("EVM") && (err.message.includes("MetaMask") || err.message.includes("Transaction") || err.message.includes("Invalid") || err.message.includes("rejected")) ) {
       toast.error(err.message);
     } else {
       toast.error(alternateMsg);
@@ -673,7 +673,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       const accBalance = await getUpdatedBalance();
       const ipAddress = '0x00000000000000000000000000000000';
       const minningAddress = getAddressFromPublicKey(publicKey);
-      const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
 
       if (!web3.utils.isAddress(minningAddress)) {
         toast.warn("Enter valid minning address");
@@ -683,8 +682,6 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
         toast.warn("Staking or mining key are or were already in use with a pool");
       } else if (BigNumber(txOpts.value).isGreaterThan(accBalance)) {
         toast.warn(`Insufficient balance (${BigNumber(accBalance).dividedBy(10**18).toFixed(4, BigNumber.ROUND_DOWN)} DMD) for stake amount ${stakeAmount} DMD`);
-      } else if (!canStakeOrWithdrawNow) {
-        toast.warn("Outside staking window");
       } else if (BigNumber(txOpts.value).isLessThan(BigNumber(candidateMinStake.toString()).dividedBy(10**18))) {
         toast.warn("Insufficient candidate (pool owner) stake");
       } else {
@@ -698,6 +695,7 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
       }
       return false;
     } catch (err: any) {
+      console.log(err);
       showLoader(false, "");
       handleErrorMsg(err, "Error in creating pool");
       return false;
@@ -708,32 +706,26 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
     const amountInWei = web3.utils.toWei(amount.toString());
 
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
-    const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
 
     if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
 
-    if (!canStakeOrWithdrawNow) {
-      toast.warning('Outside staking/withdraw window');
+    try {
+      let receipt;
+      showLoader(true, `Removing Pool 💎`);
+      receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+      setPools(prevPools => {
+        const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
+        updateStakeAmounts(updatedPools);
+        return updatedPools;
+      });
+      if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+      toast.success(`Pool Removed 💎`);
+      showLoader(false, "");
+      return true;
+    } catch(err: any) {
+      showLoader(false, "");
+      handleErrorMsg(err, "Error in Removing Pool");
       return false;
-    } else {
-      try {
-        let receipt;
-        showLoader(true, `Removing Pool 💎`);
-        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-        setPools(prevPools => {
-          const updatedPools = prevPools.filter(p => p.stakingAddress !== pool.stakingAddress);
-          updateStakeAmounts(updatedPools);
-          return updatedPools;
-        });
-        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
-        toast.success(`Pool Removed 💎`);
-        showLoader(false, "");
-        return true;
-      } catch(err: any) {
-        showLoader(false, "");
-        handleErrorMsg(err, "Error in Removing Pool");
-        return false;
-      }
     }
   }
 
@@ -788,48 +780,40 @@ const StakingContextProvider: React.FC<ContextProviderProps> = ({children}) => {
   const unstake = async (pool: Pool, amount: BigNumber): Promise<boolean> => {
     const amountInWei = web3.utils.toWei(amount.toString());
     let txOpts = { ...defaultTxOpts, from: userWallet.myAddr };
-    const canStakeOrWithdrawNow = await contractsManager.stContract?.methods.areStakeAndWithdrawAllowed().call();
-
     if (!contractsManager.stContract || !userWallet || !userWallet.myAddr) return false;
 
     // determine available withdraw method and allowed amount
-    const newStakeAmount = BigNumber(pool.myStake).minus(amountInWei);
     const { maxWithdrawAmount, maxWithdrawOrderAmount } = await getWithdrawableAmounts(pool);
 
-    if (!canStakeOrWithdrawNow) {
-      toast.warning('Outside staking/withdraw window');
-      return false;
-    } else {
-      try {
-        let receipt;
-        if (!BigNumber(maxWithdrawAmount).isZero()) {
-          if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
-            toast.warn(`Requested withdraw amount exceeds max (${BigNumber(maxWithdrawAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
-            return false;
-          }
-          showLoader(true, `Unstaking ${amount} DMD 💎`);
-          receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-          if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
-          toast.success(`Unstaked ${amount} DMD 💎`);
-        } else {
-          if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
-            toast.warn(`Requested withdraw order amount exceeds max (${BigNumber(maxWithdrawOrderAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
-            return false;
-          } else {
-            showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
-            receipt = await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
-            if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
-            toast.success(`Ordered withdraw of ${amount} DMD 💎`);
-          }
+    try {
+      let receipt;
+      if (!BigNumber(maxWithdrawAmount).isZero()) {
+        if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawAmount)) {
+          toast.warn(`Requested withdraw amount exceeds max (${BigNumber(maxWithdrawAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
+          return false;
         }
-        showLoader(false, "");
-        addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
-        return true;
-      } catch(err: any) {
-        showLoader(false, "");
-        handleErrorMsg(err, "Error in withdrawing stake");
-        return false;
+        showLoader(true, `Unstaking ${amount} DMD 💎`);
+        receipt = await contractsManager.stContract.methods.withdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+        if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+        toast.success(`Unstaked ${amount} DMD 💎`);
+      } else {
+        if (new BigNumber(amountInWei).isGreaterThan(maxWithdrawOrderAmount)) {
+          toast.warn(`Requested withdraw order amount exceeds max (${BigNumber(maxWithdrawOrderAmount).dividedBy(10**18).toFixed(0)} DMD 💎)`);
+          return false;
+        } else {
+          showLoader(true, `Ordering unstake of ${amount} DMD 💎`);
+          receipt = await contractsManager.stContract.methods.orderWithdraw(pool.stakingAddress, amountInWei.toString()).send(txOpts);
+          if (!showHistoricBlock) setCurrentBlockNumber(receipt.blockNumber);
+          toast.success(`Ordered withdraw of ${amount} DMD 💎`);
+        }
       }
+      showLoader(false, "");
+      addOrUpdatePool(pool.stakingAddress, receipt?.blockNumber || currentBlockNumber + 1);
+      return true;
+    } catch(err: any) {
+      showLoader(false, "");
+      handleErrorMsg(err, "Error in withdrawing stake");
+      return false;
     }
   }
 

@@ -160,8 +160,6 @@ export interface StakingHbbft extends BaseContract {
       _ip: string | number[]
     ): PayableTransactionObject<void>;
 
-    areStakeAndWithdrawAllowed(): NonPayableTransactionObject<boolean>;
-
     bonusScoreContract(): NonPayableTransactionObject<string>;
 
     candidateMinStake(): NonPayableTransactionObject<string>;
@@ -259,12 +257,12 @@ export interface StakingHbbft extends BaseContract {
       _amount: number | string | BN
     ): NonPayableTransactionObject<void>;
 
-    notifiyEarlyEpochEnd(
-      timestamp: number | string | BN
-    ): NonPayableTransactionObject<void>;
-
     notifyAvailability(
       _stakingAddress: string
+    ): NonPayableTransactionObject<void>;
+
+    notifyEarlyEpochEnd(
+      timestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     notifyKeyGenFailed(): NonPayableTransactionObject<void>;

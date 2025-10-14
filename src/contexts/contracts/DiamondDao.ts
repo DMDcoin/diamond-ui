@@ -262,12 +262,11 @@ export interface DiamondDao extends BaseContract {
       _stakingHbbft: string,
       _reinsertPot: string,
       _txPermission: string,
+      _bonusScore: string,
       _lowMajorityDao: string,
       _createProposalFee: number | string | BN,
       _startTimestamp: number | string | BN
     ): NonPayableTransactionObject<void>;
-
-    initializeV2(_lowMajorityDao: string): NonPayableTransactionObject<void>;
 
     isCoreContract(arg0: string): NonPayableTransactionObject<boolean>;
 
