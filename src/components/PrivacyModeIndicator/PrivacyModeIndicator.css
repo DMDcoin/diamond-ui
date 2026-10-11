@@ -8,7 +8,6 @@
   align-items: center;
   gap: var(--space-8);
   position: relative;
-  margin-right: var(--space-15);
 }
 
 .privacy-mode-toggle {
@@ -116,10 +115,6 @@
 
 /* Mobile styles */
 @media (max-width: 768px) {
-  .privacy-mode-wrapper {
-    margin-right: var(--space-10);
-  }
-  
   .privacy-mode-toggle {
     padding: var(--space-6) var(--space-12);
     font-size: var(--text-badge);

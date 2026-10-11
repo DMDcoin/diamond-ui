@@ -351,32 +351,6 @@
   transition: color var(--duration-theme) var(--ease-default);
 }
 
-.voting-power-bar {
-  height: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  margin-top: var(--space-10);
-}
-
-
-.light-theme .voting-power-bar {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.power-progress {
-  height: 100%;
-  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-  border-radius: var(--radius-control);
-  transition: width 1s ease-in-out;
-}
-
-
-.light-theme .power-progress {
-  background: linear-gradient(90deg, #0077cc, #3a7bd5);
-}
-
-
 .stat-trend {
   font-size: var(--text-ui);
   color: var(--text-secondary);
@@ -1733,7 +1707,6 @@
 @media (prefers-reduced-motion: reduce) {
   .dao-page .countdown-timer,
   .dao-page .participation-progress,
-  .dao-page .power-progress,
   .dao-page .distribution-progress,
   .dao-page .result-progress {
     transition: none;
@@ -2105,32 +2078,6 @@
   font-weight: var(--weight-medium);
   transition: color var(--duration-theme) var(--ease-default);
 }
-
-.voting-power-bar {
-  height: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-control);
-  overflow: hidden;
-  margin-top: var(--space-10);
-}
-
-
-.light-theme .voting-power-bar {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.power-progress {
-  height: 100%;
-  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-  border-radius: var(--radius-control);
-  transition: width 1s ease-in-out;
-}
-
-
-.light-theme .power-progress {
-  background: linear-gradient(90deg, #0077cc, #3a7bd5);
-}
-
 
 .stat-trend {
   font-size: var(--text-ui);
@@ -2656,10 +2603,6 @@
     justify-content: center;
   }
 
-  .dao-page .voting-power-bar {
-    width: 100%;
-  }
-
   .dao-page .proposals-tabs {
     flex-direction: column;
     gap: var(--space-0);
@@ -2687,6 +2630,21 @@
 
   .dao-page .tab-btn.active::after {
     display: none;
+  }
+
+  .dao-page .proposals-controls {
+    align-items: stretch;
+  }
+
+  .dao-page .search-filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .dao-page .search-container input,
+  .dao-page .filter-container select {
+    width: 100%;
   }
 }
 
