@@ -111,7 +111,7 @@
   margin-bottom: var(--space-30);
 }
 
-.search-filter-group {
+:is(.validators-page, .validator-detail-page) .search-filter-group {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-15);
@@ -120,14 +120,14 @@
   min-width: 0;
 }
 
-.search-container {
+:is(.validators-page, .validator-detail-page) .search-container {
   position: relative;
   flex: 1 1 16.25rem;
   min-width: 11.25rem;
   max-width: 20rem;
 }
 
-.filter-container {
+:is(.validators-page, .validator-detail-page) .filter-container {
   flex: 0 0 auto;
 }
 
@@ -145,17 +145,17 @@
   margin-left: var(--space-0);
 }
 
-.vl-recover-container .info-tooltip-trigger {
+:is(.validators-page, .validator-detail-page) .vl-recover-container .info-tooltip-trigger {
   margin-left: var(--space-0);
 }
 
-.vl-recover-container .btn-recover {
+:is(.validators-page, .validator-detail-page) .vl-recover-container .btn-recover {
   height: 43px;
   padding: var(--space-8) var(--space-16);
   font-size: var(--text-control);
 }
 
-.search-container input {
+:is(.validators-page, .validator-detail-page) .search-container input {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-control);
@@ -165,13 +165,13 @@
   font-size: var(--text-control);
 }
 
-.search-container input:focus {
+:is(.validators-page, .validator-detail-page) .search-container input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 157, 255, 0.2);
 }
 
-.search-btn {
+:is(.validators-page, .validator-detail-page) .search-btn {
   position: absolute;
   right: 0.625rem;
   top: 50%;
@@ -184,11 +184,11 @@
   font-size: 0.8333rem;
 }
 
-.search-btn:hover {
+:is(.validators-page, .validator-detail-page) .search-btn:hover {
   opacity: 1;
 }
 
-.filter-container select {
+:is(.validators-page, .validator-detail-page) .filter-container select {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-control);
@@ -203,13 +203,13 @@
   background-size: 1rem;
 }
 
-.filter-container select:focus {
+:is(.validators-page, .validator-detail-page) .filter-container select:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 157, 255, 0.2);
 }
 
-.btn-customize {
+:is(.validators-page, .validator-detail-page) .btn-customize {
   background: var(--card-bg);
   border: var(--btn-border-width) solid var(--btn-secondary-border);
   border-radius: var(--btn-radius);
@@ -225,7 +225,7 @@
   font-weight: var(--btn-weight);
 }
 
-.btn-customize:hover {
+:is(.validators-page, .validator-detail-page) .btn-customize:hover {
   background: var(--card-hover);
   transform: translateY(-0.125rem);
 }
@@ -284,20 +284,20 @@ body.light-theme .vl-table-scroll-btn:hover {
   background: #f3f4f6;
 }
 
-.validators-table {
+:is(.validators-page, .validator-detail-page) .validators-table {
   width: 100%;
   border-collapse: collapse;
   min-width: 56.25rem;
 }
 
-.validators-table th.vl-action-cell,
-.validators-table td.vl-action-cell {
+:is(.validators-page, .validator-detail-page) .validators-table th.vl-action-cell,
+:is(.validators-page, .validator-detail-page) .validators-table td.vl-action-cell {
   width: 1%;
   white-space: nowrap;
   text-align: center;
 }
 
-.validators-table th {
+:is(.validators-page, .validator-detail-page) .validators-table th {
   background: rgba(0, 0, 0, 0.2);
   padding: var(--space-15);
   text-align: left;
@@ -309,36 +309,36 @@ body.light-theme .vl-table-scroll-btn:hover {
   white-space: nowrap;
 }
 
-.validators-table th i {
+:is(.validators-page, .validator-detail-page) .validators-table th i {
   margin-left: var(--space-5);
   cursor: pointer;
   opacity: 0.7;
   transition: var(--transition);
 }
 
-.validators-table th i:hover {
+:is(.validators-page, .validator-detail-page) .validators-table th i:hover {
   opacity: 1;
 }
 
-.validators-table td {
+:is(.validators-page, .validator-detail-page) .validators-table td {
   padding: var(--space-15);
   border-bottom: var(--border-width) solid rgba(255, 255, 255, 0.05);
   font-size: var(--text-control);
 }
 
-.validators-table tbody tr {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr {
   transition: var(--transition);
 }
 
-.validators-table tbody tr:hover {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:hover {
   background: rgba(255, 255, 255, 0.03);
 }
 
-.validators-table tbody tr:last-child td {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.status-badge {
+:where(.validators-page, .validator-detail-page) .status-badge {
   display: inline-block;
   padding: var(--space-5) var(--space-10);
   border-radius: var(--radius-badge);
@@ -387,18 +387,18 @@ body.light-theme .vl-table-scroll-btn:hover {
   color: #ff6b6b;
 }
 
-.wallet-address {
+:is(.validators-page, .validator-detail-page) .wallet-address {
   font-weight: var(--weight-medium);
 }
 
-.pagination {
+:is(.validators-page, .validator-detail-page) .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--space-10);
 }
 
-.pagination-btn {
+:is(.validators-page, .validator-detail-page) .pagination-btn {
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -413,21 +413,21 @@ body.light-theme .vl-table-scroll-btn:hover {
   transition: var(--transition);
 }
 
-.pagination-btn:hover {
+:is(.validators-page, .validator-detail-page) .pagination-btn:hover {
   background: var(--card-hover);
 }
 
-.pagination-btn.active {
+:is(.validators-page, .validator-detail-page) .pagination-btn.active {
   background: rgba(0, 157, 255, 0.2);
   border-color: rgba(0, 157, 255, 0.4);
 }
 
-.pagination-ellipsis {
+:is(.validators-page, .validator-detail-page) .pagination-ellipsis {
   color: var(--text-white);
   opacity: 0.7;
 }
 
-.modal {
+:is(.validators-page, .validator-detail-page) .modal {
   display: none;
   position: fixed;
   top: 0;
@@ -444,12 +444,12 @@ body.light-theme .vl-table-scroll-btn:hover {
   transition: opacity var(--duration-base) var(--ease-default);
 }
 
-.modal.show {
+:is(.validators-page, .validator-detail-page) .modal.show {
   display: flex;
   opacity: 1;
 }
 
-.modal-content {
+:is(.validators-page, .validator-detail-page) .modal-content {
   background: var(--darker-bg);
   border-radius: var(--radius-panel);
   width: 100%;
@@ -464,7 +464,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   margin: auto;
 }
 
-.modal-header {
+:is(.validators-page, .validator-detail-page) .modal-header {
   padding: var(--space-20);
   border-bottom: var(--border-width) solid var(--border-color);
   display: flex;
@@ -476,20 +476,20 @@ body.light-theme .vl-table-scroll-btn:hover {
   flex-shrink: 0;
 }
 
-.modal-header > span {
+:is(.validators-page, .validator-detail-page) .modal-header > span {
   flex-basis: 100%;
   display: block;
   margin-top: var(--space-8);
 }
 
-.modal-header h3 {
+:is(.validators-page, .validator-detail-page) .modal-header h3 {
   width: 100%;
   margin: var(--space-0);
   font-size: var(--text-modal-title);
   color: #0070f3;
 }
 
-.close-modal {
+:is(.validators-page, .validator-detail-page) .close-modal {
   background: transparent;
   border: none;
   color: var(--text-white);
@@ -499,11 +499,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   transition: var(--transition);
 }
 
-.close-modal:hover {
+:is(.validators-page, .validator-detail-page) .close-modal:hover {
   opacity: 1;
 }
 
-.modal-body {
+:is(.validators-page, .validator-detail-page) .modal-body {
   padding: var(--space-20);
   flex: 1 1 auto;
   min-height: 0;
@@ -511,7 +511,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   overscroll-behavior: contain;
 }
 
-.modal-footer {
+:is(.validators-page, .validator-detail-page) .modal-footer {
   padding: var(--space-20);
   border-top: var(--border-width) solid var(--border-color);
   display: flex;
@@ -520,32 +520,32 @@ body.light-theme .vl-table-scroll-btn:hover {
   flex-shrink: 0;
 }
 
-.columns-container {
+:is(.validators-page, .validator-detail-page) .columns-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-20);
 }
 
-.columns-section {
+:is(.validators-page, .validator-detail-page) .columns-section {
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-panel);
   padding: var(--space-20);
 }
 
-.columns-section-title {
+:is(.validators-page, .validator-detail-page) .columns-section-title {
   font-size: var(--text-ui);
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: var(--space-15);
   font-weight: var(--weight-medium);
 }
 
-.active-columns {
+:is(.validators-page, .validator-detail-page) .active-columns {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
   gap: var(--space-10);
 }
 
-.active-column {
+:is(.validators-page, .validator-detail-page) .active-column {
   background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-toggle);
   padding: var(--space-8) var(--space-15);
@@ -556,11 +556,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   border: var(--border-width) solid rgba(255, 255, 255, 0.1);
 }
 
-.active-column:hover {
+:is(.validators-page, .validator-detail-page) .active-column:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.column-number {
+:is(.validators-page, .validator-detail-page) .column-number {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -574,7 +574,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   font-weight: var(--weight-semibold);
 }
 
-.column-name {
+:is(.validators-page, .validator-detail-page) .column-name {
   flex-grow: 1;
   font-size: var(--text-ui);
   white-space: nowrap;
@@ -582,18 +582,18 @@ body.light-theme .vl-table-scroll-btn:hover {
   text-overflow: ellipsis;
 }
 
-.column-drag {
+:is(.validators-page, .validator-detail-page) .column-drag {
   opacity: 0.5;
   margin-left: var(--space-5);
 }
 
-.available-columns {
+:is(.validators-page, .validator-detail-page) .available-columns {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-10);
 }
 
-.available-column {
+:is(.validators-page, .validator-detail-page) .available-column {
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-toggle);
   padding: var(--space-8) var(--space-15);
@@ -606,16 +606,16 @@ body.light-theme .vl-table-scroll-btn:hover {
   min-height: 2.25rem;
 }
 
-.available-column:hover {
+:is(.validators-page, .validator-detail-page) .available-column:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.available-column.selected {
+:is(.validators-page, .validator-detail-page) .available-column.selected {
   background: rgba(0, 112, 243, 0.15);
   border-color: rgba(0, 112, 243, 0.3);
 }
 
-.column-remove {
+:is(.validators-page, .validator-detail-page) .column-remove {
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -632,11 +632,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   line-height: var(--leading-none);
 }
 
-.column-remove:hover {
+:is(.validators-page, .validator-detail-page) .column-remove:hover {
   background: rgba(255, 0, 0, 0.3);
 }
 
-.btn-apply {
+:is(.validators-page, .validator-detail-page) .btn-apply {
   background: var(--btn-primary-bg);
   color: var(--btn-primary-fg);
   border: none;
@@ -647,13 +647,13 @@ body.light-theme .vl-table-scroll-btn:hover {
   font-weight: var(--btn-weight);
 }
 
-.btn-apply:hover {
+:is(.validators-page, .validator-detail-page) .btn-apply:hover {
   background: var(--btn-primary-bg-hover);
   transform: translateY(-0.125rem);
   box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
 }
 
-.btn-reset {
+:is(.validators-page, .validator-detail-page) .btn-reset {
   border: var(--btn-border-width) solid var(--btn-secondary-border);
   font-weight: var(--btn-weight);
 }
@@ -669,7 +669,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   }
 }
 
-.modal.show .modal-content {
+:is(.validators-page, .validator-detail-page) .modal.show .modal-content {
   animation: modalFadeIn var(--duration-base) var(--ease-default) forwards;
 }
 
@@ -723,17 +723,17 @@ body.light-theme .vl-table-scroll-btn:hover {
   margin-bottom: var(--space-0);
 }
 
-.form-group {
+:is(.validators-page, .validator-detail-page) .form-group {
   margin-bottom: var(--space-20);
 }
 
-.form-group label {
+:is(.validators-page, .validator-detail-page) .form-group label {
   display: block;
   margin-bottom: var(--space-8);
   font-weight: var(--weight-medium);
 }
 
-.form-group input {
+:is(.validators-page, .validator-detail-page) .form-group input {
   width: 100%;
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
@@ -743,7 +743,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   font-size: var(--text-body);
 }
 
-.form-group input:focus {
+:is(.validators-page, .validator-detail-page) .form-group input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 157, 255, 0.2);
@@ -810,12 +810,12 @@ body.light-theme .vl-table-scroll-btn:hover {
     position: relative;
   }
 
-  .validators-table {
+  :is(.validators-page, .validator-detail-page) .validators-table {
     min-width: 900px;
   }
 
-  .validators-table th:nth-child(2),
-  .validators-table td:nth-child(2) {
+  :is(.validators-page, .validator-detail-page) .validators-table th:nth-child(2),
+  :is(.validators-page, .validator-detail-page) .validators-table td:nth-child(2) {
     position: sticky;
     left: 0;
     z-index: 2;
@@ -823,7 +823,7 @@ body.light-theme .vl-table-scroll-btn:hover {
     border-right: var(--border-width) solid var(--border-color);
   }
 
-  .validators-table tbody tr:hover td:nth-child(2) {
+  :is(.validators-page, .validator-detail-page) .validators-table tbody tr:hover td:nth-child(2) {
     background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), var(--darker-bg);
   }
 }
@@ -842,13 +842,13 @@ body.light-theme .vl-table-scroll-btn:hover {
     font-size: var(--text-body);
   }
 
-  .search-filter-group {
+  :is(.validators-page, .validator-detail-page) .search-filter-group {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
   }
 
-  .search-container {
+  :is(.validators-page, .validator-detail-page) .search-container {
     max-width: none;
     flex: 0 0 auto;
   }
@@ -862,79 +862,79 @@ body.light-theme .vl-table-scroll-btn:hover {
     overflow-x: auto;
   }
 
-  .validators-table {
+  :is(.validators-page, .validator-detail-page) .validators-table {
     min-width: 900px;
   }
 
-  .modal-content {
+  :is(.validators-page, .validator-detail-page) .modal-content {
     width: 90%;
   }
 }
 
 /* Responsive styles for columns filter modal */
 @media (max-width: 768px) {
-  .modal-content {
+  :is(.validators-page, .validator-detail-page) .modal-content {
     max-width: 95%;
     margin: auto;
   }
   
-  .columns-container {
+  :is(.validators-page, .validator-detail-page) .columns-container {
     gap: var(--space-15);
   }
   
-  .columns-section {
+  :is(.validators-page, .validator-detail-page) .columns-section {
     padding: var(--space-15);
   }
   
-  .active-columns {
+  :is(.validators-page, .validator-detail-page) .active-columns {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: var(--space-8);
   }
   
-  .available-columns {
+  :is(.validators-page, .validator-detail-page) .available-columns {
     gap: var(--space-8);
   }
   
-  .modal-header h3 {
+  :is(.validators-page, .validator-detail-page) .modal-header h3 {
     font-size: var(--text-card-title);
   }
   
-  .column-name {
+  :is(.validators-page, .validator-detail-page) .column-name {
     font-size: var(--text-badge);
   }
 }
 
 @media (max-width: 480px) {
-  .modal-content {
+  :is(.validators-page, .validator-detail-page) .modal-content {
     max-width: 100%;
     margin: auto;
     border-radius: var(--radius-card);
   }
   
-  .active-columns {
+  :is(.validators-page, .validator-detail-page) .active-columns {
     grid-template-columns: 1fr;
   }
   
-  .available-columns {
+  :is(.validators-page, .validator-detail-page) .available-columns {
     flex-direction: column;
   }
   
-  .modal-header {
+  :is(.validators-page, .validator-detail-page) .modal-header {
     padding: var(--space-15);
   }
   
-  .modal-body {
+  :is(.validators-page, .validator-detail-page) .modal-body {
     padding: var(--space-15);
   }
   
-  .modal-footer {
+  :is(.validators-page, .validator-detail-page) .modal-footer {
     padding: var(--space-15);
     flex-direction: column;
     gap: var(--space-10);
   }
   
-  .btn-cancel,
-  .btn-apply {
+  :is(.validators-page, .validator-detail-page) .btn-cancel,
+  :is(.validators-page, .validator-detail-page) .btn-apply {
     width: 100%;
     border: var(--btn-border-width) solid var(--btn-secondary-border);
     font-weight: var(--btn-weight);
@@ -980,18 +980,18 @@ body.light-theme .vl-table-scroll-btn:hover {
     height: 3rem;
   }
 
-  .pagination {
+  :is(.validators-page, .validator-detail-page) .pagination {
     flex-wrap: wrap;
   }
 }
 
-.nav-links a.active {
+:is(.validators-page, .validator-detail-page) .nav-links a.active {
   opacity: 1;
   font-weight: var(--weight-semibold);
   position: relative;
 }
 
-.nav-links a.active::after {
+:is(.validators-page, .validator-detail-page) .nav-links a.active::after {
   content: "";
   position: absolute;
   bottom: -5px;
@@ -1002,7 +1002,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   border-radius: 2px;
 }
 
-.validators-table tbody tr {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr {
   opacity: 0;
   transform: translateY(0.625rem);
   animation: fadeInRows var(--duration-theme) forwards;
@@ -1015,38 +1015,38 @@ body.light-theme .vl-table-scroll-btn:hover {
   }
 }
 
-.validators-table tbody tr:nth-child(1) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(1) {
   animation-delay: 0.1s;
 }
-.validators-table tbody tr:nth-child(2) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(2) {
   animation-delay: 0.2s;
 }
-.validators-table tbody tr:nth-child(3) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(3) {
   animation-delay: 0.3s;
 }
-.validators-table tbody tr:nth-child(4) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(4) {
   animation-delay: 0.4s;
 }
-.validators-table tbody tr:nth-child(5) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(5) {
   animation-delay: 0.5s;
 }
-.validators-table tbody tr:nth-child(6) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(6) {
   animation-delay: 0.6s;
 }
-.validators-table tbody tr:nth-child(7) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(7) {
   animation-delay: 0.7s;
 }
-.validators-table tbody tr:nth-child(8) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(8) {
   animation-delay: 0.8s;
 }
-.validators-table tbody tr:nth-child(9) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(9) {
   animation-delay: 0.9s;
 }
-.validators-table tbody tr:nth-child(10) {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:nth-child(10) {
   animation-delay: 1s;
 }
 
-.validators-table th::after {
+:is(.validators-page, .validator-detail-page) .validators-table th::after {
   display: none;
 }
 
@@ -1056,11 +1056,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   }
 }
 
-.filter-container select {
+:is(.validators-page, .validator-detail-page) .filter-container select {
   color: var(--text-white);
 }
 
-.filter-container select option {
+:is(.validators-page, .validator-detail-page) .filter-container select option {
   background-color: var(--darker-bg);
   color: var(--text-white);
 }
@@ -1070,15 +1070,15 @@ body.light-theme .vl-table-scroll-btn:hover {
   animation: fadeInRows var(--duration-theme) forwards;
 }
 
-.pagination-content.active {
+:is(.validators-page, .validator-detail-page) .pagination-content.active {
   display: block;
 }
 
-.form-group input::placeholder {
+:is(.validators-page, .validator-detail-page) .form-group input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.validators-table tbody tr:hover {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr:hover {
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 15px rgba(0, 157, 255, 0.1);
 }
@@ -1128,24 +1128,24 @@ body.light-theme .validators-table-section {
   background-color: white;
 }
 
-body.light-theme .search-container input {
+body.light-theme :is(.validators-page, .validator-detail-page) .search-container input {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.15);
   color: #121826;
 }
 
-body.light-theme .search-btn {
+body.light-theme :is(.validators-page, .validator-detail-page) .search-btn {
   color: #64748b;
 }
 
-body.light-theme .filter-container select {
+body.light-theme :is(.validators-page, .validator-detail-page) .filter-container select {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.15);
   color: #121826;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
-body.light-theme .filter-container select option {
+body.light-theme :is(.validators-page, .validator-detail-page) .filter-container select option {
   background-color: white;
   color: #121826;
 }
@@ -1156,30 +1156,30 @@ body.light-theme .validators-table-container {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-body.light-theme .validators-table th {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table th {
   background-color: rgba(0, 0, 0, 0.03);
   border-bottom: var(--border-width-thick) solid rgba(0, 0, 0, 0.1);
   color: #121826;
 }
 
-body.light-theme .validators-table td {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table td {
   border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.08);
   color: #121826;
 }
 
-body.light-theme .validators-table tbody tr:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table tbody tr:hover {
   background-color: rgba(0, 112, 243, 0.04);
 }
 
-body.light-theme .validators-table th i {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table th i {
   color: #64748b;
 }
 
-body.light-theme .validators-table th i:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table th i:hover {
   color: #121826;
 }
 
-body.light-theme .wallet-address {
+body.light-theme :is(.validators-page, .validator-detail-page) .wallet-address {
   color: #121826;
 }
 
@@ -1201,84 +1201,84 @@ body.light-theme .status-invalid {
   border: var(--border-width) solid rgba(255, 107, 107, 0.3);
 }
 
-body.light-theme .pagination-btn {
+body.light-theme :is(.validators-page, .validator-detail-page) .pagination-btn {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.15);
   color: #121826;
 }
 
-body.light-theme .pagination-btn.active {
+body.light-theme :is(.validators-page, .validator-detail-page) .pagination-btn.active {
   background-color: rgba(0, 157, 255, 0.1);
   border-color: rgba(0, 157, 255, 0.3);
   color: #0070f3;
 }
 
-body.light-theme .pagination-ellipsis {
+body.light-theme :is(.validators-page, .validator-detail-page) .pagination-ellipsis {
   color: #64748b;
 }
 
-body.light-theme .modal-content {
+body.light-theme :is(.validators-page, .validator-detail-page) .modal-content {
   background: white;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
-body.light-theme .modal-header h3 {
+body.light-theme :is(.validators-page, .validator-detail-page) .modal-header h3 {
   color: #0f172a;
 }
 
-body.light-theme .close-modal {
+body.light-theme :is(.validators-page, .validator-detail-page) .close-modal {
   color: #64748b;
 }
 
-body.light-theme .modal-header {
+body.light-theme :is(.validators-page, .validator-detail-page) .modal-header {
   border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .modal-footer {
+body.light-theme :is(.validators-page, .validator-detail-page) .modal-footer {
   border-top: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .columns-section {
+body.light-theme :is(.validators-page, .validator-detail-page) .columns-section {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-body.light-theme .columns-section-title {
+body.light-theme :is(.validators-page, .validator-detail-page) .columns-section-title {
   color: #64748b;
 }
 
-body.light-theme .active-column {
+body.light-theme :is(.validators-page, .validator-detail-page) .active-column {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .active-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .active-column:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme .column-name {
+body.light-theme :is(.validators-page, .validator-detail-page) .column-name {
   color: #121826;
 }
 
-body.light-theme .available-column {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .available-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme .available-column.selected {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column.selected {
   background-color: rgba(0, 112, 243, 0.1);
   border-color: rgba(0, 112, 243, 0.3);
 }
 
-body.light-theme .column-remove {
+body.light-theme :is(.validators-page, .validator-detail-page) .column-remove {
   background-color: rgba(0, 0, 0, 0.1);
   color: #64748b;
 }
 
-body.light-theme .column-remove:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .column-remove:hover {
   background-color: rgba(255, 0, 0, 0.15);
   color: #d32f2f;
 }
@@ -1287,17 +1287,17 @@ body.light-theme .validator-info p {
   color: #121826;
 }
 
-body.light-theme .form-group label {
+body.light-theme :is(.validators-page, .validator-detail-page) .form-group label {
   color: #121826;
 }
 
-body.light-theme .form-group input {
+body.light-theme :is(.validators-page, .validator-detail-page) .form-group input {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.15);
   color: #121826;
 }
 
-body.light-theme .form-group input::placeholder {
+body.light-theme :is(.validators-page, .validator-detail-page) .form-group input::placeholder {
   color: rgba(18, 24, 38, 0.4);
 }
 
@@ -1341,7 +1341,7 @@ body.light-theme .cr-danger {
   font-weight: var(--weight-medium);
 }
 
-.validators-table td {
+:is(.validators-page, .validator-detail-page) .validators-table td {
   padding: var(--space-15);
   border-bottom: var(--border-width) solid rgba(255, 255, 255, 0.05);
   white-space: nowrap;
@@ -1350,8 +1350,8 @@ body.light-theme .cr-danger {
   max-width: 12.5rem;
 }
 
-.validators-table td,
-.validators-table button {
+:is(.validators-page, .validator-detail-page) .validators-table td,
+:is(.validators-page, .validator-detail-page) .validators-table button {
   font-size: var(--text-control) !important;
 }
 
@@ -1361,7 +1361,7 @@ body.light-theme .public-key {
 }
 
 /* Additional styles for columns filter modal */
-.btn-customize {
+:is(.validators-page, .validator-detail-page) .btn-customize {
   background: var(--btn-secondary-fill);
   color: var(--btn-secondary-fg);
   border: var(--btn-border-width) solid var(--btn-secondary-border);
@@ -1375,16 +1375,16 @@ body.light-theme .public-key {
   gap: var(--space-8);
 }
 
-.btn-customize:hover {
+:is(.validators-page, .validator-detail-page) .btn-customize:hover {
   background: var(--btn-secondary-fill-hover);
   transform: translateY(-0.125rem);
 }
 
-.btn-customize i {
+:is(.validators-page, .validator-detail-page) .btn-customize i {
   font-size: var(--text-ui);
 }
 
-.align-start {
+:is(.validators-page, .validator-detail-page) .align-start {
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
   text-align: center;
@@ -1392,71 +1392,71 @@ body.light-theme .public-key {
   padding: var(--space-20);
 }
 
-.column-selection-container {
+:is(.validators-page, .validator-detail-page) .column-selection-container {
   min-height: 6.25rem;
 }
 
-.selected-columns {
+:is(.validators-page, .validator-detail-page) .selected-columns {
   min-height: 6.25rem;
 }
 
-.drag-over {
+:is(.validators-page, .validator-detail-page) .drag-over {
   background: rgba(0, 112, 243, 0.2) !important;
   border: var(--border-width-thick) dashed #0070f3 !important;
 }
 
-.column-drag {
+:is(.validators-page, .validator-detail-page) .column-drag {
   opacity: 0.6;
   margin-left: auto;
   cursor: grab;
 }
 
-.active-column:active .column-drag {
+:is(.validators-page, .validator-detail-page) .active-column:active .column-drag {
   cursor: grabbing;
 }
 
 /* Light theme overrides for columns filter */
-body.light-theme .btn-customize {
+body.light-theme :is(.validators-page, .validator-detail-page) .btn-customize {
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .align-start {
+body.light-theme :is(.validators-page, .validator-detail-page) .align-start {
   color: rgba(0, 0, 0, 0.6);
 }
 
-body.light-theme .columns-section {
+body.light-theme :is(.validators-page, .validator-detail-page) .columns-section {
   background: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme .columns-section-title {
+body.light-theme :is(.validators-page, .validator-detail-page) .columns-section-title {
   color: rgba(0, 0, 0, 0.6);
 }
 
-body.light-theme .active-column {
+body.light-theme :is(.validators-page, .validator-detail-page) .active-column {
   background: rgba(0, 0, 0, 0.05);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .active-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .active-column:hover {
   background: rgba(0, 0, 0, 0.08);
 }
 
-body.light-theme .available-column {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.08);
   justify-content: space-between;
 }
 
-body.light-theme .available-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
-body.light-theme .available-column.selected {
+body.light-theme :is(.validators-page, .validator-detail-page) .available-column.selected {
   background: rgba(0, 112, 243, 0.1);
   border-color: rgba(0, 112, 243, 0.2);
 }
 
-body.light-theme .column-remove {
+body.light-theme :is(.validators-page, .validator-detail-page) .column-remove {
   background: rgba(0, 0, 0, 0.1);
   color: rgba(0, 0, 0, 0.7);
   display: flex;
@@ -1465,12 +1465,12 @@ body.light-theme .column-remove {
   line-height: var(--leading-none);
 }
 
-body.light-theme .column-remove:hover {
+body.light-theme :is(.validators-page, .validator-detail-page) .column-remove:hover {
   background: rgba(255, 0, 0, 0.2);
   color: rgba(255, 0, 0, 0.8);
 }
 
-.available-column .column-name {
+:is(.validators-page, .validator-detail-page) .available-column .column-name {
   flex: 1;
   margin-right: var(--space-8);
   overflow: hidden;
@@ -1478,12 +1478,12 @@ body.light-theme .column-remove:hover {
   white-space: nowrap;
 }
 
-.available-column.selected .column-name {
+:is(.validators-page, .validator-detail-page) .available-column.selected .column-name {
   margin-right: var(--space-4);
 }
 
 /* Ensure proper spacing for the X button */
-.available-column .column-remove {
+:is(.validators-page, .validator-detail-page) .available-column .column-remove {
   margin-left: auto;
   margin-right: var(--space-0);
 }
@@ -1608,7 +1608,7 @@ body.light-theme .vl-per-page select option {
 }
 
 /* Ellipsis pagination button */
-.pagination-ellipsis {
+:is(.validators-page, .validator-detail-page) .pagination-ellipsis {
   cursor: default !important;
   pointer-events: none;
   opacity: 0.5;
@@ -1620,19 +1620,19 @@ body.light-theme .vl-per-page select option {
   border: var(--border-width) solid var(--btn-warning-border);
 }
 
-.validators-table tbody tr.vl-row--abandoned td {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr.vl-row--abandoned td {
   background: rgba(255, 167, 38, 0.07);
 }
 
-.validators-table tbody tr.vl-row--abandoned:hover td {
+:is(.validators-page, .validator-detail-page) .validators-table tbody tr.vl-row--abandoned:hover td {
   background: rgba(255, 167, 38, 0.12);
 }
 
-body.light-theme .validators-table tbody tr.vl-row--abandoned td {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table tbody tr.vl-row--abandoned td {
   background: rgba(214, 158, 46, 0.08);
 }
 
-body.light-theme .validators-table tbody tr.vl-row--abandoned:hover td {
+body.light-theme :is(.validators-page, .validator-detail-page) .validators-table tbody tr.vl-row--abandoned:hover td {
   background: rgba(214, 158, 46, 0.14);
 }
 
@@ -1644,7 +1644,7 @@ body.light-theme .validators-table tbody tr.vl-row--abandoned:hover td {
   }
 
   .validators-page .vl-per-page select,
-  .btn-apply {
+  :is(.validators-page, .validator-detail-page) .btn-apply {
     min-height: var(--tap-target);
   }
 
@@ -1665,12 +1665,12 @@ body.light-theme .validators-table tbody tr.vl-row--abandoned:hover td {
   }
 
   .validators-page:not(.rich-list-page) .vl-pill,
-  .available-column {
+  :is(.validators-page, .validator-detail-page) .available-column {
     position: relative;
   }
 
   .validators-page:not(.rich-list-page) .vl-pill::before,
-  .available-column::before {
+  :is(.validators-page, .validator-detail-page) .available-column::before {
     content: "";
     position: absolute;
     top: 50%;

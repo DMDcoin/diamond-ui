@@ -1129,8 +1129,8 @@ header .logo {
 }
 
 .wallet-icon.large {
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
 }
 
 .wallet-icon-inner {
@@ -3398,7 +3398,7 @@ body.light-theme .btn-sm:hover,
 body.light-theme .btn-primary.btn-sm:hover {
   background: var(--btn-primary-bg-hover);
   box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 body.light-theme .btn-secondary.btn-sm {
