@@ -2209,6 +2209,7 @@ header .logo {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-16);
   cursor: pointer;
   transition: var(--transition);
 }
@@ -2219,6 +2220,7 @@ header .logo {
 }
 
 .faq-question i {
+  flex-shrink: 0;
   transition: var(--transition);
 }
 
@@ -2309,7 +2311,13 @@ header .logo {
 }
 
 .faq-item.active .faq-answer {
-  max-height: 2000px;
+  max-height: 125rem;
+}
+
+@media (max-width: 480px) {
+  .faq-item.active .faq-answer {
+    max-height: 250rem;
+  }
 }
 
 .faq-actions {
