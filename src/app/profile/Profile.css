@@ -1189,6 +1189,7 @@ body.light-theme .dp2-tfoot-rewards-value {
 @media (pointer: coarse) {
   .profile-page .stake-actions > * {
     min-height: var(--tap-target);
+    align-items: center;
   }
 
   .profile-page .vp2-legend-pills {

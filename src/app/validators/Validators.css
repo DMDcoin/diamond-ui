@@ -427,7 +427,8 @@ body.light-theme .vl-table-scroll-btn:hover {
   opacity: 0.7;
 }
 
-:is(.validators-page, .validator-detail-page) .modal {
+:is(.validators-page, .validator-detail-page) .modal,
+.modal.columns-modal {
   display: none;
   position: fixed;
   top: 0;
@@ -444,12 +445,13 @@ body.light-theme .vl-table-scroll-btn:hover {
   transition: opacity var(--duration-base) var(--ease-default);
 }
 
-:is(.validators-page, .validator-detail-page) .modal.show {
+:is(.validators-page, .validator-detail-page) .modal.show,
+.modal.columns-modal.show {
   display: flex;
   opacity: 1;
 }
 
-:is(.validators-page, .validator-detail-page) .modal-content {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-content {
   background: var(--darker-bg);
   border-radius: var(--radius-panel);
   width: 100%;
@@ -464,7 +466,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   margin: auto;
 }
 
-:is(.validators-page, .validator-detail-page) .modal-header {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-header {
   padding: var(--space-20);
   border-bottom: var(--border-width) solid var(--border-color);
   display: flex;
@@ -476,20 +478,20 @@ body.light-theme .vl-table-scroll-btn:hover {
   flex-shrink: 0;
 }
 
-:is(.validators-page, .validator-detail-page) .modal-header > span {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-header > span {
   flex-basis: 100%;
   display: block;
   margin-top: var(--space-8);
 }
 
-:is(.validators-page, .validator-detail-page) .modal-header h3 {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-header h3 {
   width: 100%;
   margin: var(--space-0);
   font-size: var(--text-modal-title);
   color: #0070f3;
 }
 
-:is(.validators-page, .validator-detail-page) .close-modal {
+:is(.validators-page, .validator-detail-page, .columns-modal) .close-modal {
   background: transparent;
   border: none;
   color: var(--text-white);
@@ -499,11 +501,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   transition: var(--transition);
 }
 
-:is(.validators-page, .validator-detail-page) .close-modal:hover {
+:is(.validators-page, .validator-detail-page, .columns-modal) .close-modal:hover {
   opacity: 1;
 }
 
-:is(.validators-page, .validator-detail-page) .modal-body {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-body {
   padding: var(--space-20);
   flex: 1 1 auto;
   min-height: 0;
@@ -511,7 +513,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   overscroll-behavior: contain;
 }
 
-:is(.validators-page, .validator-detail-page) .modal-footer {
+:is(.validators-page, .validator-detail-page, .columns-modal) .modal-footer {
   padding: var(--space-20);
   border-top: var(--border-width) solid var(--border-color);
   display: flex;
@@ -520,32 +522,32 @@ body.light-theme .vl-table-scroll-btn:hover {
   flex-shrink: 0;
 }
 
-:is(.validators-page, .validator-detail-page) .columns-container {
+:is(.validators-page, .validator-detail-page, .columns-modal) .columns-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-20);
 }
 
-:is(.validators-page, .validator-detail-page) .columns-section {
+:is(.validators-page, .validator-detail-page, .columns-modal) .columns-section {
   background: rgba(255, 255, 255, 0.03);
   border-radius: var(--radius-panel);
   padding: var(--space-20);
 }
 
-:is(.validators-page, .validator-detail-page) .columns-section-title {
+:is(.validators-page, .validator-detail-page, .columns-modal) .columns-section-title {
   font-size: var(--text-ui);
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: var(--space-15);
   font-weight: var(--weight-medium);
 }
 
-:is(.validators-page, .validator-detail-page) .active-columns {
+:is(.validators-page, .validator-detail-page, .columns-modal) .active-columns {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
   gap: var(--space-10);
 }
 
-:is(.validators-page, .validator-detail-page) .active-column {
+:is(.validators-page, .validator-detail-page, .columns-modal) .active-column {
   background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-toggle);
   padding: var(--space-8) var(--space-15);
@@ -556,11 +558,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   border: var(--border-width) solid rgba(255, 255, 255, 0.1);
 }
 
-:is(.validators-page, .validator-detail-page) .active-column:hover {
+:is(.validators-page, .validator-detail-page, .columns-modal) .active-column:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-:is(.validators-page, .validator-detail-page) .column-number {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-number {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -574,7 +576,7 @@ body.light-theme .vl-table-scroll-btn:hover {
   font-weight: var(--weight-semibold);
 }
 
-:is(.validators-page, .validator-detail-page) .column-name {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-name {
   flex-grow: 1;
   font-size: var(--text-ui);
   white-space: nowrap;
@@ -582,18 +584,18 @@ body.light-theme .vl-table-scroll-btn:hover {
   text-overflow: ellipsis;
 }
 
-:is(.validators-page, .validator-detail-page) .column-drag {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-drag {
   opacity: 0.5;
   margin-left: var(--space-5);
 }
 
-:is(.validators-page, .validator-detail-page) .available-columns {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-columns {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-10);
 }
 
-:is(.validators-page, .validator-detail-page) .available-column {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column {
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-toggle);
   padding: var(--space-8) var(--space-15);
@@ -606,16 +608,16 @@ body.light-theme .vl-table-scroll-btn:hover {
   min-height: 2.25rem;
 }
 
-:is(.validators-page, .validator-detail-page) .available-column:hover {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-:is(.validators-page, .validator-detail-page) .available-column.selected {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column.selected {
   background: rgba(0, 112, 243, 0.15);
   border-color: rgba(0, 112, 243, 0.3);
 }
 
-:is(.validators-page, .validator-detail-page) .column-remove {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-remove {
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -632,11 +634,11 @@ body.light-theme .vl-table-scroll-btn:hover {
   line-height: var(--leading-none);
 }
 
-:is(.validators-page, .validator-detail-page) .column-remove:hover {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-remove:hover {
   background: rgba(255, 0, 0, 0.3);
 }
 
-:is(.validators-page, .validator-detail-page) .btn-apply {
+:is(.validators-page, .validator-detail-page, .columns-modal) .btn-apply {
   background: var(--btn-primary-bg);
   color: var(--btn-primary-fg);
   border: none;
@@ -644,16 +646,17 @@ body.light-theme .vl-table-scroll-btn:hover {
   border-radius: var(--btn-radius);
   cursor: pointer;
   transition: var(--transition);
+  font-size: 0.8333rem;
   font-weight: var(--btn-weight);
 }
 
-:is(.validators-page, .validator-detail-page) .btn-apply:hover {
+:is(.validators-page, .validator-detail-page, .columns-modal) .btn-apply:hover {
   background: var(--btn-primary-bg-hover);
   transform: translateY(-0.125rem);
   box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
 }
 
-:is(.validators-page, .validator-detail-page) .btn-reset {
+:is(.validators-page, .validator-detail-page, .columns-modal) .btn-reset {
   border: var(--btn-border-width) solid var(--btn-secondary-border);
   font-weight: var(--btn-weight);
 }
@@ -669,7 +672,8 @@ body.light-theme .vl-table-scroll-btn:hover {
   }
 }
 
-:is(.validators-page, .validator-detail-page) .modal.show .modal-content {
+:is(.validators-page, .validator-detail-page) .modal.show .modal-content,
+.modal.columns-modal.show .modal-content {
   animation: modalFadeIn var(--duration-base) var(--ease-default) forwards;
 }
 
@@ -866,75 +870,75 @@ body.light-theme .vl-table-scroll-btn:hover {
     min-width: 900px;
   }
 
-  :is(.validators-page, .validator-detail-page) .modal-content {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-content {
     width: 90%;
   }
 }
 
 /* Responsive styles for columns filter modal */
 @media (max-width: 768px) {
-  :is(.validators-page, .validator-detail-page) .modal-content {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-content {
     max-width: 95%;
     margin: auto;
   }
   
-  :is(.validators-page, .validator-detail-page) .columns-container {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .columns-container {
     gap: var(--space-15);
   }
   
-  :is(.validators-page, .validator-detail-page) .columns-section {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .columns-section {
     padding: var(--space-15);
   }
   
-  :is(.validators-page, .validator-detail-page) .active-columns {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .active-columns {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: var(--space-8);
   }
   
-  :is(.validators-page, .validator-detail-page) .available-columns {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .available-columns {
     gap: var(--space-8);
   }
   
-  :is(.validators-page, .validator-detail-page) .modal-header h3 {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-header h3 {
     font-size: var(--text-card-title);
   }
   
-  :is(.validators-page, .validator-detail-page) .column-name {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .column-name {
     font-size: var(--text-badge);
   }
 }
 
 @media (max-width: 480px) {
-  :is(.validators-page, .validator-detail-page) .modal-content {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-content {
     max-width: 100%;
     margin: auto;
     border-radius: var(--radius-card);
   }
   
-  :is(.validators-page, .validator-detail-page) .active-columns {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .active-columns {
     grid-template-columns: 1fr;
   }
   
-  :is(.validators-page, .validator-detail-page) .available-columns {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .available-columns {
     flex-direction: column;
   }
   
-  :is(.validators-page, .validator-detail-page) .modal-header {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-header {
     padding: var(--space-15);
   }
   
-  :is(.validators-page, .validator-detail-page) .modal-body {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-body {
     padding: var(--space-15);
   }
   
-  :is(.validators-page, .validator-detail-page) .modal-footer {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .modal-footer {
     padding: var(--space-15);
     flex-direction: column;
     gap: var(--space-10);
   }
   
   :is(.validators-page, .validator-detail-page) .btn-cancel,
-  :is(.validators-page, .validator-detail-page) .btn-apply {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .btn-apply {
     width: 100%;
     border: var(--btn-border-width) solid var(--btn-secondary-border);
     font-weight: var(--btn-weight);
@@ -1217,68 +1221,68 @@ body.light-theme :is(.validators-page, .validator-detail-page) .pagination-ellip
   color: #64748b;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .modal-content {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .modal-content {
   background: white;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .modal-header h3 {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .modal-header h3 {
   color: #0f172a;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .close-modal {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .close-modal {
   color: #64748b;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .modal-header {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .modal-header {
   border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .modal-footer {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .modal-footer {
   border-top: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .columns-section {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .columns-section {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .columns-section-title {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .columns-section-title {
   color: #64748b;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .active-column {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .active-column {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .active-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .active-column:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .column-name {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .column-name {
   color: #121826;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column {
   background-color: white;
   border: var(--border-width) solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column.selected {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column.selected {
   background-color: rgba(0, 112, 243, 0.1);
   border-color: rgba(0, 112, 243, 0.3);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .column-remove {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .column-remove {
   background-color: rgba(0, 0, 0, 0.1);
   color: #64748b;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .column-remove:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .column-remove:hover {
   background-color: rgba(255, 0, 0, 0.15);
   color: #d32f2f;
 }
@@ -1384,7 +1388,7 @@ body.light-theme .public-key {
   font-size: var(--text-ui);
 }
 
-:is(.validators-page, .validator-detail-page) .align-start {
+:is(.validators-page, .validator-detail-page, .columns-modal) .align-start {
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
   text-align: center;
@@ -1392,26 +1396,26 @@ body.light-theme .public-key {
   padding: var(--space-20);
 }
 
-:is(.validators-page, .validator-detail-page) .column-selection-container {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-selection-container {
   min-height: 6.25rem;
 }
 
-:is(.validators-page, .validator-detail-page) .selected-columns {
+:is(.validators-page, .validator-detail-page, .columns-modal) .selected-columns {
   min-height: 6.25rem;
 }
 
-:is(.validators-page, .validator-detail-page) .drag-over {
+:is(.validators-page, .validator-detail-page, .columns-modal) .drag-over {
   background: rgba(0, 112, 243, 0.2) !important;
   border: var(--border-width-thick) dashed #0070f3 !important;
 }
 
-:is(.validators-page, .validator-detail-page) .column-drag {
+:is(.validators-page, .validator-detail-page, .columns-modal) .column-drag {
   opacity: 0.6;
   margin-left: auto;
   cursor: grab;
 }
 
-:is(.validators-page, .validator-detail-page) .active-column:active .column-drag {
+:is(.validators-page, .validator-detail-page, .columns-modal) .active-column:active .column-drag {
   cursor: grabbing;
 }
 
@@ -1420,43 +1424,43 @@ body.light-theme :is(.validators-page, .validator-detail-page) .btn-customize {
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .align-start {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .align-start {
   color: rgba(0, 0, 0, 0.6);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .columns-section {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .columns-section {
   background: rgba(0, 0, 0, 0.03);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .columns-section-title {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .columns-section-title {
   color: rgba(0, 0, 0, 0.6);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .active-column {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .active-column {
   background: rgba(0, 0, 0, 0.05);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .active-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .active-column:hover {
   background: rgba(0, 0, 0, 0.08);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column {
   background: rgba(0, 0, 0, 0.03);
   border-color: rgba(0, 0, 0, 0.08);
   justify-content: space-between;
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .available-column.selected {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .available-column.selected {
   background: rgba(0, 112, 243, 0.1);
   border-color: rgba(0, 112, 243, 0.2);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .column-remove {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .column-remove {
   background: rgba(0, 0, 0, 0.1);
   color: rgba(0, 0, 0, 0.7);
   display: flex;
@@ -1465,12 +1469,12 @@ body.light-theme :is(.validators-page, .validator-detail-page) .column-remove {
   line-height: var(--leading-none);
 }
 
-body.light-theme :is(.validators-page, .validator-detail-page) .column-remove:hover {
+body.light-theme :is(.validators-page, .validator-detail-page, .columns-modal) .column-remove:hover {
   background: rgba(255, 0, 0, 0.2);
   color: rgba(255, 0, 0, 0.8);
 }
 
-:is(.validators-page, .validator-detail-page) .available-column .column-name {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column .column-name {
   flex: 1;
   margin-right: var(--space-8);
   overflow: hidden;
@@ -1478,12 +1482,12 @@ body.light-theme :is(.validators-page, .validator-detail-page) .column-remove:ho
   white-space: nowrap;
 }
 
-:is(.validators-page, .validator-detail-page) .available-column.selected .column-name {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column.selected .column-name {
   margin-right: var(--space-4);
 }
 
 /* Ensure proper spacing for the X button */
-:is(.validators-page, .validator-detail-page) .available-column .column-remove {
+:is(.validators-page, .validator-detail-page, .columns-modal) .available-column .column-remove {
   margin-left: auto;
   margin-right: var(--space-0);
 }
@@ -1644,7 +1648,7 @@ body.light-theme :is(.validators-page, .validator-detail-page) .validators-table
   }
 
   .validators-page .vl-per-page select,
-  :is(.validators-page, .validator-detail-page) .btn-apply {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .btn-apply {
     min-height: var(--tap-target);
   }
 
@@ -1665,12 +1669,12 @@ body.light-theme :is(.validators-page, .validator-detail-page) .validators-table
   }
 
   .validators-page:not(.rich-list-page) .vl-pill,
-  :is(.validators-page, .validator-detail-page) .available-column {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .available-column {
     position: relative;
   }
 
   .validators-page:not(.rich-list-page) .vl-pill::before,
-  :is(.validators-page, .validator-detail-page) .available-column::before {
+  :is(.validators-page, .validator-detail-page, .columns-modal) .available-column::before {
     content: "";
     position: absolute;
     top: 50%;
