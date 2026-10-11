@@ -28,7 +28,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
   }
   to {
     opacity: 1;
@@ -38,7 +38,7 @@
 
 .modalContent {
   width: 100%;
-  max-width: 520px;
+  max-width: 32.5rem;
   padding: var(--space-32);
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -67,8 +67,8 @@
 
 .modalClose {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -76,8 +76,8 @@
   cursor: pointer;
   padding: var(--space-4);
   border-radius: var(--radius-circle);
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,7 +99,7 @@
 
 .form > span {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   margin: var(--space-0);
   padding: var(--space-12);
@@ -149,15 +149,20 @@
   -moz-appearance: textfield;
 }
 
+.inputWrapper .formInput {
+  padding-right: 3.75rem;
+}
+
 .maxButton {
   position: absolute;
-  right: 8px;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
   border: none;
   background: transparent;
   color: var(--text-secondary);
   font-weight: var(--weight-bold);
+  font-size: 0.8333rem;
   padding: var(--space-6) var(--space-8);
   cursor: pointer;
   border-radius: var(--radius-button);
@@ -174,7 +179,7 @@
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 200px;
+  max-width: 12.5rem;
   align-self: center;
 }
 
@@ -188,7 +193,7 @@
   border: var(--border-width) solid rgba(7, 244, 158, 0.25);
   border-radius: var(--radius-card);
   color: #07f49e;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: var(--weight-medium);
 }
 
@@ -199,7 +204,7 @@
 .claimNote {
   margin: var(--space-0);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: var(--leading-normal);
 }
 
@@ -207,15 +212,15 @@
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 150px;
+  max-width: 9.375rem;
   align-self: center;
   border: var(--border-width) solid var(--text);
-  padding: var(--space-12) 13px;
+  padding: var(--space-12) 0.8125rem;
 }
 
 .unstakeWarning {
   color: #ffa726;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: var(--leading-normal);
   text-align: center;
   margin: var(--space-0);
@@ -364,6 +369,16 @@
 }
 
 @media (pointer: coarse) {
+  .maxButton::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-target));
+    height: max(100%, var(--tap-target));
+    transform: translate(-50%, -50%);
+  }
+
   .modalClose::after {
     content: "";
     position: absolute;

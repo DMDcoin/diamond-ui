@@ -21,13 +21,13 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(1.25rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .modalContent {
   width: 100%;
-  max-width: 520px;
+  max-width: 32.5rem;
   padding: var(--space-32);
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -58,7 +58,7 @@
   font-size: var(--text-control);
   line-height: 1.5;
   text-align: center;
-  margin: var(--space-0) var(--space-0) 18px var(--space-0);
+  margin: var(--space-0) var(--space-0) 1.125rem var(--space-0);
 }
 
 .breakdown,
@@ -72,7 +72,7 @@
 .breakdown {
   list-style: none;
   padding: var(--space-0) var(--space-16);
-  max-height: clamp(180px, 32vh, 300px);
+  max-height: clamp(11.25rem, 32vh, 18.75rem);
   overflow-y: auto;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
@@ -103,7 +103,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-16);
-  padding: 14px var(--space-0);
+  padding: 0.875rem var(--space-0);
 }
 
 .breakdownRow + .breakdownRow {
@@ -136,7 +136,7 @@
   border: none;
   padding: var(--space-0);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-family: inherit;
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-default);
@@ -167,12 +167,12 @@
 
 .breakdownLastActive {
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
 .split {
-  padding: 14px var(--space-16);
+  padding: 0.875rem var(--space-16);
 }
 
 .splitHeader {
@@ -184,7 +184,7 @@
   margin-bottom: var(--space-12);
   border-bottom: var(--border-width) solid var(--border-color);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .splitTotal {
@@ -220,8 +220,8 @@
 .importantBlock {
   border: var(--border-width) solid rgba(255, 167, 38, 0.25);
   background: rgba(255, 167, 38, 0.08);
-  border-radius: 10px;
-  padding: 14px var(--space-16);
+  border-radius: 0.625rem;
+  padding: 0.875rem var(--space-16);
   margin-bottom: var(--space-20);
 }
 
@@ -242,8 +242,8 @@
 
 .modalClose {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -251,8 +251,8 @@
   cursor: pointer;
   padding: var(--space-4);
   border-radius: var(--radius-circle);
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -277,7 +277,7 @@
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 200px;
+  max-width: 12.5rem;
   align-self: center;
 }
 
@@ -372,6 +372,11 @@
 }
 
 @media (pointer: coarse) {
+  .identityAddress {
+    padding-block: calc((var(--tap-target) - 1lh) / 2);
+    margin-block: calc((1lh - var(--tap-target)) / 2);
+  }
+
   .modalClose::after {
     content: "";
     position: absolute;

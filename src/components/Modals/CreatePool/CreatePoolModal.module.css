@@ -27,7 +27,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem);
   }
   to {
     opacity: 1;
@@ -37,7 +37,7 @@
 
 .modalContent {
   width: 100%;
-  max-width: 480px;
+  max-width: 30rem;
   padding: var(--space-32);
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -59,8 +59,8 @@
 
 .modalClose {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -68,8 +68,8 @@
   cursor: pointer;
   padding: var(--space-4);
   border-radius: var(--radius-circle);
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,7 +90,7 @@
 
 .form > span {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   text-align: center;
   width: 100%;
@@ -106,7 +106,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-6);
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-secondary);
 }
 
@@ -134,9 +134,13 @@
   width: 100%;
 }
 
+.inputWrapper .formInput {
+  padding-right: 2.25rem;
+}
+
 .percentageSign {
   position: absolute;
-  right: 12px;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
@@ -147,11 +151,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   border-radius: var(--radius-pill);
   border: var(--border-width) solid var(--border-color);
-  font-size: 10px;
+  font-size: 0.625rem;
   cursor: pointer;
   color: var(--text-secondary);
 }
@@ -168,12 +172,24 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-6);
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-secondary);
 }
 
-.checkboxWrapper > input {
+.checkboxWrapper > input,
+.checkboxHit {
   flex-shrink: 0;
+}
+
+.checkboxHit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkboxHit > input {
+  width: 0.8125rem;
+  height: 0.8125rem;
 }
 
 .formSubmit {
@@ -181,10 +197,10 @@
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 150px;
+  max-width: 9.375rem;
   align-self: center;
   background: #f7fafc;
-  padding-inline: 32px;
+  padding-inline: 2rem;
 }
 
 :global(body.light-theme) .modalContent {
@@ -204,6 +220,30 @@
 }
 
 @media (pointer: coarse) {
+  .checkboxWrapper {
+    column-gap: 1.875rem;
+  }
+
+  .checkboxHit {
+    width: var(--tap-target);
+    height: var(--tap-target);
+    margin: calc((0.8125rem - var(--tap-target)) / 2);
+  }
+
+  .checkboxWrapper .infoIcon {
+    position: relative;
+  }
+
+  .checkboxWrapper .infoIcon::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--tap-target);
+    height: var(--tap-target);
+    transform: translate(-50%, -50%);
+  }
+
   .modalClose::after {
     content: "";
     position: absolute;

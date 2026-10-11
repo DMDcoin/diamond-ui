@@ -640,6 +640,7 @@
 .dmd-modal-fees-row dd {
   margin: var(--space-0);
   font-weight: var(--weight-medium);
+  white-space: nowrap;
 }
 
 .dmd-modal-fees-row-total dd {
