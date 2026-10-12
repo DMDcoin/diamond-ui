@@ -1,18 +1,23 @@
+import logger from '@/utils/logger';
 import axios from "axios";
 import BigNumber from "bignumber.js";
-import ProxyAdmin from "../contexts/contract-abis/ProxyAdmin.json";
+import ProxyAdmin from "@/contracts/abis/ProxyAdmin.json";
+import Web3 from 'web3';
+import { formatCount, formatDecimal, formatDmd } from '@/utils/format';
+import { toBuffer, bufferToHex, ecrecover, publicToAddress, hashPersonalMessage, fromRpcSig } from 'ethereumjs-util';
 
-const Web3 = require('web3');
 const web3 = new Web3();
-const { toBuffer, bufferToHex, ecrecover, publicToAddress, hashPersonalMessage, fromRpcSig } = require('ethereumjs-util');
 
+export const generateSelector = (signature: string): string => {
+  return web3.utils.sha3(signature)?.slice(0, 10) || '';
+};
 
 export const isValidAddress = (address: string): boolean => {
   return /^0x[0-9a-fA-F]{40}$/.test(address);
 };
 
 export const getFunctionSelector = (signature: string): string => {
-  return web3.utils.sha3(signature).slice(0, 10);
+  return web3.utils.sha3(signature)?.slice(0, 10) || '';
 };
 
 export const extractFunctionSelectorFromCalldata = (calldata: string): string => {
@@ -37,7 +42,7 @@ export const getAbiWithContractAddress = (contractsManager: any, contractAddress
     }
     return [];
   } catch (error) {
-    console.error("Error fetching contract ABI:", error);
+    logger.error("Error fetching contract ABI:", error);
     return [];
   }
 }
@@ -69,8 +74,6 @@ export const getParameterDescription = (parameterName: string): string => {
     return "The portion of the governance pot allocated to rewards.";
   } else if (parameterName === "setReportDisallowPeriod") {
     return "Timeframe during which a node announces maintenance to avoid penalties.";
-  } else if (parameterName === "setStandByFactor") {
-    return "Bonus score rewarded to validators that were available.";
   }
   return "";
 }
@@ -81,7 +84,7 @@ export const getFunctionInfoWithAbi = (contractsManager: any, contractAddress: s
   const matchingFunction = abi.find(item => {
       if (item.type === 'function') {
         const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
-        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        const calculatedSelector = web3.utils.sha3(functionSignature)?.slice(0, 10) || '';
         return calculatedSelector === selector;
       }
       return false;
@@ -98,7 +101,7 @@ export const getFunctionNameFromDirectory = async (selector: string): Promise<st
       return results[0].text_signature; // Returns the first matching function name
     }
   } catch (error) {
-    console.error("Error fetching function name:", error);
+    logger.error("Error fetching function name:", error);
   }
   return null; // Returns null if no match found
 };
@@ -128,7 +131,7 @@ export const getMatchingFunction = (selector: string, abis: Array<any>) => {
     const matchingFunction = abi.find((item: any) => {
       if (item.type === 'function') {
         const functionSignature = `${item.name}(${item.inputs.map((input: any) => input.type).join(',')})`;
-        const calculatedSelector = web3.utils.sha3(functionSignature).slice(0, 10);
+        const calculatedSelector = web3.utils.sha3(functionSignature)?.slice(0, 10) || '';
         if (calculatedSelector === selector) {
           // Stop processing further once a match is found
           return true;
@@ -184,6 +187,30 @@ export const timestampToDateTime = (timestamp: number) => {
   return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
 }
 
+export function parseEpochEndTime(value: number | string | null | undefined): Date | null {
+  if (value == null || value === '') return null;
+  if (typeof value === 'number') {
+    const ms = value < 1e12 ? value * 1000 : value;
+    const d = new Date(ms);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+export function formatEpochEndDate(value: number | string | null | undefined): string {
+  const d = parseEpochEndTime(value);
+  if (!d) return '—';
+  return d.toLocaleDateString();
+}
+
+export function parseDmdAmount(value: string | number | null | undefined): number {
+  if (value == null || value === '') return 0;
+  const bn = BigNumber(value);
+  if (!bn.isFinite() || bn.isZero()) return 0;
+  return bn.isGreaterThanOrEqualTo(1e15) ? bn.dividedBy(1e18).toNumber() : bn.toNumber();
+}
+
 export const getAddressFromPublicKey = (publicKey: string): string => {
   let publicKeyCleaned = publicKey;
 
@@ -216,9 +243,9 @@ export const requestPublicKeyMetamask = async (web3: any, address: string) => {
   const publicKeyHex = bufferToHex(publicKey);
   const derivedAddress = bufferToHex(publicToAddress(publicKey));
 
-  console.log(`Address: ${address}`);
-  console.log(`Derived Address: ${derivedAddress}`);
-  console.log(`Public Key: ${publicKeyHex}`);
+  logger.log(`Address: ${address}`);
+  logger.log(`Derived Address: ${derivedAddress}`);
+  logger.log(`Public Key: ${publicKeyHex}`);
 
   return publicKeyHex;
 }
@@ -289,22 +316,54 @@ export const formatCryptoUnitValue = (value: string | number): string => {
     value = value.toString();
   }
 
-  // Remove any leading zeros
-  value = value.replace(/^0+/, '');
+  // Strip leading zeros, but keep a single digit so "0" doesn't become an empty string
+  value = String(value ?? '').trim().replace(/^0+(?=\d)/, '');
+
+  const amount = BigNumber(value);
+  if (!amount.isFinite()) return '0 Wei';
 
   const strLength = value.length;
 
   // Interpret based on the number of trailing zeros
   if (strLength >= 18) {
-    return `${BigNumber(value).dividedBy(10**18)} DMD`;
+    return formatDmd(amount.dividedBy(10**18));
   } else if (strLength >= 9) {
-    return `${BigNumber(value).dividedBy(10**9)} Gwei`;
+    return `${formatDecimal(amount.dividedBy(10**9))} Gwei`;
   } else {
-    return `${BigNumber(value).dividedBy(10**1)} Wei`;
+    return `${formatCount(amount)} Wei`;
   }
 }
 
 export const truncateAddress = (address: string) => {
   if (!address) return "";
   return `${address.slice(0, 7)}...${address.slice(-5)}`;
+};
+
+const DURATION_UNITS: Array<{ label: string; seconds: number }> = [
+  { label: 'year', seconds: 365 * 24 * 60 * 60 },
+  { label: 'month', seconds: 30 * 24 * 60 * 60 },
+  { label: 'day', seconds: 24 * 60 * 60 },
+  { label: 'hour', seconds: 60 * 60 },
+  { label: 'minute', seconds: 60 },
+];
+
+export const formatDuration = (seconds: number, maxUnits: number = 2): string => {
+  let remaining = Math.max(0, Math.floor(seconds));
+  if (remaining < 60) return 'less than a minute';
+
+  const parts: string[] = [];
+  for (const unit of DURATION_UNITS) {
+    if (parts.length === maxUnits) break;
+    const count = Math.floor(remaining / unit.seconds);
+    if (count === 0) continue;
+    parts.push(`${count} ${unit.label}${count === 1 ? '' : 's'}`);
+    remaining -= count * unit.seconds;
+  }
+
+  return parts.join(' ');
+};
+
+export const formatElapsedSince = (timestamp: number): string => {
+  if (!timestamp) return '—';
+  return `${formatDuration(Math.floor(Date.now() / 1000) - timestamp)} ago`;
 };

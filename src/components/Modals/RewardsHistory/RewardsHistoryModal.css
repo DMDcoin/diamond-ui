@@ -1,0 +1,263 @@
+.rewards-history-modal > div {
+  max-width: none;
+  width: 90vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-20);
+}
+
+.rewards-history-container {
+  gap: var(--space-20);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.rewards-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: var(--space-40);
+}
+
+.rewards-history-title {
+  font-size: 1.75rem;
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+  margin: var(--space-0);
+}
+
+.rewards-history-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-badge);
+  border: var(--border-width) solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+}
+
+.rewards-history-export-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: white;
+}
+
+.rewards-history-export-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rewards-history-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--text-control);
+  margin: -0.625rem var(--space-0) var(--space-0) var(--space-0);
+}
+
+.rewards-history-dual-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-20);
+  overflow-y: auto;
+}
+
+.rewards-history-chart-section {
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-panel);
+  padding: var(--space-16);
+}
+
+body.light-theme .rewards-history-chart-section {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.rewards-history-list-section {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-panel);
+  overflow: auto;
+  max-height: 25rem;
+}
+
+body.light-theme .rewards-history-list-section {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Table */
+.rewards-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-ui);
+}
+
+.rewards-history-table th {
+  text-align: left;
+  padding: var(--space-10) 0.875rem;
+  color: var(--text-secondary);
+  font-weight: var(--weight-semibold);
+  border-bottom: var(--border-width) solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--darker-bg, #020010);
+  z-index: 1;
+}
+
+body.light-theme .rewards-history-table th {
+  background: #fff;
+}
+
+.rewards-history-table td {
+  padding: var(--space-10) 0.875rem;
+  color: var(--text);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.rewards-history-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rewards-history-table tbody tr:hover {
+  background: var(--card-hover);
+}
+
+/* States */
+.rewards-history-loading,
+.rewards-history-error,
+.rewards-history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-12);
+  padding: var(--space-40) var(--space-20);
+  color: var(--text-secondary);
+}
+
+.rewards-history-loading .spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: var(--radius-circle);
+  animation: spin 0.8s linear infinite;
+}
+
+.rewards-history-error i,
+.rewards-history-empty i {
+  font-size: var(--text-title);
+  opacity: 0.5;
+}
+
+/* Pagination */
+.rewards-history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-0);
+}
+
+.pagination-info {
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+}
+
+.rewards-history-pagination .pagination-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  padding: var(--space-0);
+  border-radius: var(--radius-card);
+  border: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default), border-color var(--duration-fast) var(--ease-default);
+  font-size: var(--text-caption);
+}
+
+.rewards-history-pagination .pagination-btn:hover:not(:disabled) {
+  background: var(--card-hover);
+  border-color: var(--accent);
+}
+
+.rewards-history-pagination .pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+body.light-theme .rewards-history-pagination .pagination-btn {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .rewards-history-modal > div {
+    width: 100vw;
+    max-width: calc(100vw - 16px);
+    padding: var(--space-20) var(--space-16);
+  }
+
+  .rewards-history-header {
+    flex-wrap: wrap;
+    gap: var(--space-12);
+  }
+
+  .rewards-history-title {
+    font-size: var(--text-section-sm);
+  }
+
+  .rewards-history-table th,
+  .rewards-history-table td {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .rewards-history-title {
+    font-size: var(--text-modal-title);
+  }
+}
+
+@media (pointer: coarse) {
+  .rewards-history-container {
+    overflow: visible;
+  }
+
+  .rewards-history-export-btn,
+  .rewards-history-pagination .pagination-btn {
+    position: relative;
+  }
+
+  .rewards-history-export-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: max(100%, var(--tap-target));
+    transform: translateY(-50%);
+  }
+
+  .rewards-history-pagination .pagination-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-target));
+    height: max(100%, var(--tap-target));
+    transform: translate(-50%, -50%);
+  }
+}

@@ -1,0 +1,206 @@
+/**
+ * Privacy Mode Indicator Styles
+ * Dark and light theme compatible styles
+ */
+
+.privacy-mode-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  position: relative;
+  margin-right: var(--space-15);
+}
+
+.privacy-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-card);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--ease-default);
+  white-space: nowrap;
+}
+
+.light-theme .privacy-mode-toggle {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.privacy-mode-toggle:hover {
+  background: var(--card-hover);
+  border-color: var(--accent);
+  transform: translateY(-0.0625rem);
+}
+
+.light-theme .privacy-mode-toggle:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: var(--accent);
+}
+
+.privacy-mode-toggle.active {
+  background: linear-gradient(135deg, rgba(58, 123, 213, 0.2), rgba(138, 43, 226, 0.2));
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(58, 123, 213, 0.3);
+}
+
+.light-theme .privacy-mode-toggle.active {
+  background: linear-gradient(135deg, rgba(58, 123, 213, 0.15), rgba(138, 43, 226, 0.15));
+  box-shadow: 0 0 20px rgba(58, 123, 213, 0.2);
+}
+
+.privacy-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-body);
+  transition: transform var(--transition-speed) var(--ease-default);
+}
+
+.privacy-mode-toggle:hover .privacy-icon {
+  transform: scale(1.1);
+}
+
+.privacy-mode-toggle.active .privacy-icon {
+  color: var(--accent);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.privacy-label {
+  font-family: var(--font-sans);
+  letter-spacing: 0.0125rem;
+}
+
+/* Active badge indicator */
+.privacy-mode-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: var(--radius-circle);
+  font-size: var(--icon-xs);
+  color: white;
+  box-shadow: 0 2px 8px rgba(58, 123, 213, 0.5);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(58, 123, 213, 0.5);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(58, 123, 213, 0.7);
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .privacy-mode-wrapper {
+    margin-right: var(--space-10);
+  }
+  
+  .privacy-mode-toggle {
+    padding: var(--space-6) var(--space-12);
+    font-size: var(--text-badge);
+  }
+  
+  .privacy-label {
+    display: none;
+  }
+  
+  .privacy-icon {
+    font-size: var(--text-card-title);
+  }
+  
+  .privacy-mode-badge {
+    width: 16px;
+    height: 16px;
+    font-size: 0.6rem;
+    top: -4px;
+    right: -4px;
+  }
+}
+
+/* Extra small mobile - icon only */
+@media (max-width: 480px) {
+  .privacy-mode-toggle {
+    padding: var(--space-8);
+    min-width: 40px;
+    justify-content: center;
+  }
+  
+  .privacy-icon {
+    font-size: var(--text-body);
+  }
+}
+
+/* Tooltip enhancement */
+.privacy-mode-toggle::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -2.1875rem;
+  right: 0;
+  transform: scale(0.9);
+  transform-origin: right center;
+  padding: var(--space-6) var(--space-12);
+  background: var(--darker-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-button);
+  color: var(--text);
+  font-size: var(--icon-sm);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition-speed) var(--ease-default);
+  z-index: 1000;
+}
+
+.light-theme .privacy-mode-toggle::after {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-mode-toggle:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (max-width: 768px) {
+  .privacy-mode-toggle::after {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .privacy-mode-toggle::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-target));
+    height: max(100%, var(--tap-target));
+    transform: translate(-50%, -50%);
+  }
+}

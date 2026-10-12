@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "diamond-ui",
+      "type": "skill-md",
+      "description": "How to use Diamond UI — validators, DAO governance, and staking.",
+      "url": "https://ui2.bit.diamonds/.well-known/agent-skills/SKILL.md",
+      "digest": "sha256:0dbd3d606e6b02acb7c28452da0c500e922ab868895626e40436e7bef7825c09"
+    }
+  ]
+}

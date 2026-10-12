@@ -1,0 +1,10 @@
+{
+  "issuer": "https://ui2.bit.diamonds",
+  "authorization_endpoint": "https://ui2.bit.diamonds/connect",
+  "token_endpoint": "https://ui2.bit.diamonds/token",
+  "jwks_uri": "https://ui2.bit.diamonds/.well-known/jwks.json",
+  "response_types_supported": ["token"],
+  "grant_types_supported": ["implicit"],
+  "subject_types_supported": ["public"],
+  "id_token_signing_alg_values_supported": ["RS256"]
+}

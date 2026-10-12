@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./styles.module.css";
 import BigNumber from "bignumber.js";
-import { formatCryptoUnitValue } from "../../utils/common";
+import { formatCryptoUnitValue } from "@/utils/common";
+import { formatCount, formatPercent } from "@/utils/format";
 
 interface ProposalStepSliderProps {
     state: string;
@@ -66,13 +67,13 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ parameterName, 
 
     const formatValue = (value: string) => {
         if (parameterName === "Governance Pot Share Nominator") {
-            return `${value} %`;
+            return formatPercent(value);
         }
         if (parameterName === "Report Disallow Period") {
-            return `${Number(value) / 60} minutes`;
+            return `${formatCount(Number(value) / 60)} minutes`;
         }
         if (parameterName === "Block Gas Limit") {
-            return `${Number(value) / 10**6} mGas`;
+            return `${formatCount(Number(value) / 10**6)} mGas`;
         }
         if (parameterName === "Standby Bonus") {
             return value;
@@ -119,4 +120,3 @@ const ProposalStepSlider: React.FC<ProposalStepSliderProps> = ({ parameterName, 
 };
 
 export default ProposalStepSlider;
-

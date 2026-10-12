@@ -1,0 +1,162 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: var(--space-20);
+  animation: fadeIn var(--duration-base) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 480px;
+  padding: 28px;
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-panel);
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  margin: auto;
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--text-section-sm);
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  margin-top: var(--space-10);
+}
+
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.fieldLabel > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.formInput {
+  width: 100%;
+  padding: var(--space-12);
+  background: rgba(255, 255, 255, 0.02);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-card);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #00d2ff;
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.percentageSign {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  pointer-events: none;
+}
+
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--border-color);
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.formSubmit {
+  max-width: 140px;
+  align-self: center;
+  font-weight: var(--weight-bold);
+}
+
+.stakeWarning {
+  color: #ff6b6b;
+  text-align: center;
+}
+
+.modalTitle {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.modalDescription {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--space-20);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+:global(body.light-theme) .modalContent {
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  .modalOverlay {
+    padding: var(--space-10);
+  }
+
+  .modalContent {
+    padding: var(--space-20);
+  }
+}
+
+@media (pointer: coarse) {
+  .modalClose::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-target));
+    height: max(100%, var(--tap-target));
+    transform: translate(-50%, -50%);
+  }
+}

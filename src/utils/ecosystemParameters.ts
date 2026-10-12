@@ -72,5 +72,14 @@ export const EcosystemParameters: EcosystemParameters = {
       params: [],
       value: undefined
     }
+  },
+
+  "DMD Names": {
+    "Minting Fee": {
+      getter: "mintingFee()",
+      setter: "setMintingFee(uint256)",
+      params: [],
+      value: undefined
+    }
   }
 };

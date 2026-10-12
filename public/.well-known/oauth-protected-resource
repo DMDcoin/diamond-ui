@@ -1,0 +1,6 @@
+{
+  "resource": "https://ui2.bit.diamonds",
+  "authorization_servers": ["https://ui2.bit.diamonds"],
+  "scopes_supported": ["read"],
+  "bearer_methods_supported": ["header"]
+}

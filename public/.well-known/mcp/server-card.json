@@ -1,0 +1,15 @@
+{
+  "serverInfo": {
+    "name": "Diamond UI",
+    "version": "0.1.0"
+  },
+  "transport": {
+    "type": "http",
+    "endpoint": "https://ui2.bit.diamonds/mcp"
+  },
+  "capabilities": {
+    "tools": ["get-validators", "get-dao-proposals", "get-network-stats", "navigate"],
+    "resources": [],
+    "prompts": []
+  }
+}

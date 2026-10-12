@@ -1,0 +1,112 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-16);
+}
+
+.body {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.label {
+  font-size: var(--text-ui);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  display: block;
+}
+
+.currentRow {
+  margin-top: var(--space-4);
+}
+
+.currentBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: var(--space-10) var(--space-12);
+}
+
+.currentUrl {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  background: var(--card-hover);
+  color: var(--text-secondary);
+  font-size: var(--icon-sm);
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-pill);
+}
+
+.copyBtn {
+  border: var(--border-width) solid var(--border-color);
+  background: transparent;
+  color: var(--text);
+  border-radius: var(--radius-button);
+  padding: var(--space-6) var(--space-10);
+  cursor: pointer;
+}
+
+.inputRow {
+  margin-top: var(--space-8);
+}
+
+.input {
+  width: 100%;
+  background: var(--card-bg);
+  color: var(--text);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: var(--space-10) var(--space-12);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--text-secondary);
+}
+
+.validating {
+  border-color: #f0ad4e;
+}
+
+.success {
+  border-color: #28a745;
+}
+
+.error {
+  border-color: #dc3545;
+}
+
+.helper {
+  font-size: var(--text-caption);
+  margin-top: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.info {
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  margin-top: var(--space-8);
+}
+
+.footer {
+  gap: var(--space-8);
+  display: flex;
+  margin-top: var(--space-16);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Light theme tweaks */
+:global(body.light-theme) .input {
+  background: #fff;
+  color: #2d3748;
+}

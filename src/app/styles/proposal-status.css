@@ -1,0 +1,114 @@
+/* Base status badge styling */
+.proposal-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-10);
+  border-radius: var(--radius-badge);
+  font-size: var(--text-badge);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.proposal-status.active {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #3B82F6 !important;
+}
+
+.proposal-status.voting {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #3B82F6 !important;
+}
+
+.proposal-status.executed {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10B981 !important;
+}
+
+.proposal-status.accepted {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10B981 !important;
+}
+
+.proposal-status.declined {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #EF4444 !important;
+}
+
+.proposal-status.canceled {
+  background: rgba(107, 114, 128, 0.15) !important;
+  color: #6B7280 !important;
+}
+
+.proposal-status.created {
+  background: rgba(96, 165, 250, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+.proposal-status.votingfinished {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #F59E0B !important;
+}
+
+.proposal-status.unknown {
+  background: rgba(107, 114, 128, 0.15) !important;
+  color: #6B7280 !important;
+}
+
+/* Theme overrides to ensure consistency */
+body.light-theme .proposal-status.active,
+body.dark-theme .proposal-status.active {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #3B82F6 !important;
+}
+
+body.light-theme .proposal-status.voting,
+body.dark-theme .proposal-status.voting {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #3B82F6 !important;
+}
+
+body.light-theme .proposal-status.executed,
+body.dark-theme .proposal-status.executed {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10B981 !important;
+}
+
+body.light-theme .proposal-status.accepted,
+body.dark-theme .proposal-status.accepted {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10B981 !important;
+}
+
+body.light-theme .proposal-status.declined,
+body.dark-theme .proposal-status.declined {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #EF4444 !important;
+}
+
+body.light-theme .proposal-status.canceled,
+body.dark-theme .proposal-status.canceled {
+  background: rgba(107, 114, 128, 0.15) !important;
+  color: #6B7280 !important;
+}
+
+body.light-theme .proposal-status.created,
+body.dark-theme .proposal-status.created {
+  background: rgba(96, 165, 250, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+body.light-theme .proposal-status.votingfinished,
+body.dark-theme .proposal-status.votingfinished {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #F59E0B !important;
+}
+
+body.light-theme .proposal-status.unknown,
+body.dark-theme .proposal-status.unknown {
+  background: rgba(107, 114, 128, 0.15) !important;
+  color: #6B7280 !important;
+}

@@ -1,0 +1,96 @@
+.info-tooltip-portal {
+  background: var(--tooltip-bg, rgba(22, 22, 26, 0.95));
+  color: var(--tooltip-color, #ffffff);
+  border-radius: 0.625rem;
+  padding: var(--space-16) 1.1rem;
+  max-width: 26.25rem;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+  z-index: 10050;
+  font-size: var(--text-control);
+  line-height: 1.45;
+  display: none;
+}
+
+.info-tooltip-portal.visible {
+  display: block;
+}
+
+.info-tooltip-portal .info-tooltip-content {
+  text-align: left;
+}
+
+.info-tooltip-portal .info-tooltip-content > div {
+  margin: var(--space-0);
+  padding: var(--space-0);
+}
+
+.info-tooltip-portal .info-tooltip-content p {
+  margin: var(--space-0) var(--space-0) var(--space-8) var(--space-0);
+}
+
+.info-tooltip-portal .info-tooltip-content p:last-child {
+  margin-bottom: var(--space-0);
+}
+
+.info-tooltip-portal .info-tooltip-content ul {
+  margin: var(--space-0) var(--space-0) var(--space-8) var(--space-0);
+  padding-left: 1.1rem;
+  list-style-position: outside;
+}
+
+.info-tooltip-portal .info-tooltip-content .tooltip-title {
+  font-weight: var(--weight-bold);
+  margin-bottom: 0.4rem;
+}
+
+/* arrow */
+.info-tooltip-arrow {
+  width: 0;
+  height: 0;
+  border-left: var(--border-width-arrow) solid transparent;
+  border-right: var(--border-width-arrow) solid transparent;
+  border-top: var(--border-width-arrow) solid var(--tooltip-bg, rgba(22, 22, 26, 0.95));
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -0.4375rem; /* will flip when placement is top */
+}
+
+.info-tooltip-portal.top .info-tooltip-arrow {
+  border-top: none;
+  border-bottom: var(--border-width-arrow) solid var(--tooltip-bg, rgba(22,22,26,0.95));
+  top: auto;
+  bottom: -7px;
+}
+
+.info-tooltip-trigger {
+  margin-left: var(--space-4);
+  align-items: center;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.info-tooltip-portal .tooltip-title {
+  color: var(--tooltip-color);
+}
+
+body.light-theme .info-tooltip-portal {
+  box-shadow: 0 8px 24px rgba(18,24,38,0.06);
+  border: var(--border-width) solid rgba(18,24,38,0.04);
+}
+
+@media (pointer: coarse) {
+  .info-tooltip-trigger:has(> i) {
+    position: relative;
+  }
+
+  .info-tooltip-trigger:has(> i)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--tap-target);
+    height: var(--tap-target);
+    transform: translate(-50%, -50%);
+  }
+}

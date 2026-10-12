@@ -1,0 +1,199 @@
+/* Trigger — icon variant matches the round buttons of the validator header */
+.share-trigger {
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-base) var(--ease-default);
+}
+
+.share-trigger--icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-card);
+  border: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-ui);
+}
+
+.share-trigger--icon:hover,
+.share-trigger--icon.is-open {
+  background: var(--card-hover);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Trigger — pill variant matches the status chips of the proposal header */
+.share-trigger--pill {
+  gap: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  height: 35px;
+  padding: var(--space-5) 14px;
+  border-radius: var(--radius-badge);
+  font-size: var(--text-control);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  white-space: nowrap;
+  background: rgba(58, 123, 213, 0.15);
+  color: var(--accent);
+  border: var(--border-width) solid rgba(58, 123, 213, 0.3);
+}
+
+.share-trigger--pill i {
+  font-size: var(--text-caption);
+}
+
+.share-trigger--pill:hover,
+.share-trigger--pill.is-open {
+  background: rgba(58, 123, 213, 0.25);
+  border-color: rgba(58, 123, 213, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Menu */
+.share-menu {
+  position: fixed;
+  z-index: 10050;
+  padding: var(--space-6);
+  border-radius: var(--radius-panel);
+  background: var(--tooltip-bg, rgba(22, 22, 26, 0.95));
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  visibility: hidden;
+}
+
+.share-menu.is-positioned {
+  visibility: visible;
+  animation: share-menu-in 0.18s var(--ease-default);
+}
+
+.share-menu--top.is-positioned {
+  animation-name: share-menu-in-up;
+}
+
+@keyframes share-menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes share-menu-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.share-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-10) var(--space-12);
+  border: none;
+  border-radius: var(--radius-card);
+  background: transparent;
+  color: var(--tooltip-color, #ffffff);
+  font-family: inherit;
+  font-size: var(--text-ui);
+  font-weight: var(--weight-medium);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+}
+
+.share-menu-item:hover,
+.share-menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.share-menu-item i {
+  width: 1.125rem;
+  flex-shrink: 0;
+  font-size: var(--text-control);
+  text-align: center;
+  opacity: 0.75;
+}
+
+.share-menu-item:hover i {
+  opacity: 1;
+}
+
+.share-menu-icon--done {
+  color: #22c55e;
+  opacity: 1 !important;
+}
+
+.share-menu-divider {
+  height: 0.0625rem;
+  margin: var(--space-6) var(--space-8);
+  background: var(--border-color);
+}
+
+/* Light theme */
+body.light-theme .share-trigger--icon {
+  background: #f8fafc;
+  border: var(--border-width) solid rgba(0, 0, 0, 0.12);
+  color: #374151;
+}
+
+body.light-theme .share-trigger--icon:hover,
+body.light-theme .share-trigger--icon.is-open {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .share-trigger--pill {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+body.light-theme .share-trigger--pill:hover,
+body.light-theme .share-trigger--pill.is-open {
+  background: rgba(37, 99, 235, 0.18);
+  border-color: rgba(37, 99, 235, 0.45);
+}
+
+body.light-theme .share-menu {
+  background: #ffffff;
+  border: var(--border-width) solid #e5e7eb;
+  box-shadow: 0 12px 32px rgba(18, 24, 38, 0.14);
+}
+
+body.light-theme .share-menu-item {
+  color: #1f2937;
+}
+
+body.light-theme .share-menu-item:hover,
+body.light-theme .share-menu-item:focus-visible {
+  background: #f1f5f9;
+}
+
+body.light-theme .share-menu-divider {
+  background: #e5e7eb;
+}
+
+@media (max-width: 576px) {
+  .share-trigger--icon {
+    width: 36px;
+    height: 36px;
+    font-size: var(--text-badge);
+  }
+
+  .share-trigger--pill {
+    font-size: var(--text-ui);
+    padding: var(--space-5) var(--space-12);
+  }
+}
+
+@media (pointer: coarse) {
+  .share-menu-item {
+    min-height: var(--tap-target);
+  }
+}

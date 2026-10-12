@@ -1,0 +1,329 @@
+/* StakeModal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: var(--space-20);
+  animation: fadeIn var(--duration-base) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-32);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-modal-module);
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp var(--duration-base) ease-out;
+  margin: auto;
+}
+
+.modalContent h2 {
+  color: var(--text);
+  font-size: var(--text-section);
+  font-weight: var(--weight-semibold);
+  margin: var(--space-0) var(--space-0) var(--space-24) var(--space-0);
+  text-align: center;
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.modalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--text-section);
+  cursor: pointer;
+  padding: var(--space-4);
+  border-radius: var(--radius-circle);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.modalClose:hover {
+  background: var(--card-hover);
+  color: var(--text);
+  transform: scale(1.1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-20);
+}
+
+.form > span {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  width: 100%;
+}
+
+.formInput {
+  width: 100%;
+  padding: var(--space-16);
+  background: rgba(255, 255, 255, 0.05);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-card);
+  color: var(--text);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  transition: all var(--duration-base) var(--ease-default);
+  backdrop-filter: blur(10px);
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: #00d2ff;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper input[type=number]::-webkit-outer-spin-button,
+.inputWrapper input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: var(--space-0);
+}
+
+.inputWrapper input[type=number] {
+  appearance: textfield;
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.maxButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: var(--weight-bold);
+  padding: var(--space-6) var(--space-8);
+  cursor: pointer;
+  border-radius: var(--radius-button);
+  transition: color 0.15s var(--ease-default), background 0.15s var(--ease-default);
+}
+
+.maxButton:hover {
+  background: var(--card-hover);
+  color: var(--text);
+}
+
+.formInput::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.formSubmit {
+  color: black;
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  max-width: 150px;
+  align-self: center;
+}
+
+.formSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  box-shadow: none;
+  transform: none;
+}
+
+.disabledNotice {
+  color: #e53e3e;
+  font-size: 13px;
+  line-height: var(--leading-normal);
+  text-align: center;
+  padding: var(--space-10) var(--space-12);
+  background: rgba(229, 62, 62, 0.06);
+  border: var(--border-width) solid rgba(229, 62, 62, 0.12);
+  border-radius: var(--radius-card);
+  margin-top: var(--space-8);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--space-12);
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stakeWarning {
+  color: #ff6b6b;
+  font-size: 13px;
+  line-height: var(--leading-normal);
+  text-align: center;
+  padding: var(--space-12);
+  background: rgba(255, 107, 107, 0.1);
+  border: var(--border-width) solid rgba(255, 107, 107, 0.2);
+  border-radius: var(--radius-card);
+  margin-top: var(--space-8);
+}
+
+.spanLeft {
+  align-self: flex-start;
+}
+
+:global(body.light-theme) .modalOverlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+:global(body.light-theme) .modalContent {
+  background: #ffffff;
+  border: var(--border-width) solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+:global(body.light-theme) .modalContent h2 {
+  color: #1a202c;
+}
+
+:global(body.light-theme) .modalClose {
+  color: #718096;
+}
+
+:global(body.light-theme) .modalClose:hover {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+:global(body.light-theme) .form > span {
+  color: #4a5568;
+}
+
+:global(body.light-theme) .formInput {
+  background: #f7fafc;
+  border: var(--border-width) solid #e2e8f0;
+  color: #2d3748;
+}
+
+:global(body.light-theme) .maxButton {
+  color: grey;
+}
+
+:global(body.light-theme) .maxButton:hover {
+  background: rgba(226, 232, 240, 0.6);
+  color: #2d3748;
+}
+
+:global(body.light-theme) .formInput:focus {
+  background: #ffffff;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+:global(body.light-theme) .formInput::placeholder {
+  color: #718096;
+}
+
+:global(body.light-theme) .formSubmit {
+  background: linear-gradient(135deg, #3182ce, #63b3ed);
+}
+
+:global(body.light-theme) .formSubmit:hover {
+  box-shadow: 0 8px 25px rgba(49, 130, 206, 0.3);
+}
+
+:global(body.light-theme) .formSubmit:disabled {
+  background: #e2e8f0;
+  color: #a0aec0;
+}
+
+:global(body.light-theme) .stakeWarning {
+  color: #c53030;
+  background: rgba(197, 48, 48, 0.1);
+  border-color: rgba(197, 48, 48, 0.2);
+}
+
+@media (max-width: 640px) {
+  .modalOverlay {
+    padding: var(--space-10);
+  }
+
+  .modalContent {
+    padding: var(--space-24);
+    max-width: 100%;
+  }
+  
+  .modalContent h2 {
+    font-size: var(--text-modal-title);
+  }
+  
+  .formInput {
+    padding: 14px;
+    font-size: var(--text-body);
+  }
+  
+  .formSubmit {
+    padding: 14px var(--space-24);
+  }
+
+  .formActions {
+    gap: var(--space-10);
+  }
+}
+
+@media (pointer: coarse) {
+  .modalClose::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, var(--tap-target));
+    height: max(100%, var(--tap-target));
+    transform: translate(-50%, -50%);
+  }
+}
