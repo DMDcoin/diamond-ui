@@ -291,7 +291,7 @@ export default function ProfilePage() {
     const isActive = Boolean((myPool as any).isActive);
     const isValid = Boolean((myPool as any).isToBeElected || (myPool as any).isPendingValidator);
     if (isActive) return { label: 'Active', className: 'active' } as const;
-    if (isValid) return { label: 'Valid', className: 'valid' } as const;
+    if (isValid) return { label: 'Standby', className: 'valid' } as const;
     return { label: 'Invalid', className: 'invalid' } as const;
   }, [myPool]);
 

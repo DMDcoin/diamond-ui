@@ -1097,7 +1097,7 @@ const StakingContextProvider: React.FC<{ children: ReactNode }> = ({children}) =
     stakingInitialized,
     abandonedPools,
     inactivityThreshold,
-    validCandidates: pools.filter(pool => pool.isAvailable).length,
+    validCandidates: pools.filter(pool => pool.isActive || pool.isToBeElected || pool.isPendingValidator).length,
     activeValidators: pools.filter(pool => pool.isActive).length,
 
     // methods
