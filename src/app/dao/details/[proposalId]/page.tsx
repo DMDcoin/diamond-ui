@@ -14,11 +14,12 @@ import { useDaoContext } from '@/contexts/DAO'
 import logger from '@/utils/logger';
 import { useWeb3Context } from '@/contexts/Web3'
 import { useStakingContext } from '@/contexts/Staking'
-import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, formatCryptoUnitValue, getFunctionInfoWithAbi, timestampToDate, truncateAddress } from '@/utils/common'
-import { formatCount, formatDmd, formatDmdFromWei, formatPercent } from '@/utils/format'
+import { capitalizeFirstLetter, decodeCallData, extractValueFromCalldata, getFunctionInfoWithAbi, timestampToDate } from '@/utils/common'
+import { formatDmd, formatDmdFromWei, formatPercent } from '@/utils/format'
 import { getProposalImpact } from '@/constants/proposalImpacts'
+import { formatParameterValue } from '@/utils/parameterFormat'
+import { ParameterComparison, ProposalCreatorCard, ProposalImpactList } from '@/components/ProposalCards'
 import { useDmdNamesForAddresses } from '@/hooks/useDmdNamesForAddresses'
-import { formatDmdName } from '@/utils/dmdNaming'
 import { toast } from 'react-toastify'
 import copy from 'copy-to-clipboard'
 
@@ -313,46 +314,6 @@ export default function ProposalDetailsPage() {
     } catch (e) {}
   }, [proposal?.proposalType, proposal?.rawProposalType])
 
-  // Format parameter values based on the parameter/function
-  const formatParameterValue = (fnName: string, displayName: string, rawValue: string): string => {
-    try {
-      const v = rawValue || '0'
-      const name = (displayName || fnName || '').toLowerCase()
-      // Specific formatting rules per parameter
-      if (fnName === 'setStandByFactor' || name.includes('standby')) {
-        return `${v}`
-      }
-      if (fnName === 'setGovernancePotShareNominator' || name.includes('governance pot share nominator')) {
-        return formatPercent(v)
-      }
-      if (fnName === 'setReportDisallowPeriod' || name.includes('report disallow period')) {
-        // seconds -> minutes
-        return `${formatCount(Number(v) / 60)} minutes`
-      }
-      if (fnName === 'setBlockGasLimit' || name.includes('block gas limit')) {
-        // show in mGas
-        return `${formatCount(Number(v) / 10 ** 6)} mGas`
-      }
-      if (fnName === 'setMinimumGasPrice' || name.includes('minimum gas price')) {
-        // show in Gwei
-        return `${formatCount(Number(v) / 10 ** 9)} Gwei`
-      }
-      if (fnName === 'setCreateProposalFee' || name.includes('create proposal fee')) {
-        return formatDmdFromWei(v)
-      }
-      if (fnName === 'setDelegatorMinStake' || name.includes('delegator min stake')) {
-        return formatDmdFromWei(v)
-      }
-      if (fnName === 'setMintingFee' || name.includes('minting fee')) {
-        return formatDmdFromWei(v)
-      }
-      // Fallback to crypto unit heuristic
-      return formatCryptoUnitValue(v)
-    } catch (e) {
-      return rawValue
-    }
-  }
-
   // derive parameter name/function and compute current/proposed values
   useEffect(() => {
     (async () => {
@@ -614,34 +575,12 @@ export default function ProposalDetailsPage() {
         <div className="container">
           <div className="proposal-grid">
             <div className="proposal-info">
-              <div className="proposal-card creator-card">
-                <div className="card-header"><h3>Created By</h3></div>
-                <div className="card-content">
-                  <div className="creator-address">
-                    <div className="address-icon" style={{ backgroundColor: "#3a7bd5" }} />
-                    {proposerName ? (
-                      <div className="creator-identity">
-                        <span className="creator-name">{formatDmdName(proposerName)}</span>
-                        <span className="creator-address-row">
-                          <span className="address-text">{truncateAddress(String(proposal?.proposer || ''))}</span>
-                          <button className="copy-btn" onClick={(e) => handleCopy(String(proposal?.proposer || ''), e)}>
-                            <i className="fas fa-copy" />
-                          </button>
-                          <div className="copy-tooltip">Copied!</div>
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <span className="address-text">{proposal?.proposer || '0x8F3c7D138e6F5b9D6F9D4c4e4c8D2D8D2D9D2b'}</span>
-                        <button className="copy-btn" onClick={(e) => handleCopy(String(proposal?.proposer || ''), e)}>
-                          <i className="fas fa-copy" />
-                        </button>
-                        <div className="copy-tooltip">Copied!</div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <ProposalCreatorCard
+                address={proposal?.proposer || ''}
+                name={proposerName}
+                fallbackAddress="0x8F3c7D138e6F5b9D6F9D4c4e4c8D2D8D2D9D2b"
+                onCopy={handleCopy}
+              />
 
               <div className="proposal-card description-card" id="description-content">
                 <div className="card-header"><h3>Description</h3></div>
@@ -663,17 +602,7 @@ export default function ProposalDetailsPage() {
                     } catch (e) {}
                     return 'Parameter Change'
                   })()}</h4></div>
-                  <div className="parameter-comparison">
-                    <div className="parameter-current">
-                      <div className="label">Current</div>
-                      <div className="value">{currentParamValue || ''}</div>
-                    </div>
-                    <div className="parameter-arrow">→</div>
-                    <div className="parameter-proposed">
-                      <div className="label">Proposed</div>
-                      <div className="value">{proposedParamValue || ''}</div>
-                    </div>
-                  </div>
+                  <ParameterComparison current={currentParamValue || ''} proposed={proposedParamValue || ''} />
                   <div className="parameter-fee">
                     <span className="label">Proposal fee:</span>
                     <span className="value">{proposalFeeLabel}</span>
@@ -684,22 +613,7 @@ export default function ProposalDetailsPage() {
                   {(() => {
                     const impactData = getProposalImpact(paramFunctionName);
                     if (!impactData) return null;
-                    
-                    return (
-                      <div className="parameter-impact">
-                        <h4>Impact Assessment</h4>
-                        {impactData.effects.map((effect, index) => (
-                          <div key={index} className="impact-item">
-                            <div className={`impact-icon ${effect.type}`}>
-                              {effect.type === 'positive' ? '+' : '-'}
-                            </div>
-                            <div className="impact-text">
-                              <p>{effect.text}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
+                    return <ProposalImpactList impact={impactData} />;
                   })()}
                 </div>
               </div>
@@ -775,23 +689,7 @@ export default function ProposalDetailsPage() {
                   {(() => {
                     const impactData = getProposalImpact(paramFunctionName);
                     if (!impactData) return null;
-                    
-                    return (
-                      <div className="parameter-impact" style={{ marginTop: '1.875rem' }}>
-                        <h4>Impact Assessment</h4>
-                        <div className="impact-title">{impactData.title}</div>
-                        {impactData.effects.map((effect, index) => (
-                          <div key={index} className="impact-item">
-                            <div className={`impact-icon ${effect.type}`}>
-                              {effect.type === 'positive' ? '+' : '-'}
-                            </div>
-                            <div className="impact-text">
-                              <p>{effect.text}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
+                    return <ProposalImpactList impact={impactData} showTitle style={{ marginTop: '1.875rem' }} />;
                   })()}
                   <div className="parameter-fee" style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
                     <span className="label">Proposal fee:</span>
