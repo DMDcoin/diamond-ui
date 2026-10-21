@@ -26,8 +26,8 @@
 
 .modalContent {
   width: 100%;
-  max-width: 480px;
-  padding: 28px;
+  max-width: 30rem;
+  padding: 1.75rem;
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-panel);
@@ -38,8 +38,8 @@
 
 .modalClose {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 
@@ -75,7 +75,7 @@
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-card);
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .formInput:focus {
@@ -88,9 +88,13 @@
   width: 100%;
 }
 
+.inputWrapper .formInput {
+  padding-right: 2.25rem;
+}
+
 .percentageSign {
   position: absolute;
-  right: 12px;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #718096;
@@ -101,17 +105,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   border-radius: var(--radius-pill);
   border: var(--border-width) solid var(--border-color);
-  font-size: 10px;
+  font-size: 0.625rem;
   cursor: pointer;
   color: var(--text-secondary);
 }
 
 .formSubmit {
-  max-width: 140px;
+  max-width: 8.75rem;
   align-self: center;
   font-weight: var(--weight-bold);
 }
@@ -132,7 +136,7 @@
   text-align: center;
   margin-bottom: var(--space-20);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 :global(body.light-theme) .modalContent {
@@ -147,9 +151,17 @@
   .modalContent {
     padding: var(--space-20);
   }
+
+  .modalTitle {
+    padding-inline: var(--space-24);
+  }
 }
 
 @media (pointer: coarse) {
+  .formInput {
+    font-size: var(--text-body);
+  }
+
   .modalClose::after {
     content: "";
     position: absolute;

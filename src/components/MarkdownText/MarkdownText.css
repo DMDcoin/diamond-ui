@@ -15,7 +15,7 @@
 }
 
 .markdown-body p {
-  margin: var(--space-0) var(--space-0) 14px;
+  margin: var(--space-0) var(--space-0) 0.875rem;
   white-space: pre-wrap;
 }
 
@@ -23,7 +23,7 @@
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
-  margin: 26px var(--space-0) var(--space-10);
+  margin: 1.625rem var(--space-0) var(--space-10);
   font-weight: var(--weight-bold);
   line-height: 1.35;
   color: var(--text);
@@ -44,8 +44,8 @@
 
 .markdown-body ul,
 .markdown-body ol {
-  margin: var(--space-0) var(--space-0) 14px;
-  padding-left: 22px;
+  margin: var(--space-0) var(--space-0) 0.875rem;
+  padding-left: 1.375rem;
 }
 
 .markdown-body li {
@@ -68,7 +68,7 @@
 .markdown-body code {
   font-family: var(--font-data);
   font-size: 0.9em;
-  padding: 2px var(--space-6);
+  padding: 0.125rem var(--space-6);
   border-radius: var(--radius-control);
   background: rgba(255, 255, 255, 0.08);
 }
@@ -87,5 +87,5 @@ body.light-theme .markdown-body code {
   height: 0;
   border: 0;
   border-top: var(--border-width) solid var(--border-color);
-  margin: 22px var(--space-0);
+  margin: 1.375rem var(--space-0);
 }

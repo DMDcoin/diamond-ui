@@ -21,13 +21,13 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(1.25rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .modalContent {
   width: 100%;
-  max-width: 520px;
+  max-width: 32.5rem;
   padding: var(--space-32);
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -58,14 +58,14 @@
   color: var(--text-secondary);
   font-size: var(--text-control);
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 1.125rem;
 }
 
 .importantBlock {
   border: var(--border-width) solid rgba(255, 167, 38, 0.25);
   background: rgba(255, 167, 38, 0.08);
-  border-radius: 10px;
-  padding: 14px var(--space-16);
+  border-radius: 0.625rem;
+  padding: 0.875rem var(--space-16);
   margin-bottom: var(--space-16);
 }
 
@@ -86,8 +86,8 @@
 
 .modalClose {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -95,8 +95,8 @@
   cursor: pointer;
   padding: var(--space-4);
   border-radius: var(--radius-circle);
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,6 +120,11 @@
   color: var(--text-secondary);
   font-size: var(--text-control);
   word-wrap: break-word;
+}
+
+.confirmLabel > input {
+  width: 0.8125rem;
+  height: 0.8125rem;
 }
 
 .formInput {
@@ -147,13 +152,13 @@
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 150px;
+  max-width: 9.375rem;
   align-self: center;
 }
 
 .unstakeWarning {
   color: #ffa726;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: var(--leading-normal);
   text-align: center;
   margin: var(--space-0);
@@ -222,6 +227,12 @@
   }
   .formSubmit {
     padding: 14px var(--space-24);
+  }
+
+  .modalContent h3 {
+    padding-inline: var(--space-32);
+    white-space: normal;
+    text-wrap: balance;
   }
 }
 

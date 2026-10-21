@@ -31,8 +31,8 @@
   gap: var(--space-6);
   display: inline-flex;
   align-items: center;
-  height: 35px;
-  padding: var(--space-5) 14px;
+  height: 2.1875rem;
+  padding: var(--space-5) 0.875rem;
   border-radius: var(--radius-badge);
   font-size: var(--text-control);
   font-weight: var(--weight-medium);
@@ -51,7 +51,7 @@
 .share-trigger--pill.is-open {
   background: rgba(58, 123, 213, 0.25);
   border-color: rgba(58, 123, 213, 0.5);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 /* Menu */
@@ -195,5 +195,19 @@ body.light-theme .share-menu-divider {
 @media (pointer: coarse) {
   .share-menu-item {
     min-height: var(--tap-target);
+  }
+
+  .share-trigger--pill {
+    position: relative;
+  }
+
+  .share-trigger--pill::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: max(100%, var(--tap-target));
+    transform: translateY(-50%);
   }
 }

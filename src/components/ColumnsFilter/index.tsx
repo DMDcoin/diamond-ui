@@ -164,7 +164,7 @@ const ColumnsFilterModal: React.FC<ColumnsFilterModalProps> = ({
       </button>
 
       {isOpen && createPortal(
-        <div className={`modal ${isOpen ? 'show' : ''}`}>
+        <div className={`modal columns-modal ${isOpen ? 'show' : ''}`}>
           <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h3>Customize your table view</h3>

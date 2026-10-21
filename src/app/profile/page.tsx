@@ -291,7 +291,7 @@ export default function ProfilePage() {
     const isActive = Boolean((myPool as any).isActive);
     const isValid = Boolean((myPool as any).isToBeElected || (myPool as any).isPendingValidator);
     if (isActive) return { label: 'Active', className: 'active' } as const;
-    if (isValid) return { label: 'Valid', className: 'valid' } as const;
+    if (isValid) return { label: 'Standby', className: 'valid' } as const;
     return { label: 'Invalid', className: 'invalid' } as const;
   }, [myPool]);
 
@@ -318,7 +318,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div>
+    <div className="profile-page">
         {/* Authenticated User View (Without Validator) */}
         <div id="authenticated-user-view" style={{display: hasValidator ? "none" : "block"}}>
           {/* User Information Section */}
@@ -487,7 +487,7 @@ export default function ProfilePage() {
                     ) : (
                       <tr>
                         <td colSpan={isPrivacyMode ? 4 : 8} style={{ textAlign: 'center', padding: '2rem' }}>
-                          You haven't staked with any validators yet
+                          <span className="dp2-empty-text">You haven't staked with any validators yet</span>
                         </td>
                       </tr>
                     )}
@@ -945,7 +945,7 @@ export default function ProfilePage() {
                     ) : (
                       <tr>
                         <td colSpan={isPrivacyMode ? 4 : 8} style={{ textAlign: 'center', padding: '2rem' }}>
-                          You haven't staked with any validators yet
+                          <span className="dp2-empty-text">You haven't staked with any validators yet</span>
                         </td>
                       </tr>
                     )}

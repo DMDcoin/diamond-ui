@@ -1,6 +1,6 @@
 /* Hero Section */
 .proposal-hero {
-  min-height: 300px;
+  min-height: 18.75rem;
   display: flex;
   align-items: center;
   background: var(--bg);
@@ -43,32 +43,18 @@
   margin-top: var(--space-15);
 }
 
-.proposal-date {
+.proposal-details-page-root .proposal-date {
   display: flex;
   align-items: center;
   gap: var(--space-8);
   font-size: var(--text-control);
-}
-
-.proposal-status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-  font-size: var(--text-control);
-  padding: var(--space-5) var(--space-12);
-  border-radius: var(--radius-badge);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-normal);
-  text-align: center;
-  white-space: nowrap;
 }
 
 .dismiss-proposal-btn {
   gap: var(--space-6);
   display: flex;
   align-items: center;
-  padding: var(--space-5) 14px;
+  padding: var(--space-5) 0.875rem;
   border-radius: var(--radius-badge);
   font-size: var(--text-control);
   font-weight: var(--weight-medium);
@@ -77,28 +63,28 @@
   border: var(--border-width) solid rgba(255, 76, 76, 0.3);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  height: 35px;
+  height: 2.1875rem;
 }
 
 .dismiss-proposal-btn > i {
-  margin-top: 3px;
+  margin-top: 0.1875rem;
 }
 
 .dismiss-proposal-btn:hover {
   background: rgba(255, 76, 76, 0.25);
   border-color: rgba(255, 76, 76, 0.5);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 .dismiss-proposal-btn i {
   font-size: var(--text-caption);
 }
 
-.form-group {
+.proposal-details-page-root .form-group {
   margin-bottom: var(--space-20);
 }
 
-.form-group label {
+.proposal-details-page-root .form-group label {
   display: block;
   margin-bottom: var(--space-8);
   font-weight: var(--weight-medium);
@@ -106,9 +92,9 @@
   transition: color var(--duration-theme) var(--ease-default);
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.proposal-details-page-root .form-group input,
+.proposal-details-page-root .form-group select,
+.proposal-details-page-root .form-group textarea {
   width: 100%;
   background: var(--darker-bg);
   border: var(--border-width) solid var(--border-color);
@@ -121,54 +107,54 @@
 }
 
 
-.light-theme .form-group label {
+.light-theme .proposal-details-page-root .form-group label {
   color: #333;
 }
 
-.light-theme .form-group input,
-.light-theme .form-group select,
-.light-theme .form-group textarea {
+.light-theme .proposal-details-page-root .form-group input,
+.light-theme .proposal-details-page-root .form-group select,
+.light-theme .proposal-details-page-root .form-group textarea {
   background: #ffffff;
   border: var(--border-width) solid #d0d5dd;
   color: #333;
 }
 
 
-.form-group select {
+.proposal-details-page-root .form-group select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 15px center;
+  background-position: right 0.9375rem center;
   padding-right: var(--space-40);
 }
 
 
-.light-theme .form-group select {
+.light-theme .proposal-details-page-root .form-group select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.proposal-details-page-root .form-group input:focus,
+.proposal-details-page-root .form-group select:focus,
+.proposal-details-page-root .form-group textarea:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 157, 255, 0.2);
 }
 
 
-.light-theme .form-group input:focus,
-.light-theme .form-group select:focus,
-.light-theme .form-group textarea:focus {
+.light-theme .proposal-details-page-root .form-group input:focus,
+.light-theme .proposal-details-page-root .form-group select:focus,
+.light-theme .proposal-details-page-root .form-group textarea:focus {
   border-color: #0077cc;
   box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.15);
 }
 
-.form-group select option {
+.proposal-details-page-root .form-group select option {
   background-color: var(--darker-bg);
   color: var(--text);
 }
 
-.light-theme .form-group select option {
+.light-theme .proposal-details-page-root .form-group select option {
   background-color: #ffffff;
   color: #333;
 }
@@ -180,14 +166,14 @@
     transform: translateY(0) scale(1);
   }
   50% {
-    transform: translateY(-20px) scale(1.05);
+    transform: translateY(-1.25rem) scale(1.05);
   }
 }
 
-.diamond {
+.proposal-details-page-root .diamond {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 6.25rem;
+  height: 6.25rem;
   background-color: rgba(1, 69, 178, 0.08);
   border-radius: 20%;
   backdrop-filter: blur(10px);
@@ -199,34 +185,34 @@
   border: var(--border-width) solid rgba(255, 255, 255, 0.1);
 }
 
-.diamond:hover {
+.proposal-details-page-root .diamond:hover {
   transform: rotate(45deg) scale(1.1);
   box-shadow: 0 15px 40px rgba(1, 69, 178, 0.2);
 }
 
-.diamond-1 {
+.proposal-details-page-root .diamond-1 {
   top: 20%;
   right: 15%;
-  width: 150px;
-  height: 150px;
+  width: 9.375rem;
+  height: 9.375rem;
   background-color: var(--diamond-1-color);
   animation-delay: 0s;
 }
 
-.diamond-2 {
+.proposal-details-page-root .diamond-2 {
   top: 35%;
   right: 10%;
-  width: 100px;
-  height: 100px;
+  width: 6.25rem;
+  height: 6.25rem;
   background-color: var(--diamond-2-color);
   animation-delay: 2s;
 }
 
-.diamond-3 {
+.proposal-details-page-root .diamond-3 {
   top: 45%;
   right: 18%;
-  width: 120px;
-  height: 120px;
+  width: 7.5rem;
+  height: 7.5rem;
   background-color: var(--diamond-3-color);
   animation-delay: 4s;
 }
@@ -243,12 +229,12 @@
   width: 100%;
 }
 
-.target-address .value,
-.transaction-value,
-.transaction-hash,
-.address-container,
-.call-data-content,
-.decoded-data-content {
+.proposal-details-page-root .target-address .value,
+.proposal-details-page-root .transaction-value,
+.proposal-details-page-root .transaction-hash,
+.proposal-details-page-root .address-container,
+.proposal-details-page-root .call-data-content,
+.proposal-details-page-root .decoded-data-content {
   max-width: 100%;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -268,8 +254,8 @@
   gap: var(--space-25);
 }
 
-.proposal-info,
-.voting-info {
+.proposal-details-page-root .proposal-info,
+.proposal-details-page-root .voting-info {
   min-width: 0;
 }
 
@@ -301,7 +287,7 @@
 .proposal-timeline-section:hover,
 .resources-section:hover,
 .related-proposals-section:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.3125rem);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -312,7 +298,7 @@
 }
 
 .timeline::before {
-  left: 8px;
+  left: 0.5rem;
 }
 
 .timeline-item {
@@ -320,9 +306,9 @@
 }
 
 .timeline-dot {
-  left: -25px;
-  width: 16px;
-  height: 16px;
+  left: -1.5625rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Adjust resources grid to be a single column in its section */
@@ -353,7 +339,7 @@
 }
 
 .proposal-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.3125rem);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -374,16 +360,16 @@
 }
 
 /* Creator Card */
-.creator-address {
+.proposal-details-page-root .creator-address {
   display: flex;
   align-items: center;
   gap: var(--space-10);
   position: relative;
 }
 
-.address-icon {
-  width: 32px;
-  height: 32px;
+.proposal-details-page-root .address-icon {
+  width: 2rem;
+  height: 2rem;
   border-radius: var(--radius-circle);
   flex-shrink: 0;
 }
@@ -399,7 +385,7 @@
 .creator-identity {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.125rem;
   min-width: 0;
 }
 
@@ -429,6 +415,7 @@
   color: var(--text-secondary);
   cursor: pointer;
   padding: var(--space-5);
+  font-size: 0.8333rem;
   transition: color var(--duration-base) var(--ease-default);
 }
 
@@ -438,7 +425,7 @@
 
 .copy-tooltip {
   position: absolute;
-  top: -30px;
+  top: -1.875rem;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.8);
@@ -451,7 +438,7 @@
   transition: opacity var(--duration-base) var(--ease-default), visibility var(--duration-base) var(--ease-default);
 }
 
-.copy-btn.copied + .copy-tooltip {
+.proposal-details-page-root .copy-btn.copied + .copy-tooltip {
   opacity: 1;
   visibility: visible;
 }
@@ -485,23 +472,23 @@
   color: var(--text-secondary);
 }
 
-.parameter-current .label,
-.parameter-proposed .label {
+.proposal-details-page-root .parameter-current .label,
+.proposal-details-page-root .parameter-proposed .label {
   font-size: var(--text-ui);
   opacity: 0.7;
 }
 
-.parameter-current .value,
-.parameter-proposed .value {
+.proposal-details-page-root .parameter-current .value,
+.proposal-details-page-root .parameter-proposed .value {
   font-size: var(--text-stat);
   font-weight: var(--weight-bold);
 }
 
-.parameter-current .value {
+.proposal-details-page-root .parameter-current .value {
   color: #ff9800;
 }
 
-.parameter-proposed .value {
+.proposal-details-page-root .parameter-proposed .value {
   color: #00d2ff;
 }
 
@@ -515,7 +502,7 @@
   border-radius: var(--radius-card);
 }
 
-.parameter-fee .value {
+.proposal-details-page-root .parameter-fee .value {
   font-weight: var(--weight-semibold);
 }
 
@@ -523,21 +510,21 @@
   position: relative;
 }
 
-.info-icon {
+.proposal-details-page-root .info-icon {
   cursor: pointer;
   color: var(--text-secondary);
   transition: color var(--duration-base) var(--ease-default);
 }
 
-.info-icon:hover {
+.proposal-details-page-root .info-icon:hover {
   color: var(--text);
 }
 
-.info-tooltip {
+.proposal-details-page-root .info-tooltip {
   position: absolute;
-  top: -5px;
-  left: 25px;
-  width: 250px;
+  top: -0.3125rem;
+  left: 1.5625rem;
+  width: 15.625rem;
   background: rgba(0, 0, 0, 0.9);
   color: white;
   padding: var(--space-10);
@@ -549,7 +536,7 @@
   z-index: 10;
 }
 
-.info-tooltip-container:hover .info-tooltip {
+.proposal-details-page-root .info-tooltip-container:hover .info-tooltip {
   opacity: 1;
   visibility: visible;
 }
@@ -606,25 +593,25 @@ body.light-theme .parameter-description {
   overflow: hidden;
 }
 
-.parameter-description .markdown-body {
+.proposal-details-page-root .parameter-description .markdown-body {
   opacity: 0.9;
   font-weight: var(--weight-medium);
 }
 
-.parameter-description .markdown-body p,
-.parameter-description .markdown-body li {
+.proposal-details-page-root .parameter-description .markdown-body p,
+.proposal-details-page-root .parameter-description .markdown-body li {
   font-weight: var(--weight-medium);
   opacity: 1;
 }
 
-.parameter-description .markdown-body h3,
-.parameter-description .markdown-body h4,
-.parameter-description .markdown-body h5,
-.parameter-description .markdown-body h6 {
+.proposal-details-page-root .parameter-description .markdown-body h3,
+.proposal-details-page-root .parameter-description .markdown-body h4,
+.proposal-details-page-root .parameter-description .markdown-body h5,
+.proposal-details-page-root .parameter-description .markdown-body h6 {
   opacity: 1;
 }
 
-.parameter-description .markdown-body.clamped {
+.proposal-details-page-root .parameter-description .markdown-body.clamped {
   max-height: 24em;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
@@ -632,8 +619,8 @@ body.light-theme .parameter-description {
 }
 
 .parameter-description .description-toggle {
-  margin-top: 14px;
-  margin-left: -10px;
+  margin-top: 0.875rem;
+  margin-left: -0.625rem;
   color: var(--accent);
   font-weight: var(--weight-medium);
 }
@@ -656,7 +643,7 @@ body.light-theme .parameter-description {
 
 .special-indicator {
   font-size: var(--text-ui);
-  padding: 2px var(--space-8);
+  padding: 0.125rem var(--space-8);
   border-radius: var(--radius-control);
   font-weight: var(--weight-medium);
 }
@@ -681,8 +668,8 @@ body.light-theme .parameter-description {
 }
 
 .impact-icon {
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: var(--radius-circle);
   display: flex;
   align-items: center;
@@ -690,12 +677,12 @@ body.light-theme .parameter-description {
   flex-shrink: 0;
 }
 
-.impact-icon.positive {
+.proposal-details-page-root .impact-icon.positive {
   background: rgba(0, 200, 83, 0.15);
   color: #00c853;
 }
 
-.impact-icon.negative {
+.proposal-details-page-root .impact-icon.negative {
   background: rgba(255, 76, 76, 0.15);
   color: #ff4c4c;
 }
@@ -727,8 +714,8 @@ body.light-theme .parameter-description {
   margin-bottom: var(--space-0);
 }
 
-.payout-address .label,
-.payout-amount .label {
+.proposal-details-page-root .payout-address .label,
+.proposal-details-page-root .payout-amount .label {
   display: block;
   font-size: var(--text-ui);
   opacity: 0.7;
@@ -742,7 +729,7 @@ body.light-theme .parameter-description {
   position: relative;
 }
 
-.payout-amount .value {
+.proposal-details-page-root .payout-amount .value {
   font-size: var(--text-card-header);
   font-weight: var(--weight-semibold);
   color: #00d2ff;
@@ -769,15 +756,15 @@ body.light-theme .parameter-description {
 }
 
 .breakdown-bar {
-  height: 10px;
+  height: 0.625rem;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   overflow: hidden;
 }
 
 .breakdown-progress {
   height: 100%;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
 }
 
 .breakdown-progress.dev-grants {
@@ -788,7 +775,7 @@ body.light-theme .parameter-description {
   background: linear-gradient(90deg, #5d26c1, #a17fe0);
 }
 
-.breakdown-progress.events {
+.proposal-details-page-root .breakdown-progress.events {
   background: linear-gradient(90deg, #16a085, #2ecc71);
 }
 
@@ -796,7 +783,7 @@ body.light-theme .parameter-description {
   background: linear-gradient(90deg, #f2994a, #f2c94c);
 }
 
-.breakdown-label {
+.proposal-details-page-root .breakdown-label {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-ui);
@@ -809,8 +796,8 @@ body.light-theme .parameter-description {
 }
 
 .milestone-icon {
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   background: rgba(0, 157, 255, 0.15);
   color: #00d2ff;
   border-radius: var(--radius-circle);
@@ -848,7 +835,7 @@ body.light-theme .parameter-description {
   margin-bottom: var(--space-20);
 }
 
-.target-address .label {
+.proposal-details-page-root .target-address .label {
   display: block;
   font-size: var(--text-ui);
   opacity: 0.7;
@@ -883,7 +870,7 @@ body.light-theme .parameter-description {
 
 .call-data-content,
 .decoded-data-content {
-  max-height: 1000px;
+  max-height: 62.5rem;
   overflow: hidden;
   transition: max-height var(--duration-theme) var(--ease-default);
 }
@@ -914,7 +901,7 @@ body.light-theme .parameter-description {
 }
 
 .decoded-label {
-  width: 150px;
+  width: 9.375rem;
   font-weight: var(--weight-semibold);
   flex-shrink: 0;
 }
@@ -939,7 +926,7 @@ body.light-theme .parameter-description {
 }
 
 .nested-label {
-  width: 130px;
+  width: 8.125rem;
   font-weight: var(--weight-semibold);
   flex-shrink: 0;
 }
@@ -967,7 +954,7 @@ body.light-theme .parameter-description {
 
 .changes-list li i {
   color: #00c853;
-  margin-top: 3px;
+  margin-top: 0.1875rem;
 }
 
 .resource-links {
@@ -1038,27 +1025,27 @@ body.light-theme .parameter-description {
   font-size: var(--text-ui);
 }
 
-.voting-status-message.executed {
+.proposal-details-page-root .voting-status-message.executed {
   background: rgba(16, 185, 129, 0.15);
   color: #10B981;
 }
 
-.voting-status-message.declined {
+.proposal-details-page-root .voting-status-message.declined {
   background: rgba(239, 68, 68, 0.15);
   color: #EF4444;
 }
 
-.voting-status-message.accepted {
+.proposal-details-page-root .voting-status-message.accepted {
   background: rgba(16, 185, 129, 0.15);
   color: #10B981;
 }
 
-.voting-status-message.active {
+.proposal-details-page-root .voting-status-message.active {
   background: rgba(59, 130, 246, 0.15);
   color: #3B82F6;
 }
 
-.voting-status-message.created {
+.proposal-details-page-root .voting-status-message.created {
   background: rgba(96, 165, 250, 0.15);
   color: #60A5FA;
 }
@@ -1073,34 +1060,34 @@ body.light-theme .parameter-description {
   color: #F59E0B;
 }
 
-.voting-status-message.unknown {
+.proposal-details-page-root .voting-status-message.unknown {
   background: rgba(107, 114, 128, 0.15);
   color: #6B7280;
 }
 
-.voting-progress-container {
+.proposal-details-page-root .voting-progress-container {
   position: relative;
   margin-bottom: var(--space-30);
 }
 
-.voting-progress-bar {
-  height: 24px;
+.proposal-details-page-root .voting-progress-bar {
+  height: 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-panel);
   position: relative;
   margin-bottom: var(--space-15);
 }
 
-.progress-yes {
+.proposal-details-page-root .progress-yes {
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
   background: linear-gradient(90deg, #16a085, #2ecc71);
-  border-radius: 15px var(--radius-none) var(--radius-none) 15px;
+  border-radius: 0.9375rem var(--radius-none) var(--radius-none) 0.9375rem;
 }
 
-.progress-no {
+.proposal-details-page-root .progress-no {
   position: absolute;
   left: 0;
   top: 0;
@@ -1110,20 +1097,20 @@ body.light-theme .parameter-description {
   margin-left: 68%;
 }
 
-.threshold-line {
+.proposal-details-page-root .threshold-line {
   position: absolute;
   top: 0;
-  height: 45px;
-  width: 4px;
+  height: 2.8125rem;
+  width: 0.25rem;
   background: #FFC107;
   border: 0.5px solid rgba(0, 0, 0, 0.6);
   z-index: 2;
-  top: -9px;
+  top: -0.5625rem;
 }
 
 .threshold-label {
   position: absolute;
-  top: -20px;
+  top: -1.25rem;
   left: 50%;
   transform: translateX(-50%);
   font-size: var(--icon-sm);
@@ -1131,15 +1118,15 @@ body.light-theme .parameter-description {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.voting-progress-bar.segmented .bar-segments {
+.proposal-details-page-root .voting-progress-bar.segmented .bar-segments {
   display: flex;
   height: 100%;
   border-radius: inherit;
   overflow: hidden;
 }
 
-.voting-progress-bar.segmented .progress-yes,
-.voting-progress-bar.segmented .progress-no {
+.proposal-details-page-root .voting-progress-bar.segmented .progress-yes,
+.proposal-details-page-root .voting-progress-bar.segmented .progress-no {
   position: relative;
   top: 0;
   left: 0;
@@ -1149,22 +1136,22 @@ body.light-theme .parameter-description {
   transition: width 1.5s ease-out;
 }
 
-.voting-progress-bar.segmented .progress-yes {
+.proposal-details-page-root .voting-progress-bar.segmented .progress-yes {
   width: var(--yes-width, 0%);
 }
 
-.voting-progress-bar.segmented .progress-no {
+.proposal-details-page-root .voting-progress-bar.segmented .progress-no {
   width: var(--no-width, 0%);
 }
 
-.voting-progress-bar.segmented .threshold-line,
-.voting-progress-bar.segmented .threshold-label {
+.proposal-details-page-root .voting-progress-bar.segmented .threshold-line,
+.proposal-details-page-root .voting-progress-bar.segmented .threshold-label {
   left: var(--threshold-left, 0%);
 }
 
 .voting-progress-tooltip {
   position: absolute;
-  top: -70px;
+  top: -4.375rem;
   left: 0;
   background: rgba(0, 0, 0, 0.9);
   border-radius: var(--radius-control);
@@ -1176,7 +1163,7 @@ body.light-theme .parameter-description {
   pointer-events: none;
 }
 
-.voting-progress-container:hover .voting-progress-tooltip {
+.proposal-details-page-root .voting-progress-container:hover .voting-progress-tooltip {
   opacity: 1;
   visibility: visible;
 }
@@ -1187,34 +1174,34 @@ body.light-theme .parameter-description {
   gap: var(--space-5);
 }
 
-.tooltip-item {
+.proposal-details-page-root .tooltip-item {
   display: flex;
   align-items: center;
   gap: var(--space-8);
   font-size: var(--text-ui);
 }
 
-.tooltip-item .dot {
-  width: 8px;
-  height: 8px;
+.proposal-details-page-root .tooltip-item .dot {
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: var(--radius-circle);
 }
 
-.tooltip-item.yes .dot {
+.proposal-details-page-root .tooltip-item.yes .dot {
   background: #2ecc71;
 }
 
-.tooltip-item.no .dot {
+.proposal-details-page-root .tooltip-item.no .dot {
   background: #ff4c4c;
 }
 
-.voting-stats {
+.proposal-details-page-root .voting-stats {
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
 }
 
-.voting-legend {
+.proposal-details-page-root .voting-legend {
   display: flex;
   gap: var(--space-16);
   align-items: center;
@@ -1223,54 +1210,54 @@ body.light-theme .parameter-description {
   flex-wrap: wrap;
 }
 
-.voting-legend .legend-item {
+.proposal-details-page-root .voting-legend .legend-item {
   display: flex;
   align-items: center;
   gap: var(--space-6);
 }
 
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+.proposal-details-page-root .legend-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.125rem;
   border: var(--border-width) solid var(--border-color);
   display: inline-block;
 }
 
-.legend-dot.yes {
+.proposal-details-page-root .legend-dot.yes {
   background: linear-gradient(90deg, #16a085, #2ecc71);
 }
 
-.legend-dot.no {
+.proposal-details-page-root .legend-dot.no {
   background: linear-gradient(90deg, #ff4c4c, #ff9800);
 }
 
-.legend-dot.threshold {
+.proposal-details-page-root .legend-dot.threshold {
   background: #FFC107;
   border-color: rgba(0, 0, 0, 0.6);
 }
 
-.voting-progress-bar.segmented .threshold-line {
+.proposal-details-page-root .voting-progress-bar.segmented .threshold-line {
   left: var(--threshold-left, 0%);
   transform: translateX(-50%);
 }
-.voting-progress-bar.segmented .threshold-label {
+.proposal-details-page-root .voting-progress-bar.segmented .threshold-label {
   left: var(--threshold-left, 0%);
 }
 
-.stat-item {
+.proposal-details-page-root .stat-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: var(--text-control);
 }
 
-.stat-label {
+.proposal-details-page-root .stat-label {
   font-weight: var(--weight-medium);
   font-size: var(--text-ui);
 }
 
-.stat-value {
+.proposal-details-page-root .stat-value {
   font-weight: var(--weight-semibold);
   font-size: var(--text-control);
 }
@@ -1280,23 +1267,23 @@ body.light-theme .parameter-description {
   opacity: 0.7;
 }
 
-.yes-votes .stat-value,
-.yes-votes .stat-percentage {
+.proposal-details-page-root .yes-votes .stat-value,
+.proposal-details-page-root .yes-votes .stat-percentage {
   color: #2ecc71;
 }
 
-.no-votes .stat-value,
-.no-votes .stat-percentage {
+.proposal-details-page-root .no-votes .stat-value,
+.proposal-details-page-root .no-votes .stat-percentage {
   color: #ff4c4c;
 }
 
-.stat-divider {
-  height: 1px;
+.proposal-details-page-root .stat-divider {
+  height: 0.0625rem;
   background: var(--border-color);
   margin: var(--space-10) var(--space-0);
 }
 
-.threshold {
+.proposal-details-page-root .threshold {
   font-size: var(--text-badge);
   opacity: 0.7;
 }
@@ -1336,11 +1323,11 @@ body.light-theme .parameter-description {
   opacity: 0.9;
 }
 
-.voting-actions .form-group {
+.proposal-details-page-root .voting-actions .form-group {
   margin-bottom: var(--space-10);
 }
 
-.voting-actions .form-group input {
+.proposal-details-page-root .voting-actions .form-group input {
   width: 100%;
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
@@ -1350,39 +1337,39 @@ body.light-theme .parameter-description {
   font-size: var(--text-control);
 }
 
-.voting-actions .form-group input:focus {
+.proposal-details-page-root .voting-actions .form-group input:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 157, 255, 0.2);
 }
 
-.vote-buttons {
+.proposal-details-page-root .vote-buttons {
   display: flex;
   gap: var(--space-10);
   flex-wrap: wrap;
 }
 
-.vote-buttons .primaryBtn {
+.proposal-details-page-root .vote-buttons .primaryBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-8);
-  min-width: 160px;
+  min-width: 10rem;
 }
 
-.primaryBtn.vote-yes {
+.proposal-details-page-root .primaryBtn.vote-yes {
   background: linear-gradient(90deg, #16a085, #2ecc71);
 }
 
-.primaryBtn.vote-yes:hover:not(:disabled) {
+.proposal-details-page-root .primaryBtn.vote-yes:hover:not(:disabled) {
   background: linear-gradient(90deg, #1b9b7e, #29c267);
 }
 
-.primaryBtn.vote-no {
+.proposal-details-page-root .primaryBtn.vote-no {
   background: linear-gradient(90deg, #ff4c4c, #ff9800);
 }
 
-.primaryBtn.vote-no:hover:not(:disabled) {
+.proposal-details-page-root .primaryBtn.vote-no:hover:not(:disabled) {
   background: linear-gradient(90deg, #e84545, #f28a00);
 }
 
@@ -1425,7 +1412,7 @@ body.light-theme .parameter-description {
 .transaction-item {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 0.1875rem;
   margin-bottom: var(--space-12);
 }
 
@@ -1491,13 +1478,13 @@ body.light-theme .parameter-description {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.type-btn.active {
+.proposal-details-page-root .type-btn.active {
   background: rgba(0, 157, 255, 0.3);
   color: #00d2ff;
 }
 
 /* Utility Classes */
-.hidden {
+.proposal-details-page-root .hidden {
   display: none;
 }
 
@@ -1524,14 +1511,14 @@ body.light-theme .parameter-description {
 }
 
 .resource-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-0.1875rem);
   background: var(--card-hover);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .resource-icon {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: var(--radius-card);
   background: rgba(0, 157, 255, 0.15);
   display: flex;
@@ -1570,35 +1557,35 @@ body.light-theme .parameter-description {
 }
 
 .related-proposal-item:hover {
-  transform: translateY(-3px);
+  transform: translateY(-0.1875rem);
   background: var(--card-hover);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .related-proposal-status {
-  width: 10px;
-  height: 10px;
+  width: 0.625rem;
+  height: 0.625rem;
   border-radius: var(--radius-circle);
   flex-shrink: 0;
 }
 
-.related-proposal-status.executed {
+.proposal-details-page-root .related-proposal-status.executed {
   background: #00c853;
 }
 
-.related-proposal-status.active {
+.proposal-details-page-root .related-proposal-status.active {
   background: #00d2ff;
 }
 
-.related-proposal-status.declined {
+.proposal-details-page-root .related-proposal-status.declined {
   background: #ff4c4c;
 }
 
-.related-proposal-status.accepted {
+.proposal-details-page-root .related-proposal-status.accepted {
   background: #00c853;
 }
 
-.related-proposal-status.created {
+.proposal-details-page-root .related-proposal-status.created {
   background: #6496ff;
 }
 
@@ -1610,7 +1597,7 @@ body.light-theme .parameter-description {
   background: #ffc107;
 }
 
-.related-proposal-status.unknown {
+.proposal-details-page-root .related-proposal-status.unknown {
   background: #999;
 }
 
@@ -1645,10 +1632,10 @@ body.light-theme .parameter-description {
 .timeline::before {
   content: "";
   position: absolute;
-  left: 10px;
+  left: 0.625rem;
   top: 0;
   height: 100%;
-  width: 2px;
+  width: 0.125rem;
   background: var(--border-color);
 }
 
@@ -1663,10 +1650,10 @@ body.light-theme .parameter-description {
 
 .timeline-dot {
   position: absolute;
-  left: -30px;
+  left: -1.875rem;
   top: 0;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: var(--radius-circle);
   background: var(--card-bg);
   border: var(--border-width-thick) solid var(--border-color);
@@ -1764,25 +1751,25 @@ body.light-theme .proposal-hero {
   background: #f5f7fa;
 }
 
-body.light-theme .diamond {
+body.light-theme .proposal-details-page-root .diamond {
   background-color: rgba(1, 69, 178, 0.05);
   box-shadow: 0 8px 32px rgba(1, 69, 178, 0.08);
   border: var(--border-width) solid rgba(1, 69, 178, 0.1);
 }
 
-body.light-theme .diamond-1 {
+body.light-theme .proposal-details-page-root .diamond-1 {
   background-color: rgba(1, 69, 178, 0.05);
 }
 
-body.light-theme .diamond-2 {
+body.light-theme .proposal-details-page-root .diamond-2 {
   background-color: rgba(138, 43, 226, 0.05);
 }
 
-body.light-theme .diamond-3 {
+body.light-theme .proposal-details-page-root .diamond-3 {
   background-color: rgba(0, 157, 255, 0.05);
 }
 
-body.light-theme .diamond:hover {
+body.light-theme .proposal-details-page-root .diamond:hover {
   transform: rotate(45deg) scale(1.1);
   box-shadow: 0 15px 40px rgba(1, 69, 178, 0.15);
 }
@@ -1804,7 +1791,7 @@ body.light-theme .proposal-card:hover,
 body.light-theme .proposal-timeline-section:hover,
 body.light-theme .resources-section:hover,
 body.light-theme .related-proposals-section:hover {
-  transform: translateY(-5px);
+  transform: translateY(-0.3125rem);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -1821,11 +1808,11 @@ body.light-theme .parameter-comparison {
   background: rgba(0, 0, 0, 0.05);
 }
 
-body.light-theme .parameter-current .value {
+body.light-theme .proposal-details-page-root .parameter-current .value {
   color: #f57c00;
 }
 
-body.light-theme .parameter-proposed .value {
+body.light-theme .proposal-details-page-root .parameter-proposed .value {
   color: #0077cc;
 }
 
@@ -1833,17 +1820,17 @@ body.light-theme .parameter-fee {
   background: rgba(0, 0, 0, 0.05);
 }
 
-body.light-theme .info-tooltip {
+body.light-theme .proposal-details-page-root .info-tooltip {
   background: rgba(0, 0, 0, 0.8);
 }
 
 /* Impact items */
-body.light-theme .impact-icon.positive {
+body.light-theme .proposal-details-page-root .impact-icon.positive {
   background: rgba(0, 200, 83, 0.15);
   color: #00a651;
 }
 
-body.light-theme .impact-icon.negative {
+body.light-theme .proposal-details-page-root .impact-icon.negative {
   background: rgba(255, 76, 76, 0.15);
   color: #e53935;
 }
@@ -1858,7 +1845,7 @@ body.light-theme .funding-details {
   background: rgba(0, 0, 0, 0.05);
 }
 
-body.light-theme .payout-amount .value {
+body.light-theme .proposal-details-page-root .payout-amount .value {
   color: #0077cc;
 }
 
@@ -1871,7 +1858,7 @@ body.light-theme .breakdown-progress.education {
   background: linear-gradient(90deg, #5d26c1, #8e44ad);
 }
 
-body.light-theme .breakdown-progress.events {
+body.light-theme .proposal-details-page-root .breakdown-progress.events {
   background: linear-gradient(90deg, #16a085, #27ae60);
 }
 
@@ -1911,25 +1898,25 @@ body.light-theme .impact-item {
 }
 
 /* Voting status */
-body.light-theme .voting-status-message.executed {
+body.light-theme .proposal-details-page-root .voting-status-message.executed {
   background: rgba(0, 200, 83, 0.15);
   color: #00a651;
 }
 
-body.light-theme .voting-status-message.declined {
+body.light-theme .proposal-details-page-root .voting-status-message.declined {
   background: rgba(255, 76, 76, 0.15);
   color: #e53935;
 }
 
-body.light-theme .voting-progress-bar {
+body.light-theme .proposal-details-page-root .voting-progress-bar {
   background: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .progress-yes {
+body.light-theme .proposal-details-page-root .progress-yes {
   background: linear-gradient(90deg, #16a085, #27ae60);
 }
 
-body.light-theme .progress-no {
+body.light-theme .proposal-details-page-root .progress-no {
   background: linear-gradient(90deg, #e53935, #f57c00);
 }
 
@@ -1941,17 +1928,17 @@ body.light-theme .voting-progress-tooltip {
   background: rgba(0, 0, 0, 0.8);
 }
 
-body.light-theme .yes-votes .stat-value,
-body.light-theme .yes-votes .stat-percentage {
+body.light-theme .proposal-details-page-root .yes-votes .stat-value,
+body.light-theme .proposal-details-page-root .yes-votes .stat-percentage {
   color: #27ae60;
 }
 
-body.light-theme .no-votes .stat-value,
-body.light-theme .no-votes .stat-percentage {
+body.light-theme .proposal-details-page-root .no-votes .stat-value,
+body.light-theme .proposal-details-page-root .no-votes .stat-percentage {
   color: #e53935;
 }
 
-body.light-theme .stat-divider {
+body.light-theme .proposal-details-page-root .stat-divider {
   background: #e5e7eb;
 }
 
@@ -1976,22 +1963,22 @@ body.light-theme .voting-actions .voted-notice {
   border: var(--border-width) solid #e5e7eb;
 }
 
-body.light-theme .voting-actions .form-group input {
+body.light-theme .proposal-details-page-root .voting-actions .form-group input {
   background: #ffffff;
   border: var(--border-width) solid rgba(0, 0, 0, 0.15);
   color: #121826;
 }
 
-body.light-theme .voting-actions .form-group input:focus {
+body.light-theme .proposal-details-page-root .voting-actions .form-group input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
 }
 
-body.light-theme .primaryBtn.vote-yes {
+body.light-theme .proposal-details-page-root .primaryBtn.vote-yes {
   background: linear-gradient(90deg, #16a085, #27ae60);
 }
 
-body.light-theme .primaryBtn.vote-no {
+body.light-theme .proposal-details-page-root .primaryBtn.vote-no {
   background: linear-gradient(90deg, #e53935, #f57c00);
 }
 
@@ -2043,7 +2030,7 @@ body.light-theme .type-btn:hover {
   background: rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .type-btn.active {
+body.light-theme .proposal-details-page-root .type-btn.active {
   background: rgba(0, 157, 255, 0.2);
   color: #0077cc;
 }
@@ -2051,3 +2038,79 @@ body.light-theme .type-btn.active {
 .proposal-hero-content {
   margin-top: var(--space-60);
 }
+
+.proposal-details-page-root .proposal-header h1 {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .proposal-details-page-root .proposal-hero {
+    min-height: 0;
+    padding-bottom: var(--space-32);
+  }
+
+  .proposal-details-page-root .proposal-details {
+    padding: var(--space-32) var(--space-0);
+  }
+}
+
+@media (max-width: 576px) {
+  .proposal-details-page-root .proposal-header h1 {
+    font-size: var(--text-section-lg);
+  }
+
+  .proposal-details-page-root .card-content,
+  .proposal-details-page-root .parameter-description,
+  .proposal-details-page-root .technical-details {
+    padding: var(--space-15);
+  }
+
+  .proposal-details-page-root .parameter-comparison {
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  .proposal-details-page-root .parameter-arrow {
+    transform: rotate(90deg);
+  }
+}
+
+@media (pointer: coarse) {
+  .proposal-details-page-root .voting-actions .form-group input {
+    font-size: var(--text-body);
+  }
+
+  .proposal-details-page-root .discussion-link {
+    min-height: var(--tap-target);
+  }
+
+  .proposal-details-page-root .proposal-breadcrumb a,
+  .proposal-details-page-root .dismiss-proposal-btn,
+  .proposal-details-page-root .expand-btn,
+  .proposal-details-page-root .copy-btn {
+    position: relative;
+  }
+
+  .proposal-details-page-root .proposal-breadcrumb a::after,
+  .proposal-details-page-root .dismiss-proposal-btn::after,
+  .proposal-details-page-root .expand-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: max(100%, var(--tap-target));
+    transform: translateY(-50%);
+  }
+
+  .proposal-details-page-root .copy-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--tap-target);
+    height: var(--tap-target);
+    transform: translate(-50%, -50%);
+  }
+}
+

@@ -292,7 +292,7 @@ export default function ValidatorDetails() {
                       {validatorDisplayName || 'Loading...'}
                     </h1>
                     <span id="validator-status-badge" className={`status-badge ${isAbandoned ? 'status-abandoned' : pool?.isActive ? 'status-active' : (pool?.isToBeElected || pool?.isPendingValidator) ? 'status-valid' : 'status-invalid'}`}>
-                      {isAbandoned ? "Abandoned" : pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Valid" : "Invalid"}
+                      {isAbandoned ? "Abandoned" : pool?.isActive ? "Active" : (pool?.isToBeElected || pool?.isPendingValidator) ? "Standby" : "Invalid"}
                     </span>
                     <div className="address-actions">
                       <button className="btn-icon" id="copy-address" title="Copy Address" onClick={() => copyData(address || "")}>

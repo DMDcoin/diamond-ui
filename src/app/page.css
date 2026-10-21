@@ -46,7 +46,7 @@
     align-items: flex-end;
   }
   
-  .score-label {
+  :is(.home-page, .profile-page) .score-label {
     font-size: var(--text-ui);
     opacity: 0.7;
     margin-bottom: var(--space-5);
@@ -59,7 +59,7 @@
     justify-content: center;
   }
   
-  .score-value {
+  :is(.home-page, .profile-page) .score-value {
     font-size: var(--text-title-xl);
     font-weight: var(--weight-bold);
     color: #6ee7b7;
@@ -86,13 +86,13 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   }
   
-  .stat-label {
+  :is(.home-page, .profile-page) .stat-label {
     font-size: var(--text-ui);
     opacity: 0.7;
     margin-bottom: var(--space-10);
   }
   
-  .stat-value {
+  :is(.home-page, .profile-page) .stat-value {
     font-size: var(--text-section);
     font-weight: var(--weight-semibold);
   }
@@ -167,7 +167,7 @@
   }
   
   .stake-bar {
-    height: 10px;
+    height: 0.625rem;
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-control);
     overflow: hidden;
@@ -234,7 +234,7 @@
     gap: var(--space-10);
     display: flex;
     line-height: inherit;
-    height: 35px !important;
+    height: 2.1875rem !important;
     justify-content: center;
     border: var(--border-width) solid #fff3;
   }
@@ -243,15 +243,15 @@
     box-shadow: 0 2px 8px #3182ce4d;
   }
   
-  [data-tooltip] {
+  :is(.home-page, .profile-page) [data-tooltip] {
     position: relative;
     cursor: pointer;
   }
   
-  [data-tooltip]:hover::after {
+  :is(.home-page, .profile-page) [data-tooltip]:hover::after {
     content: attr(data-tooltip);
     position: absolute;
-    top: -30px;
+    top: -1.875rem;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.8);
@@ -282,19 +282,19 @@
     gap: var(--space-20); 
   }
   
-  .user-wallet,
-  .validator-wallet {
+  :is(.home-page, .profile-page) .user-wallet,
+  :is(.home-page, .profile-page) .validator-wallet {
     display: flex;
     align-items: center;
     gap: var(--space-15);
   }
   
-  .wallet-details h1 {
+  :is(.home-page, .profile-page) .wallet-details h1 {
     margin-bottom: var(--space-5);
     font-size: var(--text-modal-title); 
   }
   
-  .wallet-details p {
+  :is(.home-page, .profile-page) .wallet-details p {
     opacity: 0.7;
     margin: var(--space-0);
   }
@@ -305,12 +305,12 @@
     flex-wrap: wrap; 
   }
   
-  .stat-item {
+  :is(.home-page, .profile-page) .stat-item {
     display: flex;
     flex-direction: column;
   }
   
-  .stat-label {
+  :is(.home-page, .profile-page) .stat-label {
     font-size: var(--text-ui);
     opacity: 0.7;
     margin-bottom: var(--space-5);
@@ -325,7 +325,7 @@
   }
   
   
-  .status-badge {
+  :is(.home-page, .profile-page) .status-badge {
     display: inline-block;
     padding: var(--space-4) var(--space-10);
     border-radius: var(--radius-badge);
@@ -335,19 +335,19 @@
     border: var(--border-width) solid transparent;
   }
   
-  .status-badge.active {
+  :is(.home-page, .profile-page) .status-badge.active {
     background: rgba(7, 244, 158, 0.15);
     color: #07f49e;
     border-color: rgba(7, 244, 158, 0.3);
   }
   
-  .status-badge.valid {
+  :is(.home-page, .profile-page) .status-badge.valid {
     background: rgba(0, 210, 255, 0.15);
     color: #00d2ff;
     border-color: rgba(0, 210, 255, 0.3);
   }
 
-  .status-badge.invalid {
+  :is(.home-page, .profile-page) .status-badge.invalid {
     background: rgba(255, 107, 107, 0.15);
     color: #ff6b6b;
     border-color: rgba(255, 107, 107, 0.3);
@@ -378,7 +378,7 @@
   }
   
   .stake-bar {
-    height: 8px;
+    height: 0.5rem;
     background: rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-control);
     overflow: hidden;
@@ -537,14 +537,14 @@
     border: var(--border-width) solid var(--border-color);
   }
   
-  .validators-table,
-  .delegates-table {
+  :is(.home-page, .profile-page) .validators-table,
+  :is(.home-page, .profile-page) .delegates-table {
     width: 100%;
     border-collapse: collapse;
   }
   
-  .validators-table th,
-  .delegates-table th {
+  :is(.home-page, .profile-page) .validators-table th,
+  :is(.home-page, .profile-page) .delegates-table th {
     text-align: left;
     padding: var(--space-15);
     background: rgba(255, 255, 255, 0.03);
@@ -553,14 +553,14 @@
     color: var(--text-secondary);
   }
   
-  .validators-table td,
-  .delegates-table td {
+  :is(.home-page, .profile-page) .validators-table td,
+  :is(.home-page, .profile-page) .delegates-table td {
     padding: var(--space-15);
     border-top: var(--border-width) solid var(--border-color);
   }
   
-  .validators-table tr:hover,
-  .delegates-table tr:hover {
+  :is(.home-page, .profile-page) .validators-table tr:hover,
+  :is(.home-page, .profile-page) .delegates-table tr:hover {
     background: var(--card-hover);
   }
   
@@ -580,7 +580,7 @@
     gap: var(--space-10); 
   }
   
-  .dao-stat-card {
+  :is(.home-page, .profile-page) .dao-stat-card {
     background: var(--card-bg);
     border-radius: var(--radius-card);
     padding: var(--space-20);
@@ -588,40 +588,40 @@
     border: var(--border-width) solid var(--border-color);
   }
   
-  .dao-stat-card h3 {
+  :is(.home-page, .profile-page) .dao-stat-card h3 {
     font-size: var(--text-ui);
     opacity: 0.7;
     margin-bottom: var(--space-10);
   }
   
-  .dao-stat-card .stat-value {
+  :is(.home-page, .profile-page) .dao-stat-card .stat-value {
     font-size: var(--text-section);
     font-weight: var(--weight-bold);
   }
   
-  .dao-stat-card .countdown {
+  :is(.home-page, .profile-page) .dao-stat-card .countdown {
     color: #6ee7b7;
   }
   
   
-  .validators-staked,
-  .delegates-section,
-  .dao-overview,
-  .top-validators {
+  :is(.home-page, .profile-page) .validators-staked,
+  :is(.home-page, .profile-page) .delegates-section,
+  :is(.home-page, .profile-page) .dao-overview,
+  :is(.home-page, .profile-page) .top-validators {
     padding: var(--space-60) var(--space-0);
     background: var(--bg);
   }
   
-  .validators-staked h2,
-  .delegates-section h2,
-  .dao-overview h2,
-  .top-validators h2 {
+  :is(.home-page, .profile-page) .validators-staked h2,
+  :is(.home-page, .profile-page) .delegates-section h2,
+  :is(.home-page, .profile-page) .dao-overview h2,
+  :is(.home-page, .profile-page) .top-validators h2 {
     font-size: clamp(1.8rem, 5vw, 2.5rem); 
     margin-bottom: var(--space-30);
   }
   
-  .delegates-section,
-  .top-validators {
+  :is(.home-page, .profile-page) .delegates-section,
+  :is(.home-page, .profile-page) .top-validators {
     background: var(--darker-bg);
   }
   
@@ -631,7 +631,7 @@
   }
   
   
-  .modal {
+  :is(.home-page, .profile-page) .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -646,7 +646,7 @@
     padding: var(--space-20); 
   }
   
-  .modal-content {
+  :is(.home-page, .profile-page) .modal-content {
     background: var(--darker-bg);
     border-radius: var(--radius-card);
     width: 100%;
@@ -658,7 +658,7 @@
     overflow-y: auto; 
   }
   
-  .modal-header {
+  :is(.home-page, .profile-page) .modal-header {
     padding: var(--space-20);
     border-bottom: var(--border-width) solid var(--border-color);
     display: flex;
@@ -670,12 +670,12 @@
     z-index: 1;
   }
   
-  .modal-header h3 {
+  :is(.home-page, .profile-page) .modal-header h3 {
     margin: var(--space-0);
     font-size: var(--text-section);
   }
   
-  .close-modal {
+  :is(.home-page, .profile-page) .close-modal {
     font-size: var(--text-section);
     cursor: pointer;
     opacity: 0.7;
@@ -683,25 +683,25 @@
     padding: var(--space-5); 
   }
   
-  .close-modal:hover {
+  :is(.home-page, .profile-page) .close-modal:hover {
     opacity: 1;
   }
   
-  .modal-body {
+  :is(.home-page, .profile-page) .modal-body {
     padding: var(--space-20);
   }
   
-  .form-group {
+  :is(.home-page, .profile-page) .form-group {
     margin-bottom: var(--space-20);
   }
   
-  .form-group label {
+  :is(.home-page, .profile-page) .form-group label {
     display: block;
     margin-bottom: var(--space-8);
     font-weight: var(--weight-medium);
   }
   
-  .form-group input {
+  :is(.home-page, .profile-page) .form-group input {
     width: 100%;
     padding: var(--space-12);
     border-radius: var(--radius-control);
@@ -711,7 +711,7 @@
     font-size: var(--text-body);
   }
   
-  .form-group input:focus {
+  :is(.home-page, .profile-page) .form-group input:focus {
     outline: none;
     border-color: #3b82f6;
   }
@@ -768,18 +768,18 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
   
-  .stat-header {
+  :is(.home-page, .profile-page) .stat-header {
     margin-bottom: var(--space-20);
   }
   
-  .stat-header h3 {
+  :is(.home-page, .profile-page) .stat-header h3 {
     font-size: var(--text-card-title);
     font-weight: var(--weight-semibold);
     margin: var(--space-0);
     opacity: 0.9;
   }
 
-  .stat-header > * > i {
+  :is(.home-page, .profile-page) .stat-header > * > i {
     cursor: pointer;
   }
   
@@ -798,19 +798,19 @@
     margin-bottom: var(--space-15) !important;
   }
   
-  .stake-change.positive {
+  :is(.home-page, .profile-page) .stake-change.positive {
     color: #6ee7b7;
   }
   
-  .stake-change.negative {
+  :is(.home-page, .profile-page) .stake-change.negative {
     color: #ef4444;
   }
   
-  .stat-change.positive {
+  :is(.home-page, .profile-page) .stat-change.positive {
     color: #6ee7b7;
   }
   
-  .stat-change.negative {
+  :is(.home-page, .profile-page) .stat-change.negative {
     color: #ef4444;
   }
   
@@ -821,7 +821,7 @@
     line-height: var(--leading-normal);
   }
   
-  .stat-actions {
+  :is(.home-page, .profile-page) .stat-actions {
     gap: var(--space-10);
     display: flex;
     flex-wrap: wrap;
@@ -829,21 +829,21 @@
     flex-direction: column;
   }
   
-  .stat-actions > a {
+  :is(.home-page, .profile-page) .stat-actions > a {
     flex: 1;
   }
   
-  .stat-actions > div {
+  :is(.home-page, .profile-page) .stat-actions > div {
     flex: 1;
     gap: var(--space-10);
     display: flex;
   }
   
-  .stat-actions > button {
+  :is(.home-page, .profile-page) .stat-actions > button {
     flex: 1;
   }
   
-  .stat-actions > div > button {
+  :is(.home-page, .profile-page) .stat-actions > div > button {
     flex: 1;
     height: 35px;
     max-height: 35px;
@@ -869,8 +869,8 @@
   
   .stat-card > button {
     width: 100%;
-    height: 35px;
-    min-height: 35px;
+    height: 2.1875rem;
+    min-height: 2.1875rem;
     margin-top: auto;
   }
   
@@ -880,13 +880,13 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
   
-  .stat-card .stat-label {
+  :is(.home-page, .profile-page) .stat-card .stat-label {
     font-size: var(--text-ui);
     opacity: 0.7;
     margin-bottom: var(--space-10);
   }
   
-  .stat-card .stat-value {
+  :is(.home-page, .profile-page) .stat-card .stat-value {
     font-size: var(--text-stat);
     font-weight: var(--weight-bold);
     margin-bottom: var(--space-8);
@@ -905,13 +905,13 @@
     line-height: var(--leading-normal);
   }
   
-  .stat-card .stat-actions {
+  :is(.home-page, .profile-page) .stat-card .stat-actions {
     display: flex;
     gap: var(--space-8);
     flex-wrap: wrap;
   }
   
-  .stat-card .btn-sm {
+  :is(.home-page, .profile-page) .stat-card .btn-sm {
     padding: var(--space-6) var(--space-12);
     font-size: var(--text-badge);
   }
@@ -947,7 +947,7 @@
   
   .combined-stake-card:hover {
     background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px);
+    transform: translateY(-0.125rem);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   }
   
@@ -974,7 +974,7 @@
   
   .stake-breakdown {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
     gap: var(--space-25);
     margin-bottom: var(--space-30);
   }
@@ -989,9 +989,9 @@
   }
   
   .stake-item > button {
-    height: 35px;
-    max-width: 100px;
-    max-height: 35px;
+    height: 2.1875rem;
+    max-width: 6.25rem;
+    max-height: 2.1875rem;
     margin-top: auto;
   }
   
@@ -1041,11 +1041,11 @@
     flex-wrap: wrap;
   }
   
-  .stake-item .btn-sm {
+  :is(.home-page, .profile-page) .stake-item .btn-sm {
     padding: var(--space-6) var(--space-12);
     font-size: var(--text-badge);
     flex: 1;
-    min-width: 70px;
+    min-width: 4.375rem;
   }
   
   .stake-distribution-section {
@@ -1057,7 +1057,7 @@
     margin-bottom: var(--space-15);
   }
   
-  .distribution-label {
+  :is(.home-page, .profile-page) .distribution-label {
     font-size: var(--text-body);
     font-weight: var(--weight-medium);
     opacity: 0.8;
@@ -1068,7 +1068,7 @@
     opacity: 0.8;
   }
   
-  .info-value.negative {
+  :is(.home-page, .profile-page) .info-value.negative {
     color: #ef4444;
   }
   
@@ -1082,7 +1082,7 @@
     gap: var(--space-15);
   }
   
-  .node-stake-info .btn-sm {
+  :is(.home-page, .profile-page) .node-stake-info .btn-sm {
     flex-shrink: 0;
   }
   
@@ -1133,11 +1133,11 @@
       padding: var(--space-20);
     }
   
-    .stat-actions {
+    :is(.home-page, .profile-page) .stat-actions {
       justify-content: center;
     }
   
-    .stat-actions .btn-sm {
+    :is(.home-page, .profile-page) .stat-actions .btn-sm {
       flex: 1;
       min-width: 80px;
     }
@@ -1163,36 +1163,36 @@
     }
   
     
-    .validators-staked,
-    .delegates-section,
-    .dao-overview,
-    .top-validators {
+    :is(.home-page, .profile-page) .validators-staked,
+    :is(.home-page, .profile-page) .delegates-section,
+    :is(.home-page, .profile-page) .dao-overview,
+    :is(.home-page, .profile-page) .top-validators {
       padding: var(--space-40) var(--space-0);
     }
   
     
-    .validators-table,
-    .delegates-table {
+    :is(.home-page, .profile-page) .validators-table,
+    :is(.home-page, .profile-page) .delegates-table {
       font-size: var(--text-ui);
     }
   
-    .validators-table th,
-    .delegates-table th {
+    :is(.home-page, .profile-page) .validators-table th,
+    :is(.home-page, .profile-page) .delegates-table th {
       padding: var(--space-10);
     }
   
-    .validators-table td,
-    .delegates-table td {
+    :is(.home-page, .profile-page) .validators-table td,
+    :is(.home-page, .profile-page) .delegates-table td {
       padding: var(--space-10);
     }
   }
   
   @media (max-width: 576px) {
-    .stat-actions {
+    :is(.home-page, .profile-page) .stat-actions {
       flex-direction: column;
     }
   
-    .stat-actions .btn-sm {
+    :is(.home-page, .profile-page) .stat-actions .btn-sm {
       width: 100%;
     }
   
@@ -1210,12 +1210,12 @@
     }
   
     
-    .wallet-icon.large {
+    :is(.home-page, .profile-page) .wallet-icon.large {
       width: 40px;
       height: 40px;
     }
   
-    .wallet-details h1 {
+    :is(.home-page, .profile-page) .wallet-details h1 {
       font-size: var(--text-body);
     }
   
@@ -1254,11 +1254,11 @@
       padding: var(--space-20);
     }
   
-    .stat-card .stat-actions {
+    :is(.home-page, .profile-page) .stat-card .stat-actions {
       justify-content: center;
     }
   
-    .stat-card .btn-sm {
+    :is(.home-page, .profile-page) .stat-card .btn-sm {
       flex: 1;
       min-width: 70px;
     }
@@ -1283,7 +1283,7 @@
       justify-content: center;
     }
   
-    .stake-item .btn-sm {
+    :is(.home-page, .profile-page) .stake-item .btn-sm {
       min-width: 80px;
     }
   
@@ -1295,11 +1295,11 @@
   }
   
   @media (max-width: 576px) {
-    .stat-card .stat-actions {
+    :is(.home-page, .profile-page) .stat-card .stat-actions {
       flex-direction: column;
     }
   
-    .stat-card .btn-sm {
+    :is(.home-page, .profile-page) .stat-card .btn-sm {
       width: 100%;
     }
   
@@ -1307,7 +1307,7 @@
       flex-direction: column;
     }
   
-    .stake-item .btn-sm {
+    :is(.home-page, .profile-page) .stake-item .btn-sm {
       width: 100%;
     }
   

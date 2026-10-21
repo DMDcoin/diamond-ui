@@ -5,7 +5,7 @@
 }
 
 .faqs-hero {
-  min-height: 400px;
+  min-height: 25rem;
   display: flex;
   align-items: center;
   background: var(--bg);
@@ -16,7 +16,7 @@
 
 .faqs-hero-content {
   text-align: center;
-  max-width: 800px;
+  max-width: 50rem;
   margin: var(--space-0) auto;
   margin-top: var(--space-20);
 }
@@ -45,14 +45,14 @@
 
 /* FAQ Container */
 .faqs-page .faq-container {
-  max-width: 900px;
+  max-width: 56.25rem;
   margin: var(--space-0) auto;
 }
 
 /* Contact Section */
 .faq-contact {
   text-align: center;
-  max-width: 900px;
+  max-width: 56.25rem;
   margin: var(--space-80) auto var(--space-0);
   padding: var(--space-40);
   background: var(--card-bg);
@@ -84,7 +84,7 @@
 
 .contact-links .btn-primary,
 .contact-links .btn-secondary {
-  padding: 14px 28px;
+  padding: 0.875rem 1.75rem;
   font-size: var(--text-body);
   font-weight: var(--btn-weight);
   border-radius: var(--btn-radius);
@@ -102,7 +102,7 @@
 }
 
 .contact-links .btn-primary:hover {
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
   box-shadow: 0 8px 25px rgba(0, 210, 255, 0.3);
 }
 
@@ -115,7 +115,7 @@
 .contact-links .btn-secondary:hover {
   background: var(--btn-secondary-bg-hover);
   border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
 }
 
 /* Responsive Design */

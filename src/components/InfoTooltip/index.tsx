@@ -3,6 +3,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+const VIEWPORT_MARGIN = 8;
+
 type Props = {
   content: React.ReactNode;
   placement?: 'top' | 'bottom';
@@ -31,7 +33,7 @@ export default function InfoTooltip({
   const [hovered, setHovered] = useState(false);
   const [pinned, setPinned] = useState(false);
   const visible = !disabled && (hovered || pinned);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [pos, setPos] = useState({ top: 0, left: 0, shift: 0 });
 
   useEffect(() => {
     if (!visible) return;
@@ -50,7 +52,11 @@ export default function InfoTooltip({
       } else {
         top = rect.top - (tooltip.offsetHeight + offset) + scrollY;
       }
-      setPos({ top, left: centerX });
+      const half = tooltip.offsetWidth / 2;
+      const minLeft = scrollX + VIEWPORT_MARGIN + half;
+      const maxLeft = scrollX + document.documentElement.clientWidth - VIEWPORT_MARGIN - half;
+      const left = Math.max(minLeft, Math.min(centerX, maxLeft));
+      setPos({ top, left, shift: centerX - left });
     };
 
     updatePos();
@@ -126,7 +132,7 @@ export default function InfoTooltip({
           id={id ?? 'info-tooltip'}
           role="tooltip"
           className={`info-tooltip-portal ${visible ? 'visible' : ''} ${placement}`}
-          style={{ top: pos.top, left: pos.left, position: 'absolute', transform: 'translateX(-50%)' }}
+          style={{ top: pos.top, left: pos.left, position: 'absolute', transform: 'translateX(-50%)', '--arrow-shift': `${pos.shift}px` } as React.CSSProperties}
         >
           <div className="info-tooltip-content">{content}</div>
           <div className="info-tooltip-arrow" />

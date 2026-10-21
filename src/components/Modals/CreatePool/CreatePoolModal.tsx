@@ -167,11 +167,13 @@ const CreatePoolModal: React.FC<ModalProps> = ({ buttonText }) => {
                     <span className={styles.infoIcon}>i</span>
                   </InfoTooltip>
                 </span>
-                <input
-                  type="checkbox"
-                  checked={isDifferentNodeOperator}
-                  onChange={() => setIsDifferentNodeOperator((prev) => !prev)}
-                />
+                <label className={styles.checkboxHit}>
+                  <input
+                    type="checkbox"
+                    checked={isDifferentNodeOperator}
+                    onChange={() => setIsDifferentNodeOperator((prev) => !prev)}
+                  />
+                </label>
               </div>
 
               {isDifferentNodeOperator && (

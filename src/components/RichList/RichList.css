@@ -15,6 +15,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.validators-page .rich-list-metrics .metric-card {
+  justify-content: flex-start;
+}
+
+.validators-page .rich-list-metrics .metric-card .metric-value {
+  margin-bottom: var(--space-8);
+}
+
 .rl-metric-sub {
   display: block;
   font-size: var(--text-caption);

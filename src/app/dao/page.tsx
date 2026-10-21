@@ -584,9 +584,6 @@ export default function DaoPage() {
                       <span className="detail-value">{formatDmdFromWei(stakingContext.totalDaoStake ?? 0)}</span>
                     </div>
                   </div>
-                  <div className="voting-power-bar">
-                    <div className="power-progress" style={{ width: `${stakingContext.myPool.votingPower ? stakingContext.myPool.votingPower.toFixed(4) : 0}%` }} />
-                  </div>
                 </div>
               </div>
             ) : null}
