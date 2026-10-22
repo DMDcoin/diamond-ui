@@ -9,7 +9,6 @@ import { UserWallet } from "@/contexts/types/wallet";
 import { CURR_VERSION_INFO } from "@/constants/version";
 import { switchChain, watchAccount } from '@wagmi/core';
 import { useWalletConnect } from "@/contexts/WalletConnect";
-import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ContractManager } from "@/contexts/services/contractManager";
 import { wagmiConfig } from "@/contexts/WalletConnect/config/wagmi";
 import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
@@ -90,7 +89,7 @@ const Web3ContextProvider: React.FC<{children: ReactNode}> = ({ children }) => {
    */
   // Prefer cookie/localStorage via storage util, then hybrid config
   const rpcUrl = getRPC() || config.rpcUrl;
-  const [wagmiConnector, setWagmiConnector] = useState<WalletConnectProvider | null>(null);
+  const [wagmiConnector, setWagmiConnector] = useState<any>(null);
   // Wallet-connected for signing
   const [web3, setWeb3] = useState<Web3>(new Web3(rpcUrl));
   // Stable HTTP RPC for reads only

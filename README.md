@@ -29,7 +29,7 @@ This guide provides step-by-step instructions to set up and run the project.
 
 ### Prerequisites
 
-- **Node.js**: Make sure you have Node.js installed. [Download here](https://nodejs.org/).
+- **Node.js 24**: Make sure you have Node.js 24 installed (`nvm use` picks it up from `.nvmrc`). [Download here](https://nodejs.org/).
 - **npm or yarn**: Ensure `npm` or `yarn` is installed for managing packages.
 
 ### Installation
