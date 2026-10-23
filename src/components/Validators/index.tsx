@@ -284,11 +284,11 @@ export default function Validators() {
   let poolsCopy = [...visiblePools];
 
   if (filter === 'valid') {
-    poolsCopy = poolsCopy.filter(pool => pool.isToBeElected && !pool.isActive);
+    poolsCopy = poolsCopy.filter(pool => !pool.isActive && (pool.isToBeElected || pool.isPendingValidator));
   } else if (filter === 'active') {
     poolsCopy = poolsCopy.filter(pool => pool.isActive);
   } else if (filter === 'invalid') {
-    poolsCopy = poolsCopy.filter(pool => !pool.isActive && !pool.isToBeElected);
+    poolsCopy = poolsCopy.filter(pool => !pool.isActive && !pool.isToBeElected && !pool.isPendingValidator);
   } else if (filter === 'stakedOn') {
     poolsCopy = poolsCopy.filter(pool => BigNumber(pool.myStake).isGreaterThan(0));
   } else if (filter === 'abandoned') {
@@ -396,7 +396,7 @@ export default function Validators() {
   const getTooltipText = (key: string) => {
     switch (key) {
       case 'isActive':
-          return "Active candidate is part of the active set; Valid - is not part of the active set, but can be elected; Invalid - a candidate who is flagged unavailable on the blockchain or has not enough stake.";
+          return "Active - part of the current active set; Standby - eligible for election but not currently active; Invalid - unavailable or does not meet the minimum stake requirements.";
       case 'totalStake':
           return "Total delegated DMD (self-staked DMD + delegates' stake), with the bar showing how full the pool is against the 50,000 DMD maximum.";
       case 'votingPower':
@@ -511,7 +511,7 @@ export default function Validators() {
                   {abandoned
                     ? 'Abandoned'
                     : typeof pool.isActive === 'boolean'
-                      ? pool.isActive ? 'Active' : (pool.isToBeElected || pool.isPendingValidator) ? "Valid" : "Invalid"
+                      ? pool.isActive ? 'Active' : (pool.isToBeElected || pool.isPendingValidator) ? "Standby" : "Invalid"
                       : 'Loading...'}
                 </span>
               </td>
@@ -688,8 +688,8 @@ export default function Validators() {
                 <Image src={getImagePath("valid-validators.png")} alt="" width={100} height={100} />
               </div>
               <div className='metric-content'>
-                <p className="metric-value">{visiblePools.filter((p) => p.isToBeElected && !p.isActive).length}</p>
-                <h3>Valid Validators</h3>
+                <p className="metric-value">{visiblePools.filter((p) => !p.isActive && (p.isToBeElected || p.isPendingValidator)).length}</p>
+                <h3>Standby Validators</h3>
               </div>
               <Image className="ellipse-bottom" src={getImagePath("ellipse-bottom.png")} alt="" width={0} height={0} />
             </div>
@@ -698,7 +698,7 @@ export default function Validators() {
                 <Image src={getImagePath("invalid-validators.png")} alt="" width={100} height={100} />
               </div>
               <div className='metric-content'>
-                <p className="metric-value">{visiblePools.filter((p) => !p.isActive && !p.isToBeElected).length}</p>
+                <p className="metric-value">{visiblePools.filter((p) => !p.isActive && !p.isToBeElected && !p.isPendingValidator).length}</p>
                 <h3>Invalid Validators</h3>
               </div>
               <Image className="ellipse-bottom" src={getImagePath("ellipse-bottom.png")} alt="" width={0} height={0} />
@@ -726,8 +726,8 @@ export default function Validators() {
               <div className="filter-container">
                 <select value={filter} onChange={handleFilterChange}>
                   <option value="default">All Statuses</option>
-                  <option value="valid">Valid Candidates</option>
                   <option value="active">Active Candidates</option>
+                  <option value="valid">Standby Candidates</option>
                   <option value="invalid">Invalid Candidates</option>
                   {abandonedCount > 0 && (
                     <option value="abandoned">Abandoned Candidates</option>

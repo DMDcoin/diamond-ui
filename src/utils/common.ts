@@ -51,7 +51,7 @@ export function capitalizeFirstLetter(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function formatFunctionName(functionString: string): string {
+export function formatFunctionName(functionString: string): string {
   // Remove parameters like `(uint256)`
   let formatted = functionString.replace(/\(.*\)/, "");
 

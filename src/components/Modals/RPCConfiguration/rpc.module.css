@@ -7,6 +7,7 @@
 
 .body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-16);
 }
 
@@ -52,6 +53,7 @@
   color: var(--text);
   border-radius: var(--radius-button);
   padding: var(--space-6) var(--space-10);
+  font-size: 0.8333rem;
   cursor: pointer;
 }
 
@@ -66,6 +68,7 @@
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--radius-card);
   padding: var(--space-10) var(--space-12);
+  font-size: 0.8333rem;
   outline: none;
 }
 
@@ -109,4 +112,35 @@
 :global(body.light-theme) .input {
   background: #fff;
   color: #2d3748;
+}
+
+@media (max-width: 576px) {
+  .footer {
+    flex-wrap: wrap;
+  }
+
+  .footer > * {
+    flex: 1 1 auto;
+  }
+}
+
+@media (pointer: coarse) {
+  .copyBtn {
+    position: relative;
+  }
+
+  .copyBtn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: max(100%, var(--tap-target));
+    transform: translateY(-50%);
+  }
+
+  .input {
+    min-height: var(--tap-target);
+    font-size: var(--text-body);
+  }
 }

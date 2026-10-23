@@ -250,7 +250,8 @@ export default function OwnedNamesSection({ walletAddress, activeName, refreshKe
                               return;
                             }
                             const rect = e.currentTarget.getBoundingClientRect();
-                            setMenuPos({ top: rect.bottom + 6, left: rect.right - 150 });
+                            const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                            setMenuPos({ top: rect.bottom + 0.375 * rem, left: rect.right - 9.375 * rem });
                             setOpenMenuFor(entry.name);
                           }}
                         >

@@ -445,7 +445,7 @@ export default function Home() {
                 <p className="stat-value">{formatCount(activeValidators)}</p>
               </div>
               <div className="stat-card fade-in">
-                <h3>Valid Candidates</h3>
+                <h3>Eligible Candidates</h3>
                 <p className="stat-value">{formatCount(validCandidates)}</p>
               </div>
               <div className="stat-card fade-in">

@@ -3,7 +3,8 @@
   color: var(--tooltip-color, #ffffff);
   border-radius: 0.625rem;
   padding: var(--space-16) 1.1rem;
-  max-width: 26.25rem;
+  width: max-content;
+  max-width: min(26.25rem, calc(100vw - 1rem));
   box-shadow: 0 12px 36px rgba(0,0,0,0.45);
   z-index: 10050;
   font-size: var(--text-control);
@@ -51,7 +52,7 @@
   border-right: var(--border-width-arrow) solid transparent;
   border-top: var(--border-width-arrow) solid var(--tooltip-bg, rgba(22, 22, 26, 0.95));
   position: absolute;
-  left: 50%;
+  left: calc(50% + var(--arrow-shift, 0px));
   transform: translateX(-50%);
   top: -0.4375rem; /* will flip when placement is top */
 }

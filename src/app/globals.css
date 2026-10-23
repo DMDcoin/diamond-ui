@@ -550,17 +550,17 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 10px;
-  height: 10px;
+  width: 0.625rem;
+  height: 0.625rem;
   border-radius: var(--radius-circle);
   background: #f24726;
   cursor: pointer;
-  margin-top: -3.5px;
+  margin-top: -0.21875rem;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
-  height: 3px;
+  height: 0.1875rem;
   cursor: pointer;
   background: var(--border-color);
 }
@@ -817,6 +817,7 @@ header .logo {
 
 .primaryBtn {
   padding: var(--space-10) var(--space-20);
+  font-size: 0.8333rem;
   border: none;
   background: var(--accent);
   color: white;
@@ -1128,8 +1129,8 @@ header .logo {
 }
 
 .wallet-icon.large {
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
 }
 
 .wallet-icon-inner {
@@ -2208,6 +2209,7 @@ header .logo {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-16);
   cursor: pointer;
   transition: var(--transition);
 }
@@ -2218,6 +2220,7 @@ header .logo {
 }
 
 .faq-question i {
+  flex-shrink: 0;
   transition: var(--transition);
 }
 
@@ -2308,7 +2311,13 @@ header .logo {
 }
 
 .faq-item.active .faq-answer {
-  max-height: 2000px;
+  max-height: 125rem;
+}
+
+@media (max-width: 480px) {
+  .faq-item.active .faq-answer {
+    max-height: 250rem;
+  }
 }
 
 .faq-actions {
@@ -2617,7 +2626,6 @@ footer {
 
   .footer-links .privacy-mode-wrapper {
     margin-left: auto;
-    margin-right: var(--space-0);
   }
 }
 
@@ -3397,7 +3405,7 @@ body.light-theme .btn-sm:hover,
 body.light-theme .btn-primary.btn-sm:hover {
   background: var(--btn-primary-bg-hover);
   box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
 
 body.light-theme .btn-secondary.btn-sm {

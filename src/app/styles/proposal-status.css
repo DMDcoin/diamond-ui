@@ -58,6 +58,16 @@
   color: #6B7280 !important;
 }
 
+.proposal-status.draft {
+  background: rgba(156, 163, 175, 0.15);
+  color: #C1C6CE;
+}
+
+body.light-theme .proposal-status.draft {
+  background: rgba(107, 114, 128, 0.12);
+  color: #4B5563;
+}
+
 /* Theme overrides to ensure consistency */
 body.light-theme .proposal-status.active,
 body.dark-theme .proposal-status.active {

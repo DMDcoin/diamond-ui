@@ -58,7 +58,7 @@ body.light-theme .dmd-validator-cell__sub--red { color: #c0392b; }
 /* Aep30Badge */
 .dmd-aep30-badge {
   display: inline-block;
-  padding: 2px var(--space-8);
+  padding: 0.125rem var(--space-8);
   border-radius: var(--radius-pill);
   font-size: var(--text-badge);
   font-weight: var(--weight-semibold);

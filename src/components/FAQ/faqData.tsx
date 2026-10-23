@@ -154,9 +154,9 @@ export const faqData: FAQItem[] = [
       <div>
         <p>Diamond UI has 3 statuses of validator candidates:</p>
         <ul className="pl40 pr20 pb20">
-          <li><strong>Active candidate</strong> is part of the active set;</li>
-          <li><strong>Valid</strong> - is not part of the active set, but can be elected;</li>
-          <li><strong>Invalid</strong> - a candidate who is flagged unavailable on the blockchain or has not enough stake.</li>
+          <li><strong>Active</strong> - part of the current active set;</li>
+          <li><strong>Standby</strong> - eligible for election but not currently active;</li>
+          <li><strong>Invalid</strong> - unavailable or does not meet the minimum stake requirements.</li>
         </ul>
       </div>
     )
