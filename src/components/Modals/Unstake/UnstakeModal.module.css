@@ -38,7 +38,7 @@
 
 .modalContent {
   width: 100%;
-  max-width: 32.5rem;
+  max-width: 30rem;
   padding: var(--space-32);
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -50,16 +50,24 @@
   margin: auto;
 }
 
+.modalHeader {
+  margin: var(--space-0) var(--space-0) var(--space-24);
+  padding: var(--space-0) var(--space-24);
+  text-align: center;
+}
+
 .modalContent h3 {
   color: var(--text);
   font-size: var(--text-section);
   font-weight: var(--weight-semibold);
-  margin: var(--space-0) var(--space-0) var(--space-24) var(--space-0);
+  margin: var(--space-0);
   text-align: center;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+}
+
+.modalSubtitle {
+  margin: var(--space-4) var(--space-0) var(--space-0);
+  color: var(--text-secondary);
+  font-size: var(--text-ui);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -93,17 +101,39 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-20);
-  text-align: center;
+  gap: var(--space-16);
+  text-align: left;
 }
 
-.form > span {
+.available {
   color: var(--text-secondary);
   font-size: 0.875rem;
   line-height: 1.5;
-  margin: var(--space-0);
-  padding: var(--space-12);
   text-align: center;
+}
+
+.available strong {
+  color: var(--btn-success-fg);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.fieldLabel {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: var(--weight-medium);
+}
+
+.fieldHint {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: var(--leading-normal);
 }
 
 .formInput {
@@ -122,14 +152,23 @@
 
 .formInput:focus {
   outline: none;
-  border-color: #ff6b6b;
+  border-color: var(--accent);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.15);
 }
 
 .formInput::placeholder {
   color: var(--text-secondary);
   opacity: 0.8;
+}
+
+.invalid,
+.invalid:focus {
+  border-color: #ffa726;
+}
+
+.invalid:focus {
+  box-shadow: 0 0 0 3px rgba(255, 167, 38, 0.15);
 }
 
 .inputWrapper {
@@ -175,30 +214,118 @@
 }
 
 .formSubmit {
-  color: black;
+  width: 100%;
+  padding: var(--space-12) var(--space-16);
   font-weight: var(--weight-bold);
   cursor: pointer;
   transition: all var(--duration-base) var(--ease-default);
-  max-width: 12.5rem;
-  align-self: center;
+}
+
+.formSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  box-shadow: none;
+  transform: none;
+}
+
+.statusPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16);
+  border-radius: var(--radius-card);
+  text-align: center;
+}
+
+.statusTitle {
+  font-size: 0.875rem;
+  font-weight: var(--weight-semibold);
+}
+
+.statusAmount {
+  font-size: var(--text-section);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-heading);
+}
+
+.statusNote {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: var(--leading-normal);
 }
 
 .claimReady {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-  padding: var(--space-12) var(--space-16);
   background: rgba(7, 244, 158, 0.08);
   border: var(--border-width) solid rgba(7, 244, 158, 0.25);
-  border-radius: var(--radius-card);
   color: #07f49e;
-  font-size: 0.875rem;
-  font-weight: var(--weight-medium);
 }
 
-.claimReady strong {
+.orderPending {
+  background: rgba(255, 167, 38, 0.1);
+  border: var(--border-width) solid rgba(255, 167, 38, 0.3);
+  color: #ffa726;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--text);
+  font-size: var(--text-ui);
+  cursor: pointer;
+}
+
+.checkRow input {
+  width: 1rem;
+  height: 1rem;
+  margin: var(--space-0);
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-16);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-16);
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.summaryRow span:last-child {
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+.summaryTotal {
+  font-weight: var(--weight-semibold);
+}
+
+.summaryTotal span:last-child {
+  color: var(--btn-success-fg);
   font-weight: var(--weight-bold);
+}
+
+.summaryNote {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.orderNote {
+  color: var(--btn-warning-fg);
+  font-size: 0.8125rem;
+  line-height: var(--leading-normal);
 }
 
 .claimNote {
@@ -222,20 +349,16 @@
   color: #ffa726;
   font-size: 0.8125rem;
   line-height: var(--leading-normal);
-  text-align: center;
+  text-align: left;
   margin: var(--space-0);
-  padding: var(--space-16);
+  padding: var(--space-10) var(--space-12);
   background: rgba(255, 167, 38, 0.1);
   border: var(--border-width) solid rgba(255, 167, 38, 0.2);
   border-radius: var(--radius-card);
 }
 
-.zeroPadding {
-  padding: var(--space-0) !important;
-}
-
-.zeroMargin {
-  margin: var(--space-0) !important;
+.unstakeWarning i {
+  margin-right: var(--space-8);
 }
 
 .spanLeft {
@@ -254,14 +377,6 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-:global(body.light-theme) .modalContent h3 {
-  color: #1a202c;
-  background: linear-gradient(135deg, #e53e3e, #c53030);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 :global(body.light-theme) .modalClose {
   color: #718096;
 }
@@ -271,9 +386,9 @@
   color: #2d3748;
 }
 
-:global(body.light-theme) .form > span {
+:global(body.light-theme) .available,
+:global(body.light-theme) .fieldLabel {
   color: #4a5568;
-  border-color: #e2e8f0;
 }
 
 :global(body.light-theme) .formInput {
@@ -284,12 +399,21 @@
 
 :global(body.light-theme) .formInput:focus {
   background: #ffffff;
-  border-color: #e53e3e;
-  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 :global(body.light-theme) .formInput::placeholder {
   color: #718096;
+}
+
+:global(body.light-theme) .invalid,
+:global(body.light-theme) .invalid:focus {
+  border-color: #b45309;
+}
+
+:global(body.light-theme) .invalid:focus {
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
 }
 
 :global(body.light-theme) .maxButton {
@@ -301,21 +425,13 @@
   color: #2d3748;
 }
 
-:global(body.light-theme) .formSubmit {
-  background: linear-gradient(135deg, #e53e3e, #c53030);
-}
-
-:global(body.light-theme) .formSubmit:hover {
-  box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
-}
-
 :global(body.light-theme) .formSubmit:disabled {
   background: #e2e8f0;
   color: #a0aec0;
 }
 
 :global(body.light-theme) .unstakeWarning {
-  color: #d69e2e;
+  color: #b45309;
   background: rgba(214, 158, 46, 0.1);
   border-color: rgba(214, 158, 46, 0.2);
 }
@@ -324,6 +440,16 @@
   color: #047857;
   background: rgba(4, 120, 87, 0.08);
   border-color: rgba(4, 120, 87, 0.25);
+}
+
+:global(body.light-theme) .orderPending {
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.08);
+  border-color: rgba(180, 83, 9, 0.25);
+}
+
+:global(body.light-theme) .statusNote {
+  color: #4a5568;
 }
 
 :global(body.light-theme) .claimNote {
@@ -343,9 +469,6 @@
   
   .modalContent h3 {
     font-size: var(--text-modal-title);
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
   }
   
   .formInput {
@@ -355,11 +478,6 @@
   
   .formSubmit {
     padding: 14px var(--space-24);
-  }
-  
-  .form > span {
-    padding: var(--space-10);
-    font-size: 13px;
   }
   
   .unstakeWarning {
@@ -377,6 +495,10 @@
     width: max(100%, var(--tap-target));
     height: max(100%, var(--tap-target));
     transform: translate(-50%, -50%);
+  }
+
+  .checkRow {
+    min-height: var(--tap-target);
   }
 
   .modalClose::after {
