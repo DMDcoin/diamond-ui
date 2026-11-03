@@ -343,6 +343,43 @@
   gap: var(--space-8);
 }
 
+.headerTip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.headerTip :global(.info-tooltip-trigger) {
+  margin-left: var(--space-0);
+}
+
+.totalRow strong {
+  color: #00d2ff;
+}
+
+.feeRow + .feeRow {
+  margin-top: var(--space-8);
+}
+
+.gasHint {
+  margin: var(--space-8) var(--space-0) var(--space-0);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  color: var(--text-secondary);
+}
+
+.gasError {
+  flex-wrap: wrap;
+}
+
+.gasError span {
+  flex: 1 1 12rem;
+}
+
+.retryBtn {
+  margin-left: auto;
+}
+
 .parameterRule {
   margin: var(--space-0) var(--space-0) var(--space-20);
   font-size: var(--text-ui);
@@ -701,6 +738,7 @@
   .submit,
   .addBtn,
   .switchBtn,
+  .retryBtn,
   .walletEmpty :global(.btn-secondary) {
     min-height: var(--tap-target);
   }
@@ -811,6 +849,10 @@
 
 :global(body.light-theme) .warning {
   color: #9a5b00;
+}
+
+:global(body.light-theme) .totalRow strong {
+  color: #0077b6;
 }
 
 :global(body.light-theme) .removeBtn {

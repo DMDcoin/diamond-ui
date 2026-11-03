@@ -16,6 +16,17 @@ import { timestampToDateTime } from "@/utils/common";
 import { formatCount, formatDecimal, formatDmd } from "@/utils/format";
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
 
+const PARTNERS: { name: string; href: string; logo: string; logoLight?: string }[] = [
+  { name: 'Biconomy', href: 'https://www.biconomy.com/exchange/DMD_ETH', logo: '/images/partners/logo_biconomy.svg' },
+  { name: 'Dex-Trade', href: 'https://dex-trade.com/spot/trading/DMDETH', logo: '/images/partners/logo_dextrade.svg', logoLight: '/images/partners/logo_dextrade_light.svg' },
+  { name: 'NonKYC', href: 'https://nonkyc.io/market/DMD_USDT', logo: '/images/partners/logo_nonkyc.png', logoLight: '/images/partners/logo_nonkyc_light.png' },
+  { name: 'Azbit', href: 'https://azbit.com/exchange/DMD_ETH', logo: '/images/partners/logo_azbit.svg', logoLight: '/images/partners/logo_azbit_light.svg' },
+  { name: 'BlockServ', href: 'http://blockserv.at/', logo: '/images/partners/logo_blockserv.png' },
+  { name: 'PerfectNet', href: 'https://www.perfectnet.at/', logo: '/images/partners/logo_perfectnet.svg' },
+];
+
+const PARTNER_SET_COPIES = 4;
+
 
 export default function Home() {
   const theme = useTheme();
@@ -116,146 +127,15 @@ export default function Home() {
             <div className="partners-bar">
               <div className="slider">
                 <div className="slide-track">
-                  <div className="slide">
-                    <a href="https://www.bitmart.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_bitmart.png" height="100" width="250" alt="BitMart" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://blockserv.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_blockserv.png" height="100" width="250" alt="BlockServ" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://biconomy.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_biconomy.svg" height="100" width="250" alt="Biconomy" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://mexc.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_mexc.svg" height="100" width="250" alt="Mexc" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://perfectnet.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_perfectnet.svg" height="100" width="250" alt="PerfectNet" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://herotech.io" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_herotech.png" height="100" width="250" alt="HeroTech" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://www.bitmart.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_bitmart.png" height="100" width="250" alt="BitMart" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://blockserv.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_blockserv.png" height="100" width="250" alt="BlockServ" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://biconomy.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_biconomy.svg" height="100" width="250" alt="Biconomy" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://mexc.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_mexc.svg" height="100" width="250" alt="Mexc" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://perfectnet.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_perfectnet.svg" height="100" width="250" alt="PerfectNet" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://herotech.io" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_herotech.png" height="100" width="250" alt="HeroTech" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://www.bitmart.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_bitmart.png" height="100" width="250" alt="BitMart" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://blockserv.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_blockserv.png" height="100" width="250" alt="BlockServ" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://biconomy.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_biconomy.svg" height="100" width="250" alt="Biconomy" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://mexc.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_mexc.svg" height="100" width="250" alt="Mexc" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://perfectnet.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_perfectnet.svg" height="100" width="250" alt="PerfectNet" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://herotech.io" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_herotech.png" height="100" width="250" alt="HeroTech" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://www.bitmart.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_bitmart.png" height="100" width="250" alt="BitMart" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://blockserv.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_blockserv.png" height="100" width="250" alt="BlockServ" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://biconomy.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_biconomy.svg" height="100" width="250" alt="Biconomy" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://mexc.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_mexc.svg" height="100" width="250" alt="Mexc" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://perfectnet.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_perfectnet.svg" height="100" width="250" alt="PerfectNet" />
-                    </a>
-                  </div>
-                  {/* <div className="slide">
-                    <a href="https://herotech.io" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_herotech.png" height="100" width="250" alt="HeroTech" />
-                    </a>
-                  </div> */}
-                  <div className="slide">
-                    <a href="https://www.bitmart.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_bitmart.png" height="100" width="250" alt="BitMart" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://blockserv.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_blockserv.png" height="100" width="250" alt="BlockServ" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://biconomy.com" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_biconomy.svg" height="100" width="250" alt="Biconomy" />
-                    </a>
-                  </div>
-                  <div className="slide">
-                    <a href="https://perfectnet.at" target="_blank" rel="noopener noreferrer">
-                      <Image src="/images/partners/logo_perfectnet.svg" height="100" width="250" alt="PerfectNet" />
-                    </a>
-                  </div>
+                  {Array.from({ length: PARTNER_SET_COPIES }, (_, copy) =>
+                    PARTNERS.map((partner) => (
+                      <div className="slide" key={`${copy}-${partner.name}`}>
+                        <a href={partner.href} target="_blank" rel="noopener noreferrer">
+                          <Image src={theme === 'light' && partner.logoLight ? partner.logoLight : partner.logo} height="100" width="250" alt={partner.name} />
+                        </a>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

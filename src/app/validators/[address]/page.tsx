@@ -84,7 +84,7 @@ export default function ValidatorDetails() {
   }, [web3Initialized]);
 
   useEffect(() => {
-    const foundPool = pools.find((pool) => pool.stakingAddress === address);
+    const foundPool = pools.find((pool) => pool.stakingAddress?.toLowerCase() === address?.toLowerCase());
     setPool(foundPool || null);
   }, [address, pools, userWallet.myAddr]);
 

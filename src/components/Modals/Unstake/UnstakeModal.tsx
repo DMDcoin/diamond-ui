@@ -3,34 +3,55 @@ import styles from "./UnstakeModal.module.css";
 import { useWeb3Context } from "@/contexts/Web3";
 import { useStakingContext } from "@/contexts/Staking";
 import { Pool } from "@/contexts/types/models";
-import React, { useState, useEffect, useRef, FormEvent } from "react";
+import React, { useState, useEffect, useRef, useId, FormEvent } from "react";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import { truncateAddress } from "@/utils/common";
 import { formatDmd, formatDmdFromWei } from "@/utils/format";
+import { formatDmdName } from "@/utils/dmdNaming";
 import { isOrderClaimable } from "@/components/OrderedStakeTag";
+import { useDmdNamesForAddresses } from "@/hooks/useDmdNamesForAddresses";
 
 interface ModalProps {
   buttonText: string;
   pool: Pool;
 }
 
+const ValidatorName: React.FC<{ address: string }> = ({ address }) => {
+  const names = useDmdNamesForAddresses([address]);
+  const name = names[address.toLowerCase()];
+  return <>{name ? formatDmdName(name) : truncateAddress(address)}</>;
+};
+
+const SummaryRow: React.FC<{ label: string; wei: BigNumber; total?: boolean }> = ({ label, wei, total }) => (
+  <div className={total && wei.isGreaterThan(0) ? `${styles.summaryRow} ${styles.summaryTotal}` : styles.summaryRow}>
+    <span>{label}</span>
+    <span>{formatDmdFromWei(wei)}</span>
+  </div>
+);
+
 const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const amountInputId = useId();
   const [unstakeAmount, setUnstakeAmount] = useState<string>('');
+  const [addUnstake, setAddUnstake] = useState<boolean>(false);
   const [ownPool, setOwnPool] = useState<boolean>(false);
   const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
   const [canBeOrderedAmount, setCanBeOrderedAmount] = useState<BigNumber>(new BigNumber(0));
   const [canBeUnstakedAmount, setCanBeUnstakedAmount] = useState<BigNumber>(new BigNumber(0));
+  const [amountsLoaded, setAmountsLoaded] = useState<boolean>(false);
   const { unstake, setPools, getWithdrawableAmounts, candidateMinStake, delegatorMinStake, stakingEpoch, claimOrderedUnstake } = useStakingContext();
 
   const orderedWei = BigNumber(pool.orderedWithdrawAmount ?? 0);
   const isClaimable = isOrderClaimable(pool, stakingEpoch);
+  const isLoading = !amountsLoaded && !isClaimable;
+  const isPending = !isClaimable && orderedWei.isGreaterThan(0);
   const hasUnstakable = canBeUnstakedAmount.isGreaterThan(0) || canBeOrderedAmount.isGreaterThan(0);
-  const showUnstakeFields = !isClaimable || hasUnstakable;
-  const hasAmount = hasUnstakable && BigNumber(unstakeAmount).isGreaterThan(0);
-  const unstakeVerb = canBeUnstakedAmount.isGreaterThan(0) || canBeOrderedAmount.isZero() ? "unstake" : "order";
+  const isOrder = canBeUnstakedAmount.isZero() && canBeOrderedAmount.isGreaterThan(0);
+  const showUnstakeFields = hasUnstakable && (!isClaimable || addUnstake);
+  const hasAmount = showUnstakeFields && BigNumber(unstakeAmount).isGreaterThan(0);
+  const unstakeVerb = isOrder ? "order" : "unstake";
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -71,6 +92,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     getWithdrawableAmounts(pool).then((amounts: any) => {
       setCanBeUnstakedAmount(amounts.maxWithdrawAmount);
       setCanBeOrderedAmount(amounts.maxWithdrawOrderAmount);
+      setAmountsLoaded(true);
     });
   }
 
@@ -154,24 +176,6 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     });
   }
 
-  const getActionHeading = () => {
-    if (isClaimable && !hasUnstakable) {
-      return ownPool ? "Claim DMD" : `Claim DMD from ${truncateAddress(pool.stakingAddress)}`;
-    } else if (ownPool && canBeOrderedAmount.isZero()) {
-      return "Unstake DMD";
-    } else if (!ownPool && canBeOrderedAmount.isZero()) {
-      return `Unstake from ${truncateAddress(pool.stakingAddress)}`;
-    } else if (ownPool && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
-      return "Unstake DMD";
-    } else if (canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0)) {
-      return `Unstake DMD from ${truncateAddress(pool.stakingAddress)}`;
-    } else if (ownPool && !canBeOrderedAmount.isZero()) {
-      return "Order DMD";
-    } else {
-      return `Order DMD from ${truncateAddress(pool.stakingAddress)}`;
-    }
-  };
-
   const lockedAmountDmd = ownPool
     ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake)).dividedBy(10 ** 18)
     : BigNumber.maximum(0, canBeOrderedAmount.dividedBy(10 ** 18));
@@ -179,6 +183,20 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const availableUnstakableDmd = ownPool
     ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake)).dividedBy(10 ** 18)
     : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18));
+
+  const maxInputAmount = ownPool
+    ? canBeUnstakedAmount.isGreaterThan(0) ? BigNumber.maximum(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18))).toString() : BigNumber.maximum(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18))).toString()
+    : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString();
+
+  const isOverMax = hasAmount && BigNumber(unstakeAmount).isGreaterThan(maxInputAmount);
+  const enteredWei = hasAmount && !isOverMax ? BigNumber(unstakeAmount).multipliedBy(10 ** 18) : new BigNumber(0);
+  const receiveNowWei = (isClaimable ? orderedWei : new BigNumber(0)).plus(isOrder ? 0 : enteredWei);
+  const remainingStakeWei = BigNumber.maximum(0, BigNumber(pool.myStake ?? 0).minus(enteredWei));
+  const showOrderSummary = showUnstakeFields && isOrder;
+
+  const amountLabel = isOrder
+    ? "Amount to order (DMD)"
+    : isClaimable ? "Additional amount (DMD)" : "Amount to unstake (DMD)";
 
   return (
     <>
@@ -192,119 +210,143 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
             <button className={styles.modalClose} onClick={closeModal}>
               &times;
             </button>
-            <h3>{getActionHeading()}</h3>
+            <div className={styles.modalHeader}>
+              <h3>Unstake DMD</h3>
+              <p className={styles.modalSubtitle}>
+                Validator <ValidatorName address={pool.stakingAddress} />
+              </p>
+            </div>
 
             <form className={styles.form} onSubmit={handleWithdrawStake}>
 
               {isClaimable && (
-                <div className={styles.claimReady}>
-                  <i className="fas fa-circle-check" aria-hidden="true"></i>
-                  <span><strong>{formatDmdFromWei(orderedWei)}</strong> ready to claim</span>
+                <div className={`${styles.statusPanel} ${styles.claimReady}`}>
+                  <span className={styles.statusTitle}>Ready to withdraw now</span>
+                  <strong className={styles.statusAmount}>{formatDmdFromWei(orderedWei)}</strong>
+                  <span className={styles.statusNote}>From your previous unstake order.</span>
                 </div>
               )}
 
-              {showUnstakeFields && (<>
-                {canBeUnstakedAmount.isZero() ? (
-                  lockedAmountDmd.isGreaterThan(0) && (
-                    <span className={styles.zeroPadding} data-tooltip="This amount is currently locked in an active Epoch and cannot be unstaked right now. You can pre-order an unstake, and it will become claimable after the Epoch ends.">
-                      Locked : {formatDmd(lockedAmountDmd)}
-                    </span>
-                  )
-                ) : (
-                  <span className={styles.zeroPadding} data-tooltip="This is the amount of DMD that can be unstaked and claimed immediately because it is not currently active in an Epoch.">
-                    Available for immediate unstaking: {formatDmd(availableUnstakableDmd)}
-                  </span>
-                )}
+              {isPending && (
+                <div className={`${styles.statusPanel} ${styles.orderPending}`}>
+                  <span className={styles.statusTitle}>Pending unstake</span>
+                  <strong className={styles.statusAmount}>{formatDmdFromWei(orderedWei)}</strong>
+                  <span className={styles.statusNote}>Not ready to withdraw yet.</span>
+                  <span className={styles.statusNote}>Return here and click Unstake when these funds are ready.</span>
+                </div>
+              )}
 
-                {
-                  !canBeUnstakedAmount.isZero() && lockedAmountDmd.isGreaterThan(0) && (
-                    <span className={styles.zeroPadding} data-tooltip="This amount is currently locked in an active Epoch and cannot be unstaked right now. You can pre-order an unstake, and it will become claimable after the Epoch ends.">Locked: {formatDmd(lockedAmountDmd)}</span>
-                  )
-                }
-
-                {!isClaimable && orderedWei.isGreaterThan(0) && (
-                  <span className={styles.zeroMargin + " " + styles.zeroPadding}>
-                    Amount already ordered: {formatDmdFromWei(orderedWei)}
-                  </span>
-                )}
-
-                <div className={styles.inputWrapper}>
+              {isClaimable && hasUnstakable && (
+                <label className={styles.checkRow}>
                   <input
-                    min={
-                      canBeUnstakedAmount.isZero()
-                        ? BigNumber.maximum(0, BigNumber.minimum(1, canBeOrderedAmount.dividedBy(10 ** 18))).toString()
-                        : BigNumber.maximum(0, BigNumber.minimum(1, canBeUnstakedAmount.dividedBy(10 ** 18))).toString()
-                    }
-                    max={
-                      ownPool ? 
-                      canBeUnstakedAmount.isGreaterThan(0) ? BigNumber.maximum(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18))).toString() : BigNumber.maximum(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18))).toString()
-                      : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString()
-                    }
-                    type="number"
-                    step="any"
-                    value={unstakeAmount || ''}
-                    className={styles.formInput}
-                    placeholder={
-                      (canBeUnstakedAmount.isGreaterThan(0)
-                        ? "Enter the amount to unstake"
-                        : canBeOrderedAmount.isGreaterThan(0)
-                        ? "Enter the amount to order unstake"
-                        : "Enter the amount to unstake") + (isClaimable ? " (optional)" : "")
-                    }
-                    onChange={(e) => setUnstakeAmount(e.target.value)}
+                    type="checkbox"
+                    checked={addUnstake}
+                    onChange={(e) => setAddUnstake(e.target.checked)}
                   />
+                  <span>{isOrder ? "Also place an unstake order" : "Also unstake additional funds now"}</span>
+                </label>
+              )}
 
-                  <button
-                    type="button"
-                    className={styles.maxButton}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+              {showUnstakeFields && (<>
+                {isOrder ? (
+                  <span className={styles.available} data-tooltip="This amount is currently locked in an active Epoch and cannot be unstaked right now. You can pre-order an unstake, and it will become claimable after the Epoch ends.">
+                    Available to order: <strong>{formatDmd(lockedAmountDmd)}</strong>
+                  </span>
+                ) : (
+                  <span className={styles.available} data-tooltip="This is the amount of DMD that can be unstaked and claimed immediately because it is not currently active in an Epoch.">
+                    Available to unstake now: <strong>{formatDmd(availableUnstakableDmd)}</strong>
+                  </span>
+                )}
 
-                      let amountWei: BigNumber;
-
-                      if (canBeUnstakedAmount.isZero()) {
-                        // When nothing can be unstaked immediately (order)
-                        amountWei = ownPool
-                          ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake))
-                          : canBeOrderedAmount;
-                      } else {
-                        // When some can be unstaked immediately
-                        amountWei = ownPool
-                          ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake))
-                          : canBeUnstakedAmount;
+                <div className={styles.field}>
+                  <label htmlFor={amountInputId} className={styles.fieldLabel}>{amountLabel}</label>
+                  <div className={styles.inputWrapper}>
+                    <input
+                      id={amountInputId}
+                      min={
+                        canBeUnstakedAmount.isZero()
+                          ? BigNumber.maximum(0, BigNumber.minimum(1, canBeOrderedAmount.dividedBy(10 ** 18))).toString()
+                          : BigNumber.maximum(0, BigNumber.minimum(1, canBeUnstakedAmount.dividedBy(10 ** 18))).toString()
                       }
+                      max={maxInputAmount}
+                      type="number"
+                      step="any"
+                      value={unstakeAmount || ''}
+                      className={isOverMax ? `${styles.formInput} ${styles.invalid}` : styles.formInput}
+                      aria-invalid={isOverMax}
+                      placeholder={isOrder ? "Enter the amount to order unstake" : "Enter the amount to unstake"}
+                      onChange={(e) => setUnstakeAmount(e.target.value)}
+                    />
 
-                      const amountDmdBn = amountWei.dividedBy(10 ** 18).decimalPlaces(18, BigNumber.ROUND_DOWN);
-                      setUnstakeAmount(amountDmdBn.toString(10));
-                    }}
-                    aria-label="Fill max amount"
-                  >
-                    max
-                  </button>
+                    <button
+                      type="button"
+                      className={styles.maxButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        let amountWei: BigNumber;
+
+                        if (canBeUnstakedAmount.isZero()) {
+                          amountWei = ownPool
+                            ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake))
+                            : canBeOrderedAmount;
+                        } else {
+                          amountWei = ownPool
+                            ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake))
+                            : canBeUnstakedAmount;
+                        }
+
+                        const amountDmdBn = amountWei.dividedBy(10 ** 18).decimalPlaces(18, BigNumber.ROUND_DOWN);
+                        setUnstakeAmount(amountDmdBn.toString(10));
+                      }}
+                      aria-label="Fill max amount"
+                    >
+                      Max
+                    </button>
+                  </div>
+                  {!isClaimable && !isOrder && (
+                    <span className={styles.fieldHint}>Withdraw now without creating an order.</span>
+                  )}
                 </div>
 
-                {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) &&
-                  canBeOrderedAmount.isGreaterThan(0) ? (
-                    <p className={styles.unstakeWarning}>
-                      Please note, that this node is a part of current Epoch
-                      validators set. You can unstake the available amount, and
-                      after that it is possible to order the coins to be claimed as
-                      soon as Epoch ends.
-                    </p>
-                  ) : (
-                    pool.isActive && canBeOrderedAmount.isGreaterThan(0) && (
-                      <p className={styles.unstakeWarning}>
-                        Note: This node is currently part of the active validator
-                        set for this Epoch, so unstaking is not immediately
-                        possible. However, you can place an unstake order now. The
-                        coins will be prepared and frozen in the contract, and
-                        you’ll be able to claim them by clicking ‘Unstake’ once the
-                        Epoch ends.
-                      </p>
-                    )
+                {!isClaimable && isOrder && (
+                  <p className={styles.unstakeWarning}>
+                    <i className="fas fa-circle-info" aria-hidden="true"></i>
+                    Claim after the required epoch transition.
+                  </p>
+                )}
+
+                {pool.isActive && canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) && (
+                  <p className={styles.unstakeWarning}>
+                    Please note, that this node is a part of current Epoch
+                    validators set. You can unstake the available amount, and
+                    after that it is possible to order the coins to be claimed as
+                    soon as Epoch ends.
+                  </p>
                 )}
               </>)}
+
+              {!isLoading && (<div className={styles.summary}>
+                {!isClaimable && !hasUnstakable ? (
+                  <SummaryRow label="Available now" wei={new BigNumber(0)} />
+                ) : (<>
+                  {isClaimable && showUnstakeFields && !isOrder && (<>
+                    <SummaryRow label="Previous order" wei={orderedWei} />
+                    <SummaryRow label="Additional unstake" wei={enteredWei} />
+                  </>)}
+                  <SummaryRow label="Receive now" wei={receiveNowWei} total />
+                  {showOrderSummary && <SummaryRow label="New order" wei={enteredWei} />}
+                  {!isClaimable && showUnstakeFields && <SummaryRow label="Remaining stake" wei={remainingStakeWei} />}
+                </>)}
+
+                {receiveNowWei.isGreaterThan(0) && !showOrderSummary && (
+                  <span className={styles.summaryNote}>Before network fees</span>
+                )}
+                {isClaimable && showOrderSummary && (
+                  <span className={styles.orderNote}>New order: claim after the required epoch transition.</span>
+                )}
+              </div>)}
 
               {isClaimable && hasAmount && (
                 <p className={styles.claimNote}>
@@ -312,11 +354,17 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 </p>
               )}
 
-              <button className={"btn-primary " + styles.formSubmit} type="submit" disabled={!isClaimable && !hasUnstakable}>
-                {isClaimable
-                  ? hasAmount ? `Claim & ${unstakeVerb}` : "Claim"
-                  : canBeUnstakedAmount.isGreaterThan(0) && canBeOrderedAmount.isGreaterThan(0) ? "Unstake" : canBeOrderedAmount.isGreaterThan(0) ? "Order" : "Unstake"}
-              </button>
+              {isClaimable || hasUnstakable || isLoading ? (
+                <button className={"btn-primary " + styles.formSubmit} type="submit" disabled={isLoading}>
+                  {isClaimable
+                    ? hasAmount ? (isOrder ? "Claim & Place order" : "Claim & Unstake") : "Claim"
+                    : isOrder ? "Place unstake order" : "Unstake"}
+                </button>
+              ) : (
+                <button className={"btn-cancel " + styles.formSubmit} type="button" onClick={closeModal}>
+                  Close
+                </button>
+              )}
             </form>
           </div>
         </div>,

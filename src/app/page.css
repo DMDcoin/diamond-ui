@@ -416,12 +416,12 @@
   }
   
   /* Animation for infinite slider */
-@keyframes scroll {
-  0% { 
-    transform: translateX(0); 
+@keyframes partners-scroll {
+  0% {
+    transform: translateX(0);
   }
-  100% { 
-    transform: translateX(calc(-17.5rem * 7));
+  100% {
+    transform: translateX(calc(-100% / 4));
   }
 }
 
@@ -455,9 +455,9 @@
 }
 
 .slide-track {
-  animation: scroll 35s linear infinite;
+  animation: partners-scroll 35s linear infinite;
   display: flex;
-  width: calc(17.5rem * 14);
+  width: max-content;
   gap: var(--space-0);
   background: rgba(255, 255, 255, 0.05);
 }

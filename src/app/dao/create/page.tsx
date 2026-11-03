@@ -52,13 +52,29 @@ const PARAMETER_DESCRIPTIONS: Record<string, string> = {
   "Minting Fee": "Fee required to mint/register a new DMD name. Gas fees are paid separately.",
 };
 
-const PARAMETER_RULE = "Each parameter from the list can be changed only once a month. If there are multiple proposals to change the same parameter, all with enough \"yes\" votes and participation during the DAO phase, the community will decide which proposal will be finalized and executed.";
+const PARAMETER_RULE = "Each parameter can change only once a month. If multiple proposals for the same parameter meet the voting requirements, the community decides which one to finalize and execute.";
 
-const FEE_INFO = "Please note that you pay a proposal fee and a service fee when you submit a new voting creation. You can dismiss the proposal during the proposal phase, but you will lose your funds. If your proposal is accepted, the proposal fee is returned to you on the proposal finalization.";
+const FEE_INFO = "If you dismiss the proposal during the proposal phase, the proposal fee will not be returned.";
 
-const FEE_TIP = "Fee to create a proposal. Refunded if approved.";
+const FEE_TIP = "The proposal fee is returned if the proposal is accepted and finalized successfully. Estimated Gas is a separate blockchain transaction cost; the actual gas cost may differ when submitted.";
+
+const VOTING_RULE_TIP = "Participation is the share of total DAO voting weight that takes part in the vote. Exceeding Yes is Yes voting weight minus No voting weight. Both must meet the thresholds shown. The applicable rule depends on the proposal type and, for Open Proposals, the requested amount and Low Majority Contract balance.";
+
+const BALANCES_TIP = "Governance Pot: funds available in the main DAO treasury. Low Majority Contract: funds available for proposals that qualify for Low Majority voting rules.";
 
 const REQUIRED = "Please fill out this field.";
+const FILL_AMOUNT_REQUIRED = "Amount is required. Enter the DMD amount to send from the Governance Pot to the Low Majority Contract.";
+const FILL_AMOUNT_INVALID = "Enter a valid DMD amount using digits and a decimal point, e.g. 1000 or 0.5.";
+const GAS_NO_WALLET = "Please connect your wallet first";
+const GAS_INCOMPLETE = "Complete the required fields to estimate gas.";
+const GAS_FAILED = "Gas estimation failed. Check the proposal details and try again.";
+const GAS_REVERTS: Record<string, string> = {
+  UnfinalizedProposalsExist: "Proposals from the previous phase must be finalized before a new proposal can be created.",
+  ProposalAlreadyExist: "Proposal already exists",
+  UnavailableInCurrentPhase: "Cannot propose in voting phase",
+  NewValueOutOfRange: "The proposed value is outside the allowed range for this parameter.",
+  NewProposalsLimitExceeded: "The limit of new proposals for this phase has been reached.",
+};
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const HEX_DATA_PATTERN = /^0x([0-9a-fA-F]{2})+$/;
 const DEFAULT_PARAMETER = "Staking:Delegator Min. Stake:setDelegatorMinStake(uint256)";
@@ -66,7 +82,7 @@ const DEFAULT_PARAMETER = "Staking:Delegator Min. Stake:setDelegatorMinStake(uin
 type ProposalType = "open" | "contract-upgrade" | "low-majority-fill" | "ecosystem-parameter-change" | "username-moderation";
 type Payout = { target: string; amount: string };
 type ContractCall = { contractAddress: string; contractCalldata: string };
-type GasEstimate = { state: "idle" | "loading" | "ready" | "error"; dmd?: BigNumber };
+type GasEstimate = { state: "idle" | "loading" | "ready" | "error"; dmd?: BigNumber; reason?: string };
 type Decoded = [string, string][] | null;
 
 BigNumber.config({ EXPONENTIAL_AT: 1e+9 });
@@ -93,9 +109,9 @@ const decode = (contractsManager: any, target: string, calldata: string): Decode
   }
 };
 
-function Tip({ content, label, placement = "bottom" }: { content: React.ReactNode; label: string; placement?: "top" | "bottom" }) {
+function Tip({ content, label, id, placement = "bottom" }: { content: React.ReactNode; label: string; id?: string; placement?: "top" | "bottom" }) {
   return (
-    <InfoTooltip placement={placement} label={label} content={<p>{content}</p>}>
+    <InfoTooltip placement={placement} label={label} id={id} content={<p>{content}</p>}>
       <i className="fas fa-info-circle info-icon" aria-hidden="true" />
     </InfoTooltip>
   );
@@ -163,6 +179,7 @@ export default function CreateProposalPage() {
   const [focusRequest, setFocusRequest] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [gas, setGas] = useState<GasEstimate>({ state: "idle" });
+  const [gasRetry, setGasRetry] = useState(0);
   const [submitInView, setSubmitInView] = useState(false);
   const [today, setToday] = useState("");
   const submitRef = useRef<HTMLButtonElement | null>(null);
@@ -264,7 +281,10 @@ export default function CreateProposalPage() {
 
   const totalRequested = useMemo(() => {
     if (!isPayoutType) return BigNumber(0);
-    return payouts.reduce((sum, payout) => (payout.amount && !isNaN(Number(payout.amount)) ? sum.plus(BigNumber(payout.amount)) : sum), BigNumber(0));
+    return payouts.reduce((sum, payout) => {
+      const amount = BigNumber(payout.amount);
+      return payout.amount && !isNaN(Number(payout.amount)) && amount.isFinite() ? sum.plus(amount) : sum;
+    }, BigNumber(0));
   }, [payouts, isPayoutType]);
 
   const lowMajorityBalance = daoContext.lowMajorityContractBalance;
@@ -303,7 +323,11 @@ export default function CreateProposalPage() {
         payouts.forEach((payout, index) => {
           const fixedTarget = proposalType === "low-majority-fill" && index === 0;
           if (!fixedTarget && !isAddress(payout.target)) e[`payout-${index}-target`] = `Invalid Transaction ${index + 1} payout address`;
-          if (!payout.amount || !(Number(payout.amount) >= 0)) e[`payout-${index}-amount`] = `Invalid Transaction ${index + 1} payout amount`;
+          if (!payout.amount || !(Number(payout.amount) >= 0)) {
+            e[`payout-${index}-amount`] = proposalType === "low-majority-fill"
+              ? (payout.amount ? FILL_AMOUNT_INVALID : FILL_AMOUNT_REQUIRED)
+              : `Invalid Transaction ${index + 1} payout amount`;
+          }
         });
       }
     }
@@ -391,40 +415,56 @@ export default function CreateProposalPage() {
     return { targets, values, calldatas, fullDescription: description + descriptionSuffix };
   };
 
-  const majorityType = (values: string[]) => {
+  const majorityType = (targets: string[], values: string[]) => {
     if (proposalType === "low-majority-fill") return 1;
     if (proposalType !== "open") return 0;
+    if (targets.some((target) => target.toLowerCase() === lowMajorityContractAddress.toLowerCase())) return 1;
     const total = values.reduce((sum, value) => sum.plus(BigNumber(value || "0").dividedBy(1e18)), BigNumber(0));
     return total.isGreaterThan(daoContext.lowMajorityContractBalance) ? 1 : 0;
   };
 
+  const gasFailureReason = async (rpc: Web3, abi: any[], call: { from: string; to: string; data: string; value: string }) => {
+    try {
+      await rpc.eth.call(call);
+    } catch (err: any) {
+      const selector = String(err?.data ?? "").match(/0x[0-9a-fA-F]{8}/)?.[0]?.toLowerCase();
+      const revert = abi.find((item) => item.type === "error" && Web3.utils.sha3(`${item.name}(${(item.inputs || []).map((input: any) => input.type).join(",")})`)?.slice(0, 10) === selector);
+      if (revert && GAS_REVERTS[revert.name]) return GAS_REVERTS[revert.name];
+    }
+    return GAS_FAILED;
+  };
+
   useEffect(() => {
     const dao = web3Context.contractsManager?.daoContract;
-    if (!walletAddress || errorCount > 0 || phase !== "0" || !dao) {
+    const rpc = web3Context.readonlyWeb3;
+    if (!walletAddress || errorCount > 0 || phase !== "0" || !dao || !rpc) {
       setGas({ state: "idle" });
       return;
     }
     let cancelled = false;
     setGas((prev) => ({ state: "loading", dmd: prev.dmd }));
     const timer = setTimeout(async () => {
+      let call;
       try {
         const tx = buildTransaction();
-        const method = dao.methods.propose(tx.targets, tx.values, tx.calldatas, title, tx.fullDescription, discussionUrl, majorityType(tx.values));
+        const data = dao.methods.propose(tx.targets, tx.values, tx.calldatas, title, tx.fullDescription, discussionUrl, majorityType(tx.targets, tx.values)).encodeABI();
+        call = { from: walletAddress, to: dao.options.address, data, value: daoContext.proposalFee };
         const [units, gasPrice] = await Promise.all([
-          method.estimateGas({ from: walletAddress, value: daoContext.proposalFee }),
+          rpc.eth.estimateGas(call),
           web3Context.getGasPriceSafe(),
         ]);
         if (!cancelled) setGas({ state: "ready", dmd: BigNumber(String(units)).multipliedBy(String(gasPrice)).dividedBy(1e18) });
       } catch (err) {
         logger.log("Gas estimate failed", err);
-        if (!cancelled) setGas({ state: "error" });
+        const reason = call ? await gasFailureReason(rpc, dao.options.jsonInterface, call) : GAS_FAILED;
+        if (!cancelled) setGas({ state: "error", reason });
       }
     }, 600);
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [walletAddress, errorCount, phase, web3Context.contractsManager, proposalType, title, description, discussionUrl, payouts, calls, epcKey, epcProposed, umUsername, umOwnerAddress, umReasonCategory, umEvidence, daoContext.proposalFee, lowMajorityContractAddress]);
+  }, [walletAddress, errorCount, phase, web3Context.contractsManager, web3Context.readonlyWeb3, proposalType, title, description, discussionUrl, payouts, calls, epcKey, epcProposed, umUsername, umOwnerAddress, umReasonCategory, umEvidence, daoContext.proposalFee, daoContext.lowMajorityContractBalance, lowMajorityContractAddress, gasRetry]);
 
   useEffect(() => {
     let frame = 0;
@@ -568,6 +608,8 @@ export default function CreateProposalPage() {
   const feeDmd = feeWei ? BigNumber(feeWei).dividedBy(1e18) : null;
   const feeLabel = feeDmd && feeDmd.isFinite() ? formatDmd(feeDmd) : "—";
   const gasLabel = gas.state === "ready" && gas.dmd ? formatDmd(gas.dmd) : gas.state === "loading" ? "…" : "—";
+  const totalCost = gas.state === "ready" && gas.dmd && feeDmd && feeDmd.isFinite() ? feeDmd.plus(gas.dmd) : null;
+  const gasHint = !walletAddress ? GAS_NO_WALLET : errorCount > 0 ? GAS_INCOMPLETE : null;
   const thresholdPercent = daoContext.getProposalThreshold ? daoContext.getProposalThreshold(rawType) : (lowMajorityRule ? 33 : 50);
   const totalDaoStake = BigNumber(stakingContext.totalDaoStake || 0);
   const requirement = totalDaoStake.isGreaterThan(0)
@@ -627,6 +669,10 @@ export default function CreateProposalPage() {
             <i className="fas fa-plus-circle" aria-hidden="true" /> Add Transaction
           </button>
         </div>
+        <div className={`${styles.feeRow} ${styles.totalRow}`} aria-live="polite">
+          <span>Total Requested</span>
+          <strong>{formatDmd(totalRequested)}</strong>
+        </div>
       </div>
     </div>
   );
@@ -644,7 +690,8 @@ export default function CreateProposalPage() {
               {...fieldProps("payout-0-amount")}
               value={payouts[0]?.amount || ""}
               onChange={(e) => updatePayout(0, "amount", e.target.value)}
-              placeholder="Payout Amount in DMD (optional)"
+              placeholder="Payout Amount in DMD"
+              aria-required="true"
               inputMode="decimal"
               autoComplete="off"
             />
@@ -892,7 +939,7 @@ export default function CreateProposalPage() {
       <section className="proposal-details">
         <div className="container">
           <div className={styles.typeRow}>
-            <label htmlFor="proposal-type" className={styles.typeLabel}>Please choose a proposal type you want to create:</label>
+            <label htmlFor="proposal-type" className={styles.typeLabel}>Proposal type</label>
             <select
               id="proposal-type"
               className={styles.typeSelect}
@@ -931,7 +978,7 @@ export default function CreateProposalPage() {
                       className={`${fieldProps("proposal-description").className} ${styles.textarea} ${styles.description}`}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Proposal Description"
+                      placeholder="Describe what you propose and why."
                       aria-label="Proposal Description"
                       rows={6}
                     />
@@ -948,7 +995,10 @@ export default function CreateProposalPage() {
 
             <div ref={sideRef} className={`voting-info ${styles.side}`}>
               <div className="proposal-card voting-card">
-                <div className="card-header"><h3>Voting Rule</h3></div>
+                <div className={`card-header ${styles.headerTip}`}>
+                  <h3>Voting Rule</h3>
+                  <Tip content={VOTING_RULE_TIP} label="Voting Rule" id="voting-rule-tip" />
+                </div>
                 <div className="card-content">
                   <div className={styles.ruleRow}>
                     <span className={`${styles.ruleBadge} ${lowMajorityRule ? styles.ruleLow : styles.ruleHigh}`}>{lowMajorityRule ? "Low Majority" : "High Majority"}</span>
@@ -979,11 +1029,11 @@ export default function CreateProposalPage() {
                       <div className={`voting-status-message ${withinLowMajority ? "active" : "votingfinished"}`}>
                         <i className={`fas ${withinLowMajority ? "fa-check-circle" : "fa-exclamation-triangle"}`} aria-hidden="true" />
                         {withinLowMajority ? (
-                          <p>Your requested amount is within the <strong>Low Majority</strong> Contract balance. This requires ⅓ participation of the total DAO voting weight and at least ⅓ exceeding Yes votes to pass.</p>
+                          <p>Within the Low Majority Contract balance. Low Majority voting rules apply.</p>
                         ) : (
                           <div>
-                            <p>Your requested amount exceeds the <strong>Low Majority</strong> Contract balance. This proposal must meet a higher threshold of ½ participation and at least ½ exceeding Yes votes to pass.</p>
-                            <p>To proceed with the lower participation and “Yes” vote threshold, add funds to the Low Majority Contract by creating a Low Majority Balance Fill proposal. Click the button below to start.</p>
+                            <p>Exceeds the Low Majority Contract balance. High Majority voting rules apply.</p>
+                            <p>To fund future Low Majority proposals, create a Low Majority Balance Fill proposal.</p>
                           </div>
                         )}
                       </div>
@@ -997,7 +1047,7 @@ export default function CreateProposalPage() {
                   {proposalType === "low-majority-fill" && (
                     <div className={`voting-status-message active ${styles.dynamic}`}>
                       <i className="fas fa-info-circle" aria-hidden="true" />
-                      <p>This proposal sends funds to the Low Majority Contract, enabling future proposals within its balance to pass with the lower voting threshold (⅓ participation, ⅓ exceeding Yes votes). It requires ½ participation and at least ½ exceeding Yes votes to pass.</p>
+                      <p>Funds the Low Majority Contract for future proposals. This fill proposal requires High Majority voting rules.</p>
                     </div>
                   )}
                 </div>
@@ -1030,7 +1080,10 @@ export default function CreateProposalPage() {
 
               {isPayoutType && (
                 <div className="proposal-card">
-                  <div className="card-header"><h3>Available Balances</h3></div>
+                  <div className={`card-header ${styles.headerTip}`}>
+                    <h3>Available Balances</h3>
+                    <Tip content={BALANCES_TIP} label="Available Balances" id="available-balances-tip" />
+                  </div>
                   <div className="card-content">
                     <div className={styles.balanceList}>
                       <div className={`${styles.balanceRow} ${exceedsGovernancePot ? styles.balanceExceeded : fundingSource === "governance" ? styles.balanceActive : ""}`}>
@@ -1066,13 +1119,31 @@ export default function CreateProposalPage() {
                 <div className="card-header"><h3>Fee summary</h3></div>
                 <div className="card-content">
                   <div className={styles.feeRow}>
-                    <span className={styles.rowLabel}>Proposal fee: <Tip content={FEE_TIP} label="Proposal fee:" /></span>
+                    <span className={styles.rowLabel}>Proposal fee: <Tip content={FEE_TIP} label="Proposal fee:" id="proposal-fee-tip" /></span>
                     <strong>{feeLabel}</strong>
                   </div>
                   <div className={styles.feeRow}>
                     <span>Estimated Gas</span>
                     <strong>{gasLabel}</strong>
                   </div>
+                  {totalCost && (
+                    <div className={`${styles.feeRow} ${styles.totalRow}`}>
+                      <span>Estimated Total</span>
+                      <strong>{formatDmd(totalCost)}</strong>
+                    </div>
+                  )}
+                  {gasHint && <p className={styles.gasHint}>{gasHint}</p>}
+                  {gas.state === "error" && (
+                    <div className={`${styles.warning} ${styles.gasError}`} role="alert">
+                      <i className="fas fa-exclamation-triangle" aria-hidden="true" />
+                      <span>{gas.reason || GAS_FAILED}</span>
+                      {gas.reason === GAS_FAILED && (
+                        <button type="button" className={`btn-secondary btn-sm ${styles.retryBtn}`} onClick={() => setGasRetry((n) => n + 1)}>
+                          Retry
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <p className={styles.note}>{FEE_INFO}</p>
                   {votingPhase && (
                     <div className="voting-status-message votingfinished">
@@ -1081,7 +1152,7 @@ export default function CreateProposalPage() {
                     </div>
                   )}
                   <button ref={submitRef} type="submit" className={`btn-primary ${styles.submit}`} disabled={submitDisabled}>
-                    Create
+                    Create Proposal
                   </button>
                 </div>
               </div>
@@ -1096,7 +1167,7 @@ export default function CreateProposalPage() {
           <strong>{feeLabel}</strong>
         </div>
         <button type="submit" form="create-proposal-form" className="btn-primary" disabled={submitDisabled} tabIndex={submitInView ? -1 : 0}>
-          Create
+          Create Proposal
         </button>
       </div>
     </div>
