@@ -357,6 +357,11 @@ html {
   html {
     font-size: clamp(100%, 0.625rem + 0.3125vw, 137.5%);
   }
+
+  header .container,
+  :is(.validators-page, .dao-page, .historic-page) .container {
+    max-width: min(100rem, 70vw);
+  }
 }
 
 h1,

@@ -830,6 +830,24 @@ body.light-theme .vl-table-scroll-btn:hover {
   :is(.validators-page, .validator-detail-page) .validators-table tbody tr:hover td:nth-child(2) {
     background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), var(--darker-bg);
   }
+
+  .validators-page:not(.rich-list-page) .validators-table-container {
+    container-type: inline-size;
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table td:nth-child(2) .dmd-validator-cell {
+    max-width: calc(100cqw - 10.25rem);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table:has(.btn-unstake) td:nth-child(2) .dmd-validator-cell {
+    max-width: calc(100cqw - 15.25rem);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table td:nth-child(2) :is(.dmd-validator-cell__addr, .dmd-validator-cell__sub) {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 @media (max-width: 768px) {
@@ -942,6 +960,24 @@ body.light-theme .vl-table-scroll-btn:hover {
     width: 100%;
     border: var(--btn-border-width) solid var(--btn-secondary-border);
     font-weight: var(--btn-weight);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table :is(th, td):nth-child(2) {
+    padding-left: var(--space-10);
+    padding-right: var(--space-10);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table :is(th, td).vl-action-cell {
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table td:nth-child(2) .dmd-validator-cell {
+    max-width: calc(100cqw - 7rem);
+  }
+
+  .validators-page:not(.rich-list-page) .validators-table:has(.btn-unstake) td:nth-child(2) .dmd-validator-cell {
+    max-width: calc(100cqw - 12rem);
   }
 }
 
