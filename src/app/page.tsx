@@ -21,6 +21,7 @@ const PARTNERS: { name: string; href: string; logo: string; logoLight?: string }
   { name: 'Dex-Trade', href: 'https://dex-trade.com/spot/trading/DMDETH', logo: '/images/partners/logo_dextrade.svg', logoLight: '/images/partners/logo_dextrade_light.svg' },
   { name: 'NonKYC', href: 'https://nonkyc.io/market/DMD_USDT', logo: '/images/partners/logo_nonkyc.png', logoLight: '/images/partners/logo_nonkyc_light.png' },
   { name: 'Azbit', href: 'https://azbit.com/exchange/DMD_ETH', logo: '/images/partners/logo_azbit.svg', logoLight: '/images/partners/logo_azbit_light.svg' },
+  { name: 'BiFinance', href: 'https://www.bifinance.com/en_us/trade?symbol=DMD/ETH', logo: '/images/partners/logo_bifinance.png', logoLight: '/images/partners/logo_bifinance_light.png' },
   { name: 'BlockServ', href: 'http://blockserv.at/', logo: '/images/partners/logo_blockserv.png' },
   { name: 'PerfectNet', href: 'https://www.perfectnet.at/', logo: '/images/partners/logo_perfectnet.svg' },
 ];
