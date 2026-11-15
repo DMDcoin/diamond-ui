@@ -93,6 +93,7 @@ interface DaoContextProps {
   getMyVote: (proposalId: string, myAddr: string) => Promise<Vote>;
   getProposalVotes: (proposalId: string) => Promise<ProposalVotesResult>;
   executeProposal: (proposalId: string) => Promise<string>;
+  canExecuteProposal: (proposal?: { state?: string; daoPhaseCount?: string | number } | null) => boolean;
   getDaoPotBalanceChange: (blocksAgo: number) => Promise<{ changePercentage: string | null, absoluteChange: string, direction: string }>;
   getProposalThreshold: (proposalType: string, proposal?: any) => number;
 }
@@ -1180,6 +1181,12 @@ const DaoContextProvider: React.FC<{ children: ReactNode }>  = ({ children }) =>
     });
   }
 
+  const canExecuteProposal = (proposal?: { state?: string; daoPhaseCount?: string | number } | null) => {
+    if (!proposal || String(proposal.state) !== '4') return false;
+    if (proposal.daoPhaseCount === undefined || proposal.daoPhaseCount === null || proposal.daoPhaseCount === '') return false;
+    return Number(proposal.daoPhaseCount) + 1 === Number(daoPhaseCount);
+  };
+
   const decodeEcosystemParameterCalldata = (calldata: string) => {
     try {
       // Remove '0x' prefix and get function selector (first 4 bytes)
@@ -1332,6 +1339,7 @@ const DaoContextProvider: React.FC<{ children: ReactNode }>  = ({ children }) =>
     getProposalVotes,
     setActiveProposals,
     executeProposal,
+    canExecuteProposal,
     getDaoPotBalanceChange,
     getProposalThreshold
   };
