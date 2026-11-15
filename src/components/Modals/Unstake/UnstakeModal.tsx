@@ -5,7 +5,6 @@ import { useStakingContext } from "@/contexts/Staking";
 import { Pool } from "@/contexts/types/models";
 import React, { useState, useEffect, useRef, useId, FormEvent } from "react";
 import ReactDOM from "react-dom";
-import { toast } from "react-toastify";
 import { truncateAddress } from "@/utils/common";
 import { formatDmd, formatDmdFromWei } from "@/utils/format";
 import { formatDmdName } from "@/utils/dmdNaming";
@@ -23,10 +22,12 @@ const ValidatorName: React.FC<{ address: string }> = ({ address }) => {
   return <>{name ? formatDmdName(name) : truncateAddress(address)}</>;
 };
 
-const SummaryRow: React.FC<{ label: string; wei: BigNumber; total?: boolean }> = ({ label, wei, total }) => (
-  <div className={total && wei.isGreaterThan(0) ? `${styles.summaryRow} ${styles.summaryTotal}` : styles.summaryRow}>
+const AMOUNT_PATTERN = /^-?(\d+(\.\d{0,18})?|\.\d{1,18})$/;
+
+const SummaryRow: React.FC<{ label: string; wei: BigNumber | null; total?: boolean }> = ({ label, wei, total }) => (
+  <div className={total && wei?.isGreaterThan(0) ? `${styles.summaryRow} ${styles.summaryTotal}` : styles.summaryRow}>
     <span>{label}</span>
-    <span>{formatDmdFromWei(wei)}</span>
+    <span>{wei ? formatDmdFromWei(wei) : "—"}</span>
   </div>
 );
 
@@ -34,7 +35,9 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const amountInputId = useId();
+  const amountErrorId = useId();
   const [unstakeAmount, setUnstakeAmount] = useState<string>('');
+  const [amountTouched, setAmountTouched] = useState<boolean>(false);
   const [addUnstake, setAddUnstake] = useState<boolean>(false);
   const [ownPool, setOwnPool] = useState<boolean>(false);
   const { userWallet, web3, contractsManager, ensureWalletConnection } = useWeb3Context();
@@ -53,7 +56,13 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const hasAmount = showUnstakeFields && BigNumber(unstakeAmount).isGreaterThan(0);
   const unstakeVerb = isOrder ? "order" : "unstake";
 
-  const openModal = () => setIsOpen(true);
+  const openModal = () => {
+    setUnstakeAmount('');
+    setAddUnstake(false);
+    setAmountTouched(false);
+    if (pool.stakingAddress) fetchWithdrawableAmounts();
+    setIsOpen(true);
+  };
   const closeModal = () => setIsOpen(false);
 
   useEffect(() => {
@@ -99,60 +108,22 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
   const handleWithdrawStake = async (e: FormEvent) => {
     e.preventDefault();
     if (!ensureWalletConnection()) return;
+    if (amountError) {
+      setAmountTouched(true);
+      return;
+    }
 
     if (isClaimable) {
-      if (hasAmount && !isValidUnstakeAmount(unstakeAmount)) return;
       const claimed = await claimOrderedUnstake(pool);
       if (!claimed) return;
       if (!hasAmount) return closeModal();
     }
 
-    await performUnstake(unstakeAmount);
-  }
-
-  const isValidUnstakeAmount = (amountNumber: string): boolean => {
-    if (!BigNumber(amountNumber).isGreaterThan(0)) {
-      toast.warn("Cannot unstake 0 DMD 💎");
-      return false;
-    }
-    const amountInWei = web3.utils.toWei(amountNumber.toString());
-
-    if (canBeUnstakedAmount.isZero()) {
-      const remainingStake = canBeOrderedAmount.minus(amountInWei);
-
-      if (BigNumber(amountInWei).isGreaterThan(canBeOrderedAmount)) {
-        toast.warn(`Cannot order more than ${formatDmdFromWei(canBeOrderedAmount)}`);
-        return false;
-      }
-
-      if (
-        !BigNumber(amountInWei).isEqualTo(canBeOrderedAmount) && remainingStake.isLessThan(delegatorMinStake)
-      ) {
-        toast.warn(`Ordered amount is invalid. You must order the full amount or leave at least the minimum stake of ${formatDmdFromWei(delegatorMinStake)}.`);
-        return false;
-      }
-    } else {
-      const remainingStake = canBeUnstakedAmount.minus(amountInWei);
-
-      if (BigNumber(amountInWei).isGreaterThan(canBeUnstakedAmount)) {
-        toast.warn(`Cannot unstake more than ${formatDmdFromWei(canBeUnstakedAmount)}`);
-        return false;
-      }
-
-      if (
-        !BigNumber(amountInWei).isEqualTo(canBeUnstakedAmount) && remainingStake.isLessThan(ownPool ? candidateMinStake : delegatorMinStake)
-      ) {
-        toast.warn(`Unstake amount is invalid. You must unstake the full amount or leave at least the minimum stake of ${formatDmdFromWei(ownPool ? candidateMinStake : delegatorMinStake)}.`);
-        return false;
-      }
-    }
-
-    return true;
+    await performUnstake(amountText);
   }
 
   const performUnstake = async (amountNumber: string) => {
-    if (!isValidUnstakeAmount(amountNumber)) return;
-    const amountInWei = web3.utils.toWei(amountNumber.toString());
+    const amountInWei = web3.utils.toWei(amountNumber);
 
     unstake(pool, new BigNumber(amountNumber)).then((success: boolean) => {
       if (success) {
@@ -184,14 +155,41 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
     ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake)).dividedBy(10 ** 18)
     : BigNumber.maximum(0, canBeUnstakedAmount.dividedBy(10 ** 18));
 
-  const maxInputAmount = ownPool
-    ? canBeUnstakedAmount.isGreaterThan(0) ? BigNumber.maximum(0, Number(canBeUnstakedAmount.minus(candidateMinStake).dividedBy(10**18))).toString() : BigNumber.maximum(0, Number(canBeOrderedAmount.minus(candidateMinStake).dividedBy(10**18))).toString()
-    : canBeUnstakedAmount.isGreaterThan(0) ? canBeUnstakedAmount.dividedBy(10**18).toString() : canBeOrderedAmount.dividedBy(10**18).toString();
+  const maxInputWei = canBeUnstakedAmount.isGreaterThan(0)
+    ? (ownPool ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake)) : canBeUnstakedAmount)
+    : (ownPool ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake)) : canBeOrderedAmount);
+  const maxInputAmount = maxInputWei.dividedBy(10 ** 18).decimalPlaces(18, BigNumber.ROUND_DOWN);
+  const minInputAmount = BigNumber.maximum(0, BigNumber.minimum(1, (canBeUnstakedAmount.isZero() ? canBeOrderedAmount : canBeUnstakedAmount).dividedBy(10 ** 18)));
 
-  const isOverMax = hasAmount && BigNumber(unstakeAmount).isGreaterThan(maxInputAmount);
-  const enteredWei = hasAmount && !isOverMax ? BigNumber(unstakeAmount).multipliedBy(10 ** 18) : new BigNumber(0);
-  const receiveNowWei = (isClaimable ? orderedWei : new BigNumber(0)).plus(isOrder ? 0 : enteredWei);
-  const remainingStakeWei = BigNumber.maximum(0, BigNumber(pool.myStake ?? 0).minus(enteredWei));
+  const amountText = unstakeAmount.trim();
+  const parsedAmount = AMOUNT_PATTERN.test(amountText) ? BigNumber(amountText) : null;
+  const isOverMax = showUnstakeFields && Boolean(parsedAmount?.isGreaterThan(maxInputAmount));
+
+  const amountError = ((): string | null => {
+    if (!showUnstakeFields) return null;
+    if (!amountText) return isClaimable ? null : "Cannot unstake 0 DMD 💎";
+    if (!parsedAmount) return "Please enter a valid unstake amount";
+    if (!parsedAmount.isGreaterThan(0)) return "Cannot unstake 0 DMD 💎";
+    if (parsedAmount.isLessThan(minInputAmount)) return `Value must be greater than or equal to ${minInputAmount.toString(10)}.`;
+    if (isOverMax) return `Cannot ${unstakeVerb} more than ${formatDmd(maxInputAmount)}`;
+    const amountWei = parsedAmount.multipliedBy(10 ** 18);
+    const limitWei = isOrder ? canBeOrderedAmount : canBeUnstakedAmount;
+    const minStake = isOrder || !ownPool ? delegatorMinStake : candidateMinStake;
+    if (!amountWei.isEqualTo(limitWei) && limitWei.minus(amountWei).isLessThan(minStake)) {
+      return isOrder
+        ? `Ordered amount is invalid. You must order the full amount or leave at least the minimum stake of ${formatDmdFromWei(minStake)}.`
+        : `Unstake amount is invalid. You must unstake the full amount or leave at least the minimum stake of ${formatDmdFromWei(minStake)}.`;
+    }
+    return null;
+  })();
+  const amountBlocked = Boolean(amountError) && amountText !== "";
+  const showAmountError = Boolean(amountError) && (amountTouched || isOverMax);
+  const summaryUnknown = showAmountError && amountText !== "";
+
+  const enteredWei = showUnstakeFields && !amountError && parsedAmount ? parsedAmount.multipliedBy(10 ** 18) : new BigNumber(0);
+  const receiveNowWei = summaryUnknown && !isOrder ? null : (isClaimable ? orderedWei : new BigNumber(0)).plus(isOrder ? 0 : enteredWei);
+  const remainingStakeWei = summaryUnknown ? null : BigNumber.maximum(0, BigNumber(pool.myStake ?? 0).minus(enteredWei));
+  const enteredSummaryWei = summaryUnknown ? null : enteredWei;
   const showOrderSummary = showUnstakeFields && isOrder;
 
   const amountLabel = isOrder
@@ -263,19 +261,18 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                   <div className={styles.inputWrapper}>
                     <input
                       id={amountInputId}
-                      min={
-                        canBeUnstakedAmount.isZero()
-                          ? BigNumber.maximum(0, BigNumber.minimum(1, canBeOrderedAmount.dividedBy(10 ** 18))).toString()
-                          : BigNumber.maximum(0, BigNumber.minimum(1, canBeUnstakedAmount.dividedBy(10 ** 18))).toString()
-                      }
-                      max={maxInputAmount}
+                      min={minInputAmount.toString(10)}
+                      max={maxInputAmount.toString(10)}
                       type="number"
                       step="any"
                       value={unstakeAmount || ''}
-                      className={isOverMax ? `${styles.formInput} ${styles.invalid}` : styles.formInput}
-                      aria-invalid={isOverMax}
+                      className={showAmountError ? `${styles.formInput} ${styles.invalid}` : styles.formInput}
+                      aria-invalid={showAmountError}
+                      aria-describedby={showAmountError ? amountErrorId : undefined}
                       placeholder={isOrder ? "Enter the amount to order unstake" : "Enter the amount to unstake"}
                       onChange={(e) => setUnstakeAmount(e.target.value)}
+                      onBlur={(e) => { if (e.target.value.trim()) setAmountTouched(true); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") setAmountTouched(true); }}
                     />
 
                     <button
@@ -284,27 +281,16 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-
-                        let amountWei: BigNumber;
-
-                        if (canBeUnstakedAmount.isZero()) {
-                          amountWei = ownPool
-                            ? BigNumber.maximum(0, canBeOrderedAmount.minus(candidateMinStake))
-                            : canBeOrderedAmount;
-                        } else {
-                          amountWei = ownPool
-                            ? BigNumber.maximum(0, canBeUnstakedAmount.minus(candidateMinStake))
-                            : canBeUnstakedAmount;
-                        }
-
-                        const amountDmdBn = amountWei.dividedBy(10 ** 18).decimalPlaces(18, BigNumber.ROUND_DOWN);
-                        setUnstakeAmount(amountDmdBn.toString(10));
+                        setUnstakeAmount(maxInputAmount.toString(10));
                       }}
                       aria-label="Fill max amount"
                     >
                       Max
                     </button>
                   </div>
+                  {showAmountError && (
+                    <span id={amountErrorId} className={styles.fieldError}>{amountError}</span>
+                  )}
                   {!isClaimable && !isOrder && (
                     <span className={styles.fieldHint}>Withdraw now without creating an order.</span>
                   )}
@@ -333,14 +319,14 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
                 ) : (<>
                   {isClaimable && showUnstakeFields && !isOrder && (<>
                     <SummaryRow label="Previous order" wei={orderedWei} />
-                    <SummaryRow label="Additional unstake" wei={enteredWei} />
+                    <SummaryRow label="Additional unstake" wei={enteredSummaryWei} />
                   </>)}
                   <SummaryRow label="Receive now" wei={receiveNowWei} total />
-                  {showOrderSummary && <SummaryRow label="New order" wei={enteredWei} />}
+                  {showOrderSummary && <SummaryRow label="New order" wei={enteredSummaryWei} />}
                   {!isClaimable && showUnstakeFields && <SummaryRow label="Remaining stake" wei={remainingStakeWei} />}
                 </>)}
 
-                {receiveNowWei.isGreaterThan(0) && !showOrderSummary && (
+                {receiveNowWei?.isGreaterThan(0) && !showOrderSummary && (
                   <span className={styles.summaryNote}>Before network fees</span>
                 )}
                 {isClaimable && showOrderSummary && (
@@ -355,7 +341,7 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
               )}
 
               {isClaimable || hasUnstakable || isLoading ? (
-                <button className={"btn-primary " + styles.formSubmit} type="submit" disabled={isLoading}>
+                <button className={"btn-primary " + styles.formSubmit} type="submit" disabled={isLoading || amountBlocked}>
                   {isClaimable
                     ? hasAmount ? (isOrder ? "Claim & Place order" : "Claim & Unstake") : "Claim"
                     : isOrder ? "Place unstake order" : "Unstake"}
