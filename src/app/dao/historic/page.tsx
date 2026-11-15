@@ -277,7 +277,7 @@ export default function HistoricProposalsPage() {
                   <option value="open payout">Open payout</option>
                   <option value="contract fill">Contract fill</option>
                   <option value="contract upgrade">Contract upgrade</option>
-                  <option value="parameter">Ecosystem parameter</option>                  
+                  <option value="ecosystem parameter change">Ecosystem parameter</option>
                 </select>
               </div>
             </div>
