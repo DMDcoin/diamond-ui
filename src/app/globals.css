@@ -2249,6 +2249,7 @@ header .logo {
 .faq-answer a {
   font-weight: var(--weight-semibold);
   text-decoration: underline;
+  overflow-wrap: anywhere;
 }
 
 .faq-answer ol {
