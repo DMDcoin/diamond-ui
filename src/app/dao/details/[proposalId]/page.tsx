@@ -916,7 +916,7 @@ export default function ProposalDetailsPage() {
                       </button>
                     </div>
                   )}
-                  {proposal?.state === '4' && (
+                  {daoContext.canExecuteProposal(proposal) && (
                     <div className="execute-actions" style={{ marginTop: '0.75rem' }}>
                       <button className="primaryBtn" onClick={() => handleProposalExecution(proposal?.id)}>
                         Execute Proposal

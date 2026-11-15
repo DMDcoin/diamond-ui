@@ -96,12 +96,12 @@ export default function DaoPage() {
     } catch (err) {}
   }, [web3Context.web3Initialized]);
 
+  const isActionNeeded = (proposal: any) => proposal?.state === "3" || daoContext.canExecuteProposal(proposal);
+
   const daoMappedProposals = useMemo(() => {
     const src = activeTab === 'currentPhase'
       ? daoContext.activeProposals.filter((proposal: any) => proposal.state !== "3")
-      : daoContext.allDaoProposals.filter((proposal: any) => (
-          proposal.state === "3" || proposal.state === "4"
-        ));
+      : daoContext.allDaoProposals.filter(isActionNeeded);
 
     if (!src || !src.length) return [];
 
@@ -121,7 +121,7 @@ export default function DaoPage() {
         voted: false,
         status: daoContext.getStateString ? daoContext.getStateString(p.state) : (p.state || 'Unknown'),
         state: p.state,
-        actionsNeeded: p.state === "3" || p.state === "4"
+        actionsNeeded: isActionNeeded(p)
       };
       return mapped;
     });
@@ -183,11 +183,11 @@ export default function DaoPage() {
   const actionsNeededCount = useMemo(() => {
     try {
       if (!daoContext?.allDaoProposals) return 0;
-      return daoContext.allDaoProposals.filter((proposal: any) => proposal.state === "3" || proposal.state === "4").length;
+      return daoContext.allDaoProposals.filter(isActionNeeded).length;
     } catch {
       return 0;
     }
-  }, [daoContext?.allDaoProposals]);
+  }, [daoContext?.allDaoProposals, daoContext?.daoPhaseCount]);
 
   const votingPhase = useMemo(() => {
     const phase = daoContext?.daoPhase?.phase;
@@ -806,7 +806,7 @@ export default function DaoPage() {
                 </thead>
                 <tbody>
                   {paginatedProposals
-                    .filter((p) => p.state === '3' || p.state === '4')
+                    .filter((p) => p.actionsNeeded)
                     .map((p) => (
                     <tr key={p.id} onClick={() => handleDetailsClick(p.id)} style={{ cursor: 'pointer' }}>
                       <td>{p.date}</td>
