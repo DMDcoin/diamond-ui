@@ -2,13 +2,15 @@
 
 import React, { useEffect, useMemo, useState, startTransition } from "react";
 import Link from "next/link";
+import BigNumber from 'bignumber.js';
 import "./historic-proposals.css";
 import "../../styles/proposal-status.css";
 import { useRouter } from "next/navigation";
 import { useDaoContext } from '@/contexts/DAO';
 import { useWeb3Context } from '@/contexts/Web3';
 import { timestampToDate, truncateAddress } from '@/utils/common';
-import { formatPercent } from '@/utils/format';
+import { formatDmdFromWei, formatPercent } from '@/utils/format';
+import { formatDmdName } from '@/utils/dmdNaming';
 import { markdownToPlainText } from '@/components/MarkdownText';
 import ValidatorCell from '@/components/ValidatorCell';
 import { useDmdNamesForAddresses } from '@/hooks/useDmdNamesForAddresses';
@@ -18,22 +20,72 @@ import { toast } from 'react-toastify';
 type Proposal = {
   id: string;
   date: string;
+  timestamp: number | null;
   creator: string;
   fullCreatorAddress?: string;
   creatorColor?: string;
   title: string;
   type: string;
+  requestedWei: BigNumber | null;
   participation: number;
   exceeding: number;
   status: string;
 };
+
+type SortField = 'date' | 'creator' | 'title' | 'type' | 'requested' | 'participation' | 'exceeding' | 'status';
+
+type SortValue = string | number | BigNumber;
+
+const COLUMNS: { field: SortField; label: string; alignRight?: boolean }[] = [
+  { field: 'date', label: 'Date' },
+  { field: 'creator', label: 'Created by' },
+  { field: 'title', label: 'Title' },
+  { field: 'type', label: 'Type' },
+  { field: 'requested', label: 'Requested DMD', alignRight: true },
+  { field: 'participation', label: 'Participation' },
+  { field: 'exceeding', label: 'Exceeding Yes' },
+  { field: 'status', label: 'Result' },
+];
+
+const textCollator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
+
+const isEmptyCalldata = (calldata: unknown) =>
+  calldata === null || calldata === undefined || calldata === '' || calldata === '0x';
+
+const getRequestedWei = (proposal: any): BigNumber | null => {
+  const { targets, values, calldatas } = proposal || {};
+  if (!Array.isArray(targets) || !Array.isArray(values) || !Array.isArray(calldatas)) return null;
+  if (!targets.length || values.length !== targets.length || calldatas.length !== targets.length) return null;
+  let total = new BigNumber(0);
+  for (let i = 0; i < values.length; i++) {
+    const value = new BigNumber(values[i]);
+    if (!value.isFinite() || value.isNegative()) return null;
+    if (isEmptyCalldata(calldatas[i])) total = total.plus(value);
+  }
+  return total;
+};
+
+const formatRequested = (requestedWei: BigNumber | null) => {
+  if (!requestedWei) return 'Unavailable';
+  if (requestedWei.isZero()) return '—';
+  return formatDmdFromWei(requestedWei, { unit: false });
+};
+
+const compareSortValues = (a: SortValue, b: SortValue) => {
+  if (BigNumber.isBigNumber(a) && BigNumber.isBigNumber(b)) return a.comparedTo(b);
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  return textCollator.compare(String(a), String(b));
+};
+
+const compareNewestFirst = (a: Proposal, b: Proposal) =>
+  (b.timestamp ?? 0) - (a.timestamp ?? 0) || textCollator.compare(a.id, b.id);
 
 export default function HistoricProposalsPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("all");
-  const [sortField, setSortField] = useState<string | null>('date');
+  const [sortField, setSortField] = useState<SortField>('date');
   const [sortAsc, setSortAsc] = useState(false);
 
   const [indexingStatus, setIndexingStatus] = useState<string | null>(null);
@@ -46,7 +98,7 @@ export default function HistoricProposalsPage() {
   const daoContext = useDaoContext();
   const web3Context = useWeb3Context();
 
-  function onSort(field: string) {
+  function onSort(field: SortField) {
     if (sortField === field) {
       setSortAsc(!sortAsc);
     } else {
@@ -58,18 +110,23 @@ export default function HistoricProposalsPage() {
   // Map DAO context proposals to page Proposal shape
   const daoList = useMemo(() => {
     if (!daoContext || !daoContext.allDaoProposals) return [] as Proposal[];
-    return daoContext.allDaoProposals.map((p: any) => ({
-      id: p.id,
-      date: p.timestamp ? timestampToDate(p.timestamp) : (p.date || new Date().toISOString().slice(0,10)),
-      creator: truncateAddress(p.proposer || p.proposerAddress || ""),
-      fullCreatorAddress: p.proposer || p.proposerAddress || "",
-      creatorColor: undefined,
-      title: markdownToPlainText(p.title || (p.description ? String(p.description).split('\n')[0] : "")),
-      type: (p.proposalType || p.rawProposalType || 'open').toLowerCase(),
-      participation: Number(p.participation) || 0,
-      exceeding: Number(p.exceedingYes) || 0,
-      status: daoContext.getStateString ? daoContext.getStateString(p.state) : (p.state || 'Unknown')
-    }));
+    return daoContext.allDaoProposals.map((p: any): Proposal => {
+      const timestamp = Number(p.timestamp);
+      return {
+        id: p.id,
+        date: p.timestamp ? timestampToDate(p.timestamp) : (p.date || new Date().toISOString().slice(0,10)),
+        timestamp: Number.isFinite(timestamp) && timestamp > 0 ? timestamp : null,
+        creator: truncateAddress(p.proposer || p.proposerAddress || ""),
+        fullCreatorAddress: p.proposer || p.proposerAddress || "",
+        creatorColor: undefined,
+        title: markdownToPlainText(p.title || (p.description ? String(p.description).split('\n')[0] : "")),
+        type: (p.proposalType || p.rawProposalType || 'open').toLowerCase(),
+        requestedWei: getRequestedWei(p),
+        participation: Number(p.participation) || 0,
+        exceeding: Number(p.exceedingYes) || 0,
+        status: daoContext.getStateString ? daoContext.getStateString(p.state) : (p.state || 'Unknown')
+      };
+    });
   }, [daoContext?.allDaoProposals]);
 
   const creatorNames = useDmdNamesForAddresses(
@@ -77,6 +134,34 @@ export default function HistoricProposalsPage() {
   );
 
   const displayed = useMemo(() => {
+    const getSortValue = (p: Proposal, field: SortField): SortValue | null => {
+      switch (field) {
+        case 'date':
+          return p.timestamp;
+        case 'creator': {
+          const address = p.fullCreatorAddress || '';
+          if (!address) return null;
+          const name = creatorNames[address.toLowerCase()];
+          return name ? formatDmdName(name) : address;
+        }
+        case 'title':
+          return p.title.trim() || null;
+        case 'type':
+          return p.type || null;
+        case 'requested':
+          return p.requestedWei && p.requestedWei.isGreaterThan(0) ? p.requestedWei : null;
+        case 'participation':
+          return Number.isFinite(p.participation) ? p.participation : null;
+        case 'exceeding':
+          return Number.isFinite(p.exceeding) ? p.exceeding : null;
+        case 'status':
+          return p.status && p.status !== 'Unknown' ? p.status : null;
+      }
+    };
+
+    const getMissingRank = (p: Proposal, field: SortField) =>
+      field === 'requested' && !p.requestedWei ? 1 : 0;
+
     let list: Proposal[] = daoList.slice();
 
     // Search
@@ -90,23 +175,21 @@ export default function HistoricProposalsPage() {
       list = list.filter((p) => p.type.toLowerCase() === filter.toLowerCase());
     }
 
-    // Sorting
-    if (sortField) {
-      list = [...list].sort((a, b) => {
-        let A: any = (a as any)[sortField as keyof Proposal];
-        let B: any = (b as any)[sortField as keyof Proposal];
-        if (sortField === "date") {
-          A = new Date(a.date).getTime();
-          B = new Date(b.date).getTime();
-        }
-        if (A < B) return sortAsc ? -1 : 1;
-        if (A > B) return sortAsc ? 1 : -1;
-        return 0;
-      });
-    }
+    list.sort((a, b) => {
+      const valueA = getSortValue(a, sortField);
+      const valueB = getSortValue(b, sortField);
+      if (valueA === null || valueB === null) {
+        if (valueA !== null) return -1;
+        if (valueB !== null) return 1;
+        return getMissingRank(a, sortField) - getMissingRank(b, sortField) || compareNewestFirst(a, b);
+      }
+      const order = compareSortValues(valueA, valueB);
+      if (order) return sortAsc ? order : -order;
+      return compareNewestFirst(a, b);
+    });
 
     return list;
-  }, [daoList, search, filter, sortField, sortAsc]);
+  }, [daoList, search, filter, sortField, sortAsc, creatorNames]);
 
   // Reset to page 1 when filters/search change
   useEffect(() => {
@@ -227,13 +310,27 @@ export default function HistoricProposalsPage() {
             <table className="proposals-table">
               <thead>
                 <tr>
-                  <th onClick={() => onSort('date')}>Date <i className={`fas ${sortField === 'date' ? (sortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} /></th>
-                  <th>Created by</th>
-                  <th onClick={() => onSort('title')}>Title <i className={`fas ${sortField === 'title' ? (sortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} /></th>
-                  <th>Type</th>
-                  <th>Participation</th>
-                  <th>Exceeding Yes</th>
-                  <th>Result</th>
+                  {COLUMNS.map((column) => {
+                    const active = sortField === column.field;
+                    return (
+                      <th
+                        key={column.field}
+                        scope="col"
+                        tabIndex={0}
+                        className={`sortable${active ? ' sorted' : ''}${column.alignRight ? ' align-right' : ''}`}
+                        aria-sort={active ? (sortAsc ? 'ascending' : 'descending') : 'none'}
+                        onClick={() => onSort(column.field)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onSort(column.field);
+                          }
+                        }}
+                      >
+                        {column.label} <i className={`fas ${active ? (sortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} aria-hidden="true" />
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -265,6 +362,7 @@ export default function HistoricProposalsPage() {
                       <div className="proposal-title" title={p.title}><span>{p.title}</span></div>
                     </td>
                     <td><span className={`proposal-type ${(p.type || '').replace(/\s+/g, '-')}`}>{p.type}</span></td>
+                    <td className="requested-dmd">{formatRequested(p.requestedWei)}</td>
                     <td>
                       <div className="participation-bar">
                         <div className="participation-progress" style={{ width: `${p.participation}%` }} />
