@@ -757,12 +757,13 @@ const DaoContextProvider: React.FC<{ children: ReactNode }>  = ({ children }) =>
           return reject("Cannot propose in voting phase");
         }
         if (!web3Context.ensureWalletConnection()) return reject("Wallet not connected");
-        if (await getProposalExists(targets, values, callDatas, description)) {
-          toast.warn("Proposal already exists");
-          return reject("Proposal already exists");
-        }
 
         try {
+          if (await getProposalExists(targets, values, callDatas, description)) {
+            toast.warn("Proposal already exists");
+            return reject("Proposal already exists");
+          }
+
           // Pre-validate provider readiness
           const ready = await web3Context.ensureProviderReady();
           if (!ready) {return reject("Provider not ready");}

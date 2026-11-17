@@ -65,6 +65,7 @@ const BALANCES_TIP = "Governance Pot: funds available in the main DAO treasury. 
 const REQUIRED = "Please fill out this field.";
 const FILL_AMOUNT_REQUIRED = "Amount is required. Enter the DMD amount to send from the Governance Pot to the Low Majority Contract.";
 const FILL_AMOUNT_INVALID = "Enter a valid DMD amount using digits and a decimal point, e.g. 1000 or 0.5.";
+const AMOUNT_NOT_POSITIVE = "Amount must be greater than 0 DMD.";
 const GAS_NO_WALLET = "Please connect your wallet first";
 const GAS_INCOMPLETE = "Complete the required fields to estimate gas.";
 const GAS_FAILED = "Gas estimation failed. Check the proposal details and try again.";
@@ -77,6 +78,7 @@ const GAS_REVERTS: Record<string, string> = {
 };
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const HEX_DATA_PATTERN = /^0x([0-9a-fA-F]{2})+$/;
+const AMOUNT_PATTERN = /^-?(\d+(\.\d{0,18})?|\.\d{1,18})$/;
 const DEFAULT_PARAMETER = "Staking:Delegator Min. Stake:setDelegatorMinStake(uint256)";
 
 type ProposalType = "open" | "contract-upgrade" | "low-majority-fill" | "ecosystem-parameter-change" | "username-moderation";
@@ -97,6 +99,15 @@ const isHttpUrl = (value: string) => {
 };
 
 const isAddress = (value: string) => isValidAddress(value) && Web3.utils.isAddress(value);
+
+const isBlankPayout = (payout: Payout) => !payout.target.trim() && !payout.amount.trim();
+
+const amountIssue = (value: string): "empty" | "invalid" | "not-positive" | null => {
+  const amount = value.trim();
+  if (!amount) return "empty";
+  if (!AMOUNT_PATTERN.test(amount)) return "invalid";
+  return BigNumber(amount).isGreaterThan(0) ? null : "not-positive";
+};
 
 const decode = (contractsManager: any, target: string, calldata: string): Decoded => {
   if (!isAddress(target) || !HEX_DATA_PATTERN.test(calldata)) return null;
@@ -281,26 +292,27 @@ export default function CreateProposalPage() {
 
   const totalRequested = useMemo(() => {
     if (!isPayoutType) return BigNumber(0);
-    return payouts.reduce((sum, payout) => {
-      const amount = BigNumber(payout.amount);
-      return payout.amount && !isNaN(Number(payout.amount)) && amount.isFinite() ? sum.plus(amount) : sum;
-    }, BigNumber(0));
+    return payouts.reduce((sum, payout) => (amountIssue(payout.amount) ? sum : sum.plus(BigNumber(payout.amount.trim()))), BigNumber(0));
   }, [payouts, isPayoutType]);
 
   const lowMajorityBalance = daoContext.lowMajorityContractBalance;
   const governanceBalance = daoContext.governancePotBalance;
   const withinLowMajority = totalRequested.isLessThanOrEqualTo(lowMajorityBalance);
+  const paysLowMajority = proposalType === "open" && Boolean(lowMajorityContractAddress)
+    && payouts.some((payout) => !isBlankPayout(payout) && payout.target.toLowerCase() === lowMajorityContractAddress.toLowerCase());
+  const lowMajorityEligible = proposalType === "open" && withinLowMajority && !paysLowMajority;
   const rawType = proposalType === "ecosystem-parameter-change"
     ? "2"
     : proposalType === "contract-upgrade" || proposalType === "username-moderation"
       ? "1"
-      : proposalType === "open" && withinLowMajority ? "0" : "3";
+      : lowMajorityEligible ? "0" : "3";
   const lowMajorityRule = rawType === "0" || rawType === "2";
   const fundingSource = isPayoutType && totalRequested.isGreaterThan(0)
-    ? (proposalType === "open" && withinLowMajority ? "low-majority" : "governance")
+    ? (lowMajorityEligible ? "low-majority" : "governance")
     : null;
   const exceedsGovernancePot = fundingSource === "governance" && totalRequested.isGreaterThan(governanceBalance);
   const parameterImpact = proposalType === "ecosystem-parameter-change" ? getProposalImpact(epcFunction) : null;
+  const epcLoading = proposalType === "ecosystem-parameter-change" && !epcLoadFailed && (epcCurrent === null || epcRange === null);
 
   const decodedCalls = useMemo(
     () => (proposalType === "contract-upgrade" ? calls.map((call) => decode(web3Context.contractsManager, call.contractAddress, call.contractCalldata)) : []),
@@ -317,19 +329,18 @@ export default function CreateProposalPage() {
     if (!title) e["proposal-title"] = REQUIRED;
     if (!description) e["proposal-description"] = REQUIRED;
 
-    if (isPayoutType) {
-      const anyFilled = payouts.some((payout) => payout.target !== "" || payout.amount !== "");
-      if (proposalType === "low-majority-fill" || anyFilled) {
-        payouts.forEach((payout, index) => {
-          const fixedTarget = proposalType === "low-majority-fill" && index === 0;
-          if (!fixedTarget && !isAddress(payout.target)) e[`payout-${index}-target`] = `Invalid Transaction ${index + 1} payout address`;
-          if (!payout.amount || !(Number(payout.amount) >= 0)) {
-            e[`payout-${index}-amount`] = proposalType === "low-majority-fill"
-              ? (payout.amount ? FILL_AMOUNT_INVALID : FILL_AMOUNT_REQUIRED)
-              : `Invalid Transaction ${index + 1} payout amount`;
-          }
-        });
-      }
+    if (proposalType === "low-majority-fill") {
+      const issue = amountIssue(payouts[0]?.amount || "");
+      if (issue) e["payout-0-amount"] = issue === "empty" ? FILL_AMOUNT_REQUIRED : issue === "invalid" ? FILL_AMOUNT_INVALID : AMOUNT_NOT_POSITIVE;
+    }
+
+    if (proposalType === "open") {
+      payouts.forEach((payout, index) => {
+        if (isBlankPayout(payout)) return;
+        if (!isAddress(payout.target)) e[`payout-${index}-target`] = `Invalid Transaction ${index + 1} payout address`;
+        const issue = amountIssue(payout.amount);
+        if (issue) e[`payout-${index}-amount`] = issue === "invalid" ? `Invalid Transaction ${index + 1} payout amount` : AMOUNT_NOT_POSITIVE;
+      });
     }
 
     if (proposalType === "contract-upgrade") {
@@ -342,7 +353,7 @@ export default function CreateProposalPage() {
 
     if (proposalType === "ecosystem-parameter-change") {
       if (epcLoadFailed || (epcCurrent !== null && epcRange !== null && epcOptions.length === 0)) e["epc-proposed"] = `Invalid ${epcSetter} value`;
-      else if (!epcOptions.includes(epcProposed)) e["epc-proposed"] = "Cannot propose the same value";
+      else if (!epcLoading && !epcOptions.includes(epcProposed)) e["epc-proposed"] = "Cannot propose the same value";
     }
 
     if (proposalType === "username-moderation") {
@@ -357,7 +368,7 @@ export default function CreateProposalPage() {
       if (umReasonCategory === "other" && !umEvidence.trim()) e["um-evidence"] = "Evidence/Notes is required for \"Other\"";
     }
     return e;
-  }, [title, description, isPayoutType, proposalType, payouts, calls, epcLoadFailed, epcCurrent, epcRange, epcOptions, epcProposed, epcSetter, moderationName, umOwnerAddress, umReasonCategory, umEvidence]);
+  }, [title, description, proposalType, payouts, calls, epcLoadFailed, epcCurrent, epcRange, epcOptions, epcProposed, epcSetter, epcLoading, moderationName, umOwnerAddress, umReasonCategory, umEvidence]);
 
   const errorCount = Object.keys(errors).length;
   const shown = (id: string) => (submitAttempted || touched[id] ? errors[id] : undefined);
@@ -386,15 +397,15 @@ export default function CreateProposalPage() {
     let descriptionSuffix = "";
 
     if (isPayoutType) {
-      const anyFilled = payouts.some((payout) => payout.target !== "" || payout.amount !== "");
-      if (proposalType === "open" && !anyFilled) {
+      const rows = proposalType === "open" ? payouts.filter((payout) => !isBlankPayout(payout)) : payouts;
+      if (!rows.length) {
         targets = [ZERO_ADDRESS];
         values = ["0"];
         calldatas = ["0x"];
       } else {
-        targets = payouts.map((payout, index) => (proposalType === "low-majority-fill" && index === 0 ? lowMajorityContractAddress : payout.target));
-        values = payouts.map((payout) => BigNumber(payout.amount).multipliedBy(10 ** 18).toString());
-        calldatas = payouts.map(() => "0x");
+        targets = rows.map((payout, index) => (proposalType === "low-majority-fill" && index === 0 ? lowMajorityContractAddress : payout.target));
+        values = rows.map((payout) => BigNumber(payout.amount.trim()).multipliedBy(10 ** 18).toString());
+        calldatas = rows.map(() => "0x");
       }
     } else if (proposalType === "contract-upgrade") {
       targets = calls.map((call) => call.contractAddress);
@@ -437,7 +448,7 @@ export default function CreateProposalPage() {
   useEffect(() => {
     const dao = web3Context.contractsManager?.daoContract;
     const rpc = web3Context.readonlyWeb3;
-    if (!walletAddress || errorCount > 0 || phase !== "0" || !dao || !rpc) {
+    if (!walletAddress || errorCount > 0 || epcLoading || phase !== "0" || !dao || !rpc) {
       setGas({ state: "idle" });
       return;
     }
@@ -464,7 +475,7 @@ export default function CreateProposalPage() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [walletAddress, errorCount, phase, web3Context.contractsManager, web3Context.readonlyWeb3, proposalType, title, description, discussionUrl, payouts, calls, epcKey, epcProposed, umUsername, umOwnerAddress, umReasonCategory, umEvidence, daoContext.proposalFee, daoContext.lowMajorityContractBalance, lowMajorityContractAddress, gasRetry]);
+  }, [walletAddress, errorCount, epcLoading, phase, web3Context.contractsManager, web3Context.readonlyWeb3, proposalType, title, description, discussionUrl, payouts, calls, epcKey, epcProposed, umUsername, umOwnerAddress, umReasonCategory, umEvidence, daoContext.proposalFee, daoContext.lowMajorityContractBalance, lowMajorityContractAddress, gasRetry]);
 
   useEffect(() => {
     let frame = 0;
@@ -554,6 +565,7 @@ export default function CreateProposalPage() {
       setFocusRequest((n) => n + 1);
       return;
     }
+    if (epcLoading) return;
 
     if (proposalType === "ecosystem-parameter-change") {
       const contract = getContractByName(epcContractName);
@@ -616,9 +628,9 @@ export default function CreateProposalPage() {
     ? `${formatDmdFromWei(totalDaoStake.multipliedBy(thresholdPercent).dividedBy(100))} (${formatPercent(thresholdPercent)} required)`
     : `${formatPercent(thresholdPercent)} required`;
   const submitDisabled = submitting;
-  const fundsWarning = (proposalType === "open" && !withinLowMajority && daoContext.notEnoughGovernanceFunds) || (proposalType === "low-majority-fill" && daoContext.notEnoughGovernanceFunds)
+  const fundsWarning = (proposalType === "open" && !lowMajorityEligible && daoContext.notEnoughGovernanceFunds) || (proposalType === "low-majority-fill" && daoContext.notEnoughGovernanceFunds)
     ? "governance"
-    : proposalType === "open" && withinLowMajority && daoContext.notEnoughLowMajorityFunds
+    : lowMajorityEligible && daoContext.notEnoughLowMajorityFunds
       ? "low-majority"
       : null;
   const validDiscussionUrl = discussionUrl.trim() && isHttpUrl(discussionUrl.trim()) ? discussionUrl.trim() : "";
@@ -754,7 +766,6 @@ export default function CreateProposalPage() {
   );
 
   const renderParameterChange = () => {
-    const loading = !epcLoadFailed && (epcCurrent === null || epcRange === null);
     const currentLabel = epcCurrent !== null ? formatParameterValue(epcFunction, epcMethodName, epcCurrent) : epcLoadFailed ? "—" : "…";
     const proposedError = shown("epc-proposed");
     return (
@@ -798,12 +809,12 @@ export default function CreateProposalPage() {
                   value={epcProposed}
                   onChange={(e) => setEpcProposed(e.target.value)}
                   onBlur={() => touch("epc-proposed")}
-                  disabled={loading || epcOptions.length === 0}
+                  disabled={epcLoading || epcOptions.length === 0}
                   aria-invalid={Boolean(proposedError)}
                   aria-describedby={proposedError ? "epc-proposed-error" : undefined}
                 >
-                  {loading || !proposedChoices.length ? (
-                    <option value="">{loading ? "…" : "—"}</option>
+                  {epcLoading || !proposedChoices.length ? (
+                    <option value="">{epcLoading ? "…" : "—"}</option>
                   ) : (
                     proposedChoices.map((value) => (
                       <option key={value} value={value} disabled={!epcOptions.includes(value)}>{formatParameterValue(epcFunction, epcMethodName, value)}</option>
@@ -1024,7 +1035,7 @@ export default function CreateProposalPage() {
                     <div className="stat-item participation">Exceeding Yes: {requirement}</div>
                     <div className="stat-item participation">Participation: {requirement}</div>
                   </div>
-                  {proposalType === "open" && lowMajorityContractAddress && (
+                  {proposalType === "open" && lowMajorityContractAddress && !paysLowMajority && (
                     <div className={styles.dynamic}>
                       <div className={`voting-status-message ${withinLowMajority ? "active" : "votingfinished"}`}>
                         <i className={`fas ${withinLowMajority ? "fa-check-circle" : "fa-exclamation-triangle"}`} aria-hidden="true" />
@@ -1044,7 +1055,7 @@ export default function CreateProposalPage() {
                       )}
                     </div>
                   )}
-                  {proposalType === "low-majority-fill" && (
+                  {(proposalType === "low-majority-fill" || paysLowMajority) && (
                     <div className={`voting-status-message active ${styles.dynamic}`}>
                       <i className="fas fa-info-circle" aria-hidden="true" />
                       <p>Funds the Low Majority Contract for future proposals. This fill proposal requires High Majority voting rules.</p>

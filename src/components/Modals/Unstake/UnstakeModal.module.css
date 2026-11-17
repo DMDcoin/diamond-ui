@@ -136,6 +136,12 @@
   line-height: var(--leading-normal);
 }
 
+.fieldError {
+  color: #ffa726;
+  font-size: 0.8125rem;
+  line-height: var(--leading-normal);
+}
+
 .formInput {
   width: 100%;
   padding: var(--space-16);
@@ -414,6 +420,10 @@
 
 :global(body.light-theme) .invalid:focus {
   box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+}
+
+:global(body.light-theme) .fieldError {
+  color: #b45309;
 }
 
 :global(body.light-theme) .maxButton {
