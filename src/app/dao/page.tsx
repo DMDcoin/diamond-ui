@@ -17,6 +17,7 @@ import InfoTooltip from '@/components/InfoTooltip';
 import { markdownToPlainText } from '@/components/MarkdownText';
 import ValidatorCell from '@/components/ValidatorCell';
 import { useDmdNamesForAddresses } from '@/hooks/useDmdNamesForAddresses';
+import { formatDmdName } from '@/utils/dmdNaming';
 import copy from 'copy-to-clipboard';
 
 type ProposalType = "parameter" | "open" | "contract upgrade";
@@ -24,6 +25,7 @@ type ProposalType = "parameter" | "open" | "contract upgrade";
 type Proposal = {
   id: string;
   date: string;
+  timestamp?: number | null;
   creator: string;
   fullCreatorAddress?: string;
   creatorColor?: string;
@@ -38,6 +40,37 @@ type Proposal = {
   actionsNeeded?: boolean;
 };
 
+type SortField = 'date' | 'creator' | 'title' | 'type' | 'participation' | 'exceeding' | 'voted' | 'status';
+
+type TableColumn = { field: SortField | null; label: string };
+
+const CURRENT_PHASE_COLUMNS: TableColumn[] = [
+  { field: 'date', label: 'Date' },
+  { field: 'creator', label: 'Created by' },
+  { field: 'title', label: 'Title' },
+  { field: 'type', label: 'Type' },
+  { field: 'participation', label: 'Participation' },
+  { field: 'exceeding', label: 'Exceeding Yes' },
+  { field: 'voted', label: 'Voted' },
+  { field: 'status', label: 'Status' },
+];
+
+const ACTIONS_NEEDED_COLUMNS: TableColumn[] = [
+  { field: 'date', label: 'Date' },
+  { field: 'creator', label: 'Created by' },
+  { field: 'title', label: 'Title' },
+  { field: 'type', label: 'Type' },
+  { field: 'participation', label: 'Participation' },
+  { field: 'exceeding', label: 'Exceeding Yes' },
+  { field: null, label: 'Action' },
+  { field: 'status', label: 'Status' },
+];
+
+const textCollator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
+
+const compareNewestFirst = (a: Proposal, b: Proposal) =>
+  (b.timestamp ?? 0) - (a.timestamp ?? 0) || textCollator.compare(a.id, b.id);
+
 const initialProposals: Proposal[] = [];
 
 export default function DaoPage() {
@@ -48,7 +81,7 @@ export default function DaoPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("all");
   const [filterQuery, setFilterQuery] = useState<string>('');
-  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
 
   const [countdown, setCountdown] = useState({ days: "02", hours: "18", minutes: "45", seconds: "32" });
@@ -107,9 +140,11 @@ export default function DaoPage() {
 
     return src.map((p: any) => {
       const fullAddress = p.proposer || p.proposerAddress || "";
+      const timestamp = Number(p.timestamp);
       const mapped: Proposal = {
         id: p.id,
         date: (p.timestamp ? timestampToDate(p.timestamp) : new Date().toISOString().slice(0,10)),
+        timestamp: Number.isFinite(timestamp) && timestamp > 0 ? timestamp : null,
         creator: truncateAddress(fullAddress),
         fullCreatorAddress: fullAddress,
         creatorColor: undefined,
@@ -234,22 +269,57 @@ export default function DaoPage() {
       list = list.filter((p) => String(p.type).toLowerCase().includes(filter.toLowerCase()));
     }
 
-    if (sortField) {
-      list = [...list].sort((a, b) => {
-        let A: any = (a as any)[sortField as keyof Proposal];
-        let B: any = (b as any)[sortField as keyof Proposal];
-        if (sortField === "date") {
-          A = new Date(a.date).getTime();
-          B = new Date(b.date).getTime();
+    list = list.map((p) => ({ ...p, voted: !!votedByMe[p.id] }));
+
+    const columns = activeTab === 'currentPhase' ? CURRENT_PHASE_COLUMNS : ACTIONS_NEEDED_COLUMNS;
+    const activeSortField = sortField && columns.some((column) => column.field === sortField) ? sortField : null;
+
+    if (activeSortField) {
+      const getSortValue = (p: Proposal): string | number | null => {
+        switch (activeSortField) {
+          case 'date':
+            return p.timestamp ?? null;
+          case 'creator': {
+            const address = p.fullCreatorAddress || '';
+            if (!address) return p.creator || null;
+            const name = creatorNames[address.toLowerCase()];
+            return name ? formatDmdName(name) : address;
+          }
+          case 'title':
+            return p.title.trim() || null;
+          case 'type':
+            return p.type ? String(p.type) : null;
+          case 'participation':
+            return Number.isFinite(p.participation) ? p.participation : null;
+          case 'exceeding':
+            return Number.isFinite(p.exceeding) ? p.exceeding : null;
+          case 'voted':
+            return p.voted ? 1 : 0;
+          case 'status': {
+            const status = p.status === 'Active' && votingPhase ? 'Voting' : p.status;
+            return status && status !== 'Unknown' ? status : null;
+          }
         }
-        if (A < B) return sortAsc ? -1 : 1;
-        if (A > B) return sortAsc ? 1 : -1;
-        return 0;
+      };
+
+      list = [...list].sort((a, b) => {
+        const valueA = getSortValue(a);
+        const valueB = getSortValue(b);
+        if (valueA === null || valueB === null) {
+          if (valueA !== null) return -1;
+          if (valueB !== null) return 1;
+          return compareNewestFirst(a, b);
+        }
+        const order = typeof valueA === 'number' && typeof valueB === 'number'
+          ? valueA - valueB
+          : textCollator.compare(String(valueA), String(valueB));
+        if (order) return sortAsc ? order : -order;
+        return compareNewestFirst(a, b);
       });
     }
 
-    return list.map((p) => ({ ...p, voted: !!votedByMe[p.id] }));
-  }, [daoMappedProposals, localProposals, filterQuery, search, filter, sortField, sortAsc, web3Context.userWallet, daoContext, votedByMe]);
+    return list;
+  }, [daoMappedProposals, localProposals, filterQuery, search, filter, sortField, sortAsc, activeTab, creatorNames, votingPhase, web3Context.userWallet, daoContext, votedByMe]);
 
   // Paginated proposals
   const paginatedProposals = useMemo(() => {
@@ -263,7 +333,7 @@ export default function DaoPage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, filter, activeTab]);
+  }, [search, filter, activeTab, sortField, sortAsc]);
 
   const handleDetailsClick = (proposalId: string) => {
     startTransition(() => {
@@ -332,13 +402,39 @@ export default function DaoPage() {
   }, [daoContext.allDaoProposals, daoContext.daoPhaseCount]);
 
   // Sorting toggle handler
-  function onSort(field: string) {
+  function onSort(field: SortField) {
     if (sortField === field) {
       setSortAsc(!sortAsc);
     } else {
       setSortField(field);
       setSortAsc(true);
     }
+  }
+
+  function renderColumnHeader(column: TableColumn) {
+    const field = column.field;
+    if (!field) {
+      return <th key={column.label} scope="col">{column.label}</th>;
+    }
+    const active = sortField === field;
+    return (
+      <th
+        key={field}
+        scope="col"
+        tabIndex={0}
+        className={`sortable${active ? ' sorted' : ''}`}
+        aria-sort={active ? (sortAsc ? 'ascending' : 'descending') : 'none'}
+        onClick={() => onSort(field)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSort(field);
+          }
+        }}
+      >
+        {column.label} <i className={`fas ${active ? (sortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} aria-hidden="true" />
+      </th>
+    );
   }
 
   function openVoteModal(p: Proposal) {
@@ -715,16 +811,7 @@ export default function DaoPage() {
             <div className="proposals-table-container">
               <table className="proposals-table">
                 <thead>
-                  <tr>
-                    <th onClick={() => onSort("date")}>Date <i className={`fas ${sortField === "date" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("creator")}>Created by <i className={`fas ${sortField === "creator" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("title")}>Title <i className={`fas ${sortField === "title" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("type")}>Type <i className={`fas ${sortField === "type" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("participation")}>Participation <i className={`fas ${sortField === "participation" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("exceeding")}>Exceeding Yes <i className={`fas ${sortField === "exceeding" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("voted")}>Voted <i className={`fas ${sortField === "voted" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                    <th onClick={() => onSort("status")}>Status <i className={`fas ${sortField === "status" ? (sortAsc ? "fa-sort-up" : "fa-sort-down") : "fa-sort"}`} /></th>
-                  </tr>
+                  <tr>{CURRENT_PHASE_COLUMNS.map(renderColumnHeader)}</tr>
                 </thead>
                 <tbody>
                   {paginatedProposals.map((p) => (
@@ -793,16 +880,7 @@ export default function DaoPage() {
             <div className="proposals-table-container">
               <table className="proposals-table">
                 <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Created by</th>
-                    <th>Title</th>
-                    <th>Type</th>
-                    <th>Participation</th>
-                    <th>Exceeding Yes</th>
-                    <th>Action</th>
-                    <th>Status</th>
-                  </tr>
+                  <tr>{ACTIONS_NEEDED_COLUMNS.map(renderColumnHeader)}</tr>
                 </thead>
                 <tbody>
                   {paginatedProposals
