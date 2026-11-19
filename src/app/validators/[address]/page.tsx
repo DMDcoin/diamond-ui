@@ -37,6 +37,24 @@ import { useDmdNamesForAddresses } from '@/hooks/useDmdNamesForAddresses';
 import { formatDmdName } from '@/utils/dmdNaming';
 import { formatApy, formatCount, formatDmd, formatDmdFromWei, formatPercent, formatRpt30, formatSaturation } from '@/utils/format';
 
+type DelegateSortField = 'delegator' | 'stake' | 'percentage' | 'since';
+
+type DelegateSortValue = string | number | BigNumber;
+
+const DELEGATE_COLUMNS: { field: DelegateSortField; label: string }[] = [
+  { field: 'delegator', label: 'Delegator' },
+  { field: 'stake', label: 'Delegated Stake' },
+  { field: 'percentage', label: 'Percentage' },
+  { field: 'since', label: 'Since' },
+];
+
+const compareDelegateValues = (a: DelegateSortValue, b: DelegateSortValue) => {
+  if (BigNumber.isBigNumber(a) && BigNumber.isBigNumber(b)) return a.comparedTo(b);
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  const textA = String(a);
+  const textB = String(b);
+  return textA < textB ? -1 : textA > textB ? 1 : 0;
+};
 
 export default function ValidatorDetails() {
   const params = useParams();
@@ -72,6 +90,8 @@ export default function ValidatorDetails() {
   const [chartShowOwnerShare, setChartShowOwnerShare] = useState(true);
   const [delegationStartDates, setDelegationStartDates] = useState<DelegationStartDates>({});
   const [creationTimestamp, setCreationTimestamp] = useState<number | null>(null);
+  const [delegateSortField, setDelegateSortField] = useState<DelegateSortField | null>(null);
+  const [delegateSortAsc, setDelegateSortAsc] = useState(true);
 
   // Effects
   useEffect(() => {
@@ -185,6 +205,51 @@ export default function ValidatorDetails() {
     const timestamp = delegationStartDates[delegatorAddress?.toLowerCase()];
     return timestamp ? timestampToDate(String(timestamp)) : 'Unknown';
   };
+
+  const onDelegateSort = (field: DelegateSortField) => {
+    if (delegateSortField === field) {
+      setDelegateSortAsc(!delegateSortAsc);
+    } else {
+      setDelegateSortField(field);
+      setDelegateSortAsc(true);
+    }
+  };
+
+  const delegatePoolStake = BigNumber(pool?.totalStake || 0).dividedBy(10 ** 18);
+  const delegateRows = ((pool?.delegators || []) as any[]).map((delegator, index) => {
+    const amount = BigNumber(delegator.amount).dividedBy(10 ** 18);
+    const percentage = delegatePoolStake.isGreaterThan(0) ? amount.dividedBy(delegatePoolStake).multipliedBy(100) : new BigNumber(0);
+    const sinceTimestamp = isPrivacyMode ? null : delegationStartDates[String(delegator.address || '').toLowerCase()] || null;
+    return { delegator, index, amount, percentage, sinceTimestamp };
+  });
+
+  if (delegateSortField) {
+    const getDelegateSortValue = (row: typeof delegateRows[number]): DelegateSortValue | null => {
+      switch (delegateSortField) {
+        case 'delegator':
+          return row.delegator.address ? String(row.delegator.address).toLowerCase() : null;
+        case 'stake':
+          return row.amount.isFinite() ? row.amount : null;
+        case 'percentage':
+          return row.percentage.isFinite() ? row.percentage : null;
+        case 'since':
+          return row.sinceTimestamp;
+      }
+    };
+
+    delegateRows.sort((a, b) => {
+      const valueA = getDelegateSortValue(a);
+      const valueB = getDelegateSortValue(b);
+      if (valueA === null || valueB === null) {
+        if (valueA !== null) return -1;
+        if (valueB !== null) return 1;
+        return a.index - b.index;
+      }
+      const order = compareDelegateValues(valueA, valueB);
+      if (order) return delegateSortAsc ? order : -order;
+      return a.index - b.index;
+    });
+  }
 
   // Monthly rewards: validator owner share (VOS30) plus the rewards earned on the
   // validator's own staked DMD (own stake earns at the RpT30 rate per 1,000 DMD).
@@ -766,10 +831,27 @@ export default function ValidatorDetails() {
             <thead>
               {pool && pool.delegators && pool.delegators.length ? (
                 <tr>
-                  <th>Delegator <i className="fas fa-sort"></i></th>
-                  <th>Delegated Stake <i className="fas fa-sort"></i></th>
-                  <th>Percentage <i className="fas fa-sort"></i></th>
-                  <th>Since <i className="fas fa-sort"></i></th>
+                  {DELEGATE_COLUMNS.map((column) => {
+                    const active = delegateSortField === column.field;
+                    return (
+                      <th
+                        key={column.field}
+                        scope="col"
+                        tabIndex={0}
+                        className={`sortable${active ? ' sorted' : ''}`}
+                        aria-sort={active ? (delegateSortAsc ? 'ascending' : 'descending') : 'none'}
+                        onClick={() => onDelegateSort(column.field)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onDelegateSort(column.field);
+                          }
+                        }}
+                      >
+                        {column.label} <i className={`fas ${active ? (delegateSortAsc ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`} aria-hidden="true"></i>
+                      </th>
+                    );
+                  })}
                 </tr>
               ) : (
                 <tr>
@@ -778,26 +860,20 @@ export default function ValidatorDetails() {
               )}
             </thead>
             <tbody>
-              {pool && pool.delegators && pool.delegators.length ? 
-                pool.delegators.map((delegator: any, i: number) => {
-                  const delegatedAmount = BigNumber(delegator.amount).dividedBy(10**18);
-                  const totalStake = BigNumber(pool.totalStake).dividedBy(10**18);
-                  const percentage = totalStake.isGreaterThan(0) ? delegatedAmount.dividedBy(totalStake).multipliedBy(100) : new BigNumber(0);
-                  
-                  return (
-                    <tr key={i}>
+              {pool && pool.delegators && pool.delegators.length ?
+                delegateRows.map(({ delegator, index, amount, percentage }) => (
+                    <tr key={index}>
                       <td>
                         <div className="delegate-address">
-                          <div className="address-icon" style={{backgroundColor: `hsl(${(i * 137.5) % 360}, 50%, 50%)`}}></div>
+                          <div className="address-icon" style={{backgroundColor: `hsl(${(index * 137.5) % 360}, 50%, 50%)`}}></div>
                           <span>{truncateAddress(delegator.address)}</span>
                         </div>
                       </td>
-                      <td>{formatDmd(delegatedAmount)}</td>
+                      <td>{formatDmd(amount)}</td>
                       <td>{formatPercent(percentage)}</td>
                       <td>{delegationSince(delegator.address)}</td>
                     </tr>
-                  );
-                }) : (
+                )) : (
                   <tr>
                     <td colSpan={4}>No delegations found</td>
                   </tr>

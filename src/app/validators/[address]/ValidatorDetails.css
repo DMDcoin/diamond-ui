@@ -1014,6 +1014,21 @@ body.light-theme .performance-info {
   opacity: 1;
 }
 
+.validator-detail-page .delegates-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.validator-detail-page .delegates-table th.sortable:hover i,
+.validator-detail-page .delegates-table th.sorted i {
+  opacity: 1;
+}
+
+.validator-detail-page .delegates-table th.sortable:focus-visible {
+  outline: var(--border-width-thick) solid var(--accent);
+  outline-offset: -2px;
+}
+
 .delegates-table td {
   padding: var(--space-20);
   border-bottom: var(--border-width) solid rgba(255, 255, 255, 0.05);
