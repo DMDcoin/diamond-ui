@@ -44,12 +44,21 @@ import Rpt30Cell from '@/components/Rpt30Cell';
 import OrderedStakeTag, { isOrderClaimable } from '@/components/OrderedStakeTag';
 import ProfileIdentityHeader from '@/components/DMDNames/ProfileIdentityHeader';
 import { useWalletDmdName } from '@/hooks/useWalletDmdName';
+import { useDmdNamesForAddresses } from '@/hooks/useDmdNamesForAddresses';
+import type { Pool } from '@/contexts/types/models';
+
+const getPoolStatus = (pool: Pool, abandoned: boolean) => {
+  if (abandoned) return { label: 'Abandoned', className: 'status-abandoned' };
+  if (pool.isActive) return { label: 'Active', className: 'active' };
+  if (pool.isToBeElected || pool.isPendingValidator) return { label: 'Standby', className: 'valid' };
+  return { label: 'Invalid', className: 'invalid' };
+};
 
 export default function ProfilePage() {
   const router = useRouter();
   const { userWallet } = useWeb3Context();
   const walletDmdName = useWalletDmdName();
-  const { myPool, pools, totalDaoStake, myTotalStake, myCandidateStake, delegatorMinStake, stakingEpoch } = useStakingContext();
+  const { myPool, pools, totalDaoStake, myTotalStake, myCandidateStake, delegatorMinStake, stakingEpoch, abandonedPools } = useStakingContext();
   const isPrivacyMode = useIsPrivacyMode();
   const { isConnected } = useWalletConnect();
   const { allDaoProposals } = useDaoContext();
@@ -113,6 +122,15 @@ export default function ProfilePage() {
       })
       .slice(0, 5);
   }, [eligibleTopValidators, topValidatorStatsMap]);
+
+  const validatorNames = useDmdNamesForAddresses(
+    [...stakedValidators, ...topValidators].map(pool => pool.stakingAddress).filter(Boolean)
+  );
+
+  const copyStakingAddress = (address: string) => {
+    copy(address);
+    toast.success('Copied staking address');
+  };
 
   // Redirect to home if wallet is not connected
   useEffect(() => {
@@ -441,6 +459,7 @@ export default function ProfilePage() {
                 <table className="validators-table">
                   <thead>
                     <tr>
+                      <th>Status</th>
                       <th>Validator</th>
                       {!isPrivacyMode && <th>RpT30</th>}
                       {!isPrivacyMode && <th>APY</th>}
@@ -458,13 +477,21 @@ export default function ProfilePage() {
                         const rewards30d = perPoolRewards30d[validator.stakingAddress.toLowerCase()];
                         const hasStake = BigNumber(validator.myStake ?? 0).isGreaterThan(0);
                         const isClaimable = isOrderClaimable(validator, stakingEpoch);
+                        const status = getPoolStatus(validator, !!abandonedPools[validator.stakingAddress.toLowerCase()]);
                         return (
                           <tr
                             key={validator.stakingAddress}
                             className="dp2-clickable-row"
                             onClick={() => openValidator(validator.stakingAddress)}
                           >
-                            <td><ValidatorCell address={validator.stakingAddress} /></td>
+                            <td><span className={`status-badge ${status.className}`}>{status.label}</span></td>
+                            <td>
+                              <ValidatorCell
+                                address={validator.stakingAddress}
+                                name={validatorNames[validator.stakingAddress.toLowerCase()]}
+                                onCopy={copyStakingAddress}
+                              />
+                            </td>
                             {!isPrivacyMode && <td>{stats ? <Rpt30Cell rpt30={stats.rpt30} rpt30_delta={stats.rpt30_delta} /> : '—'}</td>}
                             {!isPrivacyMode && <td>{formatApy(stats?.estimated_apy)}</td>}
                             {!isPrivacyMode && <td>{stats ? <Aep30Badge aep30={stats.aep30} /> : '—'}</td>}
@@ -486,7 +513,7 @@ export default function ProfilePage() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan={isPrivacyMode ? 4 : 8} style={{ textAlign: 'center', padding: '2rem' }}>
+                        <td colSpan={isPrivacyMode ? 5 : 9} style={{ textAlign: 'center', padding: '2rem' }}>
                           <span className="dp2-empty-text">You haven't staked with any validators yet</span>
                         </td>
                       </tr>
@@ -495,7 +522,7 @@ export default function ProfilePage() {
                   {stakedValidators.length > 0 && (
                     <tfoot>
                       <tr className="dp2-tfoot-row">
-                        <td>
+                        <td colSpan={2}>
                           <span className="dp2-tfoot-count">
                             <i className="fas fa-chart-bar" aria-hidden="true"></i>
                             {' '}{stakedValidators.length} validator{stakedValidators.length !== 1 ? 's' : ''}
@@ -560,6 +587,8 @@ export default function ProfilePage() {
                           <td>
                             <ValidatorCell
                               address={validator.stakingAddress}
+                              name={validatorNames[validator.stakingAddress.toLowerCase()]}
+                              onCopy={copyStakingAddress}
                               subtext={validator.stakingAddress === userWallet.myAddr ? '(You)' : undefined}
                             />
                           </td>
@@ -899,6 +928,7 @@ export default function ProfilePage() {
                 <table className="validators-table">
                   <thead>
                     <tr>
+                      <th>Status</th>
                       <th>Validator</th>
                       {!isPrivacyMode && <th>RpT30</th>}
                       {!isPrivacyMode && <th>APY</th>}
@@ -916,13 +946,21 @@ export default function ProfilePage() {
                         const rewards30d = perPoolRewards30d[validator.stakingAddress.toLowerCase()];
                         const hasStake = BigNumber(validator.myStake ?? 0).isGreaterThan(0);
                         const isClaimable = isOrderClaimable(validator, stakingEpoch);
+                        const status = getPoolStatus(validator, !!abandonedPools[validator.stakingAddress.toLowerCase()]);
                         return (
                           <tr
                             key={validator.stakingAddress}
                             className="dp2-clickable-row"
                             onClick={() => openValidator(validator.stakingAddress)}
                           >
-                            <td><ValidatorCell address={validator.stakingAddress} /></td>
+                            <td><span className={`status-badge ${status.className}`}>{status.label}</span></td>
+                            <td>
+                              <ValidatorCell
+                                address={validator.stakingAddress}
+                                name={validatorNames[validator.stakingAddress.toLowerCase()]}
+                                onCopy={copyStakingAddress}
+                              />
+                            </td>
                             {!isPrivacyMode && <td>{stats ? <Rpt30Cell rpt30={stats.rpt30} rpt30_delta={stats.rpt30_delta} /> : '—'}</td>}
                             {!isPrivacyMode && <td>{formatApy(stats?.estimated_apy)}</td>}
                             {!isPrivacyMode && <td>{stats ? <Aep30Badge aep30={stats.aep30} /> : '—'}</td>}
@@ -944,7 +982,7 @@ export default function ProfilePage() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan={isPrivacyMode ? 4 : 8} style={{ textAlign: 'center', padding: '2rem' }}>
+                        <td colSpan={isPrivacyMode ? 5 : 9} style={{ textAlign: 'center', padding: '2rem' }}>
                           <span className="dp2-empty-text">You haven't staked with any validators yet</span>
                         </td>
                       </tr>
@@ -953,7 +991,7 @@ export default function ProfilePage() {
                   {stakedValidators.length > 0 && (
                     <tfoot>
                       <tr className="dp2-tfoot-row">
-                        <td>
+                        <td colSpan={2}>
                           <span className="dp2-tfoot-count">
                             <i className="fas fa-chart-bar" aria-hidden="true"></i>
                             {' '}{stakedValidators.length} validator{stakedValidators.length !== 1 ? 's' : ''}
@@ -1018,6 +1056,8 @@ export default function ProfilePage() {
                           <td>
                             <ValidatorCell
                               address={validator.stakingAddress}
+                              name={validatorNames[validator.stakingAddress.toLowerCase()]}
+                              onCopy={copyStakingAddress}
                               subtext={validator.stakingAddress === userWallet.myAddr ? '(You)' : undefined}
                             />
                           </td>

@@ -70,6 +70,29 @@ body.light-theme:has(.profile-page) {
   border-collapse: collapse;
 }
 
+.profile-page .validators-table .status-badge {
+  margin-left: var(--space-0);
+  white-space: nowrap;
+}
+
+.profile-page .validators-table .dp2-tfoot-row td.dp2-tfoot-total,
+.profile-page .validators-table .dp2-tfoot-row td.dp2-tfoot-rewards {
+  white-space: normal;
+}
+
+.profile-page .dp2-tfoot-total > span,
+.profile-page .dp2-tfoot-total > strong,
+.profile-page .dp2-tfoot-rewards > span,
+.profile-page .dp2-tfoot-rewards > strong {
+  white-space: nowrap;
+}
+
+.profile-page .status-badge.status-abandoned {
+  background: var(--btn-warning-bg);
+  color: var(--btn-warning-fg);
+  border-color: var(--btn-warning-border);
+}
+
 @media (max-width: 640px) {
   .table-container::-webkit-scrollbar {
     height: 8px;

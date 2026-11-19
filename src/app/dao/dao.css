@@ -802,6 +802,21 @@
   opacity: 1;
 }
 
+.dao-page .proposals-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.dao-page .proposals-table th.sortable:hover i,
+.dao-page .proposals-table th.sorted i {
+  opacity: 1;
+}
+
+.dao-page .proposals-table th.sortable:focus-visible {
+  outline: var(--border-width-thick) solid var(--accent);
+  outline-offset: -2px;
+}
+
 .dao-page .proposals-table td {
   padding: var(--space-15);
   border-bottom: var(--border-width) solid rgba(255, 255, 255, 0.05);

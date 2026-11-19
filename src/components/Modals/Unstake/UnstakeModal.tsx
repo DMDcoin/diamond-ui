@@ -167,9 +167,9 @@ const UnstakeModal: React.FC<ModalProps> = ({ buttonText, pool }) => {
 
   const amountError = ((): string | null => {
     if (!showUnstakeFields) return null;
-    if (!amountText) return isClaimable ? null : "Cannot unstake 0 DMD 💎";
+    if (!amountText) return isClaimable ? null : "Amount must be greater than 0 DMD.";
     if (!parsedAmount) return "Please enter a valid unstake amount";
-    if (!parsedAmount.isGreaterThan(0)) return "Cannot unstake 0 DMD 💎";
+    if (!parsedAmount.isGreaterThan(0)) return "Amount must be greater than 0 DMD.";
     if (parsedAmount.isLessThan(minInputAmount)) return `Value must be greater than or equal to ${minInputAmount.toString(10)}.`;
     if (isOverMax) return `Cannot ${unstakeVerb} more than ${formatDmd(maxInputAmount)}`;
     const amountWei = parsedAmount.multipliedBy(10 ** 18);
